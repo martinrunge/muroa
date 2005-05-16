@@ -198,6 +198,9 @@ void CPlayloop::handleSyncObj(CSync* sync_obj) {
   
   time_duration sleep_time = (*m_sync_obj->getPtimePtr()) - (*m_start_time);
   cerr << "sleep time calculated from sync obj: " << sleep_time << endl;
+  
+  // sleep_time -= milliseconds(100);
+
   if( !sleep_time.is_negative() )
   {
     struct timespec ts_to_sleep, ts_remaining;

@@ -39,6 +39,9 @@ int main(int argc, char *argv[]) {
   unsigned long num;
   int payload_size = 1024;
 
+  int m_num_clients;
+  int i;
+
   /** the actual system time when the last packet was sent */
   struct timeval m_send_time;
 
@@ -47,6 +50,33 @@ int main(int argc, char *argv[]) {
   unsigned long long send_time = 0;
   unsigned long long m_payload_duration_sum = 0;
   unsigned long long total_play_time = 0;
+
+  string clients[10];
+  CSocket *sockets[10];
+  
+  if(argc > 1 && strcmp(argv[1], "--help") == 0) {
+    cout << "usage:" << endl 
+         << "dsserver [client1] [client2] [client3] ... [client10]"  << endl
+         << "client0 will always be 'localhost', the others are optional." << endl;
+
+    exit(0);
+
+  } 
+
+
+  clients[0] = "localhost";
+  sockets[0] = new CSocket(SOCK_DGRAM);
+  sockets[0]->connect("localhost", 4001);
+
+
+  for(i=1; i < argc; i++) {
+    clients[i] = argv[i];  
+
+    sockets[i] = new CSocket(SOCK_DGRAM);
+    sockets[i]->connect(clients[i], 4001);
+  }
+
+  m_num_clients = argc;
 
   ptime m_last_send_time = microsec_clock::local_time();
   ptime now = m_last_send_time;
@@ -57,9 +87,7 @@ int main(int argc, char *argv[]) {
   
   cout << "testserver!!!" << endl;
 
-  CSocket socket(SOCK_DGRAM);  
-
-  socket.connect("localhost", 4001);
+  
 
   unsigned long payload_duration_in_us = 0;
   long time_since_last_packet_in_us;
@@ -70,7 +98,7 @@ int main(int argc, char *argv[]) {
 
   FILE* in_fd = fopen("infile.raw", "r");
   
-  int transport_buffer_size_in_ms = 500;
+  int transport_buffer_size_in_ms = 800;
 
   CSync syncobj;
   time_duration buffersize = millisec(transport_buffer_size_in_ms);
@@ -85,7 +113,9 @@ int main(int argc, char *argv[]) {
 
   rtp_packet.copyInPayload(syncobj.getSerialisationBufferPtr(), syncobj.getSerialisationBufferSize());
 
-  socket.write(rtp_packet.bufferPtr(), rtp_packet.usedBufferSize());
+  for(i=0; i < m_num_clients; i++) {
+    sockets[i]->write(rtp_packet.bufferPtr(), rtp_packet.usedBufferSize());
+  }
 
   do {
     num = fread((void*)rtp_packet.payloadBufferPtr(), rtp_packet.payloadBufferSize(), 1, in_fd); 
@@ -103,7 +133,9 @@ int main(int argc, char *argv[]) {
 //    interval = now - m_last_send_time;
 //    cerr << "interval: " << interval << endl;
 
-    socket.write(rtp_packet.bufferPtr(), rtp_packet.usedBufferSize());
+    for(i=0; i < m_num_clients; i++) {
+      sockets[i]->write(rtp_packet.bufferPtr(), rtp_packet.usedBufferSize()); 
+    }
 
 //    m_last_send_time = now;    
 
