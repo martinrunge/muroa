@@ -117,6 +117,8 @@ int main(int argc, char *argv[]) {
     sockets[i]->write(rtp_packet.bufferPtr(), rtp_packet.usedBufferSize());
   }
 
+  long m_num_multi_channel_samples_before = 0;
+
   do {
     num = fread((void*)rtp_packet.payloadBufferPtr(), rtp_packet.payloadBufferSize(), 1, in_fd); 
     num *= rtp_packet.payloadBufferSize();
@@ -125,7 +127,7 @@ int main(int argc, char *argv[]) {
     payload_duration_in_us = (num * 1000000) / audio_bytes_per_second;
 
     rtp_packet.seqNum( rtp_packet.seqNum() + 1 ); 
-    rtp_packet.timestamp( rtp_packet.timestamp() + num / 4);
+    rtp_packet.timestamp( m_num_multi_channel_samples_before );
     rtp_packet.payloadType(PAYLOAD_PCM);
 
 //    measure the quality of the below usleep calculation
@@ -136,6 +138,8 @@ int main(int argc, char *argv[]) {
     for(i=0; i < m_num_clients; i++) {
       sockets[i]->write(rtp_packet.bufferPtr(), rtp_packet.usedBufferSize()); 
     }
+
+    m_num_multi_channel_samples_before += num / (2 * sizeof(short));
 
 //    m_last_send_time = now;    
 

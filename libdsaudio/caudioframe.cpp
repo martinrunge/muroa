@@ -43,6 +43,8 @@ CAudioFrame::CAudioFrame(CRTPPacket* rtp_packet, int max_frame_size) {
   m_frame_data = new char[m_max_size];
 
   copyData(rtp_packet->payloadBufferPtr(), rtp_packet->payloadBufferSize());
+
+  m_first_sample_nr = rtp_packet->timestamp(); 
 }
 
 

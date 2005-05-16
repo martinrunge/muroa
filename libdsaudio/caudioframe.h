@@ -54,6 +54,9 @@ public:
     inline void frameType(enum payload_type_t type) { m_frame_type = type; };
     inline enum payload_type_t frameType(void) { return m_frame_type; };
 
+    inline void firstSampleNr(long nr) { m_first_sample_nr = nr; };
+    inline long firstSampleNr(void) { return m_first_sample_nr; };
+
     inline int maxFrameSize(void) { return m_max_size; };
         
 protected:
@@ -62,6 +65,11 @@ protected:
     enum payload_type_t m_frame_type;
     
     int m_max_size;
+
+private:
+    long m_first_sample_nr;    
+
+
 };
 
 #endif

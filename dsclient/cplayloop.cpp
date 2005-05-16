@@ -116,8 +116,12 @@ void CPlayloop::DoLoop() {
 
 
 void CPlayloop::playAudio(CAudioFrame *frame) {
+
+  // if(m_num_multi_channel_samples_arrived != frame->firstSampleNr())
+  //  cerr << "multi channel samples arrived = " << m_num_multi_channel_samples_arrived << " but rtp timestamp says : " << frame->firstSampleNr() << endl;
   
-  m_num_multi_channel_samples_arrived += frame->dataSize() / (2 * sizeof(short));
+  // m_num_multi_channel_samples_arrived += frame->dataSize() / (2 * sizeof(short));
+  m_num_multi_channel_samples_arrived = frame->firstSampleNr();
 
   // fwrite(frame->dataPtr(), 1, frame->dataSize(), m_debug_fd1);
   CAudioFrame* resampled_frame = m_resampler->resampleFrame(frame, m_resample_factor * m_correction_factor);
