@@ -79,6 +79,7 @@ private:
     int m_counter;
 
     long m_num_multi_channel_samples_played;
+    long m_num_multi_channel_samples_arrived;
 
     boost::posix_time::time_duration m_average_time_diff;
     int m_average_size;

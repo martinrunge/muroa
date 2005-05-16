@@ -46,7 +46,8 @@ CPlayloop::CPlayloop(CRingBuffer* ringbuffer, std::string sound_dev)
   m_correction_factor = 1.0;
 
   m_num_multi_channel_samples_played = 0;
-  
+  m_num_multi_channel_samples_arrived = 0;
+
   m_audio_sink = new CAudioIoAlsa();;  
   m_audio_sink->open(sound_dev, 41000, 2);
 
@@ -115,19 +116,12 @@ void CPlayloop::DoLoop() {
 
 
 void CPlayloop::playAudio(CAudioFrame *frame) {
-  /// here:
-  /// gettimeofday
-  /// getDelay
-  /// sum up ringbuffer content
-  /// calculate real delay
-
   
-  m_num_multi_channel_samples_played += frame->dataSize() / (2 * sizeof(short));
+  m_num_multi_channel_samples_arrived += frame->dataSize() / (2 * sizeof(short));
 
   // fwrite(frame->dataPtr(), 1, frame->dataSize(), m_debug_fd1);
   CAudioFrame* resampled_frame = m_resampler->resampleFrame(frame, m_resample_factor * m_correction_factor);
   
-
   int granulated_num_bytes = resampled_frame->dataSize() - (resampled_frame->dataSize() % m_audio_sink->getWriteGranularity());
    
   m_audio_sink->write(resampled_frame->dataPtr(), granulated_num_bytes);
@@ -138,6 +132,9 @@ void CPlayloop::playAudio(CAudioFrame *frame) {
   // calculation of the drift:
   // measure clock time and time by consumed sampes in every loop run.
   // build an average value every 10 loop runs.
+
+  m_num_multi_channel_samples_played = m_num_multi_channel_samples_arrived - resampled_frame->dataSize() - m_audio_sink->getDelay();
+
 
   ptime now = microsec_clock::local_time();
     
@@ -162,7 +159,7 @@ void CPlayloop::playAudio(CAudioFrame *frame) {
     int post_delay = m_audio_sink->getDelay(); // number of frames in the playback buffer of the soundcard / sound driver
     int ringbuffer_frames = m_ringbuffer->getRingbufferSize() * 256;   // one ringbuffer frame contains 256 frames
 
-    cerr << "Average time diff (clock - samples) = " << m_average_time_diff << endl;
+    cerr << "Average time diff (clock - samples) = " << m_average_time_diff <<  " factor used = " << m_resample_factor * m_correction_factor << endl;
 
 
     int diff_in_us = m_average_time_diff.fractional_seconds();
