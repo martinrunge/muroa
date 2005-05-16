@@ -30,6 +30,7 @@
 #include "cmutex.h"
 
 #include <boost/date_time/posix_time/posix_time.hpp>
+#include <boost/date_time/time_duration.hpp>
 
 #include <list>
 #include <string>
@@ -78,6 +79,9 @@ private:
     int m_counter;
 
     long m_num_multi_channel_samples_played;
+
+    boost::posix_time::time_duration m_average_time_diff;
+    int m_average_size;
 
 //    std::list<CAudioFrame*> m_frame_list;
 

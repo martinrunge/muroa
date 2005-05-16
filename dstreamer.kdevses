@@ -3,7 +3,7 @@
 <KDevPrjSession>
  <DocsAndViews NumberOfDocuments="15" >
   <Doc0 NumberOfViews="1" URL="file:///home/martin/devel/dstreamer/dsserver/dsserver.cpp" >
-   <View0 line="0" Type="Source" />
+   <View0 Type="Source" />
   </Doc0>
   <Doc1 NumberOfViews="1" URL="file:///home/martin/devel/dstreamer/dsclient/dsclient.cpp" >
    <View0 line="33" Type="Source" />
