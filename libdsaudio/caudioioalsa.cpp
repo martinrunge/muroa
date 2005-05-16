@@ -164,21 +164,26 @@ int CAudioIoAlsa::write(char* data, int length) {
 
   frames_written = snd_pcm_writei(m_playback_handle, data, length / 4);
 
-  if( length != frames_written * 4)
+  if( length != frames_written * 4) {
     cerr << "length = " << length << " but only " << frames_written << " frames written." << endl;
 
-  if (err < 0) {
-    if(err == EBADFD)
-      cerr << "EBADFD" << endl;
-    if(err == EPIPE)
-      cerr << "EPIPE" << endl;
-    if(err == ESTRPIPE)
-      cerr << "ESTRPIPE" << endl;
-      
-    fprintf(stderr, "write to audio interface failed (%s) len: %d\n", snd_strerror (err), err);  
-    err = snd_pcm_prepare(m_playback_handle);
+    if (frames_written < 0) {
+      if(frames_written == EBADFD)
+        cerr << "EBADFD" << endl;
+      if(frames_written == EPIPE)
+        cerr << "EPIPE" << endl;
+      if(frames_written == ESTRPIPE)
+        cerr << "ESTRPIPE" << endl;
+        
+      fprintf(stderr, "write to audio interface failed (%s) len: %d\n", snd_strerror(frames_written), frames_written);  
+      err = snd_pcm_prepare(m_playback_handle);
+      if(err != 0) {
+        cerr << "snd_pcm_prepare failed: " << snd_strerror(err) << endl;
+      }
+    }
+    return 0;
   }
-  return err;
+  return frames_written;
 
 }
 
