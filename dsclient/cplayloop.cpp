@@ -42,13 +42,13 @@ CPlayloop::CPlayloop(CRingBuffer* ringbuffer, std::string sound_dev)
   m_ringbuffer = ringbuffer;
 
   m_resampler = new CResampler(SRC_SINC_BEST_QUALITY, 2);
-  m_resample_factor = (double) 48000 / 44100; 
+  m_resample_factor = (double) 44100 / 44100; 
   m_correction_factor = 1.0;
 
   m_num_multi_channel_samples_played = 0;
   
   m_audio_sink = new CAudioIoAlsa();;  
-  m_audio_sink->open(sound_dev, 48000, 2);
+  m_audio_sink->open(sound_dev, 41000, 2);
 
   cerr << "Audio sink granularity = " << m_audio_sink->getWriteGranularity() << endl;
   

@@ -98,7 +98,7 @@ int main(int argc, char *argv[]) {
 
   FILE* in_fd = fopen("infile.raw", "r");
   
-  int transport_buffer_size_in_ms = 800;
+  int transport_buffer_size_in_ms = 1500;
 
   CSync syncobj;
   time_duration buffersize = millisec(transport_buffer_size_in_ms);
