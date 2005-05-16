@@ -1,0 +1,196 @@
+/***************************************************************************
+ *   Copyright (C) 2005 by Martin Runge                                    *
+ *   martin.runge@web.de                                                   *
+ *                                                                         *
+ *   This program is free software; you can redistribute it and/or modify  *
+ *   it under the terms of the GNU General Public License as published by  *
+ *   the Free Software Foundation; either version 2 of the License, or     *
+ *   (at your option) any later version.                                   *
+ *                                                                         *
+ *   This program is distributed in the hope that it will be useful,       *
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of        *
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
+ *   GNU General Public License for more details.                          *
+ *                                                                         *
+ *   You should have received a copy of the GNU General Public License     *
+ *   along with this program; if not, write to the                         *
+ *   Free Software Foundation, Inc.,                                       *
+ *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
+ ***************************************************************************/
+#include "cplayloop.h"
+#include "caudioframe.h"
+
+#include <iostream>
+#include "libdsaudio.h"
+#include "libsock++.h"
+#include "cringbuffer.h"
+#include "cresampler.h"
+#include "csync.h"
+
+#include <time.h> 
+
+#include <boost/date_time/posix_time/posix_time.hpp>
+#include <boost/date_time/time_duration.hpp>
+
+
+
+using namespace std;
+using namespace boost::posix_time;
+
+CPlayloop::CPlayloop(CRingBuffer* ringbuffer, std::string sound_dev)
+ : CThreadSlave(), m_counter(0)
+{
+
+  m_ringbuffer = ringbuffer;
+
+  m_resampler = new CResampler(SRC_SINC_BEST_QUALITY, 2);
+  m_resample_factor = (double) 48000 / 44100; 
+  m_correction_factor = 1.0;
+
+  m_num_multi_channel_samples_played = 0;
+  
+  m_audio_sink = new CAudioIoAlsa();;  
+  m_audio_sink->open(sound_dev, 48000, 2);
+
+  cerr << "Audio sink granularity = " << m_audio_sink->getWriteGranularity() << endl;
+  
+  m_seqnum = 0;
+  
+  m_stream_id = 0;
+  m_session_id = 0;
+  
+  m_start_time = 0;
+
+}
+
+
+CPlayloop::~CPlayloop()
+{
+  
+  delete m_start_time;
+  delete m_resampler;
+  m_audio_sink->close();
+}
+
+
+void CPlayloop::DoLoop() {
+  
+
+  
+  if(m_ringbuffer->getRingbufferSize() == 0) {
+     cerr << "CPlayloop::DoLoop: buffer empty!" << endl;
+      usleep(300000);
+     return;
+  }
+
+  CAudioFrame* frame;
+
+  CRTPPacket* rtp_packet = m_ringbuffer->readPacket();
+
+  switch( rtp_packet->payloadType() ) 
+  {
+    case PAYLOAD_SYNC_OBJ:
+      m_sync_obj = new CSync(rtp_packet);
+      handleSyncObj(m_sync_obj);
+        
+      delete rtp_packet;
+      break;
+
+
+    case PAYLOAD_PCM:
+    case PAYLOAD_MP3:
+    case PAYLOAD_VORBIS:
+    case PAYLOAD_FLAC:
+      frame = new CAudioFrame(rtp_packet);
+      delete rtp_packet;
+
+      playAudio(frame);        
+      delete frame;
+      
+      break;
+
+    default:
+      cerr << "unknown payload type!" << endl;
+  }
+
+}
+
+
+void CPlayloop::playAudio(CAudioFrame *frame) {
+  /// here:
+  /// gettimeofday
+  /// getDelay
+  /// sum up ringbuffer content
+  /// calculate real delay
+
+  
+  m_num_multi_channel_samples_played += frame->dataSize() / (2 * sizeof(short));
+
+  // fwrite(frame->dataPtr(), 1, frame->dataSize(), m_debug_fd1);
+  CAudioFrame* resampled_frame = m_resampler->resampleFrame(frame, m_resample_factor * m_correction_factor);
+  
+
+  int granulated_num_bytes = resampled_frame->dataSize() - (resampled_frame->dataSize() % m_audio_sink->getWriteGranularity());
+   
+  m_audio_sink->write(resampled_frame->dataPtr(), granulated_num_bytes);
+
+  resampled_frame->moveDataToBegin(granulated_num_bytes);
+  
+
+  m_counter++;
+  if(m_counter > 100) {
+    
+    //    measure the quality of the below usleep calculation
+    // ptime now = microsec_clock::local_time();
+    // interval = now - (*m_start_time);
+    // cerr << "interval: " << interval << endl;
+
+    // m_last_send_time = now;    
+    
+    int post_delay = m_audio_sink->getDelay(); // number of frames in the playback buffer of the soundcard / sound driver
+    int ringbuffer_frames = m_ringbuffer->getRingbufferSize() * 256;   // one ringbuffer frame contains 256 frames
+
+    ptime now = microsec_clock::local_time();
+    
+    time_duration play_time_from_clock = now - (*m_sync_obj->getPtimePtr());
+    time_duration play_time_from_samples = millisec((m_num_multi_channel_samples_played * 10) / 441);  
+    time_duration time_diff = play_time_from_clock - play_time_from_samples;
+
+    cerr << "Time diff (clock - samples) = " << time_diff << endl;
+  
+
+    // cerr << "total: " << ringbuffer_frames + post_delay << " frames. Alsa(" << post_delay << ")" << endl;
+    m_counter = 0;
+  }
+}
+
+
+void CPlayloop::handleSyncObj(CSync* sync_obj) {
+
+  cerr << "got sync obj: ";  
+  m_sync_obj->print();
+  
+  if(m_sync_obj->streamId() != m_stream_id || m_sync_obj->sessionId() != m_session_id) {
+    // this is a sync obj for a new stream !!!!
+    if(m_start_time != 0)  delete m_start_time;
+    m_start_time = new ptime(microsec_clock::local_time());
+  }
+  
+  time_duration sleep_time = (*m_sync_obj->getPtimePtr()) - (*m_start_time);
+  cerr << "sleep time calculated from sync obj: " << sleep_time << endl;
+  if( !sleep_time.is_negative() )
+  {
+    struct timespec ts_to_sleep, ts_remaining;
+    ts_to_sleep.tv_sec = sleep_time.total_seconds();
+    ts_to_sleep.tv_nsec = sleep_time.fractional_seconds();
+    
+    //boost::date_time::time_resolutions 
+    if (time_duration::resolution() == boost::date_time::micro) {
+      ts_to_sleep.tv_nsec *= 1000;
+    }
+    
+    int retval = nanosleep( &ts_to_sleep, &ts_remaining);
+    
+  }
+        
+}  

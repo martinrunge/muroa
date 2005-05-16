@@ -1,0 +1,71 @@
+<?xml version = '1.0' encoding = 'UTF-8'?>
+<!DOCTYPE KDevPrjSession>
+<KDevPrjSession>
+ <DocsAndViews NumberOfDocuments="15" >
+  <Doc0 NumberOfViews="1" URL="file:///home/martin/devel/dstreamer/dsserver/dsserver.cpp" >
+   <View0 line="0" Type="Source" />
+  </Doc0>
+  <Doc1 NumberOfViews="1" URL="file:///home/martin/devel/dstreamer/dsclient/dsclient.cpp" >
+   <View0 line="33" Type="Source" />
+  </Doc1>
+  <Doc2 NumberOfViews="1" URL="file:///home/martin/devel/dstreamer/dsclient/cplayloop.cpp" >
+   <View0 line="140" Type="Source" />
+  </Doc2>
+  <Doc3 NumberOfViews="1" URL="file:///home/martin/devel/dstreamer/dsclient/cplayloop.h" >
+   <View0 line="68" Type="Source" />
+  </Doc3>
+  <Doc4 NumberOfViews="1" URL="file:///home/martin/devel/dstreamer/libdsaudio/caudioframe.cpp" >
+   <View0 line="77" Type="Source" />
+  </Doc4>
+  <Doc5 NumberOfViews="1" URL="file:///home/martin/devel/dstreamer/libdsaudio/caudioframe.h" >
+   <View0 line="36" Type="Source" />
+  </Doc5>
+  <Doc6 NumberOfViews="1" URL="file:///home/martin/devel/dstreamer/dsclient/cresampler.h" >
+   <View0 line="70" Type="Source" />
+  </Doc6>
+  <Doc7 NumberOfViews="1" URL="file:///home/martin/devel/dstreamer/dsclient/cresampler.cpp" >
+   <View0 line="161" Type="Source" />
+  </Doc7>
+  <Doc8 NumberOfViews="1" URL="file:///home/martin/devel/dstreamer/libdsaudio/caudioioalsa.cpp" >
+   <View0 line="131" Type="Source" />
+  </Doc8>
+  <Doc9 NumberOfViews="1" URL="file:///home/martin/devel/dstreamer/libsock%2B%2B/cpthread.cpp" >
+   <View0 line="57" Type="Source" />
+  </Doc9>
+  <Doc10 NumberOfViews="1" URL="file:///home/martin/devel/dstreamer/libsock%2B%2B/cpthread.h" >
+   <View0 line="57" Type="Source" />
+  </Doc10>
+  <Doc11 NumberOfViews="1" URL="file:///home/martin/devel/dstreamer/dsclient/cplayer.h" >
+   <View0 line="47" Type="Source" />
+  </Doc11>
+  <Doc12 NumberOfViews="1" URL="file:///home/martin/devel/dstreamer/dsclient/cplayer.cpp" >
+   <View0 line="43" Type="Source" />
+  </Doc12>
+  <Doc13 NumberOfViews="1" URL="file:///home/martin/devel/dstreamer/libsock%2B%2B/cmutex.h" >
+   <View0 line="28" Type="Source" />
+  </Doc13>
+  <Doc14 NumberOfViews="1" URL="file:///home/martin/devel/dstreamer/libsock%2B%2B/cmutex.cpp" >
+   <View0 line="36" Type="Source" />
+  </Doc14>
+ </DocsAndViews>
+ <pluginList>
+  <kdevdebugger>
+   <breakpointList>
+    <breakpoint0 location="/home/martin/devel/dstreamer/libdsaudio/csync.cpp:70" type="1" condition="" enabled="0" />
+    <breakpoint1 location="/home/martin/devel/dstreamer/libdsaudio/caudioframe.cpp:67" type="1" condition="" enabled="1" />
+    <breakpoint2 location="/home/martin/devel/dstreamer/dsclient/cresampler.cpp:90" type="1" condition="" enabled="1" />
+    <breakpoint3 location="/home/martin/devel/dstreamer/dsclient/cresampler.cpp:94" type="1" condition="" enabled="1" />
+    <breakpoint4 location="/home/martin/devel/dstreamer/dsclient/cresampler.cpp:166" type="1" condition="" enabled="1" />
+   </breakpointList>
+  </kdevdebugger>
+  <kdevbookmarks>
+   <bookmarks/>
+  </kdevbookmarks>
+  <kdevvalgrind>
+   <executable path="" params="" />
+   <valgrind path="" params="" />
+   <calltree path="" params="" />
+   <kcachegrind path="" />
+  </kdevvalgrind>
+ </pluginList>
+</KDevPrjSession>
