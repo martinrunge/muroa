@@ -56,6 +56,10 @@ public:
 
   
 private:
+
+    int sync(void);
+
+
     CRingBuffer *m_ringbuffer;
 
     CResampler* m_resampler;

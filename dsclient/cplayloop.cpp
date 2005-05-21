@@ -74,8 +74,6 @@ CPlayloop::~CPlayloop()
 
 void CPlayloop::DoLoop() {
   
-
-  
   if(m_ringbuffer->getRingbufferSize() == 0) {
      cerr << "CPlayloop::DoLoop: buffer empty!" << endl;
       usleep(300000);
@@ -220,3 +218,19 @@ void CPlayloop::handleSyncObj(CSync* sync_obj) {
   }
         
 }  
+
+/** called whenever the a resync is neccesarry. For example at the start of e new stream of if the soundcard had an unterrun.   
+  Two possibilities:                                                                                                          
+  - Time is proceeding and audio data was not played. -> Audio data must be thrown away because to get into sync again        
+  - Audio data i missing (e.g. playback underrun). Wait for enough audio data to arrive and start the sound device then.      */ 
+
+int CPlayloop::sync(void) {
+  
+  ptime now = microsec_clock::local_time();
+
+  
+
+
+  return 0;
+}
+
