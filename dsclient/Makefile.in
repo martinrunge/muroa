@@ -54,8 +54,8 @@ am__installdirs = "$(DESTDIR)$(bindir)"
 binPROGRAMS_INSTALL = $(INSTALL_PROGRAM)
 PROGRAMS = $(bin_PROGRAMS)
 am_dsclient_OBJECTS = dsclient.$(OBJEXT) cplayloop.$(OBJEXT) \
-	cresampler.$(OBJEXT) crecvloop.$(OBJEXT) cringbuffer.$(OBJEXT) \
-	cplayer.$(OBJEXT)
+	cresampler.$(OBJEXT) crecvloop.$(OBJEXT) cplayer.$(OBJEXT) \
+	cpacketringbuffer.$(OBJEXT)
 dsclient_OBJECTS = $(am_dsclient_OBJECTS)
 dsclient_DEPENDENCIES = $(top_builddir)/libsock++/libsock++.la \
 	$(top_builddir)/libdsaudio/libdsaudio.la
@@ -183,7 +183,7 @@ target_alias = @target_alias@
 INCLUDES = -I$(top_srcdir)/libdsaudio -I$(top_srcdir)/libsock++
 METASOURCES = AUTO
 dsclient_SOURCES = dsclient.cpp cplayloop.cpp cplayloop.h cresampler.cpp \
-	cresampler.h crecvloop.cpp cringbuffer.cpp cringbuffer.h cplayer.cpp
+	cresampler.h crecvloop.cpp cplayer.cpp cpacketringbuffer.cpp cpacketringbuffer.h
 
 dsclient_LDADD = $(top_builddir)/libsock++/libsock++.la \
 	$(top_builddir)/libdsaudio/libdsaudio.la -lsamplerate
@@ -260,11 +260,11 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/cpacketringbuffer.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/cplayer.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/cplayloop.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/crecvloop.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/cresampler.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/cringbuffer.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dsclient.Po@am__quote@
 
 .cpp.o:

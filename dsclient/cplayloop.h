@@ -38,7 +38,7 @@
 
 class CAudioFrame;
 class CSync;
-class CRingBuffer;
+class CPacketRingBuffer;
 class CResampler;
 
 using namespace boost::posix_time;
@@ -46,7 +46,7 @@ using namespace boost::posix_time;
 class CPlayloop : public CThreadSlave
 {
 public:
-    CPlayloop(CRingBuffer* ringbuffer, std::string sound_dev = "hw:0,0");
+    CPlayloop(CPacketRingBuffer* packet_ringbuffer, std::string sound_dev = "hw:0,0");
 
     ~CPlayloop();
 
@@ -60,7 +60,7 @@ private:
     int sync(void);
 
 
-    CRingBuffer *m_ringbuffer;
+    CPacketRingBuffer *m_packet_ringbuffer;
 
     CResampler* m_resampler;
     double m_resample_factor;
@@ -91,6 +91,8 @@ private:
 //    std::list<CAudioFrame*> m_frame_list;
 
 
+private:
+    void adjustResamplingFactor(int bytes_in_playback_ringbuffer);
 };
 
 #endif

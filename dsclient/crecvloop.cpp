@@ -21,14 +21,14 @@
 #include "caudioframe.h"
 #include "csocket.h"
 #include "csync.h"
-#include "cringbuffer.h"
+#include "cpacketringbuffer.h"
 
 using namespace std;
 
-CRecvloop::CRecvloop(CRingBuffer* ringbuffer, unsigned short port): CThreadSlave()
+CRecvloop::CRecvloop(CPacketRingBuffer* packet_ringbuffer, unsigned short port): CThreadSlave()
 {
 
-  m_ringbuffer = ringbuffer;
+  m_packet_ringbuffer = packet_ringbuffer;
 
   m_socket = new CSocket(SOCK_DGRAM, port);  
 
@@ -55,7 +55,7 @@ void CRecvloop::DoLoop()
     usleep(200);
   }
   else {
-    m_ringbuffer->appendRTPPacket(m_rtp_packet);
+    m_packet_ringbuffer->appendRTPPacket(m_rtp_packet);
     m_rtp_packet = new CRTPPacket(); 
   }
           

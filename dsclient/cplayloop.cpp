@@ -23,7 +23,7 @@
 #include <iostream>
 #include "libdsaudio.h"
 #include "libsock++.h"
-#include "cringbuffer.h"
+#include "cpacketringbuffer.h"
 #include "cresampler.h"
 #include "csync.h"
 
@@ -35,11 +35,11 @@
 using namespace std;
 using namespace boost::posix_time;
 
-CPlayloop::CPlayloop(CRingBuffer* ringbuffer, std::string sound_dev)
+CPlayloop::CPlayloop(CPacketRingBuffer* packet_ringbuffer, std::string sound_dev)
  : CThreadSlave(), m_counter(0), m_average_size(32)
 {
 
-  m_ringbuffer = ringbuffer;
+  m_packet_ringbuffer = packet_ringbuffer;
 
   m_resampler = new CResampler(SRC_SINC_BEST_QUALITY, 2);
   m_resample_factor = (double) 44100 / 44100; 
@@ -74,7 +74,7 @@ CPlayloop::~CPlayloop()
 
 void CPlayloop::DoLoop() {
   
-  if(m_ringbuffer->getRingbufferSize() == 0) {
+  if(m_packet_ringbuffer->getRingbufferSize() == 0) {
      cerr << "CPlayloop::DoLoop: buffer empty!" << endl;
       usleep(300000);
      return;
@@ -82,7 +82,7 @@ void CPlayloop::DoLoop() {
 
   CAudioFrame* frame;
 
-  CRTPPacket* rtp_packet = m_ringbuffer->readPacket();
+  CRTPPacket* rtp_packet = m_packet_ringbuffer->readPacket();
 
   switch( rtp_packet->payloadType() ) 
   {
@@ -131,56 +131,8 @@ void CPlayloop::playAudio(CAudioFrame *frame) {
   resampled_frame->moveDataToBegin(granulated_num_bytes);
   
 
-  // calculation of the drift:
-  // measure clock time and time by consumed sampes in every loop run.
-  // build an average value every 10 loop runs.
+  adjustResamplingFactor(resampled_frame->dataSize());
 
-  m_num_multi_channel_samples_played = m_num_multi_channel_samples_arrived - resampled_frame->dataSize() - m_audio_sink->getDelay();
-
-
-  ptime now = microsec_clock::local_time();
-    
-  time_duration play_time_from_clock = now - (*m_sync_obj->getPtimePtr());
-  time_duration play_time_from_samples = millisec((m_num_multi_channel_samples_played * 10) / 441);  
-  time_duration time_diff = play_time_from_clock - play_time_from_samples;
-
-  m_average_time_diff += time_diff;
-
-  m_counter++;
-  if(m_counter > m_average_size) {
-    
-    //    measure the quality of the below usleep calculation
-    // ptime now = microsec_clock::local_time();
-    // interval = now - (*m_start_time);
-    // cerr << "interval: " << interval << endl;
-
-    // m_last_send_time = now;    
-    
-    m_average_time_diff /= m_average_size;
-
-    int post_delay = m_audio_sink->getDelay(); // number of frames in the playback buffer of the soundcard / sound driver
-    int ringbuffer_frames = m_ringbuffer->getRingbufferSize() * 256;   // one ringbuffer frame contains 256 frames
-
-    cerr << "Average time diff (clock - samples) = " << m_average_time_diff <<  " factor used = " << m_resample_factor * m_correction_factor << endl;
-
-
-    int diff_in_us = m_average_time_diff.fractional_seconds();
-    
-    // if the resolution off fractional_seconds() id nano sec, then convert it to micro sec
-    if (time_duration::resolution() == boost::date_time::nano) {
-      diff_in_us /= 1000;
-    }
-  
-    diff_in_us += m_average_time_diff.total_seconds() * 1000000;
-
-    double diff_in_s = 0.000001 * diff_in_us * 0.1;
-
-    m_correction_factor = 1.0 - diff_in_s;  
-
-    // cerr << "total: " << ringbuffer_frames + post_delay << " frames. Alsa(" << post_delay << ")" << endl;
-    m_average_time_diff = seconds(0);
-    m_counter = 0;
-  }
 }
 
 
@@ -234,3 +186,61 @@ int CPlayloop::sync(void) {
   return 0;
 }
 
+
+
+/*!
+    \fn CPlayloop::adjustResamplingFactor()
+ */
+void CPlayloop::adjustResamplingFactor(int bytes_in_playback_ringbuffer)
+{
+  // calculation of the drift:
+  // measure clock time and time by consumed sampes in every loop run.
+  // build an average value every 10 loop runs.
+
+  m_num_multi_channel_samples_played = m_num_multi_channel_samples_arrived - bytes_in_playback_ringbuffer - m_audio_sink->getDelay();   // resampled_frame will be playback rungbuffer 
+
+
+  ptime now = microsec_clock::local_time();
+    
+  time_duration play_time_from_clock = now - (*m_sync_obj->getPtimePtr());
+  time_duration play_time_from_samples = millisec((m_num_multi_channel_samples_played * 10) / 441);  
+  time_duration time_diff = play_time_from_clock - play_time_from_samples;
+
+  m_average_time_diff += time_diff;
+
+  m_counter++;
+  if(m_counter > m_average_size) {
+    
+    //    measure the quality of the below usleep calculation
+    // ptime now = microsec_clock::local_time();
+    // interval = now - (*m_start_time);
+    // cerr << "interval: " << interval << endl;
+
+    // m_last_send_time = now;    
+    
+    m_average_time_diff /= m_average_size;
+
+    int post_delay = m_audio_sink->getDelay(); // number of frames in the playback buffer of the soundcard / sound driver
+    int ringbuffer_frames = m_packet_ringbuffer->getRingbufferSize() * 256;   // one ringbuffer frame contains 256 frames
+
+    cerr << "Average time diff (clock - samples) = " << m_average_time_diff <<  " factor used = " << m_resample_factor * m_correction_factor << endl;
+
+
+    int diff_in_us = m_average_time_diff.fractional_seconds();
+    
+    // if the resolution off fractional_seconds() id nano sec, then convert it to micro sec
+    if (time_duration::resolution() == boost::date_time::nano) {
+      diff_in_us /= 1000;
+    }
+  
+    diff_in_us += m_average_time_diff.total_seconds() * 1000000;
+
+    double diff_in_s = 0.000001 * diff_in_us * 0.1;
+
+    m_correction_factor = 1.0 - diff_in_s;  
+
+    // cerr << "total: " << ringbuffer_frames + post_delay << " frames. Alsa(" << post_delay << ")" << endl;
+    m_average_time_diff = seconds(0);
+    m_counter = 0;
+  }
+}

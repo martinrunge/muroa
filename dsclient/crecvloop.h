@@ -29,12 +29,12 @@
 class CRTPPacket;
 class CSocket;
 class CSync;
-class CRingBuffer;
+class CPacketRingBuffer;
 
 class CRecvloop : public CThreadSlave
 {
 public:
-    CRecvloop(CRingBuffer* ringbuffer, unsigned short port);
+    CRecvloop(CPacketRingBuffer* packet_ringbuffer, unsigned short port);
 
     ~CRecvloop();
   
@@ -44,7 +44,7 @@ private:
     CRTPPacket *m_rtp_packet;
     CSocket *m_socket;
 
-    CRingBuffer *m_ringbuffer;
+    CPacketRingBuffer *m_packet_ringbuffer;
 };
 
 #endif

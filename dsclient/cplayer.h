@@ -31,7 +31,7 @@ Class encapsulates all the playback functioinalty. It inplements an interface to
 class CRecvloop;
 class CPlayloop;
 class CPThread;
-class CRingBuffer;
+class CPacketRingBuffer;
 
 class CPlayer{
 public:
@@ -42,7 +42,7 @@ public:
     void stop();
 
 private:
-    CRingBuffer * m_ringbuffer;
+    CPacketRingBuffer * m_packet_ringbuffer;
   
     CPlayloop *m_playloop;
     CRecvloop *m_recvloop;
