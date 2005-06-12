@@ -34,7 +34,7 @@
 
 #include "cplayloop.h"
 #include "crecvloop.h"
-#include "cringbuffer.h"
+#include "cpacketringbuffer.h"
 
 
 using namespace std;
@@ -46,10 +46,10 @@ CPlayer::CPlayer(unsigned short port, std::string sound_dev)
   int num;
   cout << "dsclient" << endl;
  
-  m_ringbuffer = new CRingBuffer(10);
+  m_packet_ringbuffer = new CPacketRingBuffer(10);
 
-  m_recvloop = new CRecvloop(m_ringbuffer, port);
-  m_playloop = new CPlayloop(m_ringbuffer, sound_dev);
+  m_recvloop = new CRecvloop(m_packet_ringbuffer, port);
+  m_playloop = new CPlayloop(m_packet_ringbuffer, sound_dev);
 
   m_recvloop_thread = new CPThread(m_recvloop);
   m_playloop_thread = new CPThread(m_playloop);
@@ -67,7 +67,7 @@ CPlayer::~CPlayer()
   delete m_recvloop;
   delete m_playloop;
 
-  delete m_ringbuffer;
+  delete m_packet_ringbuffer;
 
 }
 
