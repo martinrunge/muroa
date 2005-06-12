@@ -129,7 +129,9 @@ void CPlayloop::playAudio(CAudioFrame *frame) {
   // fwrite(frame->dataPtr(), 1, frame->dataSize(), m_debug_fd1);
   int num_samples = m_resampler->resampleFrame(frame, m_resample_factor * m_correction_factor);
   
-  int granulated_num_bytes = m_ringbuffer->size() - (m_ringbuffer->size() % m_audio_sink->getWriteGranularity());
+
+  int rb_size = m_ringbuffer->size();
+  int granulated_num_bytes = rb_size - (rb_size % m_audio_sink->getWriteGranularity());
   
   char* playbuffer = m_ringbuffer->read(granulated_num_bytes);
 

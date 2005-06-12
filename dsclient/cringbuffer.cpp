@@ -66,7 +66,7 @@ char* CRingBuffer::read(int bytes)
       m_read_ptr += bytes;
     }  
     else {  // write_pre had overflow at buffer end, read pointer not yet.
-      int bytes_to_overflow = m_read_ptr - m_buffer;
+      int bytes_to_overflow = (m_buffer + m_buffer_size_in_bytes) - m_read_ptr;
       if(bytes_to_overflow > bytes) {  // we can do it in one piece
         memcpy(buffer, m_read_ptr, bytes);
         m_read_ptr += bytes;
@@ -78,6 +78,7 @@ char* CRingBuffer::read(int bytes)
         m_read_ptr = m_buffer + rest;
       }
     }
+    return buffer;
 }
 
 
@@ -86,10 +87,13 @@ char* CRingBuffer::read(int bytes)
  */
 int CRingBuffer::size()
 {
-    if(m_write_ptr > m_read_ptr)
-      return m_write_ptr - m_read_ptr;
+    int size;
+    if(m_write_ptr >= m_read_ptr)
+      size = m_write_ptr - m_read_ptr;
     else
-      return m_buffer_size_in_bytes - (m_read_ptr - m_read_ptr); 
+      size = m_buffer_size_in_bytes - (m_read_ptr - m_write_ptr); 
+
+    return size;
 }
 
 
