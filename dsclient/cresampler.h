@@ -31,14 +31,15 @@ audio resampling class
 
 
 class CAudioFrame;
+class CRingBuffer;
 
 
 class CResampler{
 public:
-    CResampler(int converter_type, int num_channels);
+    CResampler(CRingBuffer *ringbuffer, int converter_type, int num_channels);
     ~CResampler();
     
-    CAudioFrame* resampleFrame(CAudioFrame* in_frame, float factor = 1.0);
+    int resampleFrame(CAudioFrame* in_frame, float factor = 1.0);
     int reset();
     
 private:
@@ -61,10 +62,11 @@ private:
   int m_size_of_input_singlechannel_sample;
   int m_size_of_input_multichannel_sample;
 
-  CAudioFrame* m_resampled_frame;
+  // CAudioFrame* m_resampled_frame;
+  CRingBuffer* m_ringbuffer;
 
   void appendFrameToImputBuffer(CAudioFrame* in_frame);
-  void copyResampledFramesToResampledFrame();
+  int copyResampledFramesToRingbuffer();
 
   FILE *m_debug_fd1;
   FILE *m_debug_fd2;

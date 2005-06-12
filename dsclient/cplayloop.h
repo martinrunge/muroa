@@ -39,6 +39,7 @@
 class CAudioFrame;
 class CSync;
 class CPacketRingBuffer;
+class CRingBuffer;
 class CResampler;
 
 using namespace boost::posix_time;
@@ -61,6 +62,8 @@ private:
 
 
     CPacketRingBuffer *m_packet_ringbuffer;
+    CRingBuffer *m_ringbuffer;
+
 
     CResampler* m_resampler;
     double m_resample_factor;

@@ -24,6 +24,7 @@
 #include "libdsaudio.h"
 #include "libsock++.h"
 #include "cpacketringbuffer.h"
+#include "cringbuffer.h"
 #include "cresampler.h"
 #include "csync.h"
 
@@ -41,7 +42,9 @@ CPlayloop::CPlayloop(CPacketRingBuffer* packet_ringbuffer, std::string sound_dev
 
   m_packet_ringbuffer = packet_ringbuffer;
 
-  m_resampler = new CResampler(SRC_SINC_BEST_QUALITY, 2);
+  m_ringbuffer = new CRingBuffer(4096);
+
+  m_resampler = new CResampler(m_ringbuffer, SRC_SINC_BEST_QUALITY, 2);
   m_resample_factor = (double) 44100 / 44100; 
   m_correction_factor = 1.0;
 
@@ -50,6 +53,7 @@ CPlayloop::CPlayloop(CPacketRingBuffer* packet_ringbuffer, std::string sound_dev
 
   m_audio_sink = new CAudioIoAlsa();;  
   m_audio_sink->open(sound_dev, 41000, 2);
+
 
   cerr << "Audio sink granularity = " << m_audio_sink->getWriteGranularity() << endl;
   
@@ -68,6 +72,7 @@ CPlayloop::~CPlayloop()
   
   delete m_start_time;
   delete m_resampler;
+  delete m_ringbuffer;
   m_audio_sink->close();
 }
 
@@ -122,16 +127,17 @@ void CPlayloop::playAudio(CAudioFrame *frame) {
   m_num_multi_channel_samples_arrived = frame->firstSampleNr();
 
   // fwrite(frame->dataPtr(), 1, frame->dataSize(), m_debug_fd1);
-  CAudioFrame* resampled_frame = m_resampler->resampleFrame(frame, m_resample_factor * m_correction_factor);
+  int num_samples = m_resampler->resampleFrame(frame, m_resample_factor * m_correction_factor);
   
-  int granulated_num_bytes = resampled_frame->dataSize() - (resampled_frame->dataSize() % m_audio_sink->getWriteGranularity());
-   
-  m_audio_sink->write(resampled_frame->dataPtr(), granulated_num_bytes);
-
-  resampled_frame->moveDataToBegin(granulated_num_bytes);
+  int granulated_num_bytes = m_ringbuffer->size() - (m_ringbuffer->size() % m_audio_sink->getWriteGranularity());
   
+  char* playbuffer = m_ringbuffer->read(granulated_num_bytes);
 
-  adjustResamplingFactor(resampled_frame->dataSize());
+  if(playbuffer != 0)
+    m_audio_sink->write(playbuffer, granulated_num_bytes);
+
+
+  adjustResamplingFactor(m_ringbuffer->size());
 
 }
 

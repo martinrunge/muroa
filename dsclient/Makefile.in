@@ -55,7 +55,7 @@ binPROGRAMS_INSTALL = $(INSTALL_PROGRAM)
 PROGRAMS = $(bin_PROGRAMS)
 am_dsclient_OBJECTS = dsclient.$(OBJEXT) cplayloop.$(OBJEXT) \
 	cresampler.$(OBJEXT) crecvloop.$(OBJEXT) cplayer.$(OBJEXT) \
-	cpacketringbuffer.$(OBJEXT)
+	cpacketringbuffer.$(OBJEXT) cringbuffer.$(OBJEXT)
 dsclient_OBJECTS = $(am_dsclient_OBJECTS)
 dsclient_DEPENDENCIES = $(top_builddir)/libsock++/libsock++.la \
 	$(top_builddir)/libdsaudio/libdsaudio.la
@@ -183,12 +183,13 @@ target_alias = @target_alias@
 INCLUDES = -I$(top_srcdir)/libdsaudio -I$(top_srcdir)/libsock++
 METASOURCES = AUTO
 dsclient_SOURCES = dsclient.cpp cplayloop.cpp cplayloop.h cresampler.cpp \
-	cresampler.h crecvloop.cpp cplayer.cpp cpacketringbuffer.cpp cpacketringbuffer.h
+	cresampler.h crecvloop.cpp cplayer.cpp cpacketringbuffer.cpp cpacketringbuffer.h \
+	cringbuffer.cpp
 
 dsclient_LDADD = $(top_builddir)/libsock++/libsock++.la \
 	$(top_builddir)/libdsaudio/libdsaudio.la -lsamplerate
 
-noinst_HEADERS = crecvloop.h cplayer.h
+noinst_HEADERS = crecvloop.h cplayer.h cringbuffer.h
 all: all-am
 
 .SUFFIXES:
@@ -202,9 +203,9 @@ $(srcdir)/Makefile.in:  $(srcdir)/Makefile.am  $(am__configure_deps)
 	      exit 1;; \
 	  esac; \
 	done; \
-	echo ' cd $(top_srcdir) && $(AUTOMAKE) --gnu  dsclient/Makefile'; \
+	echo ' cd $(top_srcdir) && $(AUTOMAKE) --foreign  dsclient/Makefile'; \
 	cd $(top_srcdir) && \
-	  $(AUTOMAKE) --gnu  dsclient/Makefile
+	  $(AUTOMAKE) --foreign  dsclient/Makefile
 .PRECIOUS: Makefile
 Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 	@case '$?' in \
@@ -265,6 +266,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/cplayloop.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/crecvloop.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/cresampler.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/cringbuffer.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dsclient.Po@am__quote@
 
 .cpp.o:

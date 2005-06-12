@@ -22,15 +22,18 @@
 
 #include "cresampler.h"
 #include "caudioframe.h"
+#include "cringbuffer.h"
 
 
 
 using namespace std;
 
-CResampler::CResampler(int converter_type, int num_channels)
+CResampler::CResampler(CRingBuffer *ringbuffer, int converter_type, int num_channels)
 {
   int error;
   
+  m_ringbuffer = ringbuffer;
+
   m_num_channels = num_channels;
   m_size_of_float_multichannel_sample = m_num_channels * sizeof(float);
  
@@ -63,17 +66,17 @@ CResampler::CResampler(int converter_type, int num_channels)
   m_in_offset = 0;
   m_out_offset = 0;
 
-  m_resampled_frame = new CAudioFrame(PAYLOAD_PCM, 3 * 1024);
+  // m_resampled_frame = new CAudioFrame(PAYLOAD_PCM, 3 * 1024);
 
 }
 
 
 CResampler::~CResampler()
 {
-  delete m_resampled_frame;
+  // delete m_resampled_frame;
 
   delete m_in_buffer;
-  delete m_out_buffer;
+  // delete m_out_buffer;
 
   delete m_src_data;
   src_delete(m_src_state);
@@ -85,7 +88,7 @@ CResampler::~CResampler()
 /*!
     \fn CResampler::resampleFrame(CAudioFrame* in_frame)
  */
-CAudioFrame* CResampler::resampleFrame(CAudioFrame* in_frame, float factor)
+int CResampler::resampleFrame(CAudioFrame* in_frame, float factor)
 {
   int res;
   // src_set_ratio (m_src_state, factor);
@@ -104,9 +107,9 @@ CAudioFrame* CResampler::resampleFrame(CAudioFrame* in_frame, float factor)
     cerr << "CResampler::resampleFrame: " << src_strerror (res) << endl;
   }
 
-  copyResampledFramesToResampledFrame();
+  int num_frames = copyResampledFramesToRingbuffer();
 
-  return m_resampled_frame;  
+  return num_frames;;
 }
 
 
@@ -142,7 +145,7 @@ void CResampler::appendFrameToImputBuffer(CAudioFrame* in_frame) {
 
 
 
-void CResampler::copyResampledFramesToResampledFrame() 
+int CResampler::copyResampledFramesToRingbuffer() 
 {
 
   if(m_src_data->input_frames_used < m_src_data->input_frames) {
@@ -163,17 +166,20 @@ void CResampler::copyResampledFramesToResampledFrame()
     m_src_data->input_frames = 0;
   }
 
-  char *start_ptr = m_resampled_frame->dataEndPtr();
   int num_single_channel_samples = m_src_data->output_frames_gen * m_num_channels;
+  m_ringbuffer->write(m_src_data->data_out, num_single_channel_samples);
+
+/*  char *start_ptr = m_resampled_frame->dataEndPtr();
+  
 
   src_float_to_short_array (m_src_data->data_out, 
                             (short*)start_ptr, 
                             num_single_channel_samples);
 
-  m_resampled_frame->dataSizeAdded(num_single_channel_samples * sizeof(short));
+  m_resampled_frame->dataSizeAdded(num_single_channel_samples * sizeof(short));*/
   
   m_src_data->input_frames_used = 0;
   m_src_data->output_frames_gen = 0;
 
-
+  return num_single_channel_samples;
 }
