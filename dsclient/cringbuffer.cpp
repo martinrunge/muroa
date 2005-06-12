@@ -17,7 +17,7 @@
  *   Free Software Foundation, Inc.,                                       *
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
-#include "cringbuffer.h"
+#include "cpacketringbuffer.h"
 #include "caudioframe.h"
 #include "crtppacket.h"
 
@@ -25,20 +25,20 @@
 
 using namespace std;
 
-CRingBuffer::CRingBuffer(int num_of_frames)
+CPacketRingBuffer::CPacketRingBuffer(int num_of_frames)
 {
   m_stream_fd = fopen("debug_file_client.raw", "w");
   m_seqnum = 0;
 }
 
 
-CRingBuffer::~CRingBuffer()
+CPacketRingBuffer::~CPacketRingBuffer()
 {
   fclose(m_stream_fd);
 }
 
 
-CRTPPacket* CRingBuffer::readPacket(void) {
+CRTPPacket* CPacketRingBuffer::readPacket(void) {
      
     int ringbuffer_size;
 
@@ -79,14 +79,14 @@ CRTPPacket* CRingBuffer::readPacket(void) {
 }
 
 
-void CRingBuffer::appendRTPPacket(CRTPPacket* packet)
+void CPacketRingBuffer::appendRTPPacket(CRTPPacket* packet)
 {
   m_mutex.Lock();
   m_packet_list.push_back(packet);    
   m_mutex.UnLock();
 }
 
-int CRingBuffer::getRingbufferSize() {
+int CPacketRingBuffer::getRingbufferSize() {
   int size;
 
   m_mutex.Lock();

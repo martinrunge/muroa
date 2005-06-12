@@ -17,8 +17,8 @@
  *   Free Software Foundation, Inc.,                                       *
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
-#ifndef CRINGBUFFER_H
-#define CRINGBUFFER_H
+#ifndef CPACKETRINGBUFFER_H
+#define CPACKETRINGBUFFER_H
 
 /**
 ringbuffer implementation that takes RTP packets as input and audio frames as output. Therefore, the RTP header has an additional flag inidcation the start of frame packet and how many packet belong to that frame, so it can tell if the frame is complete. Furthermore, it indicates the beginning of a new stream, that is when audio parameters or the decoder may change and must be reinitialized.
@@ -33,10 +33,10 @@ ringbuffer implementation that takes RTP packets as input and audio frames as ou
 class CAudioFrame;
 class CRTPPacket;
 
-class CRingBuffer{
+class CPacketRingBuffer{
 public:
-    CRingBuffer(int num_of_frames);
-    ~CRingBuffer();
+    CPacketRingBuffer(int num_of_frames);
+    ~CPacketRingBuffer();
     
     void appendRTPPacket(CRTPPacket* packet);
     
