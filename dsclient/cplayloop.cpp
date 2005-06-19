@@ -89,6 +89,7 @@ void CPlayloop::DoLoop() {
 
   CRTPPacket* rtp_packet = m_packet_ringbuffer->readPacket();
 
+
   switch( rtp_packet->payloadType() ) 
   {
     case PAYLOAD_SYNC_OBJ:
@@ -127,10 +128,12 @@ void CPlayloop::playAudio(CAudioFrame *frame) {
   m_num_multi_channel_samples_arrived = frame->firstSampleNr();
 
   // fwrite(frame->dataPtr(), 1, frame->dataSize(), m_debug_fd1);
-  int num_samples = m_resampler->resampleFrame(frame, m_resample_factor * m_correction_factor);
+  int num_single_chan_samples = m_resampler->resampleFrame(frame, m_resample_factor * m_correction_factor);
   
 
   int rb_size = m_ringbuffer->size();
+
+  // cerr << num_single_chan_samples * 2 << " bytes written to ringbuffer. size in byte now: " << rb_size << endl;
   int granulated_num_bytes = rb_size - (rb_size % m_audio_sink->getWriteGranularity());
   
   char* playbuffer = m_ringbuffer->read(granulated_num_bytes);
@@ -252,3 +255,14 @@ void CPlayloop::adjustResamplingFactor(int bytes_in_playback_ringbuffer)
     m_counter = 0;
   }
 }
+
+
+int CPlayloop::getDelayInMultiChannelSamples() {
+  int delay;
+
+  delay = m_resampler->sizeInMultiChannelSamples();
+  delay += m_ringbuffer->sizeInMultiChannelSamples();
+  delay += m_audio_sink->getDelay();  
+
+  return delay;
+};

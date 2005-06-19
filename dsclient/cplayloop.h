@@ -96,6 +96,8 @@ private:
 
 private:
     void adjustResamplingFactor(int bytes_in_playback_ringbuffer);
+
+    int getDelayInMultiChannelSamples();
 };
 
 #endif

@@ -21,24 +21,36 @@
 #include "assert.h"
 
 #include <string.h>
+#include <iostream>
+
+#include <limits.h>
+
+using namespace std;
 
 CRingBuffer::CRingBuffer(int size_in_frames, int num_channels)
 {
   m_num_frames = size_in_frames;
   m_num_channels = num_channels;
   
-  m_buffer_size_in_bytes = m_num_frames * m_num_channels * 2;
+  m_buffer_size_in_bytes = m_num_frames * m_num_channels * sizeof(short);
 
   m_buffer = new char[m_buffer_size_in_bytes];
 
   m_write_ptr = m_buffer;
   m_read_ptr = m_buffer;
 
+  m_debug_fd1 = fopen("ringbuffer_input.raw", "w");
+  m_debug_fd2 = fopen("ringbuffer_output.raw", "w");
+  //m_data_ptr = new char[4096];
+
+
 }
 
 
 CRingBuffer::~CRingBuffer()
 {
+  fclose(m_debug_fd1);
+  fclose(m_debug_fd2);
   delete [] m_buffer;
 }
 
@@ -59,7 +71,10 @@ char* CRingBuffer::read(int bytes)
 {
     char* buffer = new char [bytes];
     
-    assert(bytes < size());
+    if(!(bytes <= size())) {
+      cerr << "CRingBuffer::read: bytes = " << bytes << " size = " << size() << endl;
+    }
+    assert(bytes <= size());
     
     if(m_write_ptr >= m_read_ptr) { // normal case
       memcpy(buffer, m_read_ptr, bytes);
@@ -78,6 +93,7 @@ char* CRingBuffer::read(int bytes)
         m_read_ptr = m_buffer + rest;
       }
     }
+    fwrite(buffer, 1, bytes, m_debug_fd2);
     return buffer;
 }
 
@@ -96,6 +112,10 @@ int CRingBuffer::size()
     return size;
 }
 
+int CRingBuffer::sizeInMultiChannelSamples() {
+  return size() / (m_num_channels * sizeof(short));
+}
+
 
 /*!
     \fn CRingBuffer::write(float* src, int num_samples)
@@ -108,16 +128,30 @@ void CRingBuffer::write(float* src, int num_samples)
   assert(num_samples * 2 < m_buffer_size_in_bytes - size());
 
   // range in 16 bit LE singned is -32768 ... 32767
+  // scale float [-1.0 .. 1.0] to what a long int can carry and convert it to long int with lrintf
+  // at the end, shift the long int down to a short int.
 
-  while (num_samples) { 
-    num_samples--;
-    assert(src[num_samples] <= 1.0 && src[num_samples] >= -1.0);
+  for(int i=0; i < num_samples; i++) {
+    if(src[i] <= 1.1 && src[i] >= -1.1) { // normal case, do the calculation
+        scaled_value_float = src[i] * (0.8 * (1<<31) );
+        scaled_value_int = (lrintf(scaled_value_float) >> 16);
+    }
+    else {  // if the float value excedded the range [-1 ... 1], clip it
+      if(src[i] > 1.1) {
+        cerr << "CRingBuffer::write: sample cut off (+) : " << src[i] << endl;
+        scaled_value_int = SHRT_MAX;
+      } 
+      else { // (src[i] < -1.0)
+        cerr << "CRingBuffer::write: sample cut off (-) : " << src[i] << endl;
+        scaled_value_int = SHRT_MIN;
+      }
+    }
 
-    scaled_value_float = src[num_samples] * 32767;
-    scaled_value_int = (short)scaled_value_float;
 
+    fwrite(&scaled_value_int, 2, 1, m_debug_fd1);
         
-    *m_write_ptr++ = scaled_value_int;
+    *(short*)m_write_ptr = scaled_value_int;
+    m_write_ptr += sizeof(short);
     assert(m_write_ptr != m_read_ptr);
 
     if(m_write_ptr - m_buffer >= m_buffer_size_in_bytes) {

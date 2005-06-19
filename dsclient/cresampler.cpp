@@ -66,6 +66,9 @@ CResampler::CResampler(CRingBuffer *ringbuffer, int converter_type, int num_chan
   m_in_offset = 0;
   m_out_offset = 0;
 
+  /*m_debug_fd1 = fopen("resampler_output.raw", "w");
+  m_data_ptr = new char[4096];*/
+
   // m_resampled_frame = new CAudioFrame(PAYLOAD_PCM, 3 * 1024);
 
 }
@@ -74,6 +77,9 @@ CResampler::CResampler(CRingBuffer *ringbuffer, int converter_type, int num_chan
 CResampler::~CResampler()
 {
   // delete m_resampled_frame;
+
+  /*fclose(m_debug_fd1);
+  delete [] m_data_ptr;*/
 
   delete m_in_buffer;
   // delete m_out_buffer;
@@ -169,17 +175,23 @@ int CResampler::copyResampledFramesToRingbuffer()
   int num_single_channel_samples = m_src_data->output_frames_gen * m_num_channels;
   m_ringbuffer->write(m_src_data->data_out, num_single_channel_samples);
 
-/*  char *start_ptr = m_resampled_frame->dataEndPtr();
+  /*char *start_ptr = m_resampled_frame->dataEndPtr(); */
   
 
-  src_float_to_short_array (m_src_data->data_out, 
-                            (short*)start_ptr, 
+  /*src_float_to_short_array (m_src_data->data_out, 
+                            (short*)m_data_ptr, 
                             num_single_channel_samples);
 
-  m_resampled_frame->dataSizeAdded(num_single_channel_samples * sizeof(short));*/
+  fwrite(m_data_ptr, 2, num_single_channel_samples, m_debug_fd1); */
+  /* m_resampled_frame->dataSizeAdded(num_single_channel_samples * sizeof(short));*/
   
   m_src_data->input_frames_used = 0;
   m_src_data->output_frames_gen = 0;
 
   return num_single_channel_samples;
+}
+
+
+int CResampler::sizeInMultiChannelSamples() {
+  return m_src_data->input_frames;
 }

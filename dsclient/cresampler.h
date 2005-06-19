@@ -41,6 +41,8 @@ public:
     
     int resampleFrame(CAudioFrame* in_frame, float factor = 1.0);
     int reset();
+
+    int sizeInMultiChannelSamples();
     
 private:
   SRC_STATE* m_src_state;
@@ -68,6 +70,8 @@ private:
   void appendFrameToImputBuffer(CAudioFrame* in_frame);
   int copyResampledFramesToRingbuffer();
 
+  // for debugging 
+  char* m_data_ptr;
   FILE *m_debug_fd1;
   FILE *m_debug_fd2;
   FILE *m_debug_fd3;
