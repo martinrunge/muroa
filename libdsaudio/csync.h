@@ -35,7 +35,7 @@ class CRTPPacket;
 typedef struct serialisation_vars{
   /* YYYYMMDDTHHMMSS,fffffffff */
   char timestamp[32]; // only 27 used
-  uint32_t sample_nr;
+  uint32_t frame_nr;
   uint32_t stream_id;
   uint32_t session_id;
 }serialisation_vars_t;
@@ -59,8 +59,8 @@ public:
 
     ~CSync();
 
-    inline uint32_t sampleNr(void) { return m_sample_nr; };
-    inline void sampleNr(uint32_t sample_nr) { m_sample_nr = sample_nr; };
+    inline uint32_t frameNr(void) { return m_frame_nr; };
+    inline void frameNr(uint32_t frame_nr) { m_frame_nr = frame_nr; };
 
     inline uint32_t streamId(void) { return m_stream_id; };
     inline void streamId(uint32_t stream_id) { m_stream_id = stream_id; };
@@ -84,7 +84,7 @@ private:
   boost::posix_time::ptime *m_local_time;
   
   /** the sample number that belongs to the specified point of time */
-  uint32_t m_sample_nr;
+  uint32_t m_frame_nr;
 
   /** session id */
   uint32_t m_session_id;

@@ -98,6 +98,13 @@ private:
     void adjustResamplingFactor(int bytes_in_playback_ringbuffer);
 
     int getDelayInMultiChannelSamples();
+    long long m_nr_of_last_frame;
+
+
+    int m_num_channels;
+    int m_sample_size;
+    int m_frames_per_second_pre_resampler;
+    int m_frames_per_second_post_resampler;
 };
 
 #endif

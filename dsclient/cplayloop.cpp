@@ -44,6 +44,12 @@ CPlayloop::CPlayloop(CPacketRingBuffer* packet_ringbuffer, std::string sound_dev
 
   m_ringbuffer = new CRingBuffer(4096);
 
+  m_sample_size = sizeof(short);
+  m_num_channels = 2;
+  m_frames_per_second_pre_resampler = 44100;
+  m_frames_per_second_post_resampler = 48000;
+
+
   m_resampler = new CResampler(m_ringbuffer, SRC_SINC_BEST_QUALITY, 2);
   m_resample_factor = (double) 44100 / 44100; 
   m_correction_factor = 1.0;
@@ -125,11 +131,18 @@ void CPlayloop::playAudio(CAudioFrame *frame) {
   //  cerr << "multi channel samples arrived = " << m_num_multi_channel_samples_arrived << " but rtp timestamp says : " << frame->firstSampleNr() << endl;
   
   // m_num_multi_channel_samples_arrived += frame->dataSize() / (2 * sizeof(short));
-  m_num_multi_channel_samples_arrived = frame->firstSampleNr();
+  m_num_multi_channel_samples_arrived = frame->firstFrameNr();
+  
+  m_nr_of_last_frame = frame->firstFrameNr() + frame->sizeInMultiChannelSamples() - 1;
 
   // fwrite(frame->dataPtr(), 1, frame->dataSize(), m_debug_fd1);
   int num_single_chan_samples = m_resampler->resampleFrame(frame, m_resample_factor * m_correction_factor);
   
+
+  ///@TODO check timestamp and compare to num of frames in resampler + ringbufer + soundcard. If neccessary, 
+  /// call sync() to through away som frames from the ringbuffer, of wait in playing silence samples, to get in sync again.
+
+
 
   int rb_size = m_ringbuffer->size();
 
@@ -191,7 +204,23 @@ int CPlayloop::sync(void) {
   
   ptime now = microsec_clock::local_time();
 
+  // from last sync object -> calc time for m_timestamp_of_last_sample
+  // sub delay of the buffers 
+
+  // here, sample is a multichannel sample
+  if(m_nr_of_last_frame <= m_sync_obj->frameNr()) {
+    cerr << "CPlayloop::sync: ERROR: m_nr_of_last_frame <= m_sync_obj->frameNr(). Possibly missed a sync object." << endl; 
+  }
+  assert(m_nr_of_last_frame > m_sync_obj->frameNr());
+
+  long diff_in_frames = m_nr_of_last_frame - m_sync_obj->frameNr()
+  ptime synctime(*m_sync_obj->getPtimePtr());
+  time_duration interval = synctime + diff_in_frames / m_frames_per_second_pre_resampler;
   
+  (*m_sync_obj->getPtimePtr()) 
+
+  /// @TODO attention to new stream here !!!!!!
+  m_timestamp_of_last_sample  getDelayInMultiChannelSamples();  
 
 
   return 0;

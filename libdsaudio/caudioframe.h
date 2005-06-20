@@ -54,10 +54,18 @@ public:
     inline void frameType(enum payload_type_t type) { m_frame_type = type; };
     inline enum payload_type_t frameType(void) { return m_frame_type; };
 
-    inline void firstSampleNr(long nr) { m_first_sample_nr = nr; };
-    inline long firstSampleNr(void) { return m_first_sample_nr; };
+    inline void firstFrameNr(long nr) { m_first_frame_nr = nr; };
+    inline long firstFrameNr(void) { return m_first_frame_nr; };
+
+    inline int numChannels(void) { return m_num_channels; };
+    inline void numChannels(int num) { m_num_channels = num; };
+
+    inline int sizeofSample(void) { return m_sizeof_sample; };
+    inline void sizeofSample(int sizeof_sample) { m_sizeof_sample; };
+
 
     inline int maxFrameSize(void) { return m_max_size; };
+    int sizeInMultiChannelSamples();
         
 protected:
     char* m_frame_data;
@@ -67,7 +75,9 @@ protected:
     int m_max_size;
 
 private:
-    long m_first_sample_nr;    
+    long m_first_frame_nr;    
+    int m_num_channels;
+    int m_sizeof_sample;
 
 
 };

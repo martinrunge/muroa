@@ -41,10 +41,22 @@ CAudioFrame::CAudioFrame(CRTPPacket* rtp_packet, int max_frame_size) {
   m_frame_data_size = rtp_packet->payloadBufferSize();
   m_max_size = max_frame_size;
   m_frame_data = new char[m_max_size];
-
   copyData(rtp_packet->payloadBufferPtr(), rtp_packet->payloadBufferSize());
 
-  m_first_sample_nr = rtp_packet->timestamp(); 
+  switch (m_frame_type) {
+
+    case PAYLOAD_PCM:
+       m_num_channels = 2;
+       m_sizeof_sample = sizeof(short);     
+       break;
+ 
+    default:
+       m_num_channels = 2;
+       m_sizeof_sample = sizeof(short);     
+       break; 
+  }
+
+  m_first_frame_nr = rtp_packet->timestamp(); 
 }
 
 
@@ -86,3 +98,12 @@ void CAudioFrame::moveDataToBegin(const int from) {
   }
 }
 
+
+
+/*!
+    \fn CAudioFrame::sizeInMultiChannelSamples()
+ */
+int CAudioFrame::sizeInMultiChannelSamples()
+{
+    return  m_frame_data_size / (m_num_channels * m_sizeof_sample);
+}

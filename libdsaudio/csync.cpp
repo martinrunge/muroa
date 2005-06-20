@@ -54,7 +54,7 @@ CSync::~CSync()
 char* CSync::serialize()
 {
   strcpy(m_serialization_buffer.serialisation_vars.timestamp, to_simple_string(*m_local_time).c_str() );
-  m_serialization_buffer.serialisation_vars.sample_nr = htonl(m_sample_nr);
+  m_serialization_buffer.serialisation_vars.frame_nr = htonl(m_frame_nr);
   m_serialization_buffer.serialisation_vars.stream_id = htonl(m_stream_id);
   m_serialization_buffer.serialisation_vars.session_id = htonl(m_session_id);
 
@@ -68,7 +68,7 @@ char* CSync::serialize()
 void CSync::deserialize(void)
 {
   *m_local_time = time_from_string( m_serialization_buffer.serialisation_vars.timestamp );
-  m_sample_nr = ntohl( m_serialization_buffer.serialisation_vars.sample_nr );
+  m_frame_nr = ntohl( m_serialization_buffer.serialisation_vars.frame_nr );
   m_stream_id = ntohl( m_serialization_buffer.serialisation_vars.stream_id );
   m_session_id = ntohl( m_serialization_buffer.serialisation_vars.session_id );
 }

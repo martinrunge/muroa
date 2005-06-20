@@ -104,7 +104,7 @@ int main(int argc, char *argv[]) {
   time_duration buffersize = millisec(transport_buffer_size_in_ms);
 
   syncobj.addDuration(buffersize);
-  syncobj.sampleNr(0);
+  syncobj.frameNr(0);
   syncobj.streamId(1);  
   syncobj.sessionId(1);
   syncobj.serialize();
