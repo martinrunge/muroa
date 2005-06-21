@@ -195,3 +195,4 @@ int CResampler::copyResampledFramesToRingbuffer()
 int CResampler::sizeInMultiChannelSamples() {
   return m_src_data->input_frames;
 }
+

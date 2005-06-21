@@ -98,7 +98,10 @@ private:
     void adjustResamplingFactor(int bytes_in_playback_ringbuffer);
 
     int getDelayInMultiChannelSamples();
-    long long m_nr_of_last_frame;
+    boost::posix_time::time_duration calcSoundCardDelay();
+    boost::posix_time::time_duration calcResamplerDelay();
+    boost::posix_time::time_duration calcRingbufferDelay();
+    long long m_nr_of_last_frame_decoded;
 
 
     int m_num_channels;

@@ -43,6 +43,7 @@ public:
     int reset();
 
     int sizeInMultiChannelSamples();
+
     
 private:
   SRC_STATE* m_src_state;
