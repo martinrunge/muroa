@@ -106,6 +106,8 @@ private:
 
     boost::posix_time::time_duration getPlaybackDiff();
     boost::posix_time::time_duration CPlayloop::getPlaybackDiffFromTime();
+    
+    int sleep(boost::posix_time::time_duration duration);
 
     long long m_nr_of_last_frame_decoded;
 

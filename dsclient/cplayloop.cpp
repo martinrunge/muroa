@@ -254,7 +254,8 @@ int CPlayloop::sync(void) {
   }
   else {
     cerr << "sync: " << sync_diff_in_frames << " too early with playback. waiting while playing silence." << endl;
-    playSilence(sync_diff_in_frames);
+    sleep(sync_diff);
+    // playSilence(sync_diff_in_frames);
   }
 
   cerr << "CPlayloop::sync: should be in sync now: sync_diff = " << getPlaybackDiffFromTime() << endl;
@@ -446,4 +447,32 @@ time_duration CPlayloop::getPlaybackDiffFromTime() {
   
   return sync_diff;
 
+}
+
+/*!
+    \fn CPlayloop::sleep(int duration)
+ */
+int CPlayloop::sleep(time_duration duration)
+{
+  int retval = 0;
+
+
+  if( !duration.is_negative() )
+  {
+    struct timespec ts_to_sleep, ts_remaining;
+    ts_to_sleep.tv_sec = duration.total_seconds();
+    ts_to_sleep.tv_nsec = duration.fractional_seconds();
+    
+    //boost::date_time::time_resolutions 
+    if (time_duration::resolution() == boost::date_time::micro) {
+      ts_to_sleep.tv_nsec *= 1000;
+    }
+    
+    int retval = nanosleep( &ts_to_sleep, &ts_remaining);
+    if(retval != 0)
+      cerr << "nanosleep returned early due to a signal!" << endl;
+    
+  }
+    
+  return retval;  
 }
