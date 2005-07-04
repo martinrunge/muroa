@@ -50,6 +50,8 @@ CPlayloop::CPlayloop(CPacketRingBuffer* packet_ringbuffer, std::string sound_dev
   m_frames_per_second_post_resampler = 48000;
 
 
+  m_nr_of_last_frame_decoded = 0;
+
   m_resampler = new CResampler(m_ringbuffer, SRC_SINC_BEST_QUALITY, 2);
   m_resample_factor = (double) 44100 / 44100; 
   m_correction_factor = 1.0;
