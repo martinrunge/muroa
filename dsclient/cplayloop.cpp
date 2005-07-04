@@ -70,12 +70,20 @@ CPlayloop::CPlayloop(CPacketRingBuffer* packet_ringbuffer, std::string sound_dev
   
   m_start_time = 0;
 
+  int num_shorts = m_audio_sink->getWriteGranularity() / sizeof(short);
+  m_silence_buffer = new short[num_shorts];
+  short silence_val = 0;
+
+  for(int i=0; i < num_shorts; i++) {
+    m_silence_buffer[i] = silence_val;
+  }
 }
 
 
 CPlayloop::~CPlayloop()
 {
-  
+  delete [] m_silence_buffer;    
+
   delete m_start_time;
   delete m_resampler;
   delete m_ringbuffer;
@@ -100,7 +108,8 @@ void CPlayloop::DoLoop() {
   {
     case PAYLOAD_SYNC_OBJ:
       m_sync_obj = new CSync(rtp_packet);
-      handleSyncObj(m_sync_obj);
+      // handleSyncObj(m_sync_obj);
+      sync();
         
       delete rtp_packet;
       break;
@@ -127,6 +136,8 @@ void CPlayloop::DoLoop() {
 
 void CPlayloop::playAudio(CAudioFrame *frame) {
 
+
+  int retval;
   // if(m_num_multi_channel_samples_arrived != frame->firstSampleNr())
   //  cerr << "multi channel samples arrived = " << m_num_multi_channel_samples_arrived << " but rtp timestamp says : " << frame->firstSampleNr() << endl;
   
@@ -152,10 +163,15 @@ void CPlayloop::playAudio(CAudioFrame *frame) {
   char* playbuffer = m_ringbuffer->read(granulated_num_bytes);
 
   if(playbuffer != 0)
-    m_audio_sink->write(playbuffer, granulated_num_bytes);
-
-
-  adjustResamplingFactor(m_ringbuffer->size());
+    retval = m_audio_sink->write(playbuffer, granulated_num_bytes);
+  
+  if(retval == 0 ) {
+    cerr << "syncing due to buffer underrun!" << endl;
+    // sync();
+  }
+  else {
+    adjustResamplingFactor(m_ringbuffer->size());
+  }
 
 }
 
@@ -201,30 +217,7 @@ void CPlayloop::handleSyncObj(CSync* sync_obj) {
   - Audio data is missing (e.g. playback underrun). Wait for enough audio data to arrive and start the sound device then.      */ 
 
 int CPlayloop::sync(void) {
-  
-  ptime now = microsec_clock::local_time();
-
-  ptime pre_soundcard = now + calcSoundCardDelay();
-
-  // from last sync object -> calc time for m_timestamp_of_last_sample
-  // sub delay of the buffers 
-
-  if(m_nr_of_last_frame_decoded <= m_sync_obj->frameNr()) {
-    cerr << "CPlayloop::sync: ERROR: m_nr_of_last_frame_decoded <= m_sync_obj->frameNr(). Possibly missed a sync object." << endl; 
-    return -1;
-  }
-  assert(m_nr_of_last_frame_decoded > m_sync_obj->frameNr());
-
-  long long diff_in_frames = m_nr_of_last_frame_decoded - m_sync_obj->frameNr()
-  ptime synctime(*m_sync_obj->getPtimePtr());
-
-  int tmp = m_frames_per_second_pre_resampler / 1000;
-  ptime post_packet_ringbuffer = synctime + millisec(diff_in_frames / tmp);
-  
-  ptime post_ringbuffer = post_packet_ringbuffer 
-                        + calcResamplerDelay() 
-                        + calcRingbufferDelay(); 
-  
+ 
  
   // this is the difference in time between the clock and the time calculated 
   // from played samples. It sould be zero.
@@ -237,18 +230,32 @@ int CPlayloop::sync(void) {
   //   we are to early. not enough data to playback arrived. calc the amount of 
   //   silence samples to play for waiting, or call nanosleep. Whatever gives the 
   //  better results.
-  time_duration sync_diff = post_ringbuffer - pre_soundcard;
+  time_duration sync_diff = getPlaybackDiffFromTime();
 
-  long diff_in_us = m_average_time_diff.fractional_seconds();
+  cerr << "CPlayloop::sync: sync_diff = " << sync_diff << endl;
+
+  double diff_in_s = sync_diff.seconds() + 60 * sync_diff.minutes() + 60 * 60 * sync_diff.hours();
+  long fractional_secs = sync_diff.fractional_seconds();
   // if the resolution off fractional_seconds() id nano sec, then convert it to micro sec
   if (time_duration::resolution() == boost::date_time::nano) {
-    diff_in_us /= 1000;
+    fractional_secs /= 1000;
+  }
+  diff_in_s += 0.000001 * fractional_secs; 
+
+  double diff_in_frames = diff_in_s * m_frames_per_second_post_resampler;
+  long sync_diff_in_frames = lrint(diff_in_frames);
+  
+  if(sync_diff_in_frames < 0) {
+    cerr << "sync: " << sync_diff_in_frames << " too late with playback. trowing away samples." << endl;
+    char *dicard_ptr = m_ringbuffer->read(sync_diff_in_frames * m_num_channels * sizeof(short) );
+    delete dicard_ptr;
+  }
+  else {
+    cerr << "sync: " << sync_diff_in_frames << " too early with playback. waiting while playing silence." << endl;
+    playSilence(sync_diff_in_frames);
   }
 
-  long long tmp = m_frames_per_second_post_resampler * diff_in_us;
-  long sync_diff_in_frames = tmp / 1000000;
-
-  /// @TODO  insert or remove this number of frames from ringbuffer!!!
+  cerr << "CPlayloop::sync: should be in sync now: sync_diff = " << getPlaybackDiffFromTime() << endl;
 
   return 0;
 }
@@ -330,7 +337,7 @@ time_duration CPlayloop::calcSoundCardDelay()
 {
     time_duration latency;
     int tmp = m_frames_per_second_post_resampler / 1000;
-    latency = millisec(m_audio_sink->getDelay() / tmp;
+    latency = millisec(m_audio_sink->getDelay() / tmp);
 
     return latency;
 }
@@ -343,7 +350,7 @@ time_duration CPlayloop::calcResamplerDelay()
 {
     time_duration latency;
     int tmp = m_frames_per_second_pre_resampler / 1000;
-    latency = millisec(m_resampler->sizeInMultiChannelSamples() / tmp;
+    latency = millisec(m_resampler->sizeInMultiChannelSamples() / tmp);
 
     return latency;
 }
@@ -355,7 +362,86 @@ time_duration CPlayloop::calcRingbufferDelay()
 {
     time_duration latency;
     int tmp = m_frames_per_second_post_resampler / 1000;
-    latency = millisec(m_ringbuffer->sizeInMultiChannelSamples() / tmp;
+    latency = millisec(m_ringbuffer->sizeInMultiChannelSamples() / tmp);
 
     return latency;
+}
+
+
+/*!
+    \fn CPlayloop::playSilence(int num_frames)
+ */
+void CPlayloop::playSilence(int num_frames)
+{
+  int granul_in_frames = m_audio_sink->getWriteGranularity() * m_num_channels * sizeof(short);     
+  int num_blocks = num_frames / granul_in_frames;
+  
+  for(int i = 0; i < num_blocks; i++)
+    m_audio_sink->write((char*)m_silence_buffer, m_audio_sink->getWriteGranularity()); 
+    
+}
+
+
+/*!
+    \fn CPlayloop::getPlaybackDiff()
+ */
+time_duration CPlayloop::getPlaybackDiff()
+{
+    m_num_multi_channel_samples_played = m_num_multi_channel_samples_arrived 
+                                       - m_ringbuffer->sizeInMultiChannelSamples() 
+                                       - m_audio_sink->getDelay();   // resampled_frame will be playback rungbuffer 
+
+
+  ptime now = microsec_clock::local_time();
+    
+  time_duration play_time_from_clock = now - (*m_sync_obj->getPtimePtr());
+  time_duration play_time_from_samples = millisec((m_num_multi_channel_samples_played * 10) / 441);  
+  time_duration time_diff = play_time_from_clock - play_time_from_samples;
+
+  return time_diff;
+}
+
+
+time_duration CPlayloop::getPlaybackDiffFromTime() {
+
+  long long tmp;
+
+  ptime now = microsec_clock::local_time();
+
+  ptime pre_soundcard = now - calcSoundCardDelay();
+
+  // from last sync object -> calc time for m_timestamp_of_last_sample
+  // sub delay of the buffers 
+
+  if(m_nr_of_last_frame_decoded < m_sync_obj->frameNr()) {
+    cerr << "CPlayloop::sync: ERROR: m_nr_of_last_frame_decoded < m_sync_obj->frameNr(). Possibly missed a sync object." << endl; 
+  }
+  assert(m_nr_of_last_frame_decoded >= m_sync_obj->frameNr());
+
+  long long diff_in_frames = m_nr_of_last_frame_decoded - m_sync_obj->frameNr();
+  ptime synctime(*m_sync_obj->getPtimePtr());
+
+  tmp = m_frames_per_second_pre_resampler / 1000;
+  ptime post_packet_ringbuffer = synctime + millisec(diff_in_frames / tmp);
+  
+  ptime post_ringbuffer = post_packet_ringbuffer 
+                        + calcResamplerDelay() 
+                        + calcRingbufferDelay(); 
+  
+ 
+  // this is the difference in time between the clock and the time calculated 
+  // from played samples. It sould be zero.
+  // sync_diff > 0:
+  //   we are late, e.g. due tu a soundcard playback underrun. 
+  //   now, there are more samples available than needed.
+  //   take the diff in time, calc the diff in frames and through away that amount 
+  //   of samples from the ringbuffer.
+  // sync_diff < 0:
+  //   we are to early. not enough data to playback arrived. calc the amount of 
+  //   silence samples to play for waiting, or call nanosleep. Whatever gives the 
+  //  better results.
+  time_duration sync_diff = post_ringbuffer - pre_soundcard;
+  
+  return sync_diff;
+
 }

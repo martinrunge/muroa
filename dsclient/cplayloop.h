@@ -52,6 +52,8 @@ public:
     ~CPlayloop();
 
     void DoLoop();
+    void playSilence(int num_frames);
+
 
 //    void appendAudioFrame(CAudioFrame* frame);
 
@@ -101,6 +103,10 @@ private:
     boost::posix_time::time_duration calcSoundCardDelay();
     boost::posix_time::time_duration calcResamplerDelay();
     boost::posix_time::time_duration calcRingbufferDelay();
+
+    boost::posix_time::time_duration getPlaybackDiff();
+    boost::posix_time::time_duration CPlayloop::getPlaybackDiffFromTime();
+
     long long m_nr_of_last_frame_decoded;
 
 
@@ -108,6 +114,8 @@ private:
     int m_sample_size;
     int m_frames_per_second_pre_resampler;
     int m_frames_per_second_post_resampler;
+
+    short *m_silence_buffer;
 };
 
 #endif
