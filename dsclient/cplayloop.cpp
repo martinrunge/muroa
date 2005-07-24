@@ -177,7 +177,7 @@ void CPlayloop::playAudio(CAudioFrame *frame) {
   
   if(retval == 0 ) {
     cerr << "syncing due to buffer underrun!" << endl;
-    // sync();
+    sync();
   }
   else {
     adjustResamplingFactor(m_ringbuffer->size());
