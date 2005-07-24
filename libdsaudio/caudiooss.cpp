@@ -23,7 +23,7 @@
 
 CAudioOSS::CAudioOSS() {
     m_is_open = false;
-    m_samplerate = 0;
+    m_sample_rate = 0;
 }
 
 
@@ -73,7 +73,7 @@ int CAudioOSS::open(std::string device, int samplerate, int channels) {
     perror("Error while setting sampling rate.\n");
     return -16;
   }
-  m_samplerate = m_snd_rate;
+  m_sample_rate = m_snd_rate;
 
   if(m_snd_rate != samplerate) {
     fprintf(stderr, "Hardware supportes %d Hz sampling rate only.\n", m_snd_num_ch);

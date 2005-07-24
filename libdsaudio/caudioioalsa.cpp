@@ -26,7 +26,7 @@ using namespace std;
 CAudioIoAlsa::CAudioIoAlsa()
  : IAudioIO()
 {
-  m_samplerate = 0;
+  m_sample_rate = 0;
 }
 
 

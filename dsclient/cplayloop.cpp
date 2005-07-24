@@ -52,7 +52,7 @@ CPlayloop::CPlayloop(CPacketRingBuffer* packet_ringbuffer, std::string sound_dev
   m_audio_sink = new CAudioIoAlsa();  
   m_audio_sink->open(sound_dev, desired_sample_rate, 2);
   
-  int actual_sample_rate = m_audio_sink->getActualSamplingrate();
+  int actual_sample_rate = m_audio_sink->getActualSampleRate();
   cerr << "CPlayloop::CPlayloop: open audio sink: try " << desired_sample_rate << " ... succeeded with " << actual_sample_rate << endl;
 
 
