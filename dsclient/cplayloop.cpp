@@ -231,7 +231,7 @@ int CPlayloop::sync(void) {
   
   if(sync_diff_in_frames < 0) {
     cerr << "sync: " << sync_diff_in_frames << " too late with playback. trowing away samples." << endl;
-    m_frames_to_discard = sync_diff_in_frames;
+    m_frames_to_discard = -sync_diff_in_frames;
   }
   else {
     cerr << "sync: " << sync_diff_in_frames << " too early with playback. waiting while playing silence." << endl;
