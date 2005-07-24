@@ -479,7 +479,7 @@ int CPlayloop::adjustFramesToDiscard(int num_frames_discarded) {
 
   }
 
-  cerr << "CPlayloop::adjustFramesToDiscard: still " << m_frames_to_discard << " frames left to discard." << endl;
+  cerr << "CPlayloop::adjustFramesToDiscard: still " << m_frames_to_discard << " frames left to discard. RB size = " << m_ringbuffer->sizeInMultiChannelSamples() << endl;
 
   return m_frames_to_discard;
 }
