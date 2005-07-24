@@ -466,7 +466,8 @@ int CPlayloop::adjustFramesToDiscard(int num_frames_discarded) {
 
   if(m_frames_to_discard < num_frames_discarded) {
     cerr << "CPlayloop::adjustFramesToDiscard: ERROR: m_frames_to_discard < num_frames_discarded. " << endl;
-    
+    m_frames_to_discard = 0;
+    return -1;  
   }
 
   m_frames_to_discard -= num_frames_discarded;
