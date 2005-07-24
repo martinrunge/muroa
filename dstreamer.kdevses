@@ -3,16 +3,16 @@
 <KDevPrjSession>
  <DocsAndViews NumberOfDocuments="13" >
   <Doc0 NumberOfViews="1" URL="file:///home/martin/devel/dstreamer/dsserver/dsserver.cpp" >
-   <View0 line="106" Type="Source" />
+   <View0 line="0" Type="Source" />
   </Doc0>
   <Doc1 NumberOfViews="1" URL="file:///home/martin/devel/dstreamer/dsclient/dsclient.cpp" >
    <View0 line="36" Type="Source" />
   </Doc1>
   <Doc2 NumberOfViews="1" URL="file:///home/martin/devel/dstreamer/dsclient/cplayloop.cpp" >
-   <View0 line="217" Type="Source" />
+   <View0 line="257" Type="Source" />
   </Doc2>
   <Doc3 NumberOfViews="1" URL="file:///home/martin/devel/dstreamer/dsclient/cplayloop.h" >
-   <View0 line="106" Type="Source" />
+   <View0 line="112" Type="Source" />
   </Doc3>
   <Doc4 NumberOfViews="1" URL="file:///home/martin/devel/dstreamer/dsclient/cresampler.h" >
    <View0 line="44" Type="Source" />
@@ -21,13 +21,13 @@
    <View0 line="193" Type="Source" />
   </Doc5>
   <Doc6 NumberOfViews="1" URL="file:///home/martin/devel/dstreamer/libdsaudio/caudioioalsa.cpp" >
-   <View0 line="203" Type="Source" />
+   <View0 line="185" Type="Source" />
   </Doc6>
   <Doc7 NumberOfViews="1" URL="file:///home/martin/devel/dstreamer/libdsaudio/csync.h" >
-   <View0 line="75" Type="Source" />
+   <View0 line="61" Type="Source" />
   </Doc7>
   <Doc8 NumberOfViews="1" URL="file:///home/martin/devel/dstreamer/dsclient/cringbuffer.cpp" >
-   <View0 line="34" Type="Source" />
+   <View0 line="111" Type="Source" />
   </Doc8>
   <Doc9 NumberOfViews="1" URL="file:///home/martin/devel/dstreamer/dsclient/cringbuffer.h" >
    <View0 line="46" Type="Source" />
@@ -39,17 +39,22 @@
    <View0 line="9" Type="Source" />
   </Doc11>
   <Doc12 NumberOfViews="1" URL="file:///home/martin/devel/dstreamer/libdsaudio/csync.cpp" >
-   <View0 line="119" Type="Source" />
+   <View0 line="75" Type="Source" />
   </Doc12>
  </DocsAndViews>
  <pluginList>
   <kdevdebugger>
    <breakpointList>
-    <breakpoint0 location="/home/martin/devel/dstreamer/dsclient/cringbuffer.cpp:112" type="1" condition="" enabled="1" />
+    <breakpoint0 location="/home/martin/devel/dstreamer/dsclient/cringbuffer.cpp:112" type="1" condition="" enabled="0" />
+    <breakpoint1 location="/home/martin/devel/dstreamer/dsclient/cplayloop.cpp:249" type="1" condition="" enabled="1" />
    </breakpointList>
   </kdevdebugger>
   <kdevbookmarks>
-   <bookmarks/>
+   <bookmarks>
+    <bookmark url="/home/martin/devel/dstreamer/dsclient/cplayloop.cpp" >
+     <mark line="73" />
+    </bookmark>
+   </bookmarks>
   </kdevbookmarks>
   <kdevvalgrind>
    <executable path="" params="" />
