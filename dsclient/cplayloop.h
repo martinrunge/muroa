@@ -108,6 +108,7 @@ private:
     boost::posix_time::time_duration CPlayloop::getPlaybackDiffFromTime();
     
     int sleep(boost::posix_time::time_duration duration);
+    int adjustFramesToDiscard(int num_frames_discarded);
 
     long long m_nr_of_last_frame_decoded;
 
@@ -118,6 +119,7 @@ private:
     int m_frames_per_second_post_resampler;
 
     short *m_silence_buffer;
+    int m_frames_to_discard;
 };
 
 #endif

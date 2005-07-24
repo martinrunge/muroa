@@ -41,6 +41,8 @@ CPlayloop::CPlayloop(CPacketRingBuffer* packet_ringbuffer, std::string sound_dev
 {
 
   int desired_sample_rate = 48000;
+  m_frames_to_discard = 0;
+
 
   m_packet_ringbuffer = packet_ringbuffer;
 
@@ -172,54 +174,25 @@ void CPlayloop::playAudio(CAudioFrame *frame) {
   
   char* playbuffer = m_ringbuffer->read(granulated_num_bytes);
 
-  if(playbuffer != 0)
+
+  if(m_frames_to_discard > 0) {
+    adjustFramesToDiscard(granulated_num_bytes / (m_sample_size * m_num_channels));
+  }
+
+  if(playbuffer != 0 && m_frames_to_discard == 0) {
     retval = m_audio_sink->write(playbuffer, granulated_num_bytes);
   
-  if(retval == 0 ) {
-    cerr << "syncing due to buffer underrun!" << endl;
-    sync();
+    if(retval == 0 ) {
+      cerr << "syncing due to buffer underrun!" << endl;
+      sync();
+    }
+    else {
+      adjustResamplingFactor(m_ringbuffer->size());
+    }
   }
-  else {
-    adjustResamplingFactor(m_ringbuffer->size());
-  }
+
 
 }
-
-
-void CPlayloop::handleSyncObj(CSync* sync_obj) {
-
-  cerr << "got sync obj: ";  
-  m_sync_obj->print();
-  
-  if(m_sync_obj->streamId() != m_stream_id || m_sync_obj->sessionId() != m_session_id) {
-    // this is a sync obj for a new stream !!!!
-    if(m_start_time != 0)  delete m_start_time;
-    m_start_time = new ptime(microsec_clock::local_time());
-  }
-  
-  time_duration sleep_time = (*m_sync_obj->getPtimePtr()) - (*m_start_time);
-  cerr << "sleep time calculated from sync obj: " << sleep_time << endl;
-  
-  // sleep_time -= milliseconds(100);
-
-  if( !sleep_time.is_negative() )
-  {
-    struct timespec ts_to_sleep, ts_remaining;
-    ts_to_sleep.tv_sec = sleep_time.total_seconds();
-    ts_to_sleep.tv_nsec = sleep_time.fractional_seconds();
-    
-    //boost::date_time::time_resolutions 
-    if (time_duration::resolution() == boost::date_time::micro) {
-      ts_to_sleep.tv_nsec *= 1000;
-    }
-    
-    int retval = nanosleep( &ts_to_sleep, &ts_remaining);
-    if(retval != 0)
-      cerr << "nanosleep returned early due to a signal!" << endl;
-    
-  }
-        
-}  
 
 /** called whenever the a resync is neccesarry. For example at the start of e new stream of if the soundcard had an unterrun.   
   Two possibilities:                                                                                                          
@@ -257,8 +230,8 @@ int CPlayloop::sync(void) {
   
   if(sync_diff_in_frames < 0) {
     cerr << "sync: " << sync_diff_in_frames << " too late with playback. trowing away samples." << endl;
-    char *dicard_ptr = m_ringbuffer->read(sync_diff_in_frames * m_num_channels * sizeof(short) );
-    delete dicard_ptr;
+    m_frames_to_discard = sync_diff_in_frames;
+    // discardFrames(sync_diff_in_frames);
   }
   else {
     cerr << "sync: " << sync_diff_in_frames << " too early with playback. waiting while playing silence." << endl;
@@ -387,6 +360,8 @@ void CPlayloop::playSilence(int num_frames)
   int granul_in_frames = m_audio_sink->getWriteGranularity() * m_num_channels * sizeof(short);     
   int num_blocks = num_frames / granul_in_frames;
   
+  m_frames_to_discard = 0;
+
   for(int i = 0; i < num_blocks; i++)
     m_audio_sink->write((char*)m_silence_buffer, m_audio_sink->getWriteGranularity()); 
     
@@ -484,3 +459,77 @@ int CPlayloop::sleep(time_duration duration)
     
   return retval;  
 }
+
+int CPlayloop::adjustFramesToDiscard(int num_frames_discarded) {
+  if(m_frames_to_discard < num_frames_discarded) {
+    cerr << "CPlayloop::adjustFramesToDiscard: ERROR: m_frames_to_discard < num_frames_discarded. " << endl;
+    
+  }
+
+  m_frames_to_discard -= num_frames_discarded;
+
+  if(m_frames_to_discard < m_ringbuffer->sizeInMultiChannelSamples()) {
+    char *discard_ptr = m_ringbuffer->read( m_frames_to_discard * m_num_channels * m_sample_size);
+    delete discard_ptr;
+
+    m_frames_to_discard = 0;
+
+  }
+
+  return m_frames_to_discard;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+void CPlayloop::handleSyncObj(CSync* sync_obj) {
+
+  cerr << "got sync obj: ";  
+  m_sync_obj->print();
+  
+  if(m_sync_obj->streamId() != m_stream_id || m_sync_obj->sessionId() != m_session_id) {
+    // this is a sync obj for a new stream !!!!
+    if(m_start_time != 0)  delete m_start_time;
+    m_start_time = new ptime(microsec_clock::local_time());
+  }
+  
+  time_duration sleep_time = (*m_sync_obj->getPtimePtr()) - (*m_start_time);
+  cerr << "sleep time calculated from sync obj: " << sleep_time << endl;
+  
+  // sleep_time -= milliseconds(100);
+
+  if( !sleep_time.is_negative() )
+  {
+    struct timespec ts_to_sleep, ts_remaining;
+    ts_to_sleep.tv_sec = sleep_time.total_seconds();
+    ts_to_sleep.tv_nsec = sleep_time.fractional_seconds();
+    
+    //boost::date_time::time_resolutions 
+    if (time_duration::resolution() == boost::date_time::micro) {
+      ts_to_sleep.tv_nsec *= 1000;
+    }
+    
+    int retval = nanosleep( &ts_to_sleep, &ts_remaining);
+    if(retval != 0)
+      cerr << "nanosleep returned early due to a signal!" << endl;
+    
+  }
+        
+}  
+
