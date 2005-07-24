@@ -174,7 +174,7 @@ void CPlayloop::playAudio(CAudioFrame *frame) {
   
   char* playbuffer = m_ringbuffer->read(granulated_num_bytes);
 
-  cerr << "m_frames_to_discard = " << m_frames_to_discard << endl;
+ 
   if(m_frames_to_discard > 0) {
     delete playbuffer;
     adjustFramesToDiscard(granulated_num_bytes / (m_sample_size * m_num_channels));
@@ -462,7 +462,7 @@ int CPlayloop::sleep(time_duration duration)
 }
 
 int CPlayloop::adjustFramesToDiscard(int num_frames_discarded) {
-  cerr << "CPlayloop::adjustFramesToDiscard(" << num_frames_discarded << ")" << endl;
+  // cerr << "CPlayloop::adjustFramesToDiscard(" << num_frames_discarded << ")" << endl;
 
   if(m_frames_to_discard < num_frames_discarded) {
     cerr << "CPlayloop::adjustFramesToDiscard: ERROR: m_frames_to_discard < num_frames_discarded. " << endl;
