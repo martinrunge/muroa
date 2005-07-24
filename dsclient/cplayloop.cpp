@@ -476,6 +476,8 @@ int CPlayloop::adjustFramesToDiscard(int num_frames_discarded) {
 
   }
 
+  cerr << "CPlayloop::adjustFramesToDiscard: still " << m_frames_to_discard << " frames left to discard." << endl;
+
   return m_frames_to_discard;
 }
 
