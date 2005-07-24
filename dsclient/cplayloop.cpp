@@ -53,14 +53,14 @@ CPlayloop::CPlayloop(CPacketRingBuffer* packet_ringbuffer, std::string sound_dev
   m_nr_of_last_frame_decoded = 0;
 
   m_resampler = new CResampler(m_ringbuffer, SRC_SINC_BEST_QUALITY, 2);
-  m_resample_factor = (double) 44100 / 44100; 
+  m_resample_factor = (double) m_frames_per_second_post_resampler/m_frames_per_second_pre_resampler; 
   m_correction_factor = 1.0;
 
   m_num_multi_channel_samples_played = 0;
   m_num_multi_channel_samples_arrived = 0;
 
   m_audio_sink = new CAudioIoAlsa();;  
-  m_audio_sink->open(sound_dev, 41000, 2);
+  m_audio_sink->open(sound_dev, 48000, 2);
 
 
   cerr << "Audio sink granularity = " << m_audio_sink->getWriteGranularity() << endl;
