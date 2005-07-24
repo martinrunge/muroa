@@ -40,14 +40,24 @@ CPlayloop::CPlayloop(CPacketRingBuffer* packet_ringbuffer, std::string sound_dev
  : CThreadSlave(), m_counter(0), m_average_size(32)
 {
 
+  int desired_sample_rate = 48000;
+
   m_packet_ringbuffer = packet_ringbuffer;
 
   m_ringbuffer = new CRingBuffer(4096);
 
   m_sample_size = sizeof(short);
   m_num_channels = 2;
+
+  m_audio_sink = new CAudioIoAlsa();  
+  m_audio_sink->open(sound_dev, desired_sample_rate, 2);
+  
+  int actual_sample_rate = m_audio_sink->getActualSamplingrate();
+  cerr << "CPlayloop::CPlayloop: open audio sink: try " << desired_sample_rate << " ... succeeded with " << actual_sample_rate << endl;
+
+
   m_frames_per_second_pre_resampler = 44100;
-  m_frames_per_second_post_resampler = 48000;
+  m_frames_per_second_post_resampler = actual_sample_rate;
 
 
   m_nr_of_last_frame_decoded = 0;
@@ -59,8 +69,6 @@ CPlayloop::CPlayloop(CPacketRingBuffer* packet_ringbuffer, std::string sound_dev
   m_num_multi_channel_samples_played = 0;
   m_num_multi_channel_samples_arrived = 0;
 
-  m_audio_sink = new CAudioIoAlsa();;  
-  m_audio_sink->open(sound_dev, 48000, 2);
 
 
   cerr << "Audio sink granularity = " << m_audio_sink->getWriteGranularity() << endl;

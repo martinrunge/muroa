@@ -26,6 +26,7 @@ using namespace std;
 CAudioIoAlsa::CAudioIoAlsa()
  : IAudioIO()
 {
+  m_samplerate = 0;
 }
 
 
@@ -80,6 +81,7 @@ int CAudioIoAlsa::open(std::string device, int samplerate, int channels) {
     fprintf(stderr, "cannot set sample rate (%s)\n", snd_strerror(err));
     return -6;
   }
+  m_sample_rate = samplerate;
 
   if ((err = snd_pcm_hw_params_set_channels(m_playback_handle, m_hw_params, channels)) < 0)
   {
@@ -150,7 +152,6 @@ int CAudioIoAlsa::open(std::string device, int samplerate, int channels) {
     return -15;
   }
    
-
   return 0;
 }
 
@@ -218,4 +219,9 @@ int CAudioIoAlsa::getDelay()
 
 int CAudioIoAlsa::getWriteGranularity(void) {
   return m_write_granularity;
+}
+
+
+int CAudioIoAlsa::getActualSampleRate(void) {
+  return m_sample_rate;
 }

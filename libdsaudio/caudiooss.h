@@ -35,6 +35,7 @@ public:
     int getOutOverflows();
     int getDelay();
     int getWriteGranularity(void);
+    int getActualSampleRate(void);
 
         
 private: 
@@ -42,6 +43,7 @@ private:
     int m_snd_fmt;
     int m_snd_num_ch;
     int m_snd_rate;
+    int m_sample_rate;
 
 };
 

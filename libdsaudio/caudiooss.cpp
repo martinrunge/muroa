@@ -22,7 +22,8 @@
 #include "caudiooss.h"
 
 CAudioOSS::CAudioOSS() {
-   m_is_open = false;
+    m_is_open = false;
+    m_samplerate = 0;
 }
 
 
@@ -72,6 +73,7 @@ int CAudioOSS::open(std::string device, int samplerate, int channels) {
     perror("Error while setting sampling rate.\n");
     return -16;
   }
+  m_samplerate = m_snd_rate;
 
   if(m_snd_rate != samplerate) {
     fprintf(stderr, "Hardware supportes %d Hz sampling rate only.\n", m_snd_num_ch);
@@ -132,4 +134,9 @@ int CAudioOSS::getWriteGranularity(void) {
   // implement me: fragnment size in OSS
   return 0;
   
+}
+
+
+int CAudioOSS::getActualSampleRate(void) {
+  return m_sample_rate;
 }

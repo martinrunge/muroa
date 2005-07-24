@@ -34,6 +34,7 @@ public:
     virtual int getBytesPlayed(void) = 0;
     virtual int getDelay() = 0;
     virtual int getWriteGranularity(void) = 0;
+    virtual int getActualSampleRate(void) = 0;
 
     
 protected: 

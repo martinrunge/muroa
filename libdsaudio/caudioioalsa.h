@@ -49,6 +49,7 @@ public:
     int getOutOverflows();
     int getDelay();
     int getWriteGranularity(void);
+    int getActualSampleRate(void);
 
 
 private:
@@ -59,6 +60,7 @@ private:
     snd_pcm_status_t *m_status_ptr; 
 
     int m_write_granularity;     
+    int m_sample_rate;
   
         
 };
