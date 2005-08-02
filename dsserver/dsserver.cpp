@@ -64,19 +64,19 @@ int main(int argc, char *argv[]) {
   } 
 
 
-  clients[0] = "localhost";
-  sockets[0] = new CSocket(SOCK_DGRAM);
-  sockets[0]->connect("localhost", 4001);
+//  clients[0] = "localhost";
+//  sockets[0] = new CSocket(SOCK_DGRAM);
+//  sockets[0]->connect("localhost", 4001);
 
 
   for(i=1; i < argc; i++) {
-    clients[i] = argv[i];  
+    clients[i-1] = argv[i];  
 
-    sockets[i] = new CSocket(SOCK_DGRAM);
-    sockets[i]->connect(clients[i], 4001);
+    sockets[i-1] = new CSocket(SOCK_DGRAM);
+    sockets[i-1]->connect(clients[i-1], 4001);
   }
 
-  m_num_clients = argc;
+  m_num_clients = argc - 1;
 
   ptime m_last_send_time = microsec_clock::local_time();
   ptime now = m_last_send_time;
