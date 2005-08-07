@@ -83,9 +83,10 @@ void CPacketRingBuffer::appendRTPPacket(CRTPPacket* packet)
 {
   int seqnum = packet->seqNum();
 
-  std::list<CRTPPacket*>::iterator iter = m_packet_list.end(); 
 
   m_mutex.Lock();
+
+  std::list<CRTPPacket*>::iterator iter = m_packet_list.end(); 
 
   if(m_packet_list.size() == 0) {
     m_packet_list.push_back(packet);
