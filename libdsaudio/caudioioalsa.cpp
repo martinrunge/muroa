@@ -44,7 +44,7 @@ int CAudioIoAlsa::close() {
 int CAudioIoAlsa::open(std::string device, int samplerate, int channels) {
 
   int err;
-  snd_pcm_uframes_t periodsize = 512;
+  snd_pcm_uframes_t periodsize = 1024;
   
   if ((err = snd_pcm_open(&m_playback_handle, device.c_str(), SND_PCM_STREAM_PLAYBACK, 0)) < 0)
   {
@@ -89,7 +89,7 @@ int CAudioIoAlsa::open(std::string device, int samplerate, int channels) {
     return -7;
   }
 
-  snd_pcm_uframes_t bufsize = periodsize * 128;
+  snd_pcm_uframes_t bufsize = periodsize * 8;
   
   cerr << "trying to set buffer size to " << bufsize << " frames, ";
   err = snd_pcm_hw_params_set_buffer_size_near(m_playback_handle, m_hw_params, &bufsize);
@@ -131,11 +131,11 @@ int CAudioIoAlsa::open(std::string device, int samplerate, int channels) {
     fprintf (stderr, "cannot initialize software parameters structure (%s)\n", snd_strerror (err));
     return -11;
   }
-  if ((err = snd_pcm_sw_params_set_avail_min (m_playback_handle, m_sw_params, 2048)) < 0) {
+  if ((err = snd_pcm_sw_params_set_avail_min (m_playback_handle, m_sw_params, periodsize)) < 0) {
     fprintf (stderr, "cannot set minimum available count (%s)\n", snd_strerror (err));
     return -12;
   }
-  if ((err = snd_pcm_sw_params_set_start_threshold (m_playback_handle, m_sw_params, 10240)) < 0) {
+  if ((err = snd_pcm_sw_params_set_start_threshold (m_playback_handle, m_sw_params, bufsize / 2)) < 0) {
     fprintf (stderr, "cannot set start mode (%s)\n", snd_strerror (err));
     return -13;
   }
@@ -169,12 +169,14 @@ int CAudioIoAlsa::write(char* data, int length) {
     cerr << "length = " << length << " but only " << frames_written << " frames written." << endl;
 
     if (frames_written < 0) {
-      if(frames_written == EBADFD)
+      if(abs(frames_written) == EBADFD)
         cerr << "EBADFD" << endl;
-      if(frames_written == EPIPE)
+      if(abs(frames_written) == EPIPE)
         cerr << "EPIPE" << endl;
-      if(frames_written == ESTRPIPE)
+      if(abs(frames_written) == ESTRPIPE)
         cerr << "ESTRPIPE" << endl;
+      if(abs(frames_written) == EAGAIN)
+        cerr << "EAGAIN" << endl;
         
       fprintf(stderr, "write to audio interface failed (%s) len: %d\n", snd_strerror(frames_written), frames_written);  
       err = snd_pcm_prepare(m_playback_handle);
