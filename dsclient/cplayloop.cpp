@@ -180,7 +180,7 @@ void CPlayloop::playAudio(CAudioFrame *frame) {
     adjustFramesToDiscard(granulated_num_bytes / (m_sample_size * m_num_channels));
   }
   
-  if(playbuffer != 0 && m_frames_to_discard == 0) {
+  if(playbuffer != 0 && granulated_num_bytes != 0 && m_frames_to_discard == 0) {
     retval = m_audio_sink->write(playbuffer, granulated_num_bytes);
   
     if(retval == 0 ) {
