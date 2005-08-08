@@ -51,6 +51,7 @@ private:
 
     FILE* m_stream_fd;
 
+    /** used to store the seqnum of the last read packet. At stream reset, this is set to -1, so packet nr 0 comes after it. */
     int m_seqnum;
 };
 

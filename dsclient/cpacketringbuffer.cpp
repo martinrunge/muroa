@@ -28,7 +28,7 @@ using namespace std;
 CPacketRingBuffer::CPacketRingBuffer(int num_of_frames)
 {
   m_stream_fd = fopen("debug_file_client.raw", "w");
-  m_seqnum = 0;
+  m_seqnum = -1;
 }
 
 
@@ -89,22 +89,34 @@ void CPacketRingBuffer::appendRTPPacket(CRTPPacket* packet)
   std::list<CRTPPacket*>::iterator iter_post = m_packet_list.end(); 
   std::list<CRTPPacket*>::iterator iter_pre;
 
-  if( iter_post != m_packet_list.begin() ) {
-    iter_pre = iter_post - 1;
-  }
+  do {
+    if( iter_post == m_packet_list.begin() ) {  // we arrived at the beginning of the list or the list is empty
 
-  if((*iter_pre)->seqNum() < seqnum) {
-    insert
-  }
-  
+      if(m_packet_list.size() == 0) {  //list is empty
+        if(m_seqnum < seqnum) { // insert only, if the sequence number is higher that the last read packet
+          m_packet_list.push_back(packet);
+        }
+        break;
+      }
 
+      else {  // iterated to the beginning
+        if(m_seqnum < seqnum) { // insert only, if the sequence number is higher that the last read packet
+          m_packet_list.insert(iter_post, packet); 
+        }
+        break;
+      }      
+    }
+    else {
+      iter_pre = iter_post;
+      --iter_pre;
+      if((*iter_pre)->seqNum() < seqnum) {
+        m_packet_list.insert(iter_post, packet);   
+      }
+      break;
+    }
+    --iter_post;
+  } while(1);
 
-  else {
-    do {
-      --iter;    
-    } while ( iter != m_packet_list.begin() && (*iter)->seqNum() >= seqnum);
-    m_packet_list.insert(++iter, packet);   
-  }
 
   m_mutex.UnLock();
 }
