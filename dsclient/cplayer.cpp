@@ -78,7 +78,7 @@ CPlayer::~CPlayer()
 void CPlayer::start()
 {
   m_recvloop_thread->StartThread();
-  m_playloop_thread->StartThread();
+  m_playloop_thread->StartThread(true);
 }
 
 /*!
