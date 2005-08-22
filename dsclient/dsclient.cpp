@@ -34,6 +34,14 @@ int main(int argc, char *argv[])
   char c;
   cout << "dsclient" << endl;
   
+  struct sched_param s_param;
+  
+  sched_getparam(0, &s_param);
+  s_param.sched_priority = 50;
+  sched_setparam(0, &s_param);
+  sched_setscheduler(0, SCHED_FIFO, &s_param); 
+
+
   CPlayer player(4001, "hw:0,0");
   player.start();
 
