@@ -1,58 +1,90 @@
 <?xml version = '1.0' encoding = 'UTF-8'?>
 <!DOCTYPE KDevPrjSession>
 <KDevPrjSession>
- <DocsAndViews NumberOfDocuments="13" >
+ <DocsAndViews NumberOfDocuments="24" >
   <Doc0 NumberOfViews="1" URL="file:///home/martin/devel/dstreamer/dsserver/dsserver.cpp" >
-   <View0 line="0" Type="Source" />
+   <View0 Type="Source" />
   </Doc0>
   <Doc1 NumberOfViews="1" URL="file:///home/martin/devel/dstreamer/dsclient/dsclient.cpp" >
-   <View0 line="36" Type="Source" />
+   <View0 line="41" Type="Source" />
   </Doc1>
-  <Doc2 NumberOfViews="1" URL="file:///home/martin/devel/dstreamer/dsclient/cplayloop.cpp" >
-   <View0 line="257" Type="Source" />
-  </Doc2>
-  <Doc3 NumberOfViews="1" URL="file:///home/martin/devel/dstreamer/dsclient/cplayloop.h" >
-   <View0 line="112" Type="Source" />
-  </Doc3>
-  <Doc4 NumberOfViews="1" URL="file:///home/martin/devel/dstreamer/dsclient/cresampler.h" >
-   <View0 line="44" Type="Source" />
-  </Doc4>
-  <Doc5 NumberOfViews="1" URL="file:///home/martin/devel/dstreamer/dsclient/cresampler.cpp" >
-   <View0 line="193" Type="Source" />
-  </Doc5>
-  <Doc6 NumberOfViews="1" URL="file:///home/martin/devel/dstreamer/libdsaudio/caudioioalsa.cpp" >
-   <View0 line="185" Type="Source" />
-  </Doc6>
-  <Doc7 NumberOfViews="1" URL="file:///home/martin/devel/dstreamer/libdsaudio/csync.h" >
-   <View0 line="61" Type="Source" />
-  </Doc7>
-  <Doc8 NumberOfViews="1" URL="file:///home/martin/devel/dstreamer/dsclient/cringbuffer.cpp" >
-   <View0 line="111" Type="Source" />
-  </Doc8>
-  <Doc9 NumberOfViews="1" URL="file:///home/martin/devel/dstreamer/dsclient/cringbuffer.h" >
+  <Doc2 NumberOfViews="1" URL="file:///home/martin/devel/dstreamer/dsclient/cplayloop.h" >
    <View0 line="46" Type="Source" />
-  </Doc9>
-  <Doc10 NumberOfViews="1" URL="file:///home/martin/devel/dstreamer/libdsaudio/caudioframe.cpp" >
+  </Doc2>
+  <Doc3 NumberOfViews="1" URL="file:///home/martin/devel/dstreamer/dsclient/cresampler.h" >
+   <View0 line="44" Type="Source" />
+  </Doc3>
+  <Doc4 NumberOfViews="1" URL="file:///home/martin/devel/dstreamer/dsclient/cresampler.cpp" >
+   <View0 line="193" Type="Source" />
+  </Doc4>
+  <Doc5 NumberOfViews="1" URL="file:///home/martin/devel/dstreamer/libdsaudio/caudioioalsa.cpp" >
+   <View0 line="161" Type="Source" />
+  </Doc5>
+  <Doc6 NumberOfViews="1" URL="file:///home/martin/devel/dstreamer/libdsaudio/csync.h" >
+   <View0 line="61" Type="Source" />
+  </Doc6>
+  <Doc7 NumberOfViews="1" URL="file:///home/martin/devel/dstreamer/dsclient/cringbuffer.cpp" >
+   <View0 line="29" Type="Source" />
+  </Doc7>
+  <Doc8 NumberOfViews="1" URL="file:///home/martin/devel/dstreamer/dsclient/cringbuffer.h" >
+   <View0 line="46" Type="Source" />
+  </Doc8>
+  <Doc9 NumberOfViews="1" URL="file:///home/martin/devel/dstreamer/libdsaudio/caudioframe.cpp" >
    <View0 line="107" Type="Source" />
-  </Doc10>
-  <Doc11 NumberOfViews="1" URL="file:///home/martin/devel/dstreamer/libdsaudio/caudioframe.h" >
+  </Doc9>
+  <Doc10 NumberOfViews="1" URL="file:///home/martin/devel/dstreamer/libdsaudio/caudioframe.h" >
    <View0 line="9" Type="Source" />
-  </Doc11>
-  <Doc12 NumberOfViews="1" URL="file:///home/martin/devel/dstreamer/libdsaudio/csync.cpp" >
+  </Doc10>
+  <Doc11 NumberOfViews="1" URL="file:///home/martin/devel/dstreamer/libdsaudio/csync.cpp" >
    <View0 line="75" Type="Source" />
+  </Doc11>
+  <Doc12 NumberOfViews="1" URL="file:///home/martin/devel/dstreamer/dsclient/cplayloop.cpp" >
+   <View0 line="154" Type="Source" />
   </Doc12>
+  <Doc13 NumberOfViews="1" URL="file:///home/martin/devel/dstreamer/libdsaudio/caudioioalsa.h" >
+   <View0 line="56" Type="Source" />
+  </Doc13>
+  <Doc14 NumberOfViews="1" URL="file:///home/martin/devel/dstreamer/libdsaudio/iaudioio.h" >
+   <View0 line="36" Type="Source" />
+  </Doc14>
+  <Doc15 NumberOfViews="1" URL="file:///home/martin/devel/dstreamer/libdsaudio/caudiooss.h" >
+   <View0 line="37" Type="Source" />
+  </Doc15>
+  <Doc16 NumberOfViews="1" URL="file:///home/martin/devel/dstreamer/libdsaudio/caudiooss.cpp" >
+   <View0 line="142" Type="Source" />
+  </Doc16>
+  <Doc17 NumberOfViews="1" URL="file:///home/martin/devel/dstreamer/dsclient/cpacketringbuffer.cpp" >
+   <View0 line="110" Type="Source" />
+  </Doc17>
+  <Doc18 NumberOfViews="1" URL="file:///home/martin/devel/dstreamer/dsclient/cpacketringbuffer.h" >
+   <View0 line="53" Type="Source" />
+  </Doc18>
+  <Doc19 NumberOfViews="1" URL="http://www.sgi.com/tech/stl/Iterators.html" >
+   <View0 Type="Documentation" />
+  </Doc19>
+  <Doc20 NumberOfViews="1" URL="http://www.sgi.com/tech/stl/List.html" >
+   <View0 Type="Documentation" />
+  </Doc20>
+  <Doc21 NumberOfViews="1" URL="file:///home/martin/devel/dstreamer/dsclient/cplayer.cpp" >
+   <View0 line="84" Type="Source" />
+  </Doc21>
+  <Doc22 NumberOfViews="1" URL="file:///home/martin/devel/dstreamer/libsock%2B%2B/cpthread.h" >
+   <View0 line="34" Type="Source" />
+  </Doc22>
+  <Doc23 NumberOfViews="1" URL="file:///home/martin/devel/dstreamer/libsock%2B%2B/cpthread.cpp" >
+   <View0 line="44" Type="Source" />
+  </Doc23>
  </DocsAndViews>
  <pluginList>
   <kdevdebugger>
    <breakpointList>
     <breakpoint0 location="/home/martin/devel/dstreamer/dsclient/cringbuffer.cpp:112" type="1" condition="" enabled="0" />
-    <breakpoint1 location="/home/martin/devel/dstreamer/dsclient/cplayloop.cpp:249" type="1" condition="" enabled="1" />
    </breakpointList>
   </kdevdebugger>
   <kdevbookmarks>
    <bookmarks>
     <bookmark url="/home/martin/devel/dstreamer/dsclient/cplayloop.cpp" >
-     <mark line="73" />
+     <mark line="83" />
     </bookmark>
    </bookmarks>
   </kdevbookmarks>
