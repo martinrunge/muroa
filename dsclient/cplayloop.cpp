@@ -107,7 +107,7 @@ void CPlayloop::DoLoop() {
   
   if(m_packet_ringbuffer->getRingbufferSize() == 0) {
      cerr << "CPlayloop::DoLoop: buffer empty!" << endl;
-      usleep(300000);
+      usleep(30000);
      return;
   }
 
