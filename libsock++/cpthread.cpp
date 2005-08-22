@@ -34,11 +34,34 @@ CPThread::~CPThread() {
 }
 
 
-int CPThread::StartThread(void) {
+int CPThread::StartThread(bool realtime) {
 
     int retval;
     Run(true);
+    if(realtime) {
+      struct sched_param s_param;
+      s_param.sched_priority = 50;
+  
+      pthread_attr_init(&m_thread_attr);
+      retval = pthread_attr_setschedpolicy(&m_thread_attr, SCHED_FIFO);
+      if(retval != ENOTSUP) {
+        // setschedpolicy suceeded. We have the neccessary rights.
+        retval = pthread_attr_setschedparam(&m_thread_attr, &s_param);
+        if (retval != EPERM) {
+          cerr << "Realtime priority set." << endl;
+          retval = pthread_create(&m_thread_id, &m_thread_attr, (start_routine_ptr)CPThread::ThreadMainLoop, (void*) this);
+          return retval;
+        }
+      }
+      else {
+        // we do not have super-user provilegs!
+        cerr << "ERROR setting realtime priority. Binary must be set UID root." << endl;
+      }
+
+    }
+     
     retval = pthread_create(&m_thread_id, NULL, (start_routine_ptr)CPThread::ThreadMainLoop, (void*) this);
+    
     return retval;
 }
 

@@ -32,7 +32,7 @@ public:
     CPThread(CThreadSlave* thread_slave);
     ~CPThread(void);
 
-    int StartThread(void);
+    int StartThread(bool realtime = false);
 
     int StopThread(void);
     
