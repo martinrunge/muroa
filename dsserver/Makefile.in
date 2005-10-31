@@ -14,6 +14,7 @@
 
 @SET_MAKE@
 
+
 SOURCES = $(dsserver_SOURCES)
 
 srcdir = @srcdir@
@@ -40,7 +41,8 @@ build_triplet = @build@
 host_triplet = @host@
 bin_PROGRAMS = dsserver$(EXEEXT)
 subdir = dsserver
-DIST_COMMON = $(srcdir)/Makefile.am $(srcdir)/Makefile.in
+DIST_COMMON = $(noinst_HEADERS) $(srcdir)/Makefile.am \
+	$(srcdir)/Makefile.in
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/configure.in
 am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
@@ -51,7 +53,7 @@ CONFIG_CLEAN_FILES =
 am__installdirs = "$(DESTDIR)$(bindir)"
 binPROGRAMS_INSTALL = $(INSTALL_PROGRAM)
 PROGRAMS = $(bin_PROGRAMS)
-am_dsserver_OBJECTS = dsserver.$(OBJEXT)
+am_dsserver_OBJECTS = dsserver.$(OBJEXT) cstreamserver.$(OBJEXT)
 dsserver_OBJECTS = $(am_dsserver_OBJECTS)
 dsserver_DEPENDENCIES = $(top_builddir)/libsock++/libsock++.la \
 	$(top_builddir)/libdsaudio/libdsaudio.la
@@ -68,6 +70,7 @@ CXXLINK = $(LIBTOOL) --tag=CXX --mode=link $(CXXLD) $(AM_CXXFLAGS) \
 	$(CXXFLAGS) $(AM_LDFLAGS) $(LDFLAGS) -o $@
 SOURCES = $(dsserver_SOURCES)
 DIST_SOURCES = $(dsserver_SOURCES)
+HEADERS = $(noinst_HEADERS)
 ETAGS = etags
 CTAGS = ctags
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
@@ -169,10 +172,11 @@ sysconfdir = @sysconfdir@
 target_alias = @target_alias@
 INCLUDES = -I$(top_srcdir)/libdsaudio -I$(top_srcdir)/libsock++
 METASOURCES = AUTO
-dsserver_SOURCES = dsserver.cpp
+dsserver_SOURCES = dsserver.cpp cstreamserver.cpp
 dsserver_LDADD = $(top_builddir)/libsock++/libsock++.la \
 	$(top_builddir)/libdsaudio/libdsaudio.la
 
+noinst_HEADERS = cstreamserver.h
 all: all-am
 
 .SUFFIXES:
@@ -244,6 +248,7 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/cstreamserver.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dsserver.Po@am__quote@
 
 .cpp.o:
@@ -354,7 +359,7 @@ distdir: $(DISTFILES)
 	done
 check-am: all-am
 check: check-am
-all-am: Makefile $(PROGRAMS)
+all-am: Makefile $(PROGRAMS) $(HEADERS)
 installdirs:
 	for dir in "$(DESTDIR)$(bindir)"; do \
 	  test -z "$$dir" || $(mkdir_p) "$$dir"; \
