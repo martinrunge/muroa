@@ -28,23 +28,19 @@ CStreamServer::CStreamServer(int session_id, int transport_buffer_size_in_ms) :
             m_send_time(not_a_date_time), 
             m_last_send_time(not_a_date_time) {
 
+  m_session_id = session_id;
+  m_stream_id = 0;
+
   m_payload_size = 1024;
   m_audio_bytes_per_frame = 2 * sizeof(short);
 
-  m_transport_buffer_size_in_ms = transport_buffer_size_in_ms;
+  m_transport_buffer_duration = millisec(transport_buffer_size_in_ms);
 
   m_payload_duration_sum = microseconds(0);
   m_total_play_time = microseconds(0);
-
-  time_duration buffersize = millisec(transport_buffer_size_in_ms);
-
+  
   m_rtp_packet = new CRTPPacket(m_payload_size);
 
-  m_syncobj.addDuration(buffersize);
-  m_syncobj.frameNr(0);
-  m_syncobj.streamId(0);  
-  m_syncobj.sessionId(session_id);
-  // m_syncobj.serialize();  this is done in open
 
   m_frames_in_sync_period = 0;
 
@@ -69,8 +65,12 @@ int CStreamServer::open(int audio_bytes_per_second)
   
   ptime now = m_last_send_time;
 
+  m_stream_id++;
+
+  m_syncobj.addDuration(m_transport_buffer_duration);
   m_syncobj.frameNr(0);
-  m_syncobj.streamId( m_syncobj.streamId() + 1 );  
+  m_syncobj.streamId(m_stream_id);  
+  m_syncobj.sessionId(m_session_id);
   m_syncobj.serialize();
 
   m_rtp_packet->payloadType(PAYLOAD_SYNC_OBJ);
@@ -81,7 +81,7 @@ int CStreamServer::open(int audio_bytes_per_second)
   m_frames_in_sync_period = 0;
   m_payload_duration_sum = microseconds(0);
 
-  /// @todo send RTP packet to all clients
+  sendToAllClients(m_rtp_packet);
 
   return 0;
 }
@@ -117,11 +117,7 @@ int CStreamServer::write(char* buffer, int length) {
 //    cerr << "interval: " << interval << endl;
 
 
-    list<CSocket*>::iterator iter;
-
-    for(iter = m_socket_list.begin(); iter != m_socket_list.end(); iter++ ) {
-      (*iter)->write(m_rtp_packet->bufferPtr(), m_rtp_packet->usedBufferSize()); 
-    }
+    sendToAllClients(m_rtp_packet);
 
     m_frames_in_sync_period += length / m_audio_bytes_per_frame;
 
@@ -204,3 +200,16 @@ CSocket* CStreamServer::removeSocket(list<CSocket*>::iterator sock_iterator) {
   return socket;
 }
 
+
+
+/*!
+    \fn CStreamServer::sendToAllClients(CRTPPacket* packet)
+ */
+void CStreamServer::sendToAllClients(CRTPPacket* packet)
+{
+    list<CSocket*>::iterator iter;
+
+    for(iter = m_socket_list.begin(); iter != m_socket_list.end(); iter++ ) {
+      (*iter)->write(packet->bufferPtr(), packet->usedBufferSize()); 
+    }
+}

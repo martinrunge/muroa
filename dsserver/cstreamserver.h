@@ -85,6 +85,8 @@ private:
     boost::posix_time::time_duration m_last_payload_duration;
     boost::posix_time::time_duration m_total_play_time;
 
+    boost::posix_time::time_duration m_transport_buffer_duration;
+  
     CRTPPacket *m_rtp_packet;
     CSync m_syncobj;
 
@@ -92,10 +94,14 @@ private:
 
     CMutex m_socket_list_mutex;
 
-    int m_transport_buffer_size_in_ms;
+    unsigned long m_session_id;
+
+    unsigned long m_stream_id;
 
 
 
+private:
+    void sendToAllClients(CRTPPacket* packet);
 };
 
 #endif

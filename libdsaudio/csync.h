@@ -73,7 +73,6 @@ public:
     int getSerialisationBufferSize();
     char* getSerialisationBufferPtr();
     void print();
-    void addTimePeriod(boost::posix_time::time_duration duration);
     void addDuration(boost::posix_time::time_duration duration);
 
     inline boost::posix_time::ptime* getPtimePtr() { return m_local_time; };

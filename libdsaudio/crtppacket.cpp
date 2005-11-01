@@ -22,6 +22,8 @@
 #include <string.h>
 #include <assert.h>
 
+const unsigned short CRTPPacket::DS_RTP_PROFILE = 0x2222;
+
 // create a RTP packet object from a buffer. e.g. a RTP packet received via network
 CRTPPacket::CRTPPacket(char *buffer, int buffer_size, bool delete_buffer_in_dtor )
 {
@@ -29,7 +31,23 @@ CRTPPacket::CRTPPacket(char *buffer, int buffer_size, bool delete_buffer_in_dtor
 
   m_buffer = buffer;  
   m_buffer_size = buffer_size;
-  m_used_payload_size = m_buffer_size - sizeof(rtp_header_t);
+  int total_header_size;
+
+
+  m_rtp_header = reinterpret_cast<rtp_header_t*>(m_buffer);
+  m_num_csrc = m_rtp_header->rtp_header_bits.CSRC_count;
+  if(m_num_csrc > 15) m_num_csrc = 15;
+    
+
+  total_header_size = sizeof(rtp_header_t) + m_num_csrc * sizeof(unsigned long);
+
+
+  if(m_rtp_header->rtp_header_bits.extension == 1) {
+    total_header_size += sizeof(rtp_header_extension_t);
+  }
+  
+
+  m_used_payload_size = m_buffer_size - total_header_size;
 
   m_delete_buffer_in_dtor = delete_buffer_in_dtor;
 
@@ -37,25 +55,38 @@ CRTPPacket::CRTPPacket(char *buffer, int buffer_size, bool delete_buffer_in_dtor
 }
 
 // create a new RTP packet object
-CRTPPacket::CRTPPacket(int payload_size, bool delete_buffer_in_dtor) 
-{
-  m_buffer_size = payload_size + sizeof(rtp_header_t);
-  m_buffer = new char[m_buffer_size];
-  
-  init();
+CRTPPacket::CRTPPacket(unsigned long session_id, unsigned long stream_id, int payload_size, bool delete_buffer_in_dtor) {
 
+  m_num_csrc = 0;
+
+  m_buffer_size = payload_size + sizeof(rtp_header_t);
+  m_buffer_size += m_num_csrc * sizeof(unsigned long);
+  m_buffer_size += sizeof(rtp_header_extension_t);
+
+  m_buffer = new char[m_buffer_size];
+  m_rtp_header = reinterpret_cast<rtp_header_t*>(m_buffer);
+ 
   m_rtp_header->rtp_header_bits.version = 2;
   m_rtp_header->rtp_header_bits.padding = 0;
-  m_rtp_header->rtp_header_bits.extension = 0;
+  m_rtp_header->rtp_header_bits.extension = 1;
   m_rtp_header->rtp_header_bits.CSRC_count = 0;
   m_rtp_header->rtp_header_bits.marker = 0;
   m_rtp_header->rtp_header_bits.sequence_number = 0;
   m_rtp_header->rtp_header_bits.timestamp = 0;
 
+  init();
+
   // payload types:
   // 0 == sync object
   // 1 == PCM data
   m_rtp_header->rtp_header_bits.payload_type = PAYLOAD_UNKNOWN;
+
+  m_rtp_header_extension->defined_by_profile = CRTPPacket::DS_RTP_PROFILE;
+  m_rtp_header_extension->num_32bit_words_following = sizeof(rtp_header_extension_t) - 2 * sizeof(unsigned short);
+  m_rtp_header_extension->ds_session_id = session_id;
+  m_rtp_header_extension->ds_stream_id = stream_id;
+
+
 
   m_used_payload_size = 0;
 
@@ -63,10 +94,23 @@ CRTPPacket::CRTPPacket(int payload_size, bool delete_buffer_in_dtor)
 
 
 void CRTPPacket::init() {
-  m_rtp_header = (rtp_header_t*)m_buffer;
+  int total_header_size;  
 
-  m_payload_ptr = m_buffer + sizeof(rtp_header_t);
-  m_payload_size = m_buffer_size - sizeof(rtp_header_t);
+  m_rtp_header = reinterpret_cast<rtp_header_t*>(m_buffer);
+
+  total_header_size = sizeof(rtp_header_t) + m_num_csrc * sizeof(unsigned long);
+  char *tmp = m_buffer + total_header_size;
+
+  if(m_rtp_header->rtp_header_bits.extension) {
+    m_rtp_header_extension = reinterpret_cast<rtp_header_extension_t*>(tmp);
+    total_header_size += sizeof(rtp_header_extension_t);
+  }
+  else {
+    m_rtp_header_extension = 0;
+  }
+
+  m_payload_ptr = m_buffer + total_header_size;
+  m_payload_size = m_buffer_size - total_header_size;
   
 }
 
@@ -113,4 +157,36 @@ void CRTPPacket::usedBufferSize(int size)
 CRTPPacket CRTPPacket::operator=(CRTPPacket packet)
 {
     memcpy(m_buffer, packet.bufferPtr(), packet.bufferSize());
+}
+
+
+unsigned long CRTPPacket::sessionID(void) {
+  if(m_rtp_header->rtp_header_bits.extension == 1) {
+    return m_rtp_header_extension->ds_session_id;
+  }
+  else {
+    return 0;
+  }
+}
+
+void CRTPPacket::sessionID(unsigned long session_id){
+  if(m_rtp_header->rtp_header_bits.extension == 1) {
+    m_rtp_header_extension->ds_session_id = session_id;
+  }
+}
+
+unsigned long CRTPPacket::streamID(void){
+  if(m_rtp_header->rtp_header_bits.extension == 1) {
+    return m_rtp_header_extension->ds_stream_id;
+  }
+  else {
+    return 0;
+  }
+
+}
+
+void CRTPPacket::streamID(unsigned long stream_id){
+  if(m_rtp_header->rtp_header_bits.extension == 1) {
+    m_rtp_header_extension->ds_stream_id = stream_id;
+  }
 }

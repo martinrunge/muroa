@@ -102,15 +102,6 @@ void CSync::print()
 
 
 /*!
-    \fn CSync::addTimePeriod(time_duration duration)
- */
-void CSync::addTimePeriod(time_duration duration)
-{
-    (*m_local_time) += duration;
-}
-
-
-/*!
     \fn CSync::addDuration(boost::posix_time::time_duration duration);
  */
 void CSync::addDuration(boost::posix_time::time_duration duration)

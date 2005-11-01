@@ -29,16 +29,24 @@
 
 
 typedef struct rtp_header_bits {
-    int version:2;
-    int padding:1;
-    int extension:1;
-    int CSRC_count:4;
-    int marker:1;
-    int payload_type:7;
+    unsigned version:2;
+    unsigned padding:1;
+    unsigned extension:1;
+    unsigned CSRC_count:4;
+    unsigned marker:1;
+    unsigned payload_type:7;
     unsigned short sequence_number;
     unsigned long timestamp;
     unsigned long SSRC; 
   } rtp_header_bits_t;
+
+typedef struct rtp_header_extension {
+    unsigned short defined_by_profile;
+    unsigned short num_32bit_words_following;
+    unsigned long ds_session_id;
+    unsigned long ds_stream_id;
+  } rtp_header_extension_t;
+
 
 
 union rtp_header_t {
@@ -62,7 +70,7 @@ class CRTPPacket{
 public:
     CRTPPacket(char *buffer, int buffer_size, bool delete_buffer_in_dtor = true);
 
-    CRTPPacket(int payload_size = 1024, bool delete_buffer_in_dtor = true);
+    CRTPPacket(unsigned long session_id = 0, unsigned long stream_id = 0, int payload_size = 1024, bool delete_buffer_in_dtor = true);
 
     ~CRTPPacket();
 
@@ -94,6 +102,12 @@ public:
     inline unsigned long timestamp() { return m_rtp_header->rtp_header_bits.timestamp; };
     inline void timestamp(unsigned long ts) { m_rtp_header->rtp_header_bits.timestamp = ts; };
 
+    inline unsigned long sessionID(void);
+    inline void sessionID(unsigned long session_id);
+
+    inline unsigned long streamID(void);
+    inline void streamID(unsigned long stream_id);
+
     int copyInPayload(const char* from, const int size);
 
 private:
@@ -101,7 +115,10 @@ private:
     void init(void);
     CRTPPacket operator=(CRTPPacket packet);
 
-    rtp_header_t  *m_rtp_header; 
+    rtp_header_t  *m_rtp_header;
+    rtp_header_extension_t *m_rtp_header_extension; 
+
+    unsigned m_num_csrc;
 
     char *m_buffer;
     int m_buffer_size;
@@ -112,6 +129,8 @@ private:
 
     bool m_delete_buffer_in_dtor;
   
+public:
+    static const unsigned short DS_RTP_PROFILE;
 };
 
 #endif

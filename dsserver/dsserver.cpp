@@ -30,12 +30,74 @@
 #include "csync.h"
 #include "crtppacket.h"
 
+#include "cstreamserver.h"
+
 using namespace std;
 using namespace boost::posix_time;
 
+int cppserver(int argc, char *argv[]);
+int cserver(int argc, char *argv[]);
+
 
 int main(int argc, char *argv[]) {
-  
+  cserver(argc, argv);
+//  cppserver(argc, argv);
+  return 0;
+}
+
+int cppserver(int argc, char *argv[]) {
+
+
+  if(argc > 1 && strcmp(argv[1], "--help") == 0) {
+    cout << "usage:" << endl 
+         << "dsserver [client1] [client2] [client3] ... [client10]"  << endl
+         << "client0 will always be 'localhost', the others are optional." << endl;
+
+    exit(0);
+
+  } 
+
+  unsigned long num;
+  int buffersize = 1024;
+  char *buffer = new char[buffersize];
+
+
+  CSocket *socket;
+  CStreamServer streamserver;
+
+//  clients[0] = "localhost";
+//  sockets[0] = new CSocket(SOCK_DGRAM);
+//  sockets[0]->connect("localhost", 4001);
+
+
+
+
+  for(int i = 1; i < argc; i++) {
+    socket = new CSocket(SOCK_DGRAM);
+    socket->connect(argv[i], 4001);
+    streamserver.addSocket(socket);
+  }
+
+  streamserver.open();
+
+  FILE* in_fd = fopen("infile.raw", "r");
+  do {
+    num = fread((void*)buffer, buffersize, 1, in_fd); 
+    streamserver.write(buffer, num);    
+
+
+  } while(num != 0);
+
+  streamserver.close();
+
+  delete [] buffer;
+
+  return 0;
+}
+
+
+int cserver(int argc, char *argv[]) {
+
   unsigned long num;
   int payload_size = 1024;
 
