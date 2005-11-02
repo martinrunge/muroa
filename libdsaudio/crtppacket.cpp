@@ -29,7 +29,7 @@ CRTPPacket::CRTPPacket(char *buffer, int buffer_size, bool delete_buffer_in_dtor
 {
   assert(buffer_size > sizeof(rtp_header_t));
 
-  m_buffer = buffer;  
+  m_buffer = buffer;
   m_buffer_size = buffer_size;
   int total_header_size;
 
@@ -37,7 +37,6 @@ CRTPPacket::CRTPPacket(char *buffer, int buffer_size, bool delete_buffer_in_dtor
   m_rtp_header = reinterpret_cast<rtp_header_t*>(m_buffer);
   m_num_csrc = m_rtp_header->rtp_header_bits.CSRC_count;
   if(m_num_csrc > 15) m_num_csrc = 15;
-    
 
   total_header_size = sizeof(rtp_header_t) + m_num_csrc * sizeof(unsigned long);
 

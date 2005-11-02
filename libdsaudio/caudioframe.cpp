@@ -41,7 +41,7 @@ CAudioFrame::CAudioFrame(CRTPPacket* rtp_packet, int max_frame_size) {
   m_frame_data_size = rtp_packet->payloadBufferSize();
   m_max_size = max_frame_size;
   m_frame_data = new char[m_max_size];
-  copyData(rtp_packet->payloadBufferPtr(), rtp_packet->payloadBufferSize());
+  copyData(rtp_packet->payloadBufferPtr(), rtp_packet->usedPayloadBufferSize());
 
   switch (m_frame_type) {
 
