@@ -49,9 +49,9 @@ void CRecvloop::DoLoop()
 {
 
   int num = m_socket->read(m_rtp_packet->bufferPtr(), m_rtp_packet->bufferSize()); 
-  m_rtp_packet->usedBufferSize(num);
+  // m_rtp_packet->BufferSize(num);
 
-  if(m_rtp_packet->usedPayloadBufferSize() == 0 ) {
+  if(num == 0 ) {
     usleep(200);
   }
   else {

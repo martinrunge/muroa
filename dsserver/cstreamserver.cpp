@@ -189,10 +189,10 @@ list<CSocket*>::iterator CStreamServer::addSocket(CSocket* socket) {
 
 CSocket* CStreamServer::removeSocket(list<CSocket*>::iterator sock_iterator) {
 
-  CSocket* socket;
+  CSocket* socket;  
 
   socket = *sock_iterator;
-
+  
   m_socket_list_mutex.Lock();
   m_socket_list.erase(sock_iterator);
   m_socket_list_mutex.UnLock();

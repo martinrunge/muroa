@@ -145,11 +145,12 @@ int cserver(int argc, char *argv[]) {
 
   time_duration interval;
 
-  CRTPPacket rtp_packet(payload_size);
+  int session_id = 1;
+  int stream_id = 1;
+
+  CRTPPacket rtp_packet(session_id, stream_id, payload_size);
   
   cout << "testserver!!!" << endl;
-
-  
 
   unsigned long payload_duration_in_us = 0;
   long time_since_last_packet_in_us;
@@ -160,21 +161,25 @@ int cserver(int argc, char *argv[]) {
 
   FILE* in_fd = fopen("infile.raw", "r");
   
-  int transport_buffer_size_in_ms = 1500;
+  int transport_buffer_size_in_ms = 30000;
 
   CSync syncobj;
   time_duration buffersize = millisec(transport_buffer_size_in_ms);
 
   syncobj.addDuration(buffersize);
   syncobj.frameNr(0);
-  syncobj.streamId(1);  
-  syncobj.sessionId(1);
+  syncobj.streamId(stream_id);  
+  syncobj.sessionId(session_id);
   syncobj.serialize();
 
   rtp_packet.payloadType(PAYLOAD_SYNC_OBJ);
 
   rtp_packet.copyInPayload(syncobj.getSerialisationBufferPtr(), syncobj.getSerialisationBufferSize());
 
+//  rtp_packet.sessionID(session_id);
+//  rtp_packet.streamID(stream_id);
+
+          
   for(i=0; i < m_num_clients; i++) {
     sockets[i]->write(rtp_packet.bufferPtr(), rtp_packet.usedBufferSize());
   }
@@ -197,8 +202,12 @@ int cserver(int argc, char *argv[]) {
 //    interval = now - m_last_send_time;
 //    cerr << "interval: " << interval << endl;
 
+    
+
     for(i=0; i < m_num_clients; i++) {
-      sockets[i]->write(rtp_packet.bufferPtr(), rtp_packet.usedBufferSize()); 
+      char *buffer = rtp_packet.bufferPtr();
+      int buffersize = rtp_packet.bufferSize();
+      sockets[i]->write(buffer, buffersize); 
     }
 
     m_num_multi_channel_samples_before += num / (2 * sizeof(short));

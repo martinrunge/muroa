@@ -120,6 +120,8 @@ private:
 
     short *m_silence_buffer;
     int m_frames_to_discard;
+
+    FILE* m_debug_fd1;
 };
 
 #endif

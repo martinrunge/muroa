@@ -46,7 +46,7 @@ CRTPPacket* CPacketRingBuffer::readPacket(void) {
     ringbuffer_size = m_packet_list.size();
     if(ringbuffer_size == 0) {
       m_mutex.UnLock();
-      cerr << "CRingBuffer::readFrame: buffer empty!" << endl;
+      // cerr << "CRingBuffer::readPacket: buffer empty!" << endl;
       return 0;
     }
     
@@ -54,6 +54,7 @@ CRTPPacket* CPacketRingBuffer::readPacket(void) {
     CRTPPacket* rtp_packet = *m_packet_list.begin();
     m_packet_list.pop_front();
 
+    //cerr << "CRingBuffer::readPacket: one packet read from list beginning " << endl;
     m_mutex.UnLock();
 
     int seqnum = rtp_packet->seqNum();
@@ -93,6 +94,7 @@ void CPacketRingBuffer::appendRTPPacket(CRTPPacket* packet)
     if( iter_post == m_packet_list.begin() ) {  // we arrived at the beginning of the list or the list is empty
 
       if(m_packet_list.size() == 0) {  //list is empty
+        // cerr << "CPacketRingBuffer::appendRTPPacket: list empty" << endl;
         if(m_seqnum < seqnum) { // insert only, if the sequence number is higher that the last read packet
           m_packet_list.push_back(packet);
         }
@@ -102,6 +104,7 @@ void CPacketRingBuffer::appendRTPPacket(CRTPPacket* packet)
       else {  // iterated to the beginning
         if(m_seqnum < seqnum) { // insert only, if the sequence number is higher that the last read packet
           m_packet_list.insert(iter_post, packet); 
+          // cerr << "CPacketRingBuffer::appendRTPPacket: packet inserted at beginning" << endl;
         }
         break;
       }      
@@ -111,6 +114,7 @@ void CPacketRingBuffer::appendRTPPacket(CRTPPacket* packet)
       --iter_pre;
       if((*iter_pre)->seqNum() < seqnum) {
         m_packet_list.insert(iter_post, packet);   
+        // cerr << "CPacketRingBuffer::appendRTPPacket: packet inserted in the middle" << endl;
       }
       break;
     }
@@ -124,8 +128,9 @@ void CPacketRingBuffer::appendRTPPacket(CRTPPacket* packet)
 int CPacketRingBuffer::getRingbufferSize() {
   int size;
 
-  m_mutex.Lock();
+  m_mutex.Lock();  
   size = m_packet_list.size();
+  // cerr << "CPacketRingBuffer::getRingbufferSize() = " << size << endl;
   m_mutex.UnLock();
   
   return size;

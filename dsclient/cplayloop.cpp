@@ -89,6 +89,8 @@ CPlayloop::CPlayloop(CPacketRingBuffer* packet_ringbuffer, std::string sound_dev
   for(int i=0; i < num_shorts; i++) {
     m_silence_buffer[i] = silence_val;
   }
+
+  m_debug_fd1 = fopen("m_debug_fd1","w");
 }
 
 
@@ -100,6 +102,7 @@ CPlayloop::~CPlayloop()
   delete m_resampler;
   delete m_ringbuffer;
   m_audio_sink->close();
+  fclose(m_debug_fd1);
 }
 
 
@@ -110,7 +113,7 @@ void CPlayloop::DoLoop() {
       usleep(30000);
      return;
   }
-
+  cerr << ".";
   CAudioFrame* frame;
 
   CRTPPacket* rtp_packet = m_packet_ringbuffer->readPacket();
@@ -158,7 +161,7 @@ void CPlayloop::playAudio(CAudioFrame *frame) {
   
   m_nr_of_last_frame_decoded = frame->firstFrameNr() + frame->sizeInMultiChannelSamples() - 1;
 
-  // fwrite(frame->dataPtr(), 1, frame->dataSize(), m_debug_fd1);
+  fwrite(frame->dataPtr(), 1, frame->dataSize(), m_debug_fd1);
   int num_single_chan_samples = m_resampler->resampleFrame(frame, m_resample_factor * m_correction_factor);
   
 
