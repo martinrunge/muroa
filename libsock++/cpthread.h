@@ -19,6 +19,8 @@
 #define CPTHREAD_H
 
 #include <pthread.h>
+#include <errno.h>
+
 
 // #include "cthreadslave.h"
 
