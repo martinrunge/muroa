@@ -113,7 +113,6 @@ void CPlayloop::DoLoop() {
       usleep(30000);
      return;
   }
-  cerr << ".";
   CAudioFrame* frame;
 
   CRTPPacket* rtp_packet = m_packet_ringbuffer->readPacket();

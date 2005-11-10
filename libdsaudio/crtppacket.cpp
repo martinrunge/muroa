@@ -82,7 +82,7 @@ CRTPPacket::CRTPPacket(unsigned long session_id, unsigned long stream_id, int pa
   m_rtp_header->rtp_header_bits.payload_type = PAYLOAD_UNKNOWN;
 
   m_rtp_header_extension->defined_by_profile = CRTPPacket::DS_RTP_PROFILE;
-  m_rtp_header_extension->num_32bit_words_following = sizeof(rtp_header_extension_t) - 2 * sizeof(unsigned short);
+  m_rtp_header_extension->num_32bit_words_following = (sizeof(rtp_header_extension_t) - 2 * sizeof(unsigned short)) / sizeof(unsigned long);
   m_rtp_header_extension->ds_session_id = session_id;
   m_rtp_header_extension->ds_stream_id = stream_id;
 
@@ -113,6 +113,31 @@ void CRTPPacket::init() {
   m_payload_size = m_buffer_size - total_header_size;
   
 }
+
+int CRTPPacket::commit(int num) {
+
+  int total_header_size;
+
+
+  m_rtp_header = reinterpret_cast<rtp_header_t*>(m_buffer);
+  m_num_csrc = m_rtp_header->rtp_header_bits.CSRC_count;
+  if(m_num_csrc > 15) m_num_csrc = 15;
+    
+
+  total_header_size = sizeof(rtp_header_t) + m_num_csrc * sizeof(unsigned long);
+
+
+  if(m_rtp_header->rtp_header_bits.extension == 1) {
+    total_header_size += sizeof(rtp_header_extension_t);
+  }
+  
+  m_used_payload_size = num - total_header_size;
+
+  init();
+
+  return 0;
+}
+
 
 
 CRTPPacket::~CRTPPacket()
@@ -150,6 +175,19 @@ void CRTPPacket::usedBufferSize(int size)
   }
 }
 
+
+int CRTPPacket::usedBufferSize(void) { 
+  int used_size = m_used_payload_size;
+  used_size += sizeof(rtp_header_t);
+  used_size += m_num_csrc * sizeof(unsigned long);
+
+  if(m_rtp_header->rtp_header_bits.extension == 1) {
+    used_size += sizeof(rtp_header_extension_t);
+  }
+
+  return used_size; 
+
+}
 
 /*!
     \fn CRTPPacket::operator=(CRTPPacket packet)

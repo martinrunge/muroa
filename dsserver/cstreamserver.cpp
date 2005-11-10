@@ -39,7 +39,7 @@ CStreamServer::CStreamServer(int session_id, int transport_buffer_size_in_ms) :
   m_payload_duration_sum = microseconds(0);
   m_total_play_time = microseconds(0);
   
-  m_rtp_packet = new CRTPPacket(m_payload_size);
+  m_rtp_packet = new CRTPPacket(m_session_id, m_stream_id, m_payload_size);
 
 
   m_frames_in_sync_period = 0;

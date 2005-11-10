@@ -81,8 +81,11 @@ public:
     /** The size of the whole memory buffer that can be used to receive a RTP packet via network */
     inline int bufferSize(void) { return m_buffer_size; };
 
+    /** after writing a rtp packet into the buffer that was retuned by bufferPtr(), call commit to tell how many bytes have actually been written. Then, the RTP packet is parsed. */
+    int commit(int num);
+
     /** Size of the buffer taht is used by data. It is the size of the RTP header plus the size of the payload actually loaded */
-    inline int usedBufferSize(void) { return sizeof(rtp_header_t) + m_used_payload_size; };
+    int usedBufferSize(void);
 
     /** Set size of the buffer that is used by data. It is the size of the RTP header plus the size of the payload actually loaded */
     void usedBufferSize(int size);

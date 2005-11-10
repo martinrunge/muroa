@@ -40,8 +40,8 @@ int cserver(int argc, char *argv[]);
 
 
 int main(int argc, char *argv[]) {
-  cserver(argc, argv);
-//  cppserver(argc, argv);
+//  cserver(argc, argv);
+  cppserver(argc, argv);
   return 0;
 }
 
@@ -83,7 +83,7 @@ int cppserver(int argc, char *argv[]) {
   FILE* in_fd = fopen("infile.raw", "r");
   do {
     num = fread((void*)buffer, buffersize, 1, in_fd); 
-    streamserver.write(buffer, num);    
+    streamserver.write(buffer, num * buffersize);    
 
 
   } while(num != 0);
@@ -161,7 +161,7 @@ int cserver(int argc, char *argv[]) {
 
   FILE* in_fd = fopen("infile.raw", "r");
   
-  int transport_buffer_size_in_ms = 30000;
+  int transport_buffer_size_in_ms = 1500;
 
   CSync syncobj;
   time_duration buffersize = millisec(transport_buffer_size_in_ms);
