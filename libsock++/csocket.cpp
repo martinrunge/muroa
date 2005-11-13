@@ -33,6 +33,8 @@ CSocket::CSocket(__socket_type type, unsigned short port){
   m_connected_to_ip = 0;
   m_connected_to_port = 0;
   
+  m_recv_from_addr = 0;
+
   m_last_hostname.clear();
  
   m_type = type;
@@ -58,7 +60,8 @@ CSocket::CSocket(int socket_descr, bool bound, bool connected){
   m_is_bound = bound;
   m_is_connected = connected;
   m_type = SOCK_STREAM;
-  
+
+  m_recv_from_addr = 0;  
   m_socket_descr = socket_descr;
 }
 
@@ -210,7 +213,10 @@ int CSocket::read(char* buffer, int bufferlen){
 	  }
   }		
 
-  retval = ::recv(m_socket_descr, buffer, bufferlen, 0);
+  struct sockaddr* sockaddr_ptr = reinterpret_cast<struct sockaddr*>(m_recv_from_addr->sock_addr_in_ptr());
+  socklen_t len;
+
+  retval = ::recvfrom(m_socket_descr, buffer, bufferlen, 0, sockaddr_ptr, &len);
 
   if(retval == 0 && can_read) {
     cerr << " the other side closed the connection." << endl;
@@ -224,6 +230,12 @@ int CSocket::read(char* buffer, int bufferlen){
   }
   else {
     cerr << "CSocket::Read - Error. recv returned negatice value, errno == " << errno << endl;
+  }
+  if(len != sizeof(struct sockaddr_in)) {
+    cerr << "CSocket::Read - recvfrom return size " << len << " for sender address. sizeof(struct sockaddr_in)=" << sizeof(struct sockaddr_in) << " !" << endl;
+  }
+  else {
+    // m_recv_from_addr seems ok
   }
   return retval;
 
@@ -365,4 +377,37 @@ unsigned short CSocket::connectedToPort() {
                         
 void CSocket::connectedToPort(unsigned short port) {
   m_connected_to_port = port;
+}
+
+
+/*!
+    \fn CSocket::recordSenderWithRecv(bool record)
+ */
+void CSocket::recordSenderWithRecv(bool record) {
+    if(record == true) {
+      if(m_recv_from_addr == 0) {
+        m_recv_from_addr = new CIPv4Address();        
+      }
+    }
+    else {
+      if(m_recv_from_addr != 0) {
+        delete m_recv_from_addr;
+        m_recv_from_addr = 0;
+      }
+    }   
+}
+
+
+/*!
+    \fn CSocket::recordSenderWithRecv(bool record)
+ */
+bool CSocket::recordSenderWithRecv(void) {
+  if(m_recv_from_addr == 0)
+    return false;
+  else
+    return true;
+}
+
+CIPv4Address* CSocket::latestSender() {
+  return m_recv_from_addr;
 }

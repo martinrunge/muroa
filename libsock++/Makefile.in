@@ -60,7 +60,8 @@ libLTLIBRARIES_INSTALL = $(INSTALL)
 LTLIBRARIES = $(lib_LTLIBRARIES)
 libsock___la_DEPENDENCIES =
 am_libsock___la_OBJECTS = cmutex.lo cposixcond.lo cpthread.lo \
-	csocket.lo ctcpserversocket.lo cthreadslave.lo libsock++.lo
+	csocket.lo ctcpserversocket.lo cthreadslave.lo libsock++.lo \
+	cipaddress.lo cipv4address.lo
 libsock___la_OBJECTS = $(am_libsock___la_OBJECTS)
 DEFAULT_INCLUDES = -I. -I$(srcdir) -I$(top_builddir)
 depcomp = $(SHELL) $(top_srcdir)/depcomp
@@ -186,10 +187,11 @@ target_alias = @target_alias@
 METASOURCES = AUTO
 lib_LTLIBRARIES = libsock++.la
 libsock___la_SOURCES = cmutex.cpp cmutex.h cposixcond.cpp \
-	cposixcond.h	cpthread.cpp cpthread.h csocket.cpp csocket.h \
-	ctcpserversocket.cpp	ctcpserversocket.h cthreadslave.cpp cthreadslave.h libsock++.cpp
+		cposixcond.h	cpthread.cpp cpthread.h csocket.cpp csocket.h \
+		ctcpserversocket.cpp	ctcpserversocket.h cthreadslave.cpp cthreadslave.h libsock++.cpp cipaddress.cpp \
+	cipv4address.cpp
 
-noinst_HEADERS = libsock++.h
+noinst_HEADERS = libsock++.h cipaddress.h cipv4address.h
 AM_CFLAGS = -pthread
 AM_CXXFLAGS = -pthread
 libsock___la_LIBADD = -lpthread
@@ -262,6 +264,8 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/cipaddress.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/cipv4address.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/cmutex.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/cposixcond.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/cpthread.Plo@am__quote@

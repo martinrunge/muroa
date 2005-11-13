@@ -31,6 +31,7 @@ CRecvloop::CRecvloop(CPacketRingBuffer* packet_ringbuffer, unsigned short port):
   m_packet_ringbuffer = packet_ringbuffer;
 
   m_socket = new CSocket(SOCK_DGRAM, port);  
+  m_socket->recordSenderWithRecv(true);
 
   m_rtp_packet = new CRTPPacket();
 
@@ -47,7 +48,6 @@ CRecvloop::~CRecvloop()
 
 void CRecvloop::DoLoop()
 {
-
   int num = m_socket->read(m_rtp_packet->bufferPtr(), m_rtp_packet->bufferSize()); 
   m_rtp_packet->commit(num);
 
@@ -59,6 +59,7 @@ void CRecvloop::DoLoop()
     // m_rtp_packet->BufferSize(num);
     m_packet_ringbuffer->appendRTPPacket(m_rtp_packet);
     m_rtp_packet = new CRTPPacket(); 
+    cerr << "Sender was: " << m_socket->latestSender()->ipAddress() << " port " << m_socket->latestSender()->port() << endl;
   }
           
 

@@ -31,6 +31,8 @@
 
 #include <string>
 
+#include "cipv4address.h"
+
 class CSocket {
 public:
 	CSocket(__socket_type type = SOCK_STREAM, unsigned short port = 0);
@@ -68,6 +70,13 @@ public:
   unsigned short connectedToPort();
   void connectedToPort(unsigned short port);
 
+  void recordSenderWithRecv(bool record);
+  bool recordSenderWithRecv(void);
+
+    /*!
+        \fn CSocket::latestSender()
+     */
+  CIPv4Address* latestSender();
   
 
 protected: // Protected methods
@@ -110,13 +119,17 @@ private: // Private attributes
  
   std::string m_last_hostname;
   struct sockaddr_in m_receiver;
+
   int m_type;
   
   /** if socket is of type SOCK_STREAM and it is connected, these variables may hold the IP address and port of the 
       socket on the other end. It is filled by accept an connect*/
   unsigned long m_connected_to_ip;
   unsigned short m_connected_to_port;
-                 
+
+/** if this is not NULL, the read function will put the sender of a packet in here */
+  CIPv4Address*  m_recv_from_addr;
+  // socklen_t m_recv_from_addr_len;                 
     
   int seperateHostAndPort(const std::string& hostandport, std::string* host, unsigned short* port);
   
