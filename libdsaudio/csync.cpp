@@ -26,8 +26,9 @@ using namespace std;
 using namespace boost::posix_time;
 
 
-CSync::CSync()
+CSync::CSync(enum sync_type_t sync_type)
 {
+  m_sync_type = sync_type;
   m_local_time = new ptime(microsec_clock::local_time());
   cout << "time (local + usecs): " << to_iso_string(*m_local_time) << endl;
 
@@ -53,10 +54,15 @@ CSync::~CSync()
  */
 char* CSync::serialize()
 {
-  strcpy(m_serialization_buffer.serialisation_vars.timestamp, to_simple_string(*m_local_time).c_str() );
-  m_serialization_buffer.serialisation_vars.frame_nr = htonl(m_frame_nr);
+
+  uint32_t tmp = m_sync_type;
+  m_serialization_buffer.serialisation_vars.sync_type = htonl(tmp);
   m_serialization_buffer.serialisation_vars.stream_id = htonl(m_stream_id);
   m_serialization_buffer.serialisation_vars.session_id = htonl(m_session_id);
+
+  m_serialization_buffer.serialisation_vars.frame_nr = htonl(m_frame_nr);
+
+  strcpy(m_serialization_buffer.serialisation_vars.timestamp, to_simple_string(*m_local_time).c_str() );
 
   return m_serialization_buffer.raw_buffer;    
 }
@@ -67,10 +73,15 @@ char* CSync::serialize()
  */
 void CSync::deserialize(void)
 {
-  *m_local_time = time_from_string( m_serialization_buffer.serialisation_vars.timestamp );
-  m_frame_nr = ntohl( m_serialization_buffer.serialisation_vars.frame_nr );
+  uint32_t tmp = m_serialization_buffer.serialisation_vars.sync_type;
+  m_sync_type = static_cast<sync_type_t>(ntohl(tmp));
+  
   m_stream_id = ntohl( m_serialization_buffer.serialisation_vars.stream_id );
   m_session_id = ntohl( m_serialization_buffer.serialisation_vars.session_id );
+
+  m_frame_nr = ntohl( m_serialization_buffer.serialisation_vars.frame_nr );
+
+  *m_local_time = time_from_string( m_serialization_buffer.serialisation_vars.timestamp );
 }
 
 

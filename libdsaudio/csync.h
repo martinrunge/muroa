@@ -31,25 +31,33 @@ synchronisation objects which transport a timestamp at which a sample in a speci
 
 class CRTPPacket;
 
+enum sync_type_t {
+  SYNC_STREAM,
+  SYNC_REQ_STREAM,
+  SYNC_FLUSH
+};
+
 
 typedef struct serialisation_vars{
-  /* YYYYMMDDTHHMMSS,fffffffff */
-  char timestamp[32]; // only 27 used
-  uint32_t frame_nr;
+  uint32_t sync_type;
   uint32_t stream_id;
   uint32_t session_id;
+
+  uint32_t frame_nr;
+  /* YYYYMMDDTHHMMSS,fffffffff */
+  char timestamp[32]; // only 27 used
 }serialisation_vars_t;
 
 typedef union m_serialization_buffer_t{
   serialisation_vars_t serialisation_vars;
-  char raw_buffer[32 + 4 + 4 + 4];
+  char raw_buffer[4 + 4 + 4 + 4 + 32];
 };
 
 
 class CSync{
 public:
     /** default contructor: takes the actual system time */
-    CSync();
+    CSync(enum sync_type_t sync_type = SYNC_STREAM);
 
     /** give a point of time */
     CSync(boost::posix_time::ptime time);
@@ -59,14 +67,18 @@ public:
 
     ~CSync();
 
-    inline uint32_t frameNr(void) { return m_frame_nr; };
-    inline void frameNr(uint32_t frame_nr) { m_frame_nr = frame_nr; };
+    inline enum sync_type_t syncType(void) { return m_sync_type; };
+    inline void syncType(enum sync_type_t sync_type) { m_sync_type = sync_type; };
+
 
     inline uint32_t streamId(void) { return m_stream_id; };
     inline void streamId(uint32_t stream_id) { m_stream_id = stream_id; };
 
     inline uint32_t sessionId(void) { return m_session_id; };
     inline void sessionId(uint32_t session_id) { m_session_id = session_id; };
+
+    inline uint32_t frameNr(void) { return m_frame_nr; };
+    inline void frameNr(uint32_t frame_nr) { m_frame_nr = frame_nr; };
 
     char* serialize();
     void deserialize();
@@ -79,17 +91,23 @@ public:
 
 
 private:
-  /** point of time at which the specified sample number should be played back */
-  boost::posix_time::ptime *m_local_time;
-  
-  /** the sample number that belongs to the specified point of time */
-  uint32_t m_frame_nr;
+
+  /** which type of sync object is it */
+  enum sync_type_t m_sync_type;
+
 
   /** session id */
   uint32_t m_session_id;
 
   /** stream id */
   uint32_t m_stream_id;
+
+  /** the sample number that belongs to the specified point of time */
+  uint32_t m_frame_nr;
+
+  /** point of time at which the specified sample number should be played back */
+  boost::posix_time::ptime *m_local_time;
+
 
   union m_serialization_buffer_t m_serialization_buffer;
 
