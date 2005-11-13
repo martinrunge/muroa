@@ -59,7 +59,7 @@ void CRecvloop::DoLoop()
     // m_rtp_packet->BufferSize(num);
     m_packet_ringbuffer->appendRTPPacket(m_rtp_packet);
     m_rtp_packet = new CRTPPacket(); 
-    cerr << "Sender was: " << m_socket->latestSender()->ipAddress() << " port " << m_socket->latestSender()->port() << endl;
+    // cerr << "Sender was: " << m_socket->latestSender()->ipAddress() << " port " << m_socket->latestSender()->port() << endl;
   }
           
 
