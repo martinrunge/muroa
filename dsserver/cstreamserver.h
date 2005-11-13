@@ -36,7 +36,7 @@ Class provides a server for a stream.
 // #include "libsock++.h"
 // #include "libdsaudio.h"
 
-#include "csocket.h"
+#include "cstreamconnection.h"
 #include "csync.h"
 #include "cmutex.h"
 #include "crtppacket.h"
@@ -58,8 +58,8 @@ public:
 
     void flush();
 
-    std::list<CSocket*>::iterator addSocket(CSocket* socket);
-    CSocket* removeSocket(std::list<CSocket*>::iterator sock_iterator);
+    std::list<CStreamConnection*>::iterator addStreamConnection(CStreamConnection* conn);
+    CStreamConnection* removeStreamConnection(std::list<CStreamConnection*>::iterator conn_iterator);
 
 private:
     unsigned long m_num;
@@ -90,9 +90,9 @@ private:
     CRTPPacket *m_rtp_packet;
     CSync m_syncobj;
 
-    std::list<CSocket*> m_socket_list;
+    std::list<CStreamConnection*> m_connection_list;
 
-    CMutex m_socket_list_mutex;
+    CMutex m_connection_list_mutex;
 
     unsigned long m_session_id;
 

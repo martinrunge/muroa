@@ -143,13 +143,17 @@ int CSocket::do_connect(const struct in_addr* sock_addr_in, const unsigned short
   servername.sin_port = htons (port);
   servername.sin_addr = *(struct in_addr *) sock_addr_in;
 
-  if(::connect( m_socket_descr, (struct sockaddr*) &servername, sizeof(servername)) < 0){
+  return do_connect(&servername);
+}
+
+int CSocket::do_connect(const struct sockaddr_in* servername) {
+  if(::connect( m_socket_descr, (struct sockaddr*) servername, sizeof(*servername)) < 0){
     perror("connect");
     return -1;
   }
   m_is_connected = true;
-  connectedToPort(port);
-  connectedToAddress(servername.sin_addr.s_addr);
+  connectedToPort(ntohs(servername->sin_port));
+  connectedToAddress(servername->sin_addr.s_addr);
   return 0;
 
 }
@@ -410,4 +414,13 @@ bool CSocket::recordSenderWithRecv(void) {
 
 CIPv4Address* CSocket::latestSender() {
   return m_recv_from_addr;
+}
+
+
+/*!
+    \fn CSocket::connect(CIPv4Address* addr)
+ */
+int CSocket::connect(CIPv4Address* addr)
+{
+    return do_connect(addr->sock_addr_in_ptr());
 }

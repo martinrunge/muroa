@@ -48,6 +48,8 @@ public:
   int connect(const std::string hostname, const unsigned short port = 0);
   int connect(const unsigned long ip_addr, const unsigned short port);
 
+  int connect(CIPv4Address* addr);
+
   /** write data to the socket */
   int write(const char* buffer, const int bufferlen);
   /** read from the socket connection */
@@ -77,6 +79,7 @@ public:
         \fn CSocket::latestSender()
      */
   CIPv4Address* latestSender();
+
   
 
 protected: // Protected methods
@@ -101,6 +104,7 @@ protected: // Protected methods
 private: // Private attributes
 
   int do_connect(const struct in_addr* sock_addr_in, const unsigned short port);
+  int do_connect(const struct sockaddr_in* servername);
 
 
   /** indicates wether the socket is already bound or not */  

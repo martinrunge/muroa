@@ -174,30 +174,30 @@ void CStreamServer::flush()
 }
 
 
-list<CSocket*>::iterator CStreamServer::addSocket(CSocket* socket) {
+list<CStreamConnection*>::iterator CStreamServer::addStreamConnection(CStreamConnection* conn) {
 
-  list<CSocket*>::iterator iter;
+  list<CStreamConnection*>::iterator iter;
 
   // do some checks on the socket here.
 
-  m_socket_list_mutex.Lock();
-  iter = m_socket_list.insert(m_socket_list.end(), socket);
-  m_socket_list_mutex.UnLock();
+  m_connection_list_mutex.Lock();
+  iter = m_connection_list.insert(m_connection_list.end(), conn);
+  m_connection_list_mutex.UnLock();
 
 }
 
 
-CSocket* CStreamServer::removeSocket(list<CSocket*>::iterator sock_iterator) {
+CStreamConnection* CStreamServer::removeStreamConnection(list<CStreamConnection*>::iterator conn_iterator) {
 
-  CSocket* socket;  
+  CStreamConnection* conn;  
 
-  socket = *sock_iterator;
+  conn = *conn_iterator;
   
-  m_socket_list_mutex.Lock();
-  m_socket_list.erase(sock_iterator);
-  m_socket_list_mutex.UnLock();
+  m_connection_list_mutex.Lock();
+  m_connection_list.erase(conn_iterator);
+  m_connection_list_mutex.UnLock();
 
-  return socket;
+  return conn;
 }
 
 
@@ -207,9 +207,9 @@ CSocket* CStreamServer::removeSocket(list<CSocket*>::iterator sock_iterator) {
  */
 void CStreamServer::sendToAllClients(CRTPPacket* packet)
 {
-    list<CSocket*>::iterator iter;
+    list<CStreamConnection*>::iterator iter;
 
-    for(iter = m_socket_list.begin(); iter != m_socket_list.end(); iter++ ) {
+    for(iter = m_connection_list.begin(); iter != m_connection_list.end(); iter++ ) {
       (*iter)->write(packet->bufferPtr(), packet->usedBufferSize()); 
     }
 }

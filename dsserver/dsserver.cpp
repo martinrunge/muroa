@@ -26,6 +26,7 @@
 #include "libsock++.h"
 #include "libdsaudio.h"
 
+#include "cstreamconnection.h"
 #include "csocket.h"
 #include "csync.h"
 #include "crtppacket.h"
@@ -62,7 +63,7 @@ int cppserver(int argc, char *argv[]) {
   char *buffer = new char[buffersize];
 
 
-  CSocket *socket;
+  CStreamConnection *conn;
   CStreamServer streamserver;
 
 //  clients[0] = "localhost";
@@ -73,9 +74,9 @@ int cppserver(int argc, char *argv[]) {
 
 
   for(int i = 1; i < argc; i++) {
-    socket = new CSocket(SOCK_DGRAM);
-    socket->connect(argv[i], 4001);
-    streamserver.addSocket(socket);
+    conn = new CStreamConnection();
+    conn->connect(argv[i], 4001);
+    streamserver.addStreamConnection(conn);
   }
 
   streamserver.open();
