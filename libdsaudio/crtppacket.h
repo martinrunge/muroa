@@ -105,11 +105,13 @@ public:
     inline unsigned long timestamp() { return m_rtp_header->rtp_header_bits.timestamp; };
     inline void timestamp(unsigned long ts) { m_rtp_header->rtp_header_bits.timestamp = ts; };
 
-    inline unsigned long sessionID(void);
-    inline void sessionID(unsigned long session_id);
+    unsigned long sessionID(void);
+    void sessionID(unsigned long session_id);
+      
 
-    inline unsigned long streamID(void);
-    inline void streamID(unsigned long stream_id);
+    unsigned long streamID(void);
+    void streamID(unsigned long stream_id); 
+      
 
     int copyInPayload(const char* from, const int size);
 

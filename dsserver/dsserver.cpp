@@ -63,7 +63,7 @@ int cppserver(int argc, char *argv[]) {
   char *buffer = new char[buffersize];
 
 
-  CStreamConnection *conn;
+  CIPv4Address *addr;
   CStreamServer streamserver;
 
 //  clients[0] = "localhost";
@@ -71,12 +71,9 @@ int cppserver(int argc, char *argv[]) {
 //  sockets[0]->connect("localhost", 4001);
 
 
-
-
   for(int i = 1; i < argc; i++) {
-    conn = new CStreamConnection();
-    conn->connect(argv[i], 4001);
-    streamserver.addStreamConnection(conn);
+    addr = new CIPv4Address(argv[i], 4001);
+    streamserver.addClient(addr);
   }
 
   streamserver.open();

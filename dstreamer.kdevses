@@ -1,87 +1,28 @@
 <?xml version = '1.0' encoding = 'UTF-8'?>
 <!DOCTYPE KDevPrjSession>
 <KDevPrjSession>
- <DocsAndViews NumberOfDocuments="22" >
-  <Doc0 NumberOfViews="1" URL="file:///home/martin/devel/dstreamer/dsserver/dsserver.cpp" >
-   <View0 Type="Source" />
+ <DocsAndViews NumberOfDocuments="5" >
+  <Doc0 NumberOfViews="1" URL="file:///home/martin/devel/dstreamer/dsserver/cstreamserver.h" >
+   <View0 line="38" Type="Source" />
   </Doc0>
-  <Doc1 NumberOfViews="1" URL="file:///home/martin/devel/dstreamer/libdsaudio/caudioioalsa.cpp" >
-   <View0 line="161" Type="Source" />
+  <Doc1 NumberOfViews="1" URL="file:///home/martin/devel/dstreamer/dsserver/dsserver.cpp" >
+   <View0 line="75" Type="Source" />
   </Doc1>
-  <Doc2 NumberOfViews="1" URL="file:///home/martin/devel/dstreamer/dsclient/cplayer.cpp" >
-   <View0 line="50" Type="Source" />
+  <Doc2 NumberOfViews="1" URL="file:///home/martin/devel/dstreamer/dsserver/cstreamconnection.cpp" >
+   <View0 line="21" Type="Source" />
   </Doc2>
-  <Doc3 NumberOfViews="1" URL="file:///home/martin/devel/dstreamer/dsserver/cstreamserver.h" >
-   <View0 line="64" Type="Source" />
+  <Doc3 NumberOfViews="1" URL="file:///home/martin/devel/dstreamer/dsserver/cstreamconnection.h" >
+   <View0 line="31" Type="Source" />
   </Doc3>
   <Doc4 NumberOfViews="1" URL="file:///home/martin/devel/dstreamer/dsserver/cstreamserver.cpp" >
-   <View0 line="212" Type="Source" />
+   <View0 line="86" Type="Source" />
   </Doc4>
-  <Doc5 NumberOfViews="1" URL="http://www.sgi.com/tech/stl/List.html" >
-   <View0 Type="Documentation" />
-  </Doc5>
-  <Doc6 NumberOfViews="1" URL="file:///home/martin/devel/dstreamer/dsclient/cplayloop.cpp" >
-   <View0 line="114" Type="Source" />
-  </Doc6>
-  <Doc7 NumberOfViews="1" URL="file:///home/martin/devel/dstreamer/dsclient/crecvloop.h" >
-   <View0 line="33" Type="Source" />
-  </Doc7>
-  <Doc8 NumberOfViews="1" URL="file:///home/martin/devel/dstreamer/dsclient/crecvloop.cpp" >
-   <View0 line="51" Type="Source" />
-  </Doc8>
-  <Doc9 NumberOfViews="1" URL="file:///home/martin/devel/dstreamer/libdsaudio/crtppacket.h" >
-   <View0 line="87" Type="Source" />
-  </Doc9>
-  <Doc10 NumberOfViews="1" URL="file:///home/martin/devel/dstreamer/libdsaudio/crtppacket.cpp" >
-   <View0 line="187" Type="Source" />
-  </Doc10>
-  <Doc11 NumberOfViews="1" URL="file:///home/martin/devel/dstreamer/libdsaudio/caudioframe.cpp" >
-   <View0 line="59" Type="Source" />
-  </Doc11>
-  <Doc12 NumberOfViews="1" URL="file:///home/martin/devel/dstreamer/dsclient/cplayloop.h" >
-   <View0 line="123" Type="Source" />
-  </Doc12>
-  <Doc13 NumberOfViews="1" URL="file:///home/martin/devel/dstreamer/libdsaudio/caudioframe.h" >
-   <View0 line="45" Type="Source" />
-  </Doc13>
-  <Doc14 NumberOfViews="1" URL="file:///home/martin/devel/dstreamer/dsclient/cpacketringbuffer.cpp" >
-   <View0 line="3" Type="Source" />
-  </Doc14>
-  <Doc15 NumberOfViews="1" URL="file:///home/martin/devel/dstreamer/libsock%2B%2B/cpthread.cpp" >
-   <View0 line="80" Type="Source" />
-  </Doc15>
-  <Doc16 NumberOfViews="1" URL="file:///home/martin/devel/dstreamer/libsock%2B%2B/csocket.cpp" >
-   <View0 line="234" Type="Source" />
-  </Doc16>
-  <Doc17 NumberOfViews="1" URL="file:///home/martin/devel/dstreamer/libsock%2B%2B/csocket.h" >
-   <View0 line="126" Type="Source" />
-  </Doc17>
-  <Doc18 NumberOfViews="1" URL="file:///home/martin/devel/dstreamer/libsock%2B%2B/cipaddress.cpp" >
-   <View0 line="21" Type="Source" />
-  </Doc18>
-  <Doc19 NumberOfViews="1" URL="file:///home/martin/devel/dstreamer/libsock%2B%2B/cipaddress.h" >
-   <View0 line="28" Type="Source" />
-  </Doc19>
-  <Doc20 NumberOfViews="1" URL="file:///home/martin/devel/dstreamer/libsock%2B%2B/cipv4address.h" >
-   <View0 line="37" Type="Source" />
-  </Doc20>
-  <Doc21 NumberOfViews="1" URL="file:///home/martin/devel/dstreamer/libsock%2B%2B/cipv4address.cpp" >
-   <View0 line="50" Type="Source" />
-  </Doc21>
  </DocsAndViews>
  <pluginList>
   <kdevdebugger>
    <breakpointList>
-    <breakpoint0 location="/home/martin/devel/dstreamer/dsclient/cringbuffer.cpp:112" type="1" condition="" enabled="0" />
-    <breakpoint1 location="/home/martin/devel/dstreamer/libdsaudio/caudioframe.cpp:43" type="1" condition="" enabled="0" />
-    <breakpoint2 location="/home/martin/devel/dstreamer/libdsaudio/caudioframe.cpp:42" type="1" condition="" enabled="0" />
-    <breakpoint3 location="/home/martin/devel/dstreamer/libdsaudio/crtppacket.cpp:58" type="1" condition="" enabled="1" />
-    <breakpoint4 location="/home/martin/devel/dstreamer/dsclient/crecvloop.cpp:51" type="1" condition="" enabled="0" />
-    <breakpoint5 location="/home/martin/devel/dstreamer/dsclient/crecvloop.cpp:54" type="1" condition="" enabled="0" />
-    <breakpoint6 location="/home/martin/devel/dstreamer/dsclient/crecvloop.cpp:61" type="1" condition="" enabled="1" />
-    <breakpoint7 location="/home/martin/devel/dstreamer/dsserver/dsserver.cpp:190" type="1" condition="" enabled="1" />
-    <breakpoint8 location="/home/martin/devel/dstreamer/dsserver/cstreamserver.cpp:39" type="1" condition="" enabled="1" />
-    <breakpoint9 location="/home/martin/devel/dstreamer/dsserver/dsserver.cpp:65" type="1" condition="" enabled="1" />
+    <breakpoint0 location="/home/martin/devel/dstreamer/dsserver/dsserver.cpp:77" type="1" condition="" enabled="1" />
+    <breakpoint1 location="/home/martin/devel/dstreamer/dsserver/dsserver.cpp:66" type="1" condition="" enabled="1" />
    </breakpointList>
   </kdevdebugger>
   <kdevbookmarks>

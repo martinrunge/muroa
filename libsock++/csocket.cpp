@@ -170,12 +170,12 @@ int CSocket::read(char* buffer, int bufferlen){
       return -1;
     }
   }
-  else {
+/*  else {
     if(m_is_bound == false) {
       cerr << "Error: UDP socket must be bound for reading." << endl;
       return -1;
     }
-  }
+  }*/
     
   bool can_read = false;
 
@@ -217,7 +217,12 @@ int CSocket::read(char* buffer, int bufferlen){
 	  }
   }		
 
-  struct sockaddr* sockaddr_ptr = reinterpret_cast<struct sockaddr*>(m_recv_from_addr->sock_addr_in_ptr());
+  struct sockaddr* sockaddr_ptr;
+  if( m_recv_from_addr != 0) 
+      sockaddr_ptr = reinterpret_cast<struct sockaddr*>(m_recv_from_addr->sock_addr_in_ptr());
+  else
+      sockaddr_ptr = 0;
+
   socklen_t len;
 
   retval = ::recvfrom(m_socket_descr, buffer, bufferlen, 0, sockaddr_ptr, &len);
@@ -423,4 +428,24 @@ CIPv4Address* CSocket::latestSender() {
 int CSocket::connect(CIPv4Address* addr)
 {
     return do_connect(addr->sock_addr_in_ptr());
+}
+
+
+/*!
+    \fn CSocket::sendTo(CIPv4Address* addr, char* buffer, int len)
+ */
+int CSocket::sendTo(CIPv4Address* addr, char* buffer, int bufferlen)
+{
+  int retval;
+  
+  struct sockaddr *tmp_addr = reinterpret_cast<struct sockaddr*>(addr->sock_addr_in_ptr());
+
+  retval = ::sendto(m_socket_descr, buffer, bufferlen, 0, tmp_addr, sizeof(struct sockaddr_in));
+  if(retval != bufferlen) {
+    cerr << "CSocket::Write: not the whole buffer was written!" << endl;
+    if(retval < 0) {
+      perror("CSocket::Write returned a negative value");
+    }
+  }
+  return retval;
 }

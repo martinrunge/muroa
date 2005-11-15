@@ -21,7 +21,7 @@
 #define CPLAYLOOP_H
 
 /**
-@author Martin Runge
+  @author Martin Runge
 */
 
 
@@ -41,13 +41,15 @@ class CSync;
 class CPacketRingBuffer;
 class CRingBuffer;
 class CResampler;
+class CPlayer;
+class CRTPPacket;
 
 using namespace boost::posix_time;
 
 class CPlayloop : public CThreadSlave
 {
 public:
-    CPlayloop(CPacketRingBuffer* packet_ringbuffer, std::string sound_dev = "hw:0,0");
+    CPlayloop(CPlayer* parent, CPacketRingBuffer* packet_ringbuffer, std::string sound_dev = "hw:0,0");
 
     ~CPlayloop();
 
@@ -122,6 +124,9 @@ private:
     int m_frames_to_discard;
 
     FILE* m_debug_fd1;
+    CPlayer* m_player;
+private:
+    bool checkStream(CRTPPacket* packet);
 };
 
 #endif

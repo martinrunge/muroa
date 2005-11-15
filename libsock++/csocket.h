@@ -60,6 +60,8 @@ public:
   /** send data giving the address of the receiver */
   int sendTo(const char* data, const int bufferlen, const std::string hostname, const unsigned short port = 0);
 
+  int sendTo(CIPv4Address* addr, char* buffer, int bufferlen);
+
     /*!
         \fn CSocket::getPort(void)
      */

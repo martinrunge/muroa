@@ -73,6 +73,10 @@ int CStreamServer::open(int audio_bytes_per_second)
   m_syncobj.sessionId(m_session_id);
   m_syncobj.serialize();
 
+  m_rtp_packet->sessionID(m_session_id);
+  m_rtp_packet->streamID(m_stream_id);
+
+
   m_rtp_packet->payloadType(PAYLOAD_SYNC_OBJ);
   m_rtp_packet->copyInPayload(m_syncobj.getSerialisationBufferPtr(), m_syncobj.getSerialisationBufferSize());
 
@@ -210,6 +214,46 @@ void CStreamServer::sendToAllClients(CRTPPacket* packet)
     list<CStreamConnection*>::iterator iter;
 
     for(iter = m_connection_list.begin(); iter != m_connection_list.end(); iter++ ) {
-      (*iter)->write(packet->bufferPtr(), packet->usedBufferSize()); 
+      (*iter)->send(packet->bufferPtr(), packet->usedBufferSize()); 
     }
+}
+
+
+/*!
+    \fn CStreamServer::addClient(CIPv4Address* addr)
+ */
+list<CStreamConnection*>::iterator CStreamServer::addClient(CIPv4Address* addr)
+{
+    CStreamConnection* conn = new CStreamConnection(this);
+    conn->connect(addr);
+    return addStreamConnection(conn);
+
+}
+
+
+/*!
+    \fn CStreamServer::removeClient(CIPv4Address* addr);
+ */
+void CStreamServer::removeClient(CIPv4Address* addr)
+{
+    /// @todo implement me
+    cerr << "CStreamServer::removeClient: removing a client by its address is not yet implemented." << endl;
+}
+
+
+void CStreamServer::removeClient(list<CStreamConnection*>::iterator iter) {
+  removeStreamConnection(iter);
+}
+
+/*!
+    \fn CStreamServer::getSyncObj(uint32_t session_id, uint32_t stream_id)
+ */
+CSync* CStreamServer::getSyncObj(uint32_t session_id, uint32_t stream_id)
+{
+    if(m_syncobj.sessionId() == session_id && m_syncobj.streamId() == stream_id) {
+      m_syncobj.serialize();
+      return &m_syncobj;
+    }
+    else
+      return 0;
 }

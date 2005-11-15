@@ -21,18 +21,32 @@
 #define CSTREAMCONNECTION_H
 
 #include <csocket.h>
+#include <crtppacket.h>
+#include <csync.h>
 
 #include <string>
 /**
 @author Martin Runge
 */
-class CStreamConnection : public CSocket
+
+class CStreamServer;
+
+class CStreamConnection
 {
 public:
-    CStreamConnection(std::string dest_host="", unsigned short dest_port = 0, unsigned short bind_port = 0);
+    CStreamConnection(CStreamServer* parent, unsigned short bind_port = 0);
 
     ~CStreamConnection();
+    void connect(CIPv4Address* addr);
+    int send(char* buffer, int len);
 
+private:
+
+    CSocket m_socket;
+    CRTPPacket m_rtp_packet;
+    CStreamServer* m_stream_server;
+private:
+    void handleReceivedPacket();
 };
 
 #endif

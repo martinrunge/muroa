@@ -18,15 +18,78 @@
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
 #include "cstreamconnection.h"
+#include "cstreamserver.h"
 
-CStreamConnection::CStreamConnection(std::string dest_host, unsigned short dest_port, unsigned short bind_port)
+#include <iostream>
+
+using namespace std;
+
+CStreamConnection::CStreamConnection(CStreamServer* parent, unsigned short bind_port) : m_socket(SOCK_DGRAM, bind_port )
 {
-  
+  m_stream_server = parent;
+  m_socket.setNonBlocking(0);
+  m_socket.recordSenderWithRecv(false);
 }
-
 
 CStreamConnection::~CStreamConnection()
 {
+
 }
 
 
+
+
+/*!
+    \fn CStreamConnection::connect(CIPv4Address* addr)
+ */
+void CStreamConnection::connect(CIPv4Address* addr)
+{
+    m_socket.connect(addr);
+}
+
+
+/*!
+    \fn CStreamConnection::send(char* buffer, int len)
+ */
+int CStreamConnection::send(char* buffer, const int len)
+{
+    // 1) send data away
+    int num = m_socket.write(buffer, len);
+  
+    // 2) check, if there was a rtp packet sent from the client
+    int read_num = m_socket.read(m_rtp_packet.bufferPtr(), m_rtp_packet.bufferSize());   
+
+    if(read_num > 0) {
+      handleReceivedPacket();      
+    }
+
+    return num;
+}
+
+
+/*!
+    \fn CStreamConnection::handleReceivedPacket()
+ */
+void CStreamConnection::handleReceivedPacket()
+{
+    cerr << "CStreamConnection::handleReceivedPacket: received a RTP packet from the client." << endl;
+    cerr << "RTP: payloadType = " << m_rtp_packet.payloadType() 
+         << " sessionID = " << m_rtp_packet.sessionID() 
+         << " streamID = " << m_rtp_packet.streamID() << endl; 
+
+    if(m_rtp_packet.payloadType() == PAYLOAD_SYNC_OBJ) {
+      CSync tmp_sync(&m_rtp_packet);
+      tmp_sync.deserialize();
+
+      if(tmp_sync.syncType() == SYNC_REQ_STREAM) {
+        // the clients needs a sync object for this stream !!!
+        CSync* session_sync_obj;
+        session_sync_obj = m_stream_server->getSyncObj(tmp_sync.sessionId(), tmp_sync.streamId());
+        if(session_sync_obj != 0) {
+          m_socket.write(session_sync_obj->getSerialisationBufferPtr(), session_sync_obj->getSerialisationBufferSize());        
+        }
+      }  
+
+    } 
+
+}

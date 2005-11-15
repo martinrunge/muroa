@@ -30,6 +30,7 @@ Class encapsulates all the playback functioinalty. It inplements an interface to
 
 class CRecvloop;
 class CPlayloop;
+class CRTPPacket;
 class CPThread;
 class CPacketRingBuffer;
 
@@ -40,6 +41,7 @@ public:
     ~CPlayer();
     void start();
     void stop();
+    void sendRTPPacket(CRTPPacket* packet);
 
 private:
     CPacketRingBuffer * m_packet_ringbuffer;

@@ -61,6 +61,11 @@ public:
     std::list<CStreamConnection*>::iterator addStreamConnection(CStreamConnection* conn);
     CStreamConnection* removeStreamConnection(std::list<CStreamConnection*>::iterator conn_iterator);
 
+    void removeClient(CIPv4Address* addr);
+    void removeClient(std::list<CStreamConnection*>::iterator iter);
+    std::list<CStreamConnection*>::iterator addClient(CIPv4Address* addr);
+    CSync* getSyncObj(uint32_t session_id, uint32_t stream_id);
+
 private:
     unsigned long m_num;
     int m_payload_size;

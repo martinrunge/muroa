@@ -27,6 +27,8 @@
 #include "cringbuffer.h"
 #include "cresampler.h"
 #include "csync.h"
+#include "cplayer.h"
+#include "crtppacket.h"
 
 #include <time.h> 
 
@@ -35,10 +37,13 @@
 
 using namespace std;
 using namespace boost::posix_time;
+/** C-tor */
 
-CPlayloop::CPlayloop(CPacketRingBuffer* packet_ringbuffer, std::string sound_dev)
+CPlayloop::CPlayloop(CPlayer* parent, CPacketRingBuffer* packet_ringbuffer, std::string sound_dev)
  : CThreadSlave(), m_counter(0), m_average_size(32)
 {
+
+  m_player = parent;
 
   int desired_sample_rate = 48000;
   m_frames_to_discard = 0;
@@ -93,6 +98,7 @@ CPlayloop::CPlayloop(CPacketRingBuffer* packet_ringbuffer, std::string sound_dev
   m_debug_fd1 = fopen("m_debug_fd1","w");
 }
 
+/** D-tor */
 
 CPlayloop::~CPlayloop()
 {
@@ -105,7 +111,7 @@ CPlayloop::~CPlayloop()
   fclose(m_debug_fd1);
 }
 
-
+/** the main loop for this thread */
 void CPlayloop::DoLoop() {
   
   if(m_packet_ringbuffer->getRingbufferSize() == 0) {
@@ -133,11 +139,12 @@ void CPlayloop::DoLoop() {
     case PAYLOAD_MP3:
     case PAYLOAD_VORBIS:
     case PAYLOAD_FLAC:
-      frame = new CAudioFrame(rtp_packet);
+      if(checkStream(rtp_packet)) {
+        frame = new CAudioFrame(rtp_packet);
+        playAudio(frame);        
+        delete frame;
+      }
       delete rtp_packet;
-
-      playAudio(frame);        
-      delete frame;
       
       break;
 
@@ -241,6 +248,9 @@ int CPlayloop::sync(void) {
     sleep(sync_diff);
     // playSilence(sync_diff_in_frames);
   }
+
+  m_session_id = m_sync_obj->sessionId();
+  m_stream_id = m_sync_obj->streamId();
 
   cerr << "CPlayloop::sync: should be in sync now: sync_diff = " << getPlaybackDiffFromTime() << endl;
 
@@ -487,6 +497,35 @@ int CPlayloop::adjustFramesToDiscard(int num_frames_discarded) {
   return m_frames_to_discard;
 }
 
+/**
+    CPlayloop::checkStream(CRTPPacket* packet)
+
+    if the packet belongs to the actual stream, return true. Otherwise request a sync object for that stream and return false.
+ */
+bool CPlayloop::checkStream(CRTPPacket* packet)
+{
+    uint32_t tmp_session_id = packet->sessionID();
+    uint32_t tmp_stream_id = packet->streamID();
+
+    if(tmp_session_id != m_session_id || tmp_stream_id != m_stream_id ) {
+      // this packet does not belong to the actual stream
+          
+      CSync sync_req(SYNC_REQ_STREAM);
+      sync_req.sessionId(tmp_session_id);
+      sync_req.streamId(tmp_stream_id);
+      sync_req.serialize();
+
+      CRTPPacket packet(tmp_session_id, tmp_stream_id, sizeof(CSync), true);
+
+      packet.copyInPayload(sync_req.getSerialisationBufferPtr(), sync_req.getSerialisationBufferSize());
+
+      m_player->sendRTPPacket(&packet);      
+
+      return false;  
+    }
+    else
+      return true;
+}
 
 
 
@@ -540,4 +579,6 @@ void CPlayloop::handleSyncObj(CSync* sync_obj) {
   }
         
 }  
+
+
 

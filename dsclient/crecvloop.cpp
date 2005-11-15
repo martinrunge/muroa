@@ -64,3 +64,12 @@ void CRecvloop::DoLoop()
           
 
 }
+
+
+/*!
+    \fn CRecvloop::sendPacket(CRTPPacket* packet)
+ */
+void CRecvloop::sendRTPPacket(CRTPPacket* packet)
+{
+    m_socket->sendTo(m_socket->latestSender(), packet->bufferPtr(), packet->usedBufferSize());
+}

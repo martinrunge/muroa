@@ -39,6 +39,7 @@ public:
     ~CRecvloop();
   
     void DoLoop();
+    void sendRTPPacket(CRTPPacket* packet);
 
 private:
     CRTPPacket *m_rtp_packet;

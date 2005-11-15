@@ -32,9 +32,10 @@ synchronisation objects which transport a timestamp at which a sample in a speci
 class CRTPPacket;
 
 enum sync_type_t {
-  SYNC_STREAM,
+  SYNC_NEW_STREAM,
   SYNC_REQ_STREAM,
-  SYNC_FLUSH
+  SYNC_FLUSH,
+  SYNC_CLOSE
 };
 
 
@@ -57,7 +58,7 @@ typedef union m_serialization_buffer_t{
 class CSync{
 public:
     /** default contructor: takes the actual system time */
-    CSync(enum sync_type_t sync_type = SYNC_STREAM);
+    CSync(enum sync_type_t sync_type = SYNC_NEW_STREAM);
 
     /** give a point of time */
     CSync(boost::posix_time::ptime time);

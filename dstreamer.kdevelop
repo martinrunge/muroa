@@ -22,7 +22,7 @@
       <useconfiguration>debug</useconfiguration>
     </general>
     <run>
-      <mainprogram>dsclient/dsclient</mainprogram>
+      <mainprogram>dsserver/dsserver</mainprogram>
       <terminal>true</terminal>
       <directoryradio>executable</directoryradio>
       <runarguments>
@@ -49,6 +49,7 @@
         <cxxcompiler>kdevgppoptions</cxxcompiler>
         <f77compiler>kdevg77options</f77compiler>
         <cxxflags>-O0 -g3</cxxflags>
+        <envvars/>
       </debug>
     </configurations>
     <make>
@@ -130,8 +131,9 @@
   </kdevfileview>
   <kdevdocumentation>
     <projectdoc>
-      <docsystem>Doxygen Documentation Collection</docsystem>
+      <docsystem>Doxygen-Dokumentation</docsystem>
       <docurl>dstreamer.tag</docurl>
+      <usermanualurl></usermanualurl>
     </projectdoc>
   </kdevdocumentation>
   <substmap>
@@ -178,7 +180,7 @@
   </cppsupportpart>
   <kdevdebugger>
     <general>
-      <programargs></programargs>
+      <programargs>localhost</programargs>
       <gdbpath></gdbpath>
       <dbgshell>libtool</dbgshell>
       <configGdbScript></configGdbScript>
