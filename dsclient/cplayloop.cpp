@@ -518,7 +518,8 @@ bool CPlayloop::checkStream(CRTPPacket* packet)
       CRTPPacket packet(tmp_session_id, tmp_stream_id, sizeof(CSync), true);
 
       packet.copyInPayload(sync_req.getSerialisationBufferPtr(), sync_req.getSerialisationBufferSize());
-
+      
+      packet.payloadType(PAYLOAD_SYNC_OBJ);
       m_player->sendRTPPacket(&packet);      
 
       return false;  

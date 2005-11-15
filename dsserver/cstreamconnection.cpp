@@ -86,7 +86,14 @@ void CStreamConnection::handleReceivedPacket()
         CSync* session_sync_obj;
         session_sync_obj = m_stream_server->getSyncObj(tmp_sync.sessionId(), tmp_sync.streamId());
         if(session_sync_obj != 0) {
-          m_socket.write(session_sync_obj->getSerialisationBufferPtr(), session_sync_obj->getSerialisationBufferSize());        
+
+          CRTPPacket packet(tmp_sync.sessionId(), tmp_sync.streamId(), sizeof(CSync), true);
+
+          packet.copyInPayload(tmp_sync.getSerialisationBufferPtr(), tmp_sync.getSerialisationBufferSize());
+      
+          packet.payloadType(PAYLOAD_SYNC_OBJ);
+
+          m_socket.write(packet.bufferPtr(), packet.usedBufferSize());        
         }
       }  
 
