@@ -123,11 +123,12 @@ void CPlayloop::DoLoop() {
 
   CRTPPacket* rtp_packet = m_packet_ringbuffer->readPacket();
 
+  cerr << "PayloadType " << rtp_packet->payloadType() << " size " << rtp_packet->usedPayloadBufferSize() << endl;
 
   switch( rtp_packet->payloadType() ) 
   {
     case PAYLOAD_SYNC_OBJ:
-      m_sync_obj = new CSync(rtp_packet);
+      m_player->syncObj(new CSync(rtp_packet));
       // handleSyncObj(m_sync_obj);
       sync();
         
@@ -249,8 +250,8 @@ int CPlayloop::sync(void) {
     // playSilence(sync_diff_in_frames);
   }
 
-  m_session_id = m_sync_obj->sessionId();
-  m_stream_id = m_sync_obj->streamId();
+  m_session_id = m_player->syncObj()->sessionId();
+  m_stream_id = m_player->syncObj()->streamId();
 
   cerr << "CPlayloop::sync: should be in sync now: sync_diff = " << getPlaybackDiffFromTime() << endl;
 
@@ -273,7 +274,7 @@ void CPlayloop::adjustResamplingFactor(int bytes_in_playback_ringbuffer)
 
   ptime now = microsec_clock::local_time();
     
-  time_duration play_time_from_clock = now - (*m_sync_obj->getPtimePtr());
+  time_duration play_time_from_clock = now - *(m_player->syncObj()->getPtimePtr());
   time_duration play_time_from_samples = millisec((m_num_multi_channel_samples_played * 10) / 441);  
   time_duration time_diff = play_time_from_clock - play_time_from_samples;
 
@@ -393,7 +394,7 @@ time_duration CPlayloop::getPlaybackDiff()
 
   ptime now = microsec_clock::local_time();
     
-  time_duration play_time_from_clock = now - (*m_sync_obj->getPtimePtr());
+  time_duration play_time_from_clock = now - (*m_player->syncObj()->getPtimePtr());
   time_duration play_time_from_samples = millisec((m_num_multi_channel_samples_played * 10) / 441);  
   time_duration time_diff = play_time_from_clock - play_time_from_samples;
 
@@ -412,13 +413,13 @@ time_duration CPlayloop::getPlaybackDiffFromTime() {
   // from last sync object -> calc time for m_timestamp_of_last_sample
   // sub delay of the buffers 
 
-  if(m_nr_of_last_frame_decoded < m_sync_obj->frameNr()) {
+  if(m_nr_of_last_frame_decoded < m_player->syncObj()->frameNr()) {
     cerr << "CPlayloop::sync: ERROR: m_nr_of_last_frame_decoded < m_sync_obj->frameNr(). Possibly missed a sync object." << endl; 
   }
-  assert(m_nr_of_last_frame_decoded >= m_sync_obj->frameNr());
+  assert(m_nr_of_last_frame_decoded >= m_player->syncObj()->frameNr());
 
-  long long diff_in_frames = m_nr_of_last_frame_decoded - m_sync_obj->frameNr();
-  ptime synctime(*m_sync_obj->getPtimePtr());
+  long long diff_in_frames = m_nr_of_last_frame_decoded - m_player->syncObj()->frameNr();
+  ptime synctime(*m_player->syncObj()->getPtimePtr());
 
   tmp = m_frames_per_second_pre_resampler / 1000;
   ptime post_packet_ringbuffer = synctime + millisec(diff_in_frames / tmp);
@@ -510,17 +511,21 @@ bool CPlayloop::checkStream(CRTPPacket* packet)
     if(tmp_session_id != m_session_id || tmp_stream_id != m_stream_id ) {
       // this packet does not belong to the actual stream
           
-      CSync sync_req(SYNC_REQ_STREAM);
-      sync_req.sessionId(tmp_session_id);
-      sync_req.streamId(tmp_stream_id);
-      sync_req.serialize();
+      CSync *sync_req = new CSync(SYNC_REQ_STREAM);
+      sync_req->sessionId(tmp_session_id);
+      sync_req->streamId(tmp_stream_id);
+      sync_req->serialize();
 
-      CRTPPacket packet(tmp_session_id, tmp_stream_id, sizeof(CSync), true);
+      CRTPPacket* tmp_packet = new CRTPPacket(tmp_session_id, tmp_stream_id, sizeof(CSync), true);
 
-      packet.copyInPayload(sync_req.getSerialisationBufferPtr(), sync_req.getSerialisationBufferSize());
+      tmp_packet->copyInPayload(sync_req->getSerialisationBufferPtr(), sync_req->getSerialisationBufferSize());
       
-      packet.payloadType(PAYLOAD_SYNC_OBJ);
-      m_player->sendRTPPacket(&packet);      
+      tmp_packet->payloadType(PAYLOAD_SYNC_OBJ);
+      m_player->sendRTPPacket(tmp_packet);
+
+      delete sync_req;
+
+      delete tmp_packet;     
 
       return false;  
     }
@@ -549,15 +554,15 @@ bool CPlayloop::checkStream(CRTPPacket* packet)
 void CPlayloop::handleSyncObj(CSync* sync_obj) {
 
   cerr << "got sync obj: ";  
-  m_sync_obj->print();
+  m_player->syncObj()->print();
   
-  if(m_sync_obj->streamId() != m_stream_id || m_sync_obj->sessionId() != m_session_id) {
+  if(m_player->syncObj()->streamId() != m_stream_id || m_player->syncObj()->sessionId() != m_session_id) {
     // this is a sync obj for a new stream !!!!
     if(m_start_time != 0)  delete m_start_time;
     m_start_time = new ptime(microsec_clock::local_time());
   }
   
-  time_duration sleep_time = (*m_sync_obj->getPtimePtr()) - (*m_start_time);
+  time_duration sleep_time = (*m_player->syncObj()->getPtimePtr()) - (*m_start_time);
   cerr << "sleep time calculated from sync obj: " << sleep_time << endl;
   
   // sleep_time -= milliseconds(100);

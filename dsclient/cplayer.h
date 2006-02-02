@@ -33,6 +33,7 @@ class CPlayloop;
 class CRTPPacket;
 class CPThread;
 class CPacketRingBuffer;
+class CSync;
 
 class CPlayer{
 public:
@@ -43,6 +44,10 @@ public:
     void stop();
     void sendRTPPacket(CRTPPacket* packet);
 
+    inline CSync* syncObj() {return m_sync_obj; };
+    inline void syncObj(CSync* so) {m_sync_obj = so; };
+    void sync();
+
 private:
     CPacketRingBuffer * m_packet_ringbuffer;
   
@@ -52,6 +57,7 @@ private:
     CPThread *m_recvloop_thread;
     CPThread *m_playloop_thread;
 
+    CSync *m_sync_obj;
 
 };
 

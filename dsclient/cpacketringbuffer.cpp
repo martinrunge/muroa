@@ -96,6 +96,7 @@ void CPacketRingBuffer::appendRTPPacket(CRTPPacket* packet)
       if(m_packet_list.size() == 0) {  //list is empty
         // cerr << "CPacketRingBuffer::appendRTPPacket: list empty" << endl;
         if(m_seqnum < seqnum) { // insert only, if the sequence number is higher that the last read packet
+          // cerr << "CPacketRingBuffer::appendRTPPacket: dropping packet. seqnum < m_seqnum." << endl;
           m_packet_list.push_back(packet);
         }
         break;

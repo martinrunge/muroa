@@ -56,13 +56,14 @@ public:
     void DoLoop();
     void playSilence(int num_frames);
 
+    int sync(void);
+
 
 //    void appendAudioFrame(CAudioFrame* frame);
 
   
 private:
 
-    int sync(void);
 
 
     CPacketRingBuffer *m_packet_ringbuffer;
@@ -76,7 +77,6 @@ private:
     CAudioIoAlsa *m_audio_sink;
 
 
-    CSync *m_sync_obj;
 
     void playAudio(CAudioFrame *frame);
 

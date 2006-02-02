@@ -30,11 +30,12 @@ class CRTPPacket;
 class CSocket;
 class CSync;
 class CPacketRingBuffer;
+class CPlayer;
 
 class CRecvloop : public CThreadSlave
 {
 public:
-    CRecvloop(CPacketRingBuffer* packet_ringbuffer, unsigned short port);
+    CRecvloop(CPlayer* parent, CPacketRingBuffer* packet_ringbuffer, unsigned short port);
 
     ~CRecvloop();
   
@@ -46,6 +47,7 @@ private:
     CSocket *m_socket;
 
     CPacketRingBuffer *m_packet_ringbuffer;
+    CPlayer* m_player;
 };
 
 #endif

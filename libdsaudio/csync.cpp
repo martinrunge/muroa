@@ -38,6 +38,7 @@ CSync::CSync(CRTPPacket* rtp_packet)
 {
   if(rtp_packet->payloadType() != PAYLOAD_SYNC_OBJ) return;
 
+  cout << "CSync::CSync(CRTPPacket*) time (local + usecs): " << endl;
   m_local_time = new ptime(from_iso_string("19700101T000000"));  // just a dummy to feed the c-tor. The value is never used!
   memcpy(m_serialization_buffer.raw_buffer, rtp_packet->payloadBufferPtr(), sizeof(m_serialization_buffer));
   deserialize();

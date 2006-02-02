@@ -22,12 +22,14 @@
 #include "csocket.h"
 #include "csync.h"
 #include "cpacketringbuffer.h"
+#include "cplayer.h"
 
 using namespace std;
 
-CRecvloop::CRecvloop(CPacketRingBuffer* packet_ringbuffer, unsigned short port): CThreadSlave()
+CRecvloop::CRecvloop(CPlayer* parent, CPacketRingBuffer* packet_ringbuffer, unsigned short port): CThreadSlave()
 {
 
+  m_player = parent;
   m_packet_ringbuffer = packet_ringbuffer;
 
   m_socket = new CSocket(SOCK_DGRAM, port);  
@@ -56,10 +58,30 @@ void CRecvloop::DoLoop()
     usleep(200);
   }
   else {
-    // m_rtp_packet->BufferSize(num);
-    m_packet_ringbuffer->appendRTPPacket(m_rtp_packet);
-    m_rtp_packet = new CRTPPacket(); 
-    // cerr << "Sender was: " << m_socket->latestSender()->ipAddress() << " port " << m_socket->latestSender()->port() << endl;
+
+    switch( m_rtp_packet->payloadType() ) {
+      case PAYLOAD_SYNC_OBJ:
+        m_player->syncObj( new CSync(m_rtp_packet) );
+        //  handleSyncObj(m_sync_obj);
+        m_player->sync();
+        
+        // delete m_rtp_packet;
+        break;
+
+
+      case PAYLOAD_PCM:
+      case PAYLOAD_MP3:
+      case PAYLOAD_VORBIS:
+      case PAYLOAD_FLAC:
+        // m_rtp_packet->BufferSize(num);
+        m_packet_ringbuffer->appendRTPPacket(m_rtp_packet);
+        m_rtp_packet = new CRTPPacket(); 
+        // cerr << "Sender was: " << m_socket->latestSender()->ipAddress() << " port " << m_socket->latestSender()->port() << endl;
+        break;
+      default:
+        cerr << "CRecvloop::DoLoop(): unknown payload type: " << m_rtp_packet->payloadType() << endl; 
+        
+    }
   }
           
 

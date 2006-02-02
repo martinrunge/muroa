@@ -48,7 +48,7 @@ CPlayer::CPlayer(unsigned short port, std::string sound_dev)
  
   m_packet_ringbuffer = new CPacketRingBuffer(10);
 
-  m_recvloop = new CRecvloop(m_packet_ringbuffer, port);
+  m_recvloop = new CRecvloop(this, m_packet_ringbuffer, port);
   m_playloop = new CPlayloop(this, m_packet_ringbuffer, sound_dev);
 
   m_recvloop_thread = new CPThread(m_recvloop);
@@ -97,4 +97,13 @@ void CPlayer::stop()
 void CPlayer::sendRTPPacket(CRTPPacket* packet)
 {
     m_recvloop->sendRTPPacket(packet);
+}
+
+
+/*!
+    \fn CPlayer::sync()
+ */
+void CPlayer::sync()
+{
+  m_playloop->sync();    
 }
