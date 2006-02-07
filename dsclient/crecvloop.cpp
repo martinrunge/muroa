@@ -53,7 +53,7 @@ void CRecvloop::DoLoop()
   int num = m_socket->read(m_rtp_packet->bufferPtr(), m_rtp_packet->bufferSize()); 
   m_rtp_packet->commit(num);
 
-  if(num == 0 ) {
+  if(num <= 0 ) {
     // m_rtp_packet->usedPayloadBufferSize(0);
     usleep(200);
   }

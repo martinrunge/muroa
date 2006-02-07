@@ -131,7 +131,10 @@ int CRTPPacket::commit(int num) {
     total_header_size += sizeof(rtp_header_extension_t);
   }
   
-  m_used_payload_size = num - total_header_size;
+  if(num > total_header_size)
+  	m_used_payload_size = num - total_header_size;
+  else
+	  m_used_payload_size = 0;
 
   init();
 

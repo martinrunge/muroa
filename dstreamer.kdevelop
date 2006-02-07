@@ -22,7 +22,7 @@
       <useconfiguration>debug</useconfiguration>
     </general>
     <run>
-      <mainprogram>dsserver/dsserver</mainprogram>
+      <mainprogram>dsclient/dsclient</mainprogram>
       <terminal>true</terminal>
       <directoryradio>executable</directoryradio>
       <runarguments>
@@ -133,7 +133,7 @@
     <projectdoc>
       <docsystem>Doxygen-Dokumentation</docsystem>
       <docurl>dstreamer.tag</docurl>
-      <usermanualurl></usermanualurl>
+      <usermanualurl/>
     </projectdoc>
   </kdevdocumentation>
   <substmap>
@@ -171,6 +171,11 @@
       <inlineGet>true</inlineGet>
       <inlineSet>true</inlineSet>
     </creategettersetter>
+    <qt>
+      <used>false</used>
+      <version>3</version>
+      <root></root>
+    </qt>
   </kdevcppsupport>
   <cppsupportpart>
     <filetemplates>
