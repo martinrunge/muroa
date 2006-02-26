@@ -218,12 +218,18 @@ int CSocket::read(char* buffer, int bufferlen){
   }		
 
   struct sockaddr* sockaddr_ptr;
-  if( m_recv_from_addr != 0) 
-      sockaddr_ptr = reinterpret_cast<struct sockaddr*>(m_recv_from_addr->sock_addr_in_ptr());
-  else
-      sockaddr_ptr = 0;
-
   socklen_t len;
+
+  if( m_recv_from_addr != 0) {
+      sockaddr_ptr = reinterpret_cast<struct sockaddr*>(m_recv_from_addr->sock_addr_in_ptr());
+      len = sizeof(struct sockaddr);
+  }
+  else {
+      sockaddr_ptr = 0;
+      len = 0;
+  }
+
+   
 
   retval = ::recvfrom(m_socket_descr, buffer, bufferlen, 0, sockaddr_ptr, &len);
 
