@@ -123,7 +123,7 @@ void CPlayloop::DoLoop() {
 
   CRTPPacket* rtp_packet = m_packet_ringbuffer->readPacket();
 
-  cerr << "PayloadType " << rtp_packet->payloadType() << " size " << rtp_packet->usedPayloadBufferSize() << endl;
+  // cerr << "PayloadType " << rtp_packet->payloadType() << " size " << rtp_packet->usedPayloadBufferSize() << endl;
 
   switch( rtp_packet->payloadType() ) 
   {
