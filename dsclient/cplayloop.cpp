@@ -84,7 +84,10 @@ CPlayloop::CPlayloop(CPlayer* parent, CPacketRingBuffer* packet_ringbuffer, std:
   
   m_stream_id = 0;
   m_session_id = 0;
-  
+
+  m_sync_requested_for_stream_id = 0;
+  m_sync_requested_at = microsec_clock::local_time();
+
   m_start_time = 0;
 
   int num_shorts = m_audio_sink->getWriteGranularity() / sizeof(short);
@@ -510,23 +513,26 @@ bool CPlayloop::checkStream(CRTPPacket* packet)
 
     if(tmp_session_id != m_session_id || tmp_stream_id != m_stream_id ) {
       // this packet does not belong to the actual stream
-          
-      CSync *sync_req = new CSync(SYNC_REQ_STREAM);
-      sync_req->sessionId(tmp_session_id);
-      sync_req->streamId(tmp_stream_id);
-      sync_req->serialize();
+      if( m_sync_requested_for_stream_id == 0) {  // no request is underway yet  
+        CSync *sync_req = new CSync(SYNC_REQ_STREAM);
+        sync_req->sessionId(tmp_session_id);
+        sync_req->streamId(tmp_stream_id);
+        sync_req->serialize();
 
-      CRTPPacket* tmp_packet = new CRTPPacket(tmp_session_id, tmp_stream_id, sizeof(CSync), true);
+        CRTPPacket* tmp_packet = new CRTPPacket(tmp_session_id, tmp_stream_id, sizeof(CSync), true);
 
-      tmp_packet->copyInPayload(sync_req->getSerialisationBufferPtr(), sync_req->getSerialisationBufferSize());
+        tmp_packet->copyInPayload(sync_req->getSerialisationBufferPtr(), sync_req->getSerialisationBufferSize());
       
-      tmp_packet->payloadType(PAYLOAD_SYNC_OBJ);
-      m_player->sendRTPPacket(tmp_packet);
+        tmp_packet->payloadType(PAYLOAD_SYNC_OBJ);
+        m_player->sendRTPPacket(tmp_packet);
 
-      delete sync_req;
+        m_sync_requested_for_stream_id = tmp_stream_id;
 
-      delete tmp_packet;     
+        delete sync_req;
 
+        delete tmp_packet;     
+
+      }
       return false;  
     }
     else

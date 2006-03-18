@@ -1,28 +1,56 @@
 <?xml version = '1.0' encoding = 'UTF-8'?>
 <!DOCTYPE KDevPrjSession>
 <KDevPrjSession>
- <DocsAndViews NumberOfDocuments="5" >
+ <DocsAndViews NumberOfDocuments="14" >
   <Doc0 NumberOfViews="1" URL="file:///home/martin/devel/dstreamer/dsserver/cstreamserver.h" >
-   <View0 line="38" Type="Source" />
+   <View0 Type="Source" />
   </Doc0>
   <Doc1 NumberOfViews="1" URL="file:///home/martin/devel/dstreamer/dsserver/dsserver.cpp" >
-   <View0 line="75" Type="Source" />
+   <View0 Type="Source" />
   </Doc1>
   <Doc2 NumberOfViews="1" URL="file:///home/martin/devel/dstreamer/dsserver/cstreamconnection.cpp" >
-   <View0 line="21" Type="Source" />
+   <View0 Type="Source" />
   </Doc2>
   <Doc3 NumberOfViews="1" URL="file:///home/martin/devel/dstreamer/dsserver/cstreamconnection.h" >
-   <View0 line="31" Type="Source" />
+   <View0 Type="Source" />
   </Doc3>
   <Doc4 NumberOfViews="1" URL="file:///home/martin/devel/dstreamer/dsserver/cstreamserver.cpp" >
-   <View0 line="86" Type="Source" />
+   <View0 Type="Source" />
   </Doc4>
+  <Doc5 NumberOfViews="1" URL="file:///home/martin/devel/dstreamer/libdsaudio/caudioframe.cpp" >
+   <View0 Type="Source" />
+  </Doc5>
+  <Doc6 NumberOfViews="1" URL="file:///home/martin/devel/dstreamer/dsclient/cplayloop.cpp" >
+   <View0 line="515" Type="Source" />
+  </Doc6>
+  <Doc7 NumberOfViews="1" URL="file:///home/martin/devel/dstreamer/libsock%2B%2B/cpthread.cpp" >
+   <View0 Type="Source" />
+  </Doc7>
+  <Doc8 NumberOfViews="1" URL="file:///home/martin/devel/dstreamer/dsclient/crecvloop.h" >
+   <View0 Type="Source" />
+  </Doc8>
+  <Doc9 NumberOfViews="1" URL="file:///home/martin/devel/dstreamer/dsclient/crecvloop.cpp" >
+   <View0 line="63" Type="Source" />
+  </Doc9>
+  <Doc10 NumberOfViews="1" URL="file:///home/martin/devel/dstreamer/libdsaudio/crtppacket.h" >
+   <View0 Type="Source" />
+  </Doc10>
+  <Doc11 NumberOfViews="1" URL="file:///home/martin/devel/dstreamer/libdsaudio/crtppacket.cpp" >
+   <View0 line="142" Type="Source" />
+  </Doc11>
+  <Doc12 NumberOfViews="1" URL="file:///home/martin/devel/dstreamer/libsock%2B%2B/csocket.cpp" >
+   <View0 line="210" Type="Source" />
+  </Doc12>
+  <Doc13 NumberOfViews="1" URL="file:///home/martin/devel/dstreamer/dsclient/cplayloop.h" >
+   <View0 line="128" Type="Source" />
+  </Doc13>
  </DocsAndViews>
  <pluginList>
   <kdevdebugger>
    <breakpointList>
-    <breakpoint0 location="/home/martin/devel/dstreamer/dsserver/dsserver.cpp:77" type="1" condition="" enabled="1" />
-    <breakpoint1 location="/home/martin/devel/dstreamer/dsserver/dsserver.cpp:66" type="1" condition="" enabled="1" />
+    <breakpoint0 location="/home/martin/devel/dstreamer/dsserver/dsserver.cpp:66" type="1" tracingFormatString="" traceFormatStringEnabled="0" condition="" tracingEnabled="0" enabled="1" >
+     <tracedExpressions/>
+    </breakpoint0>
    </breakpointList>
   </kdevdebugger>
   <kdevbookmarks>

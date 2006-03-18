@@ -61,7 +61,7 @@ void CRecvloop::DoLoop()
 
     switch( m_rtp_packet->payloadType() ) {
       case PAYLOAD_SYNC_OBJ:
-        m_player->syncObj( new CSync(m_rtp_packet) );
+        m_player->syncObj( new CSync(m_rtp_packet) );   ///@TODO  fix memory leak !!!!!!!!!
         //  handleSyncObj(m_sync_obj);
         m_player->sync();
         
