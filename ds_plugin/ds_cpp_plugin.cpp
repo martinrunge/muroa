@@ -23,11 +23,19 @@
 
 CStreamServer streamserver(1, 300);
 
+char* tmp_buffer;
+int tmp_length;
+int tmp_offset;
+
 extern "C" {
 
 int ds_cpp_init(void) {
 
   std::cerr << "ds_cpp_init" << std::endl;
+  tmp_length = 8192;
+  tmp_buffer = (char*)malloc(tmp_length);
+  tmp_offset = 0;
+
   return 0;
 
 }
@@ -49,8 +57,26 @@ void ds_cpp_close() {
 
 
 int ds_cpp_write(char* buffer, int length) {
-  std::cerr << "write " << buffer << " length " << length << std::endl;
-  streamserver.write(buffer, length);
+
+  int offset2;
+  int write_length;
+
+  std::cerr << " length " << length << std::endl;
+
+  offset2 = 0;  
+  write_length = 1024;
+
+  if(length > 1024) {
+    memcpy(buffer, tmp_buffer + tmp_offset, length);
+    tmp_length = tmp_offset + length;
+  }
+  do {
+    streamserver.write(tmp_buffer + offset2, write_length);
+    offset2 += write_length;
+  } while (offset2 + write_length < tmp_length);
+  memcpy(tmp_buffer + offset2, tmp_buffer, length - offset2);
+  tmp_offset = length - offset2;
+
   return 0;
 }
 
