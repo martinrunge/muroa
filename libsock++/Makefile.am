@@ -9,3 +9,6 @@ noinst_HEADERS = libsock++.h cipaddress.h cipv4address.h
 AM_CFLAGS = -pthread
 AM_CXXFLAGS = -pthread
 libsock___la_LIBADD = -lpthread
+libsock___la_LDFLAGS = -version-info 0:0:0 -shrext .so
+
+

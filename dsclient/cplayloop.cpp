@@ -513,11 +513,16 @@ bool CPlayloop::checkStream(CRTPPacket* packet)
 
     if(tmp_session_id != m_session_id || tmp_stream_id != m_stream_id ) {
       // this packet does not belong to the actual stream
+      cerr << "Got RTP packet of different stream (" << tmp_session_id << "/" << tmp_stream_id
+           << "). Self (" << m_session_id << "/" << m_stream_id << "). " << endl; 
+
       if( m_sync_requested_for_stream_id == 0) {  // no request is underway yet  
         CSync *sync_req = new CSync(SYNC_REQ_STREAM);
         sync_req->sessionId(tmp_session_id);
         sync_req->streamId(tmp_stream_id);
         sync_req->serialize();
+
+        cerr << "sending request for sync obj." << endl;
 
         CRTPPacket* tmp_packet = new CRTPPacket(tmp_session_id, tmp_stream_id, sizeof(CSync), true);
 

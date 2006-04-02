@@ -1,14 +1,7 @@
 <?xml version = '1.0' encoding = 'UTF-8'?>
 <!DOCTYPE KDevPrjSession>
 <KDevPrjSession>
- <DocsAndViews NumberOfDocuments="2" >
-  <Doc0 NumberOfViews="1" URL="file:///home/martin/devel/dstreamer/ds_plugin/ds_cpp_plugin.cpp" >
-   <View0 Type="Source" />
-  </Doc0>
-  <Doc1 NumberOfViews="1" URL="file:///home/martin/devel/dstreamer/ds_plugin/ds_plugin.c" >
-   <View0 line="19" Type="Source" />
-  </Doc1>
- </DocsAndViews>
+ <DocsAndViews NumberOfDocuments="0" />
  <pluginList>
   <kdevdebugger>
    <breakpointList/>

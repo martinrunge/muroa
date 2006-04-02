@@ -33,6 +33,9 @@ static gint bps;
 static gboolean real_time = TRUE;
 static gboolean paused, started;
 static GtkWidget *configurewin;
+static char *client0;
+static char *client1;
+
 static struct {
 	AFormat format;
 	gint frequency;
@@ -46,8 +49,10 @@ static void ds_init(void)
 	ConfigFile *cfg;
 	cfg = xmms_cfg_open_default_file();
 	xmms_cfg_read_boolean(cfg, "ds", "real_time", &real_time);
+  xmms_cfg_read_string(cfg, "ds", "ds_client0", &client0);
+  xmms_cfg_read_string(cfg, "ds", "ds_client1", &client1);
 	xmms_cfg_free(cfg);
-  ds_cpp_init();
+  ds_cpp_init(client0, client1);
 }
 
 static void ds_about(void)
