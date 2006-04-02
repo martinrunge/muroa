@@ -84,6 +84,9 @@ int CStreamServer::open(int audio_bytes_per_second)
   
   m_frames_in_sync_period = 0;
   m_payload_duration_sum = microseconds(0);
+  cerr << "CStreamServer::open: audiobytes/s = " << audio_bytes_per_second 
+       << " session/stream id = (" << m_session_id << "/" << m_stream_id << ")" 
+       << " time = " << now << endl;
 
   sendToAllClients(m_rtp_packet);
 
@@ -96,6 +99,8 @@ int CStreamServer::open(int audio_bytes_per_second)
  */
 void CStreamServer::close()
 {
+    cerr << "CStreamServer::close()" << endl;
+
     /// @todo implement me
     // send end of stream packet
 }
@@ -160,7 +165,7 @@ int CStreamServer::write(char* buffer, int length) {
     if(sleep_duration_in_us > 0)
       usleep(sleep_duration_in_us);
     else {
-      cerr << " Sleep duration was < 0!" << endl;
+      // cerr << " Sleep duration was < 0!" << endl;
     }
 
     m_last_payload_duration = payload_duration;

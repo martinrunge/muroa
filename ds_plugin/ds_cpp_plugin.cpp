@@ -42,7 +42,7 @@ int ds_cpp_init(void) {
 
 int ds_cpp_open(int audio_bytes_per_second) {
   // streamserver = new CStreamServer( 1, 300 );
-
+  std::cerr << "ds_cpp_open / audio bytes per sec:" << audio_bytes_per_second << std::endl;
   CIPv4Address localaddr("localhost:4001", 4001);
   streamserver.addClient(&localaddr);
 
@@ -61,21 +61,24 @@ int ds_cpp_write(char* buffer, int length) {
   int offset2;
   int write_length;
 
-  std::cerr << " length " << length << std::endl;
+  // std::cerr << "ds_cpp_write length " << length ;
 
   offset2 = 0;  
   write_length = 1024;
 
-  if(length > 1024) {
-    memcpy(buffer, tmp_buffer + tmp_offset, length);
-    tmp_length = tmp_offset + length;
-  }
-  do {
+  memcpy(tmp_buffer + tmp_offset, buffer, length);
+  tmp_length = tmp_offset + length;
+
+  while (write_length + offset2 < tmp_length) {
     streamserver.write(tmp_buffer + offset2, write_length);
     offset2 += write_length;
-  } while (offset2 + write_length < tmp_length);
-  memcpy(tmp_buffer + offset2, tmp_buffer, length - offset2);
-  tmp_offset = length - offset2;
+    // std::cerr << " write: " << write_length;
+  } 
+  // std::cerr << std::endl;
+  // copy  rest to begining of buffer
+    
+  memcpy(tmp_buffer, tmp_buffer + offset2, tmp_length - offset2);
+  tmp_offset = tmp_length - offset2;
 
   return 0;
 }
