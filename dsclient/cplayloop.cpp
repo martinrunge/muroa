@@ -599,3 +599,16 @@ void CPlayloop::handleSyncObj(CSync* sync_obj) {
 
 
 
+
+
+/*!
+    \fn CPlayloop::setSync(CSync* sync_obj)
+ */
+void CPlayloop::setSync(CSync* sync_obj)
+{
+  cerr << "CPlayloop::setSync" << endl;
+  m_session_id = sync_obj->sessionId();
+  m_stream_id = sync_obj->streamId();
+
+  m_sync_requested_for_stream_id = 0;
+}

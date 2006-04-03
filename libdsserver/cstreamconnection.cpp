@@ -59,6 +59,7 @@ int CStreamConnection::send(char* buffer, const int len)
     // 2) check, if there was a rtp packet sent from the client
     int read_num = m_socket.read(m_rtp_packet.bufferPtr(), m_rtp_packet.bufferSize());   
 
+    // cerr << "m_socket.read ret " << read_num << endl;
     if(read_num > 0) {
       handleReceivedPacket();      
     }
@@ -87,9 +88,10 @@ void CStreamConnection::handleReceivedPacket()
         session_sync_obj = m_stream_server->getSyncObj(tmp_sync.sessionId(), tmp_sync.streamId());
         if(session_sync_obj != 0) {
 
-          CRTPPacket packet(tmp_sync.sessionId(), tmp_sync.streamId(), sizeof(CSync), true);
+          CRTPPacket packet(session_sync_obj->sessionId(), session_sync_obj->streamId(), sizeof(CSync), true);
 
-          packet.copyInPayload(tmp_sync.getSerialisationBufferPtr(), tmp_sync.getSerialisationBufferSize());
+          session_sync_obj->serialize();
+          packet.copyInPayload(session_sync_obj->getSerialisationBufferPtr(), session_sync_obj->getSerialisationBufferSize());
       
           packet.payloadType(PAYLOAD_SYNC_OBJ);
 

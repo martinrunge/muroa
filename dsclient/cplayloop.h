@@ -58,6 +58,8 @@ public:
 
     int sync(void);
 
+    void setSync(CSync* sync_obj);
+
 
 //    void appendAudioFrame(CAudioFrame* frame);
 

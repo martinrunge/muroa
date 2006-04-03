@@ -45,7 +45,7 @@ public:
     void sendRTPPacket(CRTPPacket* packet);
 
     inline CSync* syncObj() {return m_sync_obj; };
-    inline void syncObj(CSync* so) {m_sync_obj = so; };
+    void syncObj(CSync* so);
     void sync();
 
 private:

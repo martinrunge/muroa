@@ -21,6 +21,8 @@
 
 #include "cstreamserver.h"
 
+#include <iostream>
+
 CStreamServer streamserver(1, 300);
 
 

@@ -161,7 +161,7 @@ int CSocket::do_connect(const struct sockaddr_in* servername) {
 
 /** read from the socket connection */
 int CSocket::read(char* buffer, int bufferlen){
-	struct timeval timeout;
+  struct timeval timeout;
   int retval;
   
   if(m_type == SOCK_STREAM) {
@@ -179,54 +179,54 @@ int CSocket::read(char* buffer, int bufferlen){
     
   bool can_read = false;
 
-	fd_set  fd_read_set, fd_write_set, fd_exept_set;
+  fd_set  fd_read_set, fd_write_set, fd_exept_set;
 
-	timeout = m_timeout_timeval;
+  timeout = m_timeout_timeval;
 
-	FD_ZERO(&fd_read_set);
-	FD_ZERO(&fd_exept_set);
+  FD_ZERO(&fd_read_set);
+  FD_ZERO(&fd_exept_set);
   FD_ZERO(&fd_write_set);
 
   FD_SET(m_socket_descr, &fd_read_set);           
   FD_SET(m_socket_descr, &fd_exept_set);
 
-	retval = select(m_socket_descr + 1, &fd_read_set, &fd_write_set, &fd_exept_set, &timeout);
-	if(retval >= 1) {
-  	if(FD_ISSET(m_socket_descr, &fd_read_set)) {
+  retval = select(m_socket_descr + 1, &fd_read_set, &fd_write_set, &fd_exept_set, &timeout);
+  if(retval >= 1) {
+    if(FD_ISSET(m_socket_descr, &fd_read_set)) {
       // perror("CSocket::Read  can read: ");
       can_read = true;
-		}
+    }
 
-  	if(FD_ISSET(m_socket_descr, &fd_exept_set)) {
-    	cout << "exception occoured" << endl;
-		}
+    if(FD_ISSET(m_socket_descr, &fd_exept_set)) {
+   	  cout << "exception occoured" << endl;
 	}
-	else {
-		if(retval == 0) {
+  }
+  else {
+	if(retval == 0) {
       // cerr << ".";
-    	// timeout while waiting for data
+      // timeout while waiting for data
       return 0;
-		}
-		else {  // retval < 0
+	}
+	else {  // retval < 0
       perror("select returned a value < 0");
       cerr  << "m_socket_descr = " << m_socket_descr << endl;
-    	if(errno == EINTR) {
-				cerr << "interrupted." << endl;
-				return 0;
-		  }
+      if(errno == EINTR) {
+		cerr << "interrupted." << endl;
+		return 0;
 	  }
+    }
   }		
 
   struct sockaddr* sockaddr_ptr;
   socklen_t len;
 
   if( m_recv_from_addr != 0) {
-      sockaddr_ptr = reinterpret_cast<struct sockaddr*>(m_recv_from_addr->sock_addr_in_ptr());
-      len = sizeof(struct sockaddr);
+    sockaddr_ptr = reinterpret_cast<struct sockaddr*>(m_recv_from_addr->sock_addr_in_ptr());
+    len = sizeof(struct sockaddr);
   }
   else {
-      sockaddr_ptr = 0;
-      len = 0;
+    sockaddr_ptr = 0;
+    len = 0;
   }
 
    
@@ -250,6 +250,7 @@ int CSocket::read(char* buffer, int bufferlen){
     cerr << "CSocket::Read - recvfrom return size " << len << " for sender address. sizeof(struct sockaddr_in)=" << sizeof(struct sockaddr_in) << " !" << endl;
   }
   else {
+    // cerr << " retval <= 0 " << endl;
     // m_recv_from_addr seems ok
   }
   return retval;
@@ -299,9 +300,9 @@ int CSocket::socketDescr(void){
 int CSocket::setNonBlocking(int timeout){
   int retval;
 
-	m_timeout = timeout;
-	m_timeout_timeval.tv_sec = timeout / 1000;
-	m_timeout_timeval.tv_usec = timeout - (m_timeout_timeval.tv_sec * 1000);
+  m_timeout = timeout;
+  m_timeout_timeval.tv_sec = timeout / 1000;
+  m_timeout_timeval.tv_usec = timeout - (m_timeout_timeval.tv_sec * 1000);
 
   retval = fcntl(m_socket_descr, O_NONBLOCK);
   return 0;

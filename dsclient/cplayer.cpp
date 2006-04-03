@@ -107,3 +107,8 @@ void CPlayer::sync()
 {
   m_playloop->sync();    
 }
+
+void CPlayer::syncObj(CSync* so) {
+  m_sync_obj = so;
+  m_playloop->setSync(so); 
+};

@@ -217,7 +217,6 @@ CStreamConnection* CStreamServer::removeStreamConnection(list<CStreamConnection*
 void CStreamServer::sendToAllClients(CRTPPacket* packet)
 {
     list<CStreamConnection*>::iterator iter;
-
     for(iter = m_connection_list.begin(); iter != m_connection_list.end(); iter++ ) {
       (*iter)->send(packet->bufferPtr(), packet->usedBufferSize()); 
     }
