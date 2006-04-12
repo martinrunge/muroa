@@ -139,10 +139,10 @@ void CSync::setTimeToNow()
 void CSync::deserialize(CRTPPacket* sync_packet)
 {
   if(sync_packet->payloadType() != PAYLOAD_SYNC_OBJ) return;
-  if(sync_packet->payloadBufferSize() != sizeof(m_serialization_buffer)) {
+  /* if(sync_packet->payloadBufferSize() != sizeof(m_serialization_buffer)) {
     cerr << "CSync::deserialize(CRTPPacket*): Warning: payload size does not fit. Ignoring packet!" << endl;
     return;
-  }
+  }*/
 
   memcpy(m_serialization_buffer.raw_buffer, sync_packet->payloadBufferPtr(), sizeof(m_serialization_buffer));
   deserialize();
