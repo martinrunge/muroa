@@ -91,12 +91,12 @@ int ds_cpp_write(char* buffer, int length) {
 
 
 void ds_cpp_flush() {
-  std::cerr << "ds_cpp_flush()" << endl;
+  std::cerr << "ds_cpp_flush()" << std::endl;
   streamserver.flush();
 }
 
 void ds_cpp_pause() {
-  std::cerr << "ds_cpp_pause()" << endl;
+  std::cerr << "ds_cpp_pause()" << std::endl;
   // streamserver->pause();
 }
 }
