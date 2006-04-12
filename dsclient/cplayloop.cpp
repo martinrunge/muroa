@@ -105,7 +105,7 @@ CPlayloop::CPlayloop(CPlayer* parent, CPacketRingBuffer* packet_ringbuffer, std:
 
 CPlayloop::~CPlayloop()
 {
-  delete [] m_silence_buffer;    
+  delete[] m_silence_buffer;    
 
   delete m_start_time;
   delete m_resampler;

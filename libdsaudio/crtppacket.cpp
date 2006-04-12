@@ -150,7 +150,7 @@ CRTPPacket::~CRTPPacket()
 {
   if(m_delete_buffer_in_dtor) 
   {
-    delete [] m_buffer;  
+    delete[] m_buffer;  
   }
 }
 
