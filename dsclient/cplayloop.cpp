@@ -153,6 +153,7 @@ void CPlayloop::DoLoop() {
 
     default:
       cerr << "unknown payload type!" << endl;
+      delete rtp_packet;
   }
 
 }
