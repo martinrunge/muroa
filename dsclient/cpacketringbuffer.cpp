@@ -103,6 +103,9 @@ void CPacketRingBuffer::appendRTPPacket(CRTPPacket* packet)
           // cerr << "CPacketRingBuffer::appendRTPPacket: dropping packet. seqnum < m_seqnum." << endl;
           m_packet_list.push_back(packet);
         }
+        else {
+          delete packet;  
+        }
         break;
       }
 
@@ -111,19 +114,22 @@ void CPacketRingBuffer::appendRTPPacket(CRTPPacket* packet)
           m_packet_list.insert(iter_post, packet); 
           // cerr << "CPacketRingBuffer::appendRTPPacket: packet inserted at beginning" << endl;
         }
+        else {
+           delete packet;
+        }
         break;
       }      
     }
-    else {
+    else { // still searching for the position
       iter_pre = iter_post;
       --iter_pre;
       if((*iter_pre)->seqNum() < seqnum) {
         m_packet_list.insert(iter_post, packet);   
         // cerr << "CPacketRingBuffer::appendRTPPacket: packet inserted in the middle" << endl;
+        break;
       }
-      break;
+      --iter_post;
     }
-    --iter_post;
   } while(1);
 
 
