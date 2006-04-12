@@ -133,6 +133,8 @@ private:
     int m_used_payload_size;
 
     bool m_delete_buffer_in_dtor;
+
+    static int m_counter;
   
 public:
     static const unsigned short DS_RTP_PROFILE;

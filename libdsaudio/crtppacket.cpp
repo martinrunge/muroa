@@ -22,12 +22,18 @@
 #include <string.h>
 #include <assert.h>
 
+#include <iostream>
+
 const unsigned short CRTPPacket::DS_RTP_PROFILE = 0x2222;
+
+int CRTPPacket::m_counter = 0;
 
 // create a RTP packet object from a buffer. e.g. a RTP packet received via network
 CRTPPacket::CRTPPacket(char *buffer, int buffer_size, bool delete_buffer_in_dtor )
 {
   assert(buffer_size > sizeof(rtp_header_t));
+
+  m_counter++;
 
   m_buffer = buffer;  
   m_buffer_size = buffer_size;
@@ -56,6 +62,8 @@ CRTPPacket::CRTPPacket(char *buffer, int buffer_size, bool delete_buffer_in_dtor
 
 // create a new RTP packet object
 CRTPPacket::CRTPPacket(unsigned long session_id, unsigned long stream_id, int payload_size, bool delete_buffer_in_dtor) {
+
+  m_counter++;
 
   m_num_csrc = 0;
 
@@ -150,7 +158,10 @@ CRTPPacket::~CRTPPacket()
 {
   //if(m_delete_buffer_in_dtor) 
   //{
-    delete[] m_buffer;  
+  delete[] m_buffer;  
+
+  std::cerr << "deleting instance nr " << m_counter << std::endl;
+  m_counter--;
   //}
 }
 
