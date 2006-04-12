@@ -30,7 +30,7 @@ CSync::CSync(enum sync_type_t sync_type)
 {
   m_sync_type = sync_type;
   m_local_time = new ptime(microsec_clock::local_time());
-  cout << "time (local + usecs): " << to_iso_string(*m_local_time) << endl;
+  print();
 
 }
 
@@ -38,10 +38,11 @@ CSync::CSync(CRTPPacket* rtp_packet)
 {
   if(rtp_packet->payloadType() != PAYLOAD_SYNC_OBJ) return;
 
-  cout << "CSync::CSync(CRTPPacket*) time (local + usecs): " << endl;
+  cerr << "CSync::CSync(CRTPPacket*) " ;
   m_local_time = new ptime(from_iso_string("19700101T000000"));  // just a dummy to feed the c-tor. The value is never used!
   memcpy(m_serialization_buffer.raw_buffer, rtp_packet->payloadBufferPtr(), sizeof(m_serialization_buffer));
   deserialize();
+  print();
 }
 
 CSync::~CSync()
@@ -109,7 +110,8 @@ char* CSync::getSerialisationBufferPtr()
  */
 void CSync::print()
 {
-    cerr << "time (local + usecs): " << to_iso_string(*m_local_time) << endl;
+  cerr << "session/stream ID (" << sessionId() << "/" << streamId() << ") frame nr " 
+       << frameNr() << " at " << to_iso_string(*m_local_time) << endl;
 }
 
 
