@@ -148,10 +148,10 @@ int CRTPPacket::commit(int num) {
 
 CRTPPacket::~CRTPPacket()
 {
-  if(m_delete_buffer_in_dtor) 
-  {
+  //if(m_delete_buffer_in_dtor) 
+  //{
     delete[] m_buffer;  
-  }
+  //}
 }
 
 
