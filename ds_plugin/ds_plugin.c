@@ -126,7 +126,7 @@ static void ds_configure(void)
 static int ds_open(AFormat fmt, int rate, int nch)
 {
   int retval; 
-  fprintf(stderr,"Format %d, rate %d, num channels %d", fmt, rate, nch);
+  /*fprintf(stderr,"Format %d, rate %d, num channels %d", fmt, rate, nch); */
   retval = ds_cpp_open(2 * rate * nch);
   if(retval == 0)
     return 1;

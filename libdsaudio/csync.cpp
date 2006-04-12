@@ -111,7 +111,7 @@ char* CSync::getSerialisationBufferPtr()
 void CSync::print()
 {
   cerr << "session/stream ID (" << sessionId() << "/" << streamId() << ") frame nr " 
-       << frameNr() << " at " << to_iso_string(*m_local_time) << endl;
+       << frameNr() << " at " << *m_local_time << endl;
 }
 
 
@@ -121,4 +121,13 @@ void CSync::print()
 void CSync::addDuration(boost::posix_time::time_duration duration)
 {
   *m_local_time += duration;
+}
+
+
+/*!
+    \fn CSync::setTimeToNow()
+ */
+void CSync::setTimeToNow()
+{
+    *m_local_time = microsec_clock::local_time();
 }

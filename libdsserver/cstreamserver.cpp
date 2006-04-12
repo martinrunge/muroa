@@ -67,6 +67,7 @@ int CStreamServer::open(int audio_bytes_per_second)
 
   m_stream_id++;
 
+  m_syncobj.setTimeToNow();
   m_syncobj.addDuration(m_transport_buffer_duration);
   m_syncobj.frameNr(0);
   m_syncobj.streamId(m_stream_id);  
