@@ -35,6 +35,10 @@ CPacketRingBuffer::CPacketRingBuffer(int num_of_frames)
 CPacketRingBuffer::~CPacketRingBuffer()
 {
   fclose(m_stream_fd);
+  while(!m_packet_list.empty()) {
+    delete *m_packet_list.begin();
+    m_packet_list.pop_front();
+  }
 }
 
 
