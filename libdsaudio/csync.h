@@ -83,6 +83,8 @@ public:
 
     char* serialize();
     void deserialize();
+    void deserialize(CRTPPacket* sync_packet);
+                     
     int getSerialisationBufferSize();
     char* getSerialisationBufferPtr();
     void print();

@@ -27,13 +27,13 @@ Class encapsulates all the playback functioinalty. It inplements an interface to
 */
 
 #include <string>
+#include "csync.h"
 
 class CRecvloop;
 class CPlayloop;
 class CRTPPacket;
 class CPThread;
 class CPacketRingBuffer;
-class CSync;
 
 class CPlayer{
 public:
@@ -44,8 +44,8 @@ public:
     void stop();
     void sendRTPPacket(CRTPPacket* packet);
 
-    inline CSync* syncObj() {return m_sync_obj; };
-    void syncObj(CSync* so);
+    inline CSync* syncObj() {return &m_sync_obj; };
+    void setSyncObj(CRTPPacket* rtp_packet);
     void sync();
 
 private:
@@ -57,7 +57,7 @@ private:
     CPThread *m_recvloop_thread;
     CPThread *m_playloop_thread;
 
-    CSync *m_sync_obj;
+    CSync m_sync_obj;
 
 };
 

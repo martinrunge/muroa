@@ -29,7 +29,6 @@
 #include "libdsaudio.h"
 
 #include "caudioframe.h"
-#include "csync.h"
 #include "csocket.h"
 
 #include "cplayloop.h"
@@ -108,7 +107,7 @@ void CPlayer::sync()
   m_playloop->sync();    
 }
 
-void CPlayer::syncObj(CSync* so) {
-  m_sync_obj = so;
-  m_playloop->setSync(so); 
+void CPlayer::setSyncObj(CRTPPacket* rtp_packet) {
+  m_sync_obj.deserialize( rtp_packet);
+  m_playloop->setSync(&m_sync_obj); 
 };

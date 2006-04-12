@@ -61,13 +61,7 @@ void CRecvloop::DoLoop()
 
     switch( m_rtp_packet->payloadType() ) {
       case PAYLOAD_SYNC_OBJ:
-        CSync* sync_obj = new CSync(m_rtp_packet);   ///@TODO  fix memory leak !!!!!!!!!
-        cerr << "recv sync obj for stream/session id (" << sync_obj->sessionId() << "/" 
-             << sync_obj->streamId()  << ")" << endl;       
-        m_player->syncObj(sync_obj);   
-
-        //  handleSyncObj(m_sync_obj);
-        // m_player->sync();
+        m_player->setSyncObj(m_rtp_packet);
 
         // delete m_rtp_packet;
         break;

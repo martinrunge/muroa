@@ -131,8 +131,7 @@ void CPlayloop::DoLoop() {
   switch( rtp_packet->payloadType() ) 
   {
     case PAYLOAD_SYNC_OBJ:
-      m_player->syncObj(new CSync(rtp_packet));
-      // handleSyncObj(m_sync_obj);
+      m_player->setSyncObj(rtp_packet);
       sync();
         
       delete rtp_packet;
