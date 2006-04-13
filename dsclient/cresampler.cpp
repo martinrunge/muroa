@@ -81,12 +81,12 @@ CResampler::~CResampler()
   /*fclose(m_debug_fd1);
   delete [] m_data_ptr;*/
 
-  delete m_in_buffer;
+  delete[] m_in_buffer;
 
   delete m_src_data;
   src_delete(m_src_state);
 
-  delete m_out_buffer;
+  delete[] m_out_buffer;
 
 }
 
