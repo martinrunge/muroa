@@ -58,8 +58,6 @@ CRTPPacket* CPacketRingBuffer::readPacket(void) {
     CRTPPacket* rtp_packet = *m_packet_list.begin();
     m_packet_list.pop_front();
 
-    //cerr << "CRingBuffer::readPacket: one packet read from list beginning " << endl;
-    m_mutex.UnLock();
 
     int seqnum = rtp_packet->seqNum();
     if(seqnum != m_seqnum + 1) {
@@ -70,6 +68,8 @@ CRTPPacket* CPacketRingBuffer::readPacket(void) {
     }
     m_seqnum = seqnum;
 
+    //cerr << "CRingBuffer::readPacket: one packet read from list beginning " << endl;
+    m_mutex.UnLock();
     
 //    if(first_packet_of_frame) {
 //      CAudioFrame* frame = new CAudioFrame(payload_type, payload_size);
@@ -104,6 +104,7 @@ void CPacketRingBuffer::appendRTPPacket(CRTPPacket* packet)
           m_packet_list.push_back(packet);
         }
         else {
+          cerr << "CPacketRingBuffer::appendRTPPacket: dropping packet for empty list: seqnr " << seqnum << ". Last read was: " <<  m_seqnum << endl;
           delete packet;  
         }
         break;
@@ -115,6 +116,7 @@ void CPacketRingBuffer::appendRTPPacket(CRTPPacket* packet)
           // cerr << "CPacketRingBuffer::appendRTPPacket: packet inserted at beginning" << endl;
         }
         else {
+           cerr << "CPacketRingBuffer::appendRTPPacket: dropping packet at begin: seqnr " << seqnum << ". Last read was: " <<  m_seqnum << endl;
            delete packet;
         }
         break;
