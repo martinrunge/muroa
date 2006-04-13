@@ -125,7 +125,7 @@ void CPlayloop::DoLoop() {
   CAudioFrame* frame;
 
   CRTPPacket* rtp_packet = m_packet_ringbuffer->readPacket();
-
+  cerr << "packet Buffer size: " << m_packet_ringbuffer->getRingbufferSize() << endl;
   // cerr << "PayloadType " << rtp_packet->payloadType() << " size " << rtp_packet->usedPayloadBufferSize() << endl;
 
   switch( rtp_packet->payloadType() ) 
