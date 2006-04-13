@@ -160,7 +160,7 @@ CRTPPacket::~CRTPPacket()
   //{
   delete[] m_buffer;  
 
-  std::cerr << "deleting instance nr " << m_counter << std::endl;
+  // std::cerr << "deleting instance nr " << m_counter << std::endl;
   m_counter--;
   //}
 }

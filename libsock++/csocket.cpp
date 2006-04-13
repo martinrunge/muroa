@@ -199,21 +199,21 @@ int CSocket::read(char* buffer, int bufferlen){
 
     if(FD_ISSET(m_socket_descr, &fd_exept_set)) {
    	  cout << "exception occoured" << endl;
-	}
+	  }
   }
   else {
-	if(retval == 0) {
+	  if(retval == 0) {
       // cerr << ".";
       // timeout while waiting for data
       return 0;
-	}
-	else {  // retval < 0
-      perror("select returned a value < 0");
-      cerr  << "m_socket_descr = " << m_socket_descr << endl;
-      if(errno == EINTR) {
-		cerr << "interrupted." << endl;
-		return 0;
 	  }
+	  else {  // retval < 0
+      // perror("select returned a value < 0");
+      // cerr  << "m_socket_descr = " << m_socket_descr << endl;
+      if(errno == EINTR) {
+		    cerr << "interrupted." << endl;
+		    return 0;
+	    }
     }
   }		
 
