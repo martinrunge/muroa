@@ -130,6 +130,11 @@ void CPacketRingBuffer::appendRTPPacket(CRTPPacket* packet)
         // cerr << "CPacketRingBuffer::appendRTPPacket: packet inserted in the middle" << endl;
         break;
       }
+      if((*iter_pre)->seqNum() == seqnum) { // duplicate packet! drop!
+        cerr << "CPacketRingBuffer::appendRTPPacket: dropping duplicate packet: seqnr " << seqnum << endl;
+        delete packet;
+        break;
+      }
       --iter_post;
     }
   } while(1);

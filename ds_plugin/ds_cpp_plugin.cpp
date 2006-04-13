@@ -41,6 +41,10 @@ int ds_cpp_init(char* client0, char* client1) {
   tmp_buffer = (char*)malloc(tmp_length);
   tmp_offset = 0;
 
+  CIPv4Address localaddr("gericom:4001", 4001);
+  streamserver.addClient(&localaddr);
+
+
   return 0;
 
 }
@@ -48,8 +52,6 @@ int ds_cpp_init(char* client0, char* client1) {
 int ds_cpp_open(int audio_bytes_per_second) {
   // streamserver = new CStreamServer( 1, 300 );
   std::cerr << "ds_cpp_open / audio bytes per sec:" << audio_bytes_per_second << std::endl;
-  CIPv4Address localaddr("gericom:4001", 4001);
-  streamserver.addClient(&localaddr);
 
   streamserver.open(audio_bytes_per_second); 
 
