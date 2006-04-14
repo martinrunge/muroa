@@ -53,7 +53,7 @@ CPlayer::CPlayer(unsigned short port, std::string sound_dev)
   m_recvloop_thread = new CPThread(m_recvloop);
   m_playloop_thread = new CPThread(m_playloop);
 
-  CSync syncobj;
+  //CSync syncobj;
 
 }
 
