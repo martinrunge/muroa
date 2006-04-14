@@ -14,7 +14,7 @@
     <projectdirectory>.</projectdirectory>
     <absoluteprojectpath>false</absoluteprojectpath>
     <description></description>
-    <versioncontrol/>
+    <versioncontrol></versioncontrol>
   </general>
   <kdevautoproject>
     <general>
@@ -41,7 +41,6 @@
         <cxxcompiler>kdevgppoptions</cxxcompiler>
         <f77compiler>kdevg77options</f77compiler>
         <cxxflags>-O2 -g0</cxxflags>
-        <envvars/>
       </optimized>
       <debug>
         <configargs>--enable-debug=full</configargs>
@@ -175,7 +174,7 @@
     <qt>
       <used>false</used>
       <version>3</version>
-      <root>/usr/lib/qt3</root>
+      <root></root>
     </qt>
   </kdevcppsupport>
   <cppsupportpart>
