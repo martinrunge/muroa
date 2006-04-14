@@ -94,7 +94,7 @@ char* CRingBuffer::read(int bytes)
         m_read_ptr = m_buffer + rest;
       }
     }
-    fwrite(buffer, 1, bytes, m_debug_fd2);
+    // fwrite(buffer, 1, bytes, m_debug_fd2);
     return buffer;
 }
 

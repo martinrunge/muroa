@@ -125,9 +125,10 @@ void CPlayloop::DoLoop() {
   CAudioFrame* frame;
 
   CRTPPacket* rtp_packet = m_packet_ringbuffer->readPacket();
-  cerr << "packet Buffer size: " << m_packet_ringbuffer->getRingbufferSize() << endl;
+  //cerr << "packet Buffer size: " << m_packet_ringbuffer->getRingbufferSize() << endl;
   // cerr << "PayloadType " << rtp_packet->payloadType() << " size " << rtp_packet->usedPayloadBufferSize() << endl;
 
+ 
   switch( rtp_packet->payloadType() ) 
   {
     case PAYLOAD_SYNC_OBJ:
@@ -171,7 +172,7 @@ void CPlayloop::playAudio(CAudioFrame *frame) {
   
   m_nr_of_last_frame_decoded = frame->firstFrameNr() + frame->sizeInMultiChannelSamples() - 1;
 
-  fwrite(frame->dataPtr(), 1, frame->dataSize(), m_debug_fd1);
+  // fwrite(frame->dataPtr(), 1, frame->dataSize(), m_debug_fd1);
   int num_single_chan_samples = m_resampler->resampleFrame(frame, m_resample_factor * m_correction_factor);
   
 
@@ -189,7 +190,7 @@ void CPlayloop::playAudio(CAudioFrame *frame) {
 
  
   if(m_frames_to_discard > 0) {
-    delete playbuffer;
+    //delete playbuffer;
     adjustFramesToDiscard(granulated_num_bytes / (m_sample_size * m_num_channels));
   }
   
@@ -204,7 +205,7 @@ void CPlayloop::playAudio(CAudioFrame *frame) {
       adjustResamplingFactor(m_ringbuffer->size());
     }
   }
-
+  delete[] playbuffer;
 
 }
 
