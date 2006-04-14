@@ -7,3 +7,5 @@ dsclient_SOURCES = dsclient.cpp cplayloop.cpp cplayloop.h cresampler.cpp \
 dsclient_LDADD = $(top_builddir)/libsock++/libsock++.la \
 	$(top_builddir)/libdsaudio/libdsaudio.la -lsamplerate
 noinst_HEADERS = crecvloop.h cplayer.h cringbuffer.h
+
+

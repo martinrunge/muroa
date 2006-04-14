@@ -40,8 +40,7 @@ int ds_cpp_init(char* client0, char* client1) {
   tmp_length = 8192;
   tmp_buffer = (char*)malloc(tmp_length);
   tmp_offset = 0;
-
-  CIPv4Address localaddr("gericom:4001", 4001);
+  CIPv4Address localaddr("navarra:4001", 4001);
   streamserver.addClient(&localaddr);
 
 

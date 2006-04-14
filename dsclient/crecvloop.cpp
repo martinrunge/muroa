@@ -61,6 +61,7 @@ void CRecvloop::DoLoop()
 
     switch( m_rtp_packet->payloadType() ) {
       case PAYLOAD_SYNC_OBJ:
+        cerr << "CRecvloop::DoLoop got SyncObj:";
         m_player->setSyncObj(m_rtp_packet);
 
         // delete m_rtp_packet;

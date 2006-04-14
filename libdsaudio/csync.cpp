@@ -28,6 +28,7 @@ using namespace boost::posix_time;
 
 CSync::CSync(enum sync_type_t sync_type)
 {
+  cerr << "CSync::CSync(enum)" << endl;
   m_sync_type = sync_type;
   m_local_time = new ptime(microsec_clock::local_time());
   print();
@@ -38,7 +39,7 @@ CSync::CSync(CRTPPacket* rtp_packet)
 {
   if(rtp_packet->payloadType() != PAYLOAD_SYNC_OBJ) return;
 
-  cerr << "CSync::CSync(CRTPPacket*) " ;
+  cerr << "CSync::CSync(CRTPPacket*) (test) " ;
   m_local_time = new ptime(from_iso_string("19700101T000000"));  // just a dummy to feed the c-tor. The value is never used!
   memcpy(m_serialization_buffer.raw_buffer, rtp_packet->payloadBufferPtr(), sizeof(m_serialization_buffer));
   deserialize();

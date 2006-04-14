@@ -32,7 +32,7 @@ int main(int argc, char *argv[])
 {
   int num;
   char c;
-  cout << "dsclient" << endl;
+  // cout << "dsclient" << endl;
   
   struct sched_param s_param;
   
