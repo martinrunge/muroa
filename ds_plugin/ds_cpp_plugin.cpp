@@ -34,15 +34,18 @@ int tmp_offset;
 extern "C" {
 
 
-int ds_cpp_init(char* client0, char* client1) {
+int ds_cpp_init(char** clients) {
 
-  std::cerr << "ds_cpp_init " << client0 << " " << client1 << std::endl;
   tmp_length = 8192;
   tmp_buffer = (char*)malloc(tmp_length);
   tmp_offset = 0;
-  CIPv4Address localaddr("gericom:4001", 4001);
-  streamserver.addClient(&localaddr);
-
+  
+  for(int i=0; clients[i] != NULL; i++) {
+    std::cerr << "client " << i << " is " << clients[i] << std::endl;
+    CIPv4Address *localaddr = new CIPv4Address(clients[i], 4001);
+    streamserver.addClient(localaddr);
+  }
+  
 
   return 0;
 

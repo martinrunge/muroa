@@ -33,8 +33,8 @@ static gint bps;
 static gboolean real_time = TRUE;
 static gboolean paused, started;
 static GtkWidget *configurewin;
-static char *client0;
-static char *client1;
+static GtkWidget *client_hbox[8], *client_label[8], *client_entry[8];
+static char **clients;
 
 static struct {
 	AFormat format;
@@ -46,13 +46,25 @@ static struct {
 
 static void ds_init(void)
 {
+  int i;
 	ConfigFile *cfg;
+  clients = (char**)malloc(9*sizeof(char*));
+  for(i=0; i < 9; i++) clients[i] = NULL;
+
 	cfg = xmms_cfg_open_default_file();
 	xmms_cfg_read_boolean(cfg, "ds", "real_time", &real_time);
-  xmms_cfg_read_string(cfg, "ds", "ds_client0", &client0);
-  xmms_cfg_read_string(cfg, "ds", "ds_client1", &client1);
+  xmms_cfg_read_string(cfg, "ds", "ds_client0", clients);
+  xmms_cfg_read_string(cfg, "ds", "ds_client1", clients+1);
+  xmms_cfg_read_string(cfg, "ds", "ds_client2", clients+2);
+  xmms_cfg_read_string(cfg, "ds", "ds_client3", clients+3);
+  xmms_cfg_read_string(cfg, "ds", "ds_client4", clients+4);
+  xmms_cfg_read_string(cfg, "ds", "ds_client5", clients+5);
+  xmms_cfg_read_string(cfg, "ds", "ds_client6", clients+6);
+  xmms_cfg_read_string(cfg, "ds", "ds_client7", clients+7);
 	xmms_cfg_free(cfg);
-  ds_cpp_init(client0, client1);
+  for(i=0; i < 8; i++)
+    printf("clients[%d] = %x\n", i, clients[i]);
+  ds_cpp_init(clients);
 }
 
 static void ds_about(void)
@@ -73,10 +85,25 @@ static void ds_about(void)
 static void ds_configure_ok_cb(GtkButton *w, gpointer data)
 {
 	ConfigFile *cfg;
+  int i;
+  char buffer[64];
 
 	real_time = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(data));
 	cfg = xmms_cfg_open_default_file();
 	xmms_cfg_write_boolean(cfg, "ds", "real_time", real_time);
+
+  for(i=0; i < 8; i++) {
+/*    if(gtk_entry_get_text(client_entry[i]) != NULL) {*/
+
+      if (clients[i])
+        g_free(clients[i]);
+      clients[i] = g_strdup(gtk_entry_get_text(GTK_ENTRY(client_entry[i])));
+      sprintf(buffer, "ds_client%d", i);
+      printf("client %d entry: %s=%s \n", i, buffer, clients[i]);
+      xmms_cfg_write_string(cfg, "ds", buffer, clients[i] );
+    /*}*/
+  }
+
 	xmms_cfg_write_default_file(cfg);
 	xmms_cfg_free(cfg);
 	gtk_widget_destroy(configurewin);
@@ -86,6 +113,8 @@ static void ds_configure_ok_cb(GtkButton *w, gpointer data)
 static void ds_configure(void)
 {
 	GtkWidget *rt_btn, *ok_button, *cancel_button, *vbox, *bbox;
+  int i;
+  char client_label_str[64];
 
 	if (configurewin)
 		return;
@@ -103,6 +132,26 @@ static void ds_configure(void)
 	rt_btn = gtk_check_button_new_with_label("Run in real time");
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(rt_btn), real_time);
 	gtk_box_pack_start(GTK_BOX(vbox), rt_btn, FALSE, FALSE, 0);
+
+  for(i=0; i < 8; i++) {
+    client_hbox[i] = gtk_hbox_new(FALSE, 5);
+    gtk_box_pack_start(GTK_BOX(vbox), client_hbox[i], FALSE, FALSE, 0);
+
+
+    sprintf(client_label_str, "Client %d:", i);
+    client_label[i] = gtk_label_new(client_label_str);
+    gtk_box_pack_start(GTK_BOX(client_hbox[i]), client_label[i], FALSE, FALSE, 0);
+    gtk_widget_show(client_label[i]);
+
+    client_entry[i] = gtk_entry_new();
+    if (clients[0] != NULL)
+        gtk_entry_set_text(GTK_ENTRY(client_entry[i]), clients[i]);
+    gtk_widget_set_usize(client_entry[i], 100, -1);
+    gtk_box_pack_start(GTK_BOX(client_hbox[i]), client_entry[i], TRUE, TRUE, 0);
+    gtk_widget_show(client_entry[i]);
+
+  }
+
 	bbox = gtk_hbutton_box_new();
 	gtk_button_box_set_layout(GTK_BUTTON_BOX(bbox), GTK_BUTTONBOX_END);
 	gtk_button_box_set_spacing(GTK_BUTTON_BOX(bbox), 5);
