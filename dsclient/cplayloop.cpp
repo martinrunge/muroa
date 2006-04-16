@@ -420,6 +420,7 @@ time_duration CPlayloop::getPlaybackDiffFromTime() {
   }
   assert(m_nr_of_last_frame_decoded >= m_player->syncObj()->frameNr());
 
+
   long long diff_in_frames = m_nr_of_last_frame_decoded - m_player->syncObj()->frameNr();
   ptime synctime(*m_player->syncObj()->getPtimePtr());
 
@@ -584,6 +585,12 @@ void CPlayloop::handleSyncObj(CSync* sync_obj) {
 void CPlayloop::setSync(CSync* sync_obj)
 {
   cerr << "CPlayloop::setSync" << endl;
+  if(m_stream_id != sync_obj->streamId() || m_session_id != sync_obj->sessionId()) {
+    // new stream: set m_nr_of_last_frame_decoded to the 
+    // frame nr specified in the sync obj (usually 0)
+    m_nr_of_last_frame_decoded = sync_obj->frameNr();
+  }
   m_session_id = sync_obj->sessionId();
   m_stream_id = sync_obj->streamId();
+
 }

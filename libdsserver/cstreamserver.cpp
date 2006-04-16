@@ -77,7 +77,7 @@ int CStreamServer::open(int audio_bytes_per_second)
   m_rtp_packet->sessionID(m_session_id);
   m_rtp_packet->streamID(m_stream_id);
 
-
+  m_rtp_packet->seqNum(m_rtp_packet->seqNum() + 1);
   m_rtp_packet->payloadType(PAYLOAD_SYNC_OBJ);
   m_rtp_packet->copyInPayload(m_syncobj.getSerialisationBufferPtr(), m_syncobj.getSerialisationBufferSize());
 
