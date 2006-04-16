@@ -22,13 +22,13 @@
 
 #include <cthreadslave.h>
 
+#include "csync.h"
 /**
 @author Martin Runge
 */
 
 class CRTPPacket;
 class CSocket;
-class CSync;
 class CPacketRingBuffer;
 class CPlayer;
 
@@ -48,6 +48,7 @@ private:
 
     CPacketRingBuffer *m_packet_ringbuffer;
     CPlayer* m_player;
+    CSync m_tmp_sync_obj;
 };
 
 #endif

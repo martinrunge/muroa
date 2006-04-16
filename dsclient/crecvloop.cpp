@@ -20,7 +20,6 @@
 #include "crecvloop.h"
 #include "caudioframe.h"
 #include "csocket.h"
-#include "csync.h"
 #include "cpacketringbuffer.h"
 #include "cplayer.h"
 
@@ -62,11 +61,17 @@ void CRecvloop::DoLoop()
     switch( m_rtp_packet->payloadType() ) {
       case PAYLOAD_SYNC_OBJ:
         cerr << "CRecvloop::DoLoop got SyncObj:";
-        m_player->setSyncObj(m_rtp_packet);
-
-        // delete m_rtp_packet;
+        m_tmp_sync_obj.deserialize(m_rtp_packet);
+        if(m_tmp_sync_obj.streamId() == m_player->syncRequestedForStreamID()) {
+          // this sync object has been requested by the client. Use it immediately
+          m_player->setRequestedSyncObj(m_rtp_packet);
+        }
+        else {
+          // beginning of next stream. put sync object into the packet ringbuffer
+          m_packet_ringbuffer->appendRTPPacket(m_rtp_packet);
+          m_rtp_packet = new CRTPPacket();           
+        }
         break;
-
 
       case PAYLOAD_PCM:
       case PAYLOAD_MP3:

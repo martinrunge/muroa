@@ -53,8 +53,10 @@ CPlayer::CPlayer(unsigned short port, std::string sound_dev)
   m_recvloop_thread = new CPThread(m_recvloop);
   m_playloop_thread = new CPThread(m_playloop);
 
-  //CSync syncobj;
+  m_sync_requested_for_stream_id = -1;
+  m_sync_requested_at = microsec_clock::local_time();
 
+  //CSync syncobj;
 }
 
 
@@ -110,4 +112,46 @@ void CPlayer::sync()
 void CPlayer::setSyncObj(CRTPPacket* rtp_packet) {
   m_sync_obj.deserialize( rtp_packet);
   m_playloop->setSync(&m_sync_obj); 
-};
+}
+
+
+/*!
+    \fn CPlayer::setRequestedSyncObj(CRTPPacket* rtp_packet)
+ */
+void CPlayer::setRequestedSyncObj(CRTPPacket* rtp_packet)
+{
+    m_sync_requested_for_stream_id = -1;
+    setSyncObj(rtp_packet);
+}
+
+
+/*!
+    \fn CPlayer::requestSync(int stream_id)
+ */
+void CPlayer::requestSync(int session_id, int stream_id)
+{
+  if( m_sync_requested_for_stream_id == -1) {  // no request is underway yet  
+    CSync *sync_req = new CSync(SYNC_REQ_STREAM);
+    sync_req->sessionId(session_id);
+    sync_req->streamId(stream_id);
+    sync_req->serialize();
+
+    cerr << "sending request for sync obj." << endl;
+
+    CRTPPacket* tmp_packet = new CRTPPacket(session_id, stream_id, sync_req->getSerialisationBufferSize(), true);
+
+    tmp_packet->copyInPayload(sync_req->getSerialisationBufferPtr(), sync_req->getSerialisationBufferSize());
+      
+    tmp_packet->payloadType(PAYLOAD_SYNC_OBJ);
+    sendRTPPacket(tmp_packet);
+
+    m_sync_requested_for_stream_id = stream_id;
+    m_sync_requested_at = microsec_clock::local_time();      
+
+    delete sync_req;
+    delete tmp_packet;     
+
+  }
+}
+
+

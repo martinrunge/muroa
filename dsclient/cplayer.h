@@ -48,6 +48,13 @@ public:
     void setSyncObj(CRTPPacket* rtp_packet);
     void sync();
 
+    inline int syncRequestedForStreamID(void) { 
+      return m_sync_requested_for_stream_id;
+    };
+
+    void requestSync(int session_id, int stream_id);
+    void setRequestedSyncObj(CRTPPacket* rtp_packet);
+
 private:
     CPacketRingBuffer * m_packet_ringbuffer;
   
@@ -58,6 +65,9 @@ private:
     CPThread *m_playloop_thread;
 
     CSync m_sync_obj;
+
+    int m_sync_requested_for_stream_id;
+    boost::posix_time::ptime m_sync_requested_at;
 
 };
 

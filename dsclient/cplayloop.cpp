@@ -86,9 +86,6 @@ CPlayloop::CPlayloop(CPlayer* parent, CPacketRingBuffer* packet_ringbuffer, std:
   m_stream_id = 0;
   m_session_id = 0;
 
-  m_sync_requested_for_stream_id = 0;
-  m_sync_requested_at = microsec_clock::local_time();
-
   m_start_time = 0;
 
   int num_shorts = m_audio_sink->getWriteGranularity() / sizeof(short);
@@ -517,29 +514,7 @@ bool CPlayloop::checkStream(CRTPPacket* packet)
       // this packet does not belong to the actual stream
       cerr << "Got RTP packet of different stream (" << tmp_session_id << "/" << tmp_stream_id
            << "). Self (" << m_session_id << "/" << m_stream_id << "). " << endl; 
-
-      if( m_sync_requested_for_stream_id == 0) {  // no request is underway yet  
-        CSync *sync_req = new CSync(SYNC_REQ_STREAM);
-        sync_req->sessionId(tmp_session_id);
-        sync_req->streamId(tmp_stream_id);
-        sync_req->serialize();
-
-        cerr << "sending request for sync obj." << endl;
-
-        CRTPPacket* tmp_packet = new CRTPPacket(tmp_session_id, tmp_stream_id, sizeof(CSync), true);
-
-        tmp_packet->copyInPayload(sync_req->getSerialisationBufferPtr(), sync_req->getSerialisationBufferSize());
-      
-        tmp_packet->payloadType(PAYLOAD_SYNC_OBJ);
-        m_player->sendRTPPacket(tmp_packet);
-
-        m_sync_requested_for_stream_id = tmp_stream_id;
-
-        delete sync_req;
-
-        delete tmp_packet;     
-
-      }
+      m_player->requestSync(tmp_session_id, tmp_stream_id);
       return false;  
     }
     else
@@ -611,6 +586,4 @@ void CPlayloop::setSync(CSync* sync_obj)
   cerr << "CPlayloop::setSync" << endl;
   m_session_id = sync_obj->sessionId();
   m_stream_id = sync_obj->streamId();
-
-  m_sync_requested_for_stream_id = 0;
 }

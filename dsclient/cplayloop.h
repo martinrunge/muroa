@@ -127,8 +127,6 @@ private:
 
     FILE* m_debug_fd1;
     CPlayer* m_player;
-    int m_sync_requested_for_stream_id;
-    boost::posix_time::ptime m_sync_requested_at;
 private:
     bool checkStream(CRTPPacket* packet);
 };
