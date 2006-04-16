@@ -149,7 +149,7 @@ void CRingBuffer::write(float* src, int num_samples)
     }
 
 
-    fwrite(&scaled_value_int, 2, 1, m_debug_fd1);
+    // fwrite(&scaled_value_int, 2, 1, m_debug_fd1);
         
     *(short*)m_write_ptr = scaled_value_int;
     m_write_ptr += sizeof(short);
