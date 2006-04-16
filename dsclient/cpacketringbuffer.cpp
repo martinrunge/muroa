@@ -88,6 +88,14 @@ void CPacketRingBuffer::appendRTPPacket(CRTPPacket* packet)
 {
   int seqnum = packet->seqNum();
 
+  // Handle overflow of sequence numbers:
+  // sequence number is a 16 bint unsigned -> 0...65335
+  // if seqnum of new packet is near 0 AND seqnum of last read packet is near 65335
+  // the sequence number probably hat an overflow at 65335, so seqnum 0 is one after 65335.
+  // in that case, add 65335 to the seqnum of the packet to insert and serach its position. 
+  if(seqnum < (1 << 14) && m_seqnum > (1 << 14)) {
+    seqnum += (1 << 16);
+  }
 
   m_mutex.Lock();
 
@@ -130,7 +138,7 @@ void CPacketRingBuffer::appendRTPPacket(CRTPPacket* packet)
         // cerr << "CPacketRingBuffer::appendRTPPacket: packet inserted in the middle" << endl;
         break;
       }
-      if((*iter_pre)->seqNum() == seqnum) { // duplicate packet! drop!
+      if((*iter_pre)->seqNum() == packet->seqNum()) { // duplicate packet! drop!
         cerr << "CPacketRingBuffer::appendRTPPacket: dropping duplicate packet: seqnr " << seqnum << endl;
         delete packet;
         break;
