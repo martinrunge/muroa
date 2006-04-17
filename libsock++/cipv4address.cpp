@@ -23,7 +23,7 @@
 #include <sys/socket.h>
 #include <arpa/inet.h>
 
-#include <iostream>
+
 
 using namespace std;
 
@@ -37,7 +37,7 @@ CIPv4Address::CIPv4Address(std::string host, unsigned short port)
 {
 
   string tmp_host;
-  unsigned short tmp_port;
+  unsigned short tmp_port = 0;
   seperateHostAndPort(host, &tmp_host, &tmp_port);
   
   if(tmp_port == 0) {
@@ -64,6 +64,11 @@ std::string CIPv4Address::ipAddress() {
 
 unsigned short CIPv4Address::port() {
   return ntohs(m_sockaddr_in.sin_port);
+}
+
+void CIPv4Address::port(unsigned short port_nr) {
+  m_sockaddr_in.sin_port = htons(port_nr);
+
 }
 
 
@@ -100,11 +105,49 @@ int CIPv4Address::seperateHostAndPort(const std::string& hostandport, std::strin
     *port = strtoul(hostandport.substr(pos + 1, hostandport.size()).c_str(), NULL, 10);   
     *host = hostandport.substr(0, pos);
     cerr << "hostname " << *host << " and portnumber " << *port << endl;     
-  }
-  
-  if(*port == 0)
-    return -1;
-  else
     return 0;
+  }
+  else {
+    *port = 0;
+    return -1;
+  }
 }
 
+
+
+/*!
+    \fn CIPv4Address::operator==(CIPv4Address)
+ */
+bool CIPv4Address::operator==( CIPv4Address& addr)
+{
+  struct sockaddr_in *other = addr.sock_addr_in_ptr();
+
+  if( m_sockaddr_in.sin_family == other->sin_family && 
+      m_sockaddr_in.sin_port == other->sin_port &&
+      m_sockaddr_in.sin_addr.s_addr == other->sin_addr.s_addr) {
+    return true;
+  }
+  else {
+    return false;
+  }
+}
+
+
+/*!
+    \fn CIPv4Address::operator=(std::string hostname)
+ */
+void CIPv4Address::operator=(std::string hostname)
+{
+  string tmp_host;
+  unsigned short tmp_port = 0;
+  seperateHostAndPort(hostname, &tmp_host, &tmp_port);
+
+  fillSockaddrIn(tmp_host, tmp_port);
+    
+}
+
+ostream& operator<<(ostream& os, CIPv4Address addr) {
+  
+  os << addr.ipAddress() << ":" << addr.port();
+  return os;
+}

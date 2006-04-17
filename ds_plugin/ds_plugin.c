@@ -107,6 +107,7 @@ static void ds_configure_ok_cb(GtkButton *w, gpointer data)
 	xmms_cfg_write_default_file(cfg);
 	xmms_cfg_free(cfg);
 	gtk_widget_destroy(configurewin);
+  ds_cpp_config_ok(clients);
 }
 
 

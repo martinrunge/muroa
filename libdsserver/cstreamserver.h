@@ -66,6 +66,17 @@ public:
     std::list<CStreamConnection*>::iterator addClient(CIPv4Address* addr);
     CSync* getSyncObj(uint32_t session_id, uint32_t stream_id);
 
+    /*!
+      \fn CStreamServer::adjustClientListTo(std::vector<std::string> clients)
+      \brief  specify a new list of clients and adjust the used list to that new list.
+
+      This is done in two steps: first, search the connection list for cliet connections not listed any more in the new list and remove them. Second, search the new list for clients, that are not yet listed in the modified connection list and add them.
+    */
+    void adjustClientListTo(std::list<std::string> clients);
+
+    void stdClientPort(int port);
+    int stdClientPort(void);
+
 private:
     unsigned long m_num;
     int m_payload_size;
@@ -102,6 +113,8 @@ private:
     unsigned long m_session_id;
 
     unsigned long m_stream_id;
+
+    int m_std_client_port;
 
 
 

@@ -44,6 +44,7 @@ CStreamConnection::~CStreamConnection()
  */
 void CStreamConnection::connect(CIPv4Address* addr)
 {
+    m_client_address = *addr;
     m_socket.connect(addr);
 }
 
@@ -101,4 +102,13 @@ void CStreamConnection::handleReceivedPacket()
 
     } 
 
+}
+
+
+/*!
+    \fn CStreamConnection::method_1()
+ */
+CIPv4Address* CStreamConnection::getClientAddress()
+{
+    return &m_client_address;
 }

@@ -23,6 +23,7 @@
 #include <netinet/in.h>
 
 #include <cipaddress.h>
+#include <iostream>
 
 /**
 Class for IPv4 Addresses
@@ -50,6 +51,12 @@ public:
     
     /** returns port number in host byte order */
     unsigned short port();
+    void port(unsigned short port_nr);
+
+    bool operator==(CIPv4Address& addr);
+    void operator=(std::string hostname);
+
+    friend std::ostream& operator<<(std::ostream& os, CIPv4Address addr); 
 
 private:
     void fillSockaddrIn(std::string host, unsigned short port);

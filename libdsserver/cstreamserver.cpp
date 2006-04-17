@@ -262,3 +262,96 @@ CSync* CStreamServer::getSyncObj(uint32_t session_id, uint32_t stream_id)
     else
       return 0;
 }
+
+
+void CStreamServer::adjustClientListTo(std::list<std::string> clients)
+{
+  cerr << "CStreamServer::adjustClientListTo:" << endl;
+  CIPv4Address* connection_list_addr;
+  CIPv4Address tmp_addr;
+  list<CStreamConnection*>::iterator conn_iter, tmp_conn_iter;
+  list<string>::iterator clients_iter, clients_tmp_iter;
+
+  for(conn_iter = m_connection_list.begin(); conn_iter != m_connection_list.end(); conn_iter++ ) {
+
+
+    connection_list_addr = (*conn_iter)->getClientAddress();              
+    cerr << "checking if " << *connection_list_addr << " is still in the list of clients..." ;
+    bool found = false;
+    
+    for(clients_iter = clients.begin(); clients_iter != clients.end(); clients_iter++ ) {
+      tmp_addr = *clients_iter;
+      if(tmp_addr.port() == 0)
+        tmp_addr.port(m_std_client_port);
+      
+      if(tmp_addr == *connection_list_addr) {
+        found = true;        
+        break;
+      }
+    }
+    if (!found) {
+      cerr << " not found -> remove!" << endl;
+      if(conn_iter == m_connection_list.begin()) {
+        removeStreamConnection(conn_iter);  
+        conn_iter = m_connection_list.begin();
+      }
+      else {  
+        tmp_conn_iter = conn_iter;
+        --tmp_conn_iter;
+        removeStreamConnection(conn_iter);  
+        conn_iter = tmp_conn_iter;
+      }
+    }
+    else {
+      cerr << "found -> keep!" << endl;
+    }
+  }
+  // now, all connections to clients not in the list any more have been removed.
+
+
+  for(clients_iter = clients.begin(); clients_iter != clients.end(); clients_iter++ ) {
+    cerr << "checking if " << *clients_iter << " is already in the list of connections ..." ;
+
+    tmp_addr = *clients_iter;
+    if(tmp_addr.port() == 0)
+      tmp_addr.port(m_std_client_port);
+
+    bool found = false;
+
+    for(conn_iter = m_connection_list.begin(); conn_iter != m_connection_list.end(); conn_iter++ ) {
+      connection_list_addr = (*conn_iter)->getClientAddress();              
+      
+      if(tmp_addr == *connection_list_addr) {
+        found = true;        
+        break;
+      }
+    }
+    if (!found) {
+      cerr << " not found -> add!" << endl;
+      addClient(&tmp_addr);
+    }  
+    else {
+      cerr << "found -> already present in connection list!" << endl;
+    }
+  }
+  // now, the lists are in sync
+
+}
+
+
+/*!
+    \fn CStreamServer::stdClientPort(int port)
+ */
+void CStreamServer::stdClientPort(int port)
+{
+  m_std_client_port = port;
+}
+
+
+/*!
+    \fn CStreamServer::stdClientPort(void)
+ */
+int CStreamServer::stdClientPort(void)
+{
+  return m_std_client_port;
+}

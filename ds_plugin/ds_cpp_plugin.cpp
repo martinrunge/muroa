@@ -39,16 +39,28 @@ int ds_cpp_init(char** clients) {
   tmp_length = 8192;
   tmp_buffer = (char*)malloc(tmp_length);
   tmp_offset = 0;
-  
+
+  streamserver.stdClientPort(4001);  
+
   for(int i=0; clients[i] != NULL; i++) {
     std::cerr << "client " << i << " is " << clients[i] << std::endl;
-    CIPv4Address *localaddr = new CIPv4Address(clients[i], 4001);
+    CIPv4Address *localaddr = new CIPv4Address(clients[i], streamserver.stdClientPort());
     streamserver.addClient(localaddr);
   }
   
 
   return 0;
 
+}
+
+
+int ds_cpp_config_ok(char** clients) {
+  std::list<std::string> clients_list;
+
+  for(int i=0; clients[i] != NULL; i++) {
+    clients_list.push_back(clients[i]);    
+  }    
+  streamserver.adjustClientListTo(clients_list);  
 }
 
 int ds_cpp_open(int audio_bytes_per_second) {

@@ -23,6 +23,7 @@
 #define DS_CPP_PLUGIN_H
 
 int ds_cpp_init(char** clients);
+int ds_cpp_config_ok(char** clients);
 int ds_cpp_open(int audio_bytes_per_second);
 int ds_cpp_write(char* buffer, int length);
 void ds_cpp_close();

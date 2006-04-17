@@ -39,6 +39,7 @@ public:
     ~CStreamConnection();
     void connect(CIPv4Address* addr);
     int send(char* buffer, int len);
+    CIPv4Address* getClientAddress();
 
 private:
 
@@ -47,6 +48,7 @@ private:
     CStreamServer* m_stream_server;
 private:
     void handleReceivedPacket();
+    CIPv4Address m_client_address;
 };
 
 #endif
