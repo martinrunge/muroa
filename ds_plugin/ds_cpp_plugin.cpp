@@ -40,25 +40,31 @@ int ds_cpp_init(char** clients) {
   tmp_buffer = (char*)malloc(tmp_length);
   tmp_offset = 0;
 
+  string str;
+
   streamserver.stdClientPort(4001);  
 
   for(int i=0; clients[i] != NULL; i++) {
-    std::cerr << "client " << i << " is " << clients[i] << std::endl;
-    CIPv4Address *localaddr = new CIPv4Address(clients[i], streamserver.stdClientPort());
-    streamserver.addClient(localaddr);
+    str = clients[i];
+    if(str.size() > 0) {
+      std::cerr << "client " << i << " is " << clients[i] << std::endl;
+      CIPv4Address *localaddr = new CIPv4Address(clients[i], streamserver.stdClientPort());
+      streamserver.addClient(localaddr);
+    }
   }
   
-
   return 0;
-
 }
 
 
 int ds_cpp_config_ok(char** clients) {
   std::list<std::string> clients_list;
+  string str;
 
   for(int i=0; clients[i] != NULL; i++) {
-    clients_list.push_back(clients[i]);    
+    str = clients[i];
+    if(str.size() > 0)
+      clients_list.push_back(clients[i]);    
   }    
   streamserver.adjustClientListTo(clients_list);  
 }
