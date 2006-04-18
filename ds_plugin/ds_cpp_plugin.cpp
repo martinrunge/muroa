@@ -22,6 +22,7 @@
 #include "cstreamserver.h"
 
 #include <iostream>
+#include <string>
 
 CStreamServer streamserver(1, 300);
 
@@ -40,7 +41,7 @@ int ds_cpp_init(char** clients) {
   tmp_buffer = (char*)malloc(tmp_length);
   tmp_offset = 0;
 
-  string str;
+  std::string str;
 
   streamserver.stdClientPort(4001);  
 
@@ -59,7 +60,7 @@ int ds_cpp_init(char** clients) {
 
 int ds_cpp_config_ok(char** clients) {
   std::list<std::string> clients_list;
-  string str;
+  std::string str;
 
   for(int i=0; clients[i] != NULL; i++) {
     str = clients[i];
