@@ -37,7 +37,7 @@ public:
     CStreamConnection(CStreamServer* parent, unsigned short bind_port = 0);
 
     ~CStreamConnection();
-    void connect(CIPv4Address* addr);
+    int connect(CIPv4Address* addr);
     int send(char* buffer, int len);
     CIPv4Address* getClientAddress();
 

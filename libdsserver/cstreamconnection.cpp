@@ -42,10 +42,10 @@ CStreamConnection::~CStreamConnection()
 /*!
     \fn CStreamConnection::connect(CIPv4Address* addr)
  */
-void CStreamConnection::connect(CIPv4Address* addr)
+int CStreamConnection::connect(CIPv4Address* addr)
 {
     m_client_address = *addr;
-    m_socket.connect(addr);
+    return m_socket.connect(addr);
 }
 
 
