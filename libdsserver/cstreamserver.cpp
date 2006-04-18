@@ -355,3 +355,16 @@ int CStreamServer::stdClientPort(void)
 {
   return m_std_client_port;
 }
+
+
+/*!
+    \fn CStreamServer::listClients(void)
+ */
+void CStreamServer::listClients(void)
+{
+  list<CStreamConnection*>::iterator iter;
+  cerr << "List of clients in session: " << endl;
+  for(iter = m_connection_list.begin(); iter != m_connection_list.end(); iter++ ) {
+    cerr << *(*iter)->getClientAddress() << endl;
+  }
+}
