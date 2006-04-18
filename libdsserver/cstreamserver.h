@@ -76,6 +76,7 @@ public:
 
     void stdClientPort(int port);
     int stdClientPort(void);
+    void listClients(void);
 
 private:
     unsigned long m_num;
