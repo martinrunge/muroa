@@ -1,6 +1,6 @@
 /***************************************************************************
- *   Copyright (C) 2005 by Martin Runge   *
- *   martin.runge@web.de   *
+ *   Copyright (C) 2005 by Martin Runge                                    *
+ *   martin.runge@web.de                                                   *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -66,6 +66,8 @@ int ds_cpp_config_ok(char** clients) {
 int ds_cpp_open(int audio_bytes_per_second) {
   // streamserver = new CStreamServer( 1, 300 );
   std::cerr << "ds_cpp_open / audio bytes per sec:" << audio_bytes_per_second << std::endl;
+
+  streamserver.listClients( );
 
   streamserver.open(audio_bytes_per_second); 
 
