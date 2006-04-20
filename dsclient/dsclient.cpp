@@ -32,8 +32,10 @@ int main(int argc, char *argv[])
 {
   int num;
   char c;
-  // cout << "dsclient" << endl;
   
+  string device_str, device;  
+  device = "hw:0,0";  
+
   struct sched_param s_param;
   
   sched_getparam(0, &s_param);
@@ -41,8 +43,15 @@ int main(int argc, char *argv[])
   sched_setparam(0, &s_param);
   sched_setscheduler(0, SCHED_FIFO, &s_param); 
 
+  if(argc == 3) {
+    device_str = argv[1];
+    if(device_str.compare("--device") == 0)
+      device = argv[2];
+    
+  }
 
-  CPlayer player(4001, "hw:0,0");
+  cout << "dsclient opening device " << device << endl;
+  CPlayer player(4001, device);
   player.start();
 
   cin >> c;
