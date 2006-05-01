@@ -24,6 +24,8 @@
 #include <cstdlib>
 #include <string.h>
 
+#include <sys/stat.h> 
+
 #include "cpthread.h"
 #include "libsock++.h"
 #include "libdsaudio.h"
@@ -153,5 +155,7 @@ void CPlayer::requestSync(int session_id, int stream_id)
 
   }
 }
+
+
 
 

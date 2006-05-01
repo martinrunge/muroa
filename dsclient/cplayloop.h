@@ -81,6 +81,7 @@ private:
 
 
     void playAudio(CAudioFrame *frame);
+    IAudioIO* initSoundSystem();
 
     void handleSyncObj(CSync* sync_obj);
 

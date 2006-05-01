@@ -56,7 +56,8 @@ CPlayloop::CPlayloop(CPlayer* parent, CPacketRingBuffer* packet_ringbuffer, std:
   m_sample_size = sizeof(short);
   m_num_channels = 2;
 
-  m_audio_sink = new CAudioIoAlsa();  
+  // m_audio_sink = new CAudioIoAlsa();  
+  m_audio_sink = initSoundSystem();
   m_audio_sink->open(sound_dev, desired_sample_rate, 2);
   
   int actual_sample_rate = m_audio_sink->getActualSampleRate();
@@ -520,6 +521,26 @@ bool CPlayloop::checkStream(CRTPPacket* packet)
     }
     else
       return true;
+}
+
+
+
+/*!
+    \fn CPlayer::initSoundSystem()
+ */
+IAudioIO* CPlayloop::initSoundSystem()
+{
+  struct stat buffer;
+  int         status;
+
+  // check if alsa is available:  
+  status = stat("/proc/asound/devices", &buffer);
+  if(status == 0) {
+    return new CAudioIoAlsa();
+  }
+  else {
+    return new CAudioIoOSS();
+  }
 }
 
 

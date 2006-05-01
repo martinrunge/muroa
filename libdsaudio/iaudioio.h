@@ -15,6 +15,11 @@
 
 #include <string>
 
+enum sound_system {
+  SOUND_SYS_OSS,
+  SOUND_SYS_ALSA
+};
+
 /**
 @author Martin Runge
 */
@@ -36,6 +41,7 @@ public:
     virtual int getWriteGranularity(void) = 0;
     virtual int getActualSampleRate(void) = 0;
 
+    bool checkSoundSystem(enum sound_system system);
     
 protected: 
 	 bool m_is_open;
