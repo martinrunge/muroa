@@ -533,14 +533,17 @@ IAudioIO* CPlayloop::initSoundSystem()
   struct stat buffer;
   int         status;
 
+  IAudioIO* ptr;
+
   // check if alsa is available:  
   status = stat("/proc/asound/devices", &buffer);
   if(status == 0) {
-    return new CAudioIoAlsa();
+    ptr = static_cast<IAudioIO*>(new CAudioIoAlsa());
   }
   else {
-    return new CAudioIoOSS();
+    ptr = static_cast<IAudioIO*>(new CAudioOSS());
   }
+  return ptr;
 }
 
 

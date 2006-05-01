@@ -27,6 +27,7 @@
 
 #include <cthreadslave.h>
 #include "caudioioalsa.h"
+#include "caudiooss.h"
 #include "cmutex.h"
 
 #include <boost/date_time/posix_time/posix_time.hpp>
@@ -76,8 +77,8 @@ private:
     double m_resample_factor;
     double m_correction_factor;
 
-    CAudioIoAlsa *m_audio_sink;
-
+    //CAudioIoAlsa *m_audio_sink;
+    IAudioIO *m_audio_sink;
 
 
     void playAudio(CAudioFrame *frame);
