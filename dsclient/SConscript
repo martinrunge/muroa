@@ -1,0 +1,17 @@
+#!/bin/env python 
+
+source_files = Split('cpacketringbuffer.cpp\
+                 cplayloop.cpp\
+                 cresampler.cpp\
+                 dsclient.cpp\
+                 cplayer.cpp\
+                 crecvloop.cpp\
+                 cringbuffer.cpp')
+
+
+ds_libs = Split('dsaudio sock++')
+ext_libs = Split('samplerate boost_date_time asound')
+
+
+Import('env')
+env.Program(target='dsclient', LIBS=ds_libs + ext_libs ,source=source_files) 

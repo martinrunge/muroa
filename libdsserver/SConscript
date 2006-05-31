@@ -1,0 +1,8 @@
+#!/bin/env python 
+
+source_files = Split('cstreamconnection.cpp \
+                      cstreamserver.cpp ')
+
+
+Import('env')
+env.StaticLibrary(target='libdsserver' ,source=source_files) 

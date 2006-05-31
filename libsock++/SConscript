@@ -1,0 +1,15 @@
+#!/bin/env python 
+
+source_files = Split('cipaddress.cpp \
+                      cposixcond.cpp \
+                      ctcpserversocket.cpp \
+                      cipv4address.cpp \
+                      cpthread.cpp \
+                      cthreadslave.cpp \
+                      cmutex.cpp \
+                      csocket.cpp \
+                      libsock++.cpp ')
+
+
+Import('env')
+env.StaticLibrary(target='libsock++' ,source=source_files) 

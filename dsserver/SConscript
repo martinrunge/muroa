@@ -1,0 +1,11 @@
+#!/bin/env python 
+
+source_files = Split('dsserver.cpp')
+
+
+ds_libs = Split('dsserver sock++ dsaudio')
+ext_libs = Split('boost_date_time pthread')
+
+
+Import('env')
+env.Program(target='dsserver', LIBS=ds_libs + ext_libs ,source=source_files) 

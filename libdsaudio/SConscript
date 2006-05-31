@@ -1,0 +1,13 @@
+#!/bin/env python 
+
+source_files = Split('caudioframe.cpp \
+                      caudiooss.cpp \
+                      crtppacket.cpp \
+                      iaudioio.cpp \
+                      caudioioalsa.cpp \
+                      ccalibratedac.cpp \
+                      csync.cpp ')
+
+
+Import('env')
+env.StaticLibrary(target='libdsaudio' ,source=source_files) 
