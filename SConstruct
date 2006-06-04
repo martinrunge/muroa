@@ -1,15 +1,44 @@
 #!/bin/env python
 
+import os
+import os.path
+import string
 
-prefixable_constriction_variables = Split('AR AS CC CXX LINK RANLIB SHCC SHCXX SHLINK ')
+
+import SCons.Util
+
+prefixable_constriction_variables = Split('AR AS CC CXX RANLIB')  # LINK
 availabe_cross_tools = Split('addr2line c++ g++ gcc-3.4.4 objcopy readelf strip ar c++filt g77 ld objdump size as cpp gcc nm ranlib strings')
 
-def compiler_prefix(env, cross_prefix):
-  # print(dir(env))
+def compiler_arm_prefix(env):
+  #print(env._dict.keys())
   
-  for var in env._dict:
-    if(available_cross_tools evn[var]):
-      print(var , " = ", env[var]) 
+  dir = '/home/martin/openembedded/build/tmp/cross/bin'
+  
+  path = env['ENV'].get('PATH', [])
+  if not path:
+    path = []
+  if SCons.Util.is_String(path):
+    path = string.split(path, os.pathsep)
+  
+  env['ENV']['PATH'] = string.join([dir] + path, os.pathsep)
+  
+  cross = 'arm-linux-'
+  env['AR'] = cross + 'ar'
+  env['AS'] = cross + 'as'
+  env['CC'] = cross + 'gcc'
+  env['CXX'] = cross + 'g++'
+  env['RANLIB'] = cross + 'ranlib'
+  #env['LINK'] = cross + 'ld'
+  #env['AR'] = cross + 'ar'
+  
+  
+  #  for var in prefixable_constriction_variables:
+  #    print(var , '=' ,  env[var])
+  #    tmpstring = cross_prefix + '-' + env[var]
+  #    print(tmpstring)
+  #    env[var] = tmpstring
+  
   return env
     
  
@@ -29,9 +58,9 @@ env.Append(LIBPATH=Split("#libdsaudio #libdsserver #libsock++"))
 
 prefix = '/usr/'
            
-cross = 'arm-linux'                       
+                       
                 
-env = compiler_prefix(env, cross)
+env = compiler_arm_prefix(env)
                          
                          
 Export('env')
