@@ -13,15 +13,20 @@ availabe_cross_tools = Split('addr2line c++ g++ gcc-3.4.4 objcopy readelf strip 
 def compiler_arm_prefix(env):
   #print(env._dict.keys())
   
-  dir = '/home/martin/openembedded/build/tmp/cross/bin'
+  root_dir_tools = '/home/martin/openembedded/build/tmp/'
+  staging_postfix = '/staging/arm-linux/'
+  cross_tools_postfix = '/cross/bin/'
   
+  cross_toos_dir = root_dir_tools + cross_tools_postfix
+  staging_dir = root_dir_tools + staging_postfix
+    
   path = env['ENV'].get('PATH', [])
   if not path:
     path = []
   if SCons.Util.is_String(path):
     path = string.split(path, os.pathsep)
   
-  env['ENV']['PATH'] = string.join([dir] + path, os.pathsep)
+  env['ENV']['PATH'] = string.join([cross_toos_dir] + path, os.pathsep)
   
   cross = 'arm-linux-'
   env['AR'] = cross + 'ar'
@@ -32,6 +37,8 @@ def compiler_arm_prefix(env):
   #env['LINK'] = cross + 'ld'
   #env['AR'] = cross + 'ar'
   
+  env.Append(CPPPATH= staging_dir + 'include')
+  env.Append(LIBPATH= staging_dir + 'lib')
   
   #  for var in prefixable_constriction_variables:
   #    print(var , '=' ,  env[var])
