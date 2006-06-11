@@ -111,7 +111,7 @@ private:
     boost::posix_time::time_duration calcRingbufferDelay();
 
     boost::posix_time::time_duration getPlaybackDiff();
-    boost::posix_time::time_duration CPlayloop::getPlaybackDiffFromTime();
+    boost::posix_time::time_duration getPlaybackDiffFromTime();
     
     int sleep(boost::posix_time::time_duration duration);
     int adjustFramesToDiscard(int num_frames_discarded);

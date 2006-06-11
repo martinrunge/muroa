@@ -7,77 +7,77 @@ import string
 
 import SCons.Util
 
-prefixable_constriction_variables = Split('AR AS CC CXX RANLIB')  # LINK
-availabe_cross_tools = Split('addr2line c++ g++ gcc-3.4.4 objcopy readelf strip ar c++filt g77 ld objdump size as cpp gcc nm ranlib strings')
+
 
 def compiler_arm_prefix(env):
-  #print(env._dict.keys())
-  
-  root_dir_tools = '/home/martin/openembedded/build/tmp/'
-  staging_postfix = '/staging/arm-linux/'
-  cross_tools_postfix = '/cross/bin/'
-  
-  cross_toos_dir = root_dir_tools + cross_tools_postfix
-  staging_dir = root_dir_tools + staging_postfix
-    
-  path = env['ENV'].get('PATH', [])
-  if not path:
-    path = []
-  if SCons.Util.is_String(path):
-    path = string.split(path, os.pathsep)
-  
-  env['ENV']['PATH'] = string.join([cross_toos_dir] + path, os.pathsep)
-  
-  cross = 'arm-linux-'
-  env['AR'] = cross + 'ar'
-  env['AS'] = cross + 'as'
-  env['CC'] = cross + 'gcc'
-  env['CXX'] = cross + 'g++'
-  env['RANLIB'] = cross + 'ranlib'
-  #env['LINK'] = cross + 'ld'
-  #env['AR'] = cross + 'ar'
-  
-  env.Append(CPPPATH= staging_dir + 'include')
-  env.Append(LIBPATH= staging_dir + 'lib')
-  
-  #  for var in prefixable_constriction_variables:
-  #    print(var , '=' ,  env[var])
-  #    tmpstring = cross_prefix + '-' + env[var]
-  #    print(tmpstring)
-  #    env[var] = tmpstring
-  
-  return env
-    
- 
-      
-# arm-linux-addr2line  
-# arm-linux-c++        arm-linux-g++      arm-linux-gcc-3.4.4      arm-linux-objcopy    arm-linux-readelf  arm-linux-strip
-# arm-linux-ar         arm-linux-c++filt  arm-linux-g77            arm-linux-ld         arm-linux-objdump  arm-linux-size
-# arm-linux-as         arm-linux-cpp      arm-linux-gcc            arm-linux-nm         arm-linux-ranlib   arm-linux-strings
+	root_dir_tools = '/home/martin/openembedded/build/tmp/'
+	staging_postfix = '/staging/arm-linux/'
+	cross_tools_postfix = '/cross/bin/'
+
+	cross_toos_dir = root_dir_tools + cross_tools_postfix
+	staging_dir = root_dir_tools + staging_postfix
+
+	path = env['ENV'].get('PATH', [])
+	if not path:
+		path = []
+	if SCons.Util.is_String(path):
+		path = string.split(path, os.pathsep)
+
+	env['ENV']['PATH'] = string.join([cross_toos_dir] + path, os.pathsep)
+
+	cross = 'arm-linux-'
+	env['AR'] = cross + 'ar'
+	env['AS'] = cross + 'as'
+	env['CC'] = cross + 'gcc'
+	env['CXX'] = cross + 'g++'
+	env['RANLIB'] = cross + 'ranlib'
+
+	env.Append(CPPPATH= staging_dir + 'include')
+	env.Append(LIBPATH= staging_dir + 'lib')
+
+	return env
+
+
+opts = Options()
+opts.Add('target', 'select target for cross compiling (x86, arm, ...)', 'x86')
 
 
 
+x86_env = Environment(optiosn = opts)
+x86_env.Append(CPPPATH=Split("#libdsaudio #libdsserver #libsock++"))
 
-
-env = Environment()
-env.Append(CPPPATH=Split("#libdsaudio #libdsserver #libsock++"))
-env.Append(LIBPATH=Split("#libdsaudio #libdsserver #libsock++"))
+arm_env = x86_env.Copy()
+arm_env.Append(LIBPATH=Split("#arm-obj/libdsaudio #arm-obj/libdsserver #arm-obj/libsock++"))
+x86_env.Append(LIBPATH=Split("#x86-obj/libdsaudio #x86-obj/libdsserver #x86-obj/libsock++"))
 
 prefix = '/usr/'
-           
-                       
-                
-env = compiler_arm_prefix(env)
-                         
-                         
+
+target = 'arm'
+print('target=', target)
+
+print(opts.args)
+
+
+if 'arm' in target:
+	print('Compiling for arm')
+	arm_env = compiler_arm_prefix(arm_env)
+	build_dir = 'arm-obj'
+	env = arm_env
+if 'x86' in target:
+	print('Compiling for x86')
+	build_dir = 'x86-obj'
+	env = x86_env
+
+Help(opts.GenerateHelpText(env))
+
+
+
 Export('env')
 
-SConscript('libdsaudio/SConscript', duplicate=0) 
-SConscript('libsock++/SConscript', duplicate=0) 
-SConscript('libdsserver/SConscript', duplicate=0) 
-SConscript('dsclient/SConscript', duplicate=0) 
-SConscript('dsserver/SConscript', duplicate=0) 
 
+subdirs = Split('libdsaudio libsock++ libdsserver dsclient dsserver')
 
-        
-    
+for subdir in subdirs:
+	env.BuildDir(build_dir + '/' + subdir, subdir)
+	env.SConscript(subdir + '/SConscript', build_dir = build_dir + '/' + subdir, duplicate=0) 
+

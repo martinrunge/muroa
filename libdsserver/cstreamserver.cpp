@@ -141,7 +141,7 @@ int CStreamServer::write(char* buffer, int length) {
       m_last_payload_duration = payload_duration;
       m_time_since_last_packet = m_last_payload_duration;
 
-      m_first_send_time = microsec_clock::universal_time();
+      m_first_send_time = microsec_clock::local_time();
       m_send_time = m_first_send_time;
       
       m_payload_duration_sum = payload_duration;
@@ -149,7 +149,7 @@ int CStreamServer::write(char* buffer, int length) {
 
     }
     else {
-      m_send_time = microsec_clock::universal_time();
+      m_send_time = microsec_clock::local_time();
       m_payload_duration_sum += payload_duration;                  
       // cerr << " payload_duration sum=" << m_payload_duration_sum;
     }
