@@ -27,55 +27,27 @@ audio resampling class
 */
 
 
-#include <samplerate.h>
-
 
 class CAudioFrame;
 class CRingBuffer;
 
+enum converter_quality {
+  poor,
+  medium,
+  high,
+  best
+};
 
 class CResampler{
 public:
-    CResampler(CRingBuffer *ringbuffer, int converter_type, int num_channels);
-    ~CResampler();
+    CResampler(CRingBuffer *ringbuffer, enum converter_quality quality, int num_channels);
+    virtual ~CResampler() = 0;
     
-    int resampleFrame(CAudioFrame* in_frame, float factor = 1.0);
-    int reset();
+    virtual int resampleFrame(CAudioFrame* in_frame, double factor = 1.0) = 0;
+    virtual int reset() = 0;
 
-    int sizeInMultiChannelSamples();
-
+    virtual int sizeInMultiChannelSamples() = 0;
     
-private:
-  SRC_STATE* m_src_state;
-  SRC_DATA* m_src_data;  
-  
-  float *m_in_buffer, *m_out_buffer;
-  int    m_in_buffer_size, m_out_buffer_size;
-  
-
-  // offsets are given in number of multichannel samples
-  // e.g. one sample of each channel (right and left for 2 ch stereo) would result in an ofset of 1.
-  int m_in_offset;
-  int m_out_offset;
-  
-  int m_num_channels;
-  
-
-  int m_size_of_float_multichannel_sample;     // called frame in libsamplerate
-  int m_size_of_input_singlechannel_sample;
-  int m_size_of_input_multichannel_sample;
-
-  // CAudioFrame* m_resampled_frame;
-  CRingBuffer* m_ringbuffer;
-
-  void appendFrameToImputBuffer(CAudioFrame* in_frame);
-  int copyResampledFramesToRingbuffer();
-
-  // for debugging 
-  char* m_data_ptr;
-  FILE *m_debug_fd1;
-  FILE *m_debug_fd2;
-  FILE *m_debug_fd3;
 };
 
 #endif

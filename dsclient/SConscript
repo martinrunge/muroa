@@ -6,7 +6,8 @@ source_files = Split('cpacketringbuffer.cpp\
                  dsclient.cpp\
                  cplayer.cpp\
                  crecvloop.cpp\
-                 cringbuffer.cpp')
+                 cringbuffer.cpp\
+                 CFixPointConverter.cpp')
 
 
 ds_libs = Split('dsaudio sock++')
