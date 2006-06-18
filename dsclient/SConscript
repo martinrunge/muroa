@@ -4,7 +4,7 @@ source_files = Split('cpacketringbuffer.cpp\
                  cplayloop.cpp\
                  cresampler.cpp\
                  cfloatresampler.cpp\
-                 cfixpointresampler.cpp\  
+                 cfixpointresampler.cpp\
                  dsclient.cpp\
                  cplayer.cpp\
                  crecvloop.cpp\
