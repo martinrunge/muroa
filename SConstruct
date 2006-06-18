@@ -52,10 +52,16 @@ x86_env.Append(LIBPATH=Split("#x86-obj/libdsaudio #x86-obj/libdsserver #x86-obj/
 
 prefix = '/usr/'
 
-target = 'arm'
-print('target=', target)
 
 print(opts.args)
+try:
+  target = opts.args['target']
+  
+except:
+  print("target not set. Using x86")  
+  target = 'x86'
+
+print('target=', target)
 
 
 if 'arm' in target:
