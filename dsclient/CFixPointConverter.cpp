@@ -179,7 +179,7 @@ void CFixPointConverter::initialize(double fac, int channels, double volume) {
       // Add extra to allow of offset of input data (Xoff in main routine)
       _X[i] = new short[IBUFFSIZE + 256];
       _Y[i] = new short[(int)(((double)IBUFFSIZE)*m_factor)];
-      memset(_X[i], 0, sizeof(short) * (IBUFFSIZE + 256));    
+      memset(_X[i], 0, sizeof(short) * (IBUFFSIZE + 256));
    }
 }
 
@@ -194,6 +194,7 @@ void CFixPointConverter::initialize(double fac, int channels, double volume) {
     \param outCount number of output samples to compute
     \param inArray[] input data (length inCount * nChans)
     \param outArray[] output data (length outCount * nChans)
+    \param factor      resampling factor
 
     \return number of output samples returned    
 */
@@ -202,7 +203,8 @@ int CFixPointConverter::resample(       /*  */
     int& inCount,               /* number of input samples to convert */
     int outCount,               /* number of output samples to compute */
     short inArray[],            /* input data */
-    short outArray[])           /* output data */
+    short outArray[],           /* output data */
+	double factor)              /* factor */
 {
   int Ycount;
    
@@ -658,7 +660,7 @@ int CFixPointConverter::resampleWithFilter(int& inCount,		/* number of input sam
 		if (Nout > OBUFFSIZE) /* Check to see if output buff overflowed */
 		  return err_ret("Output array overflow");
 		
-	   for (c = 0; c < m_nChans; c++)
+	    for (c = 0; c < m_nChans; c++)
 		{
 			for (i = 0; i < Nout; i++)
 			{

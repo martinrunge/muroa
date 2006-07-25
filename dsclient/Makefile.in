@@ -54,8 +54,8 @@ PROGRAMS = $(bin_PROGRAMS)
 am_dsclient_OBJECTS = dsclient.$(OBJEXT) cplayloop.$(OBJEXT) \
 	cresampler.$(OBJEXT) crecvloop.$(OBJEXT) cplayer.$(OBJEXT) \
 	cpacketringbuffer.$(OBJEXT) cringbuffer.$(OBJEXT) \
-	CFixPointConverter.$(OBJEXT) cfloatresampler.$(OBJEXT) \
-	cfixpointresampler.$(OBJEXT)
+	cfloatresampler.$(OBJEXT) cfixpointresampler.$(OBJEXT) \
+	cfilterdef.$(OBJEXT)
 dsclient_OBJECTS = $(am_dsclient_OBJECTS)
 dsclient_DEPENDENCIES = $(top_builddir)/libsock++/libsock++.la \
 	$(top_builddir)/libdsaudio/libdsaudio.la
@@ -184,14 +184,14 @@ INCLUDES = -I$(top_srcdir)/libdsaudio -I$(top_srcdir)/libsock++
 METASOURCES = AUTO
 dsclient_SOURCES = dsclient.cpp cplayloop.cpp cplayloop.h cresampler.cpp \
 	cresampler.h crecvloop.cpp cplayer.cpp cpacketringbuffer.cpp cpacketringbuffer.h \
-	cringbuffer.cpp cringbuffer.h CFixPointConverter.cpp cfloatresampler.cpp \
-	cfixpointresampler.cpp
+	cringbuffer.cpp cringbuffer.h cfloatresampler.cpp cfixpointresampler.cpp cfilterdef.cpp \
+	cfilterdef.h
 
 dsclient_LDADD = $(top_builddir)/libsock++/libsock++.la \
 	$(top_builddir)/libdsaudio/libdsaudio.la -lsamplerate
 
-noinst_HEADERS = crecvloop.h cplayer.h cringbuffer.h CFixPointConverter.h \
-	CFixPointConverterLargeFilter.h CFixPointConverterSmallFilter.h cfloatresampler.h cfixpointresampler.h
+noinst_HEADERS = crecvloop.h cplayer.h cringbuffer.h cfloatresampler.h \
+	cfixpointresampler.h CFixPointResamplerLargeFilter.h CFixPointResamplerSmallFilter.h
 
 all: all-am
 
@@ -206,9 +206,9 @@ $(srcdir)/Makefile.in:  $(srcdir)/Makefile.am  $(am__configure_deps)
 	      exit 1;; \
 	  esac; \
 	done; \
-	echo ' cd $(top_srcdir) && $(AUTOMAKE) --gnu  dsclient/Makefile'; \
+	echo ' cd $(top_srcdir) && $(AUTOMAKE) --foreign  dsclient/Makefile'; \
 	cd $(top_srcdir) && \
-	  $(AUTOMAKE) --gnu  dsclient/Makefile
+	  $(AUTOMAKE) --foreign  dsclient/Makefile
 .PRECIOUS: Makefile
 Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 	@case '$?' in \
@@ -264,7 +264,7 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/CFixPointConverter.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/cfilterdef.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/cfixpointresampler.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/cfloatresampler.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/cpacketringbuffer.Po@am__quote@

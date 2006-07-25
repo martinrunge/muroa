@@ -26,7 +26,10 @@ Ringbuffer implementation for audio data.
 @author Martin Runge
 */
 
+#include <stdint.h>
 #include "stdio.h"
+
+
 
 class CRingBuffer{
 public:
@@ -42,9 +45,13 @@ public:
     inline int getNumFrames() { return m_num_frames; };
 
     void write(float* src, int num_samples);
+    void write(short* buffer, int num_samples);
 
     int sizeInMultiChannelSamples();
-
+    int write(int16_t** per_channel_buffers, int num_samples_per_channel );
+    int capacity(void);
+    int available(void);
+    
 private:
     char* m_buffer;
     int m_buffer_size_in_bytes;

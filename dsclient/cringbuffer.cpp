@@ -161,3 +161,72 @@ void CRingBuffer::write(float* src, int num_samples)
     }
   }
 }
+
+
+/*!
+    \fn CRingBuffer::write(unsigned short* buffer, int num_samples)
+ */
+void CRingBuffer::write(short* buffer, int num_samples)
+{
+  short scaled_value_int;
+
+  assert(num_samples * 2 < m_buffer_size_in_bytes - size());
+
+  for(int i=0; i < num_samples; i++) {
+
+    // fwrite(&scaled_value_int, 2, 1, m_debug_fd1);
+        
+    *(short*)m_write_ptr = buffer[i];
+    m_write_ptr += sizeof(short);
+    assert(m_write_ptr != m_read_ptr);
+
+    if(m_write_ptr - m_buffer >= m_buffer_size_in_bytes) {
+      m_write_ptr = m_buffer;    
+      assert(m_write_ptr != m_read_ptr);
+    }
+  }
+}
+
+
+/*!
+    \fn CRingBuffer::write(int16** per_channel_buffers, int num_samples_per_channel )
+ */
+int CRingBuffer::write(int16_t** per_channel_buffers, int num_samples_per_channel )
+{
+  int16_t* writeptr = reinterpret_cast<int16_t*>(m_write_ptr);
+  int16_t* bufferptr = reinterpret_cast<int16_t*>(m_buffer);
+  int16_t* endptr = bufferptr + m_buffer_size_in_bytes / sizeof(int16_t);
+
+  assert(available() >= num_samples_per_channel * m_num_channels * sizeof(int16_t));
+
+  for(int i = 0; i < num_samples_per_channel; i++) {
+    for(int ch = 0; ch < m_num_channels; ch++) {
+      *writeptr = per_channel_buffers[ch][i];
+      if(writeptr < endptr)
+        writeptr++;
+      else
+        writeptr = bufferptr;
+    }
+  }  
+  m_write_ptr = reinterpret_cast<char*>(writeptr);    
+
+  return num_samples_per_channel;
+}
+
+
+/*!
+    \fn CRingBuffer::capacity(void)
+ */
+int CRingBuffer::capacity(void)
+{
+  return m_buffer_size_in_bytes;
+}
+
+
+/*!
+    \fn CRingBuffer::available(void)
+ */
+int CRingBuffer::available(void)
+{
+	return m_buffer_size_in_bytes - size();
+}

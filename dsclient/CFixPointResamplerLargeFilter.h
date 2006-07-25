@@ -38,12 +38,13 @@ well for its level of computational expense.
 #include <config.h>
 #endif
 
+#include <stdint.h>
 
 #define LARGE_FILTER_NMULT ((short)65)
 #define LARGE_FILTER_SCALE 14746 /* Unity-gain scale factor */
 #define LARGE_FILTER_NWING 8192 /* Filter table length */
 
-short CFixPointConverter::LARGE_FILTER_IMP[] /* Impulse response */ = {
+const static int16_t LARGE_FILTER_IMP[] /* Impulse response */ = {
 32767,
 32766,
 32764,
@@ -8237,7 +8238,7 @@ short CFixPointConverter::LARGE_FILTER_IMP[] /* Impulse response */ = {
 0,
 0};
 
-static short LARGE_FILTER_IMPD[] /* Impulse response differences */ = {
+const static int16_t LARGE_FILTER_IMPD[] /* Impulse response differences */ = {
 -1,
 -2,
 -3,

@@ -50,6 +50,14 @@
         <f77compiler>kdevg77options</f77compiler>
         <cxxflags>-O0 -g3</cxxflags>
         <envvars/>
+        <topsourcedir></topsourcedir>
+        <cppflags>-D__STDC_LIMIT_MACROS</cppflags>
+        <ldflags></ldflags>
+        <ccompilerbinary></ccompilerbinary>
+        <cxxcompilerbinary></cxxcompilerbinary>
+        <f77compilerbinary></f77compilerbinary>
+        <cflags></cflags>
+        <f77flags></f77flags>
       </debug>
     </configurations>
     <make>
@@ -174,7 +182,7 @@
     <qt>
       <used>false</used>
       <version>3</version>
-      <root></root>
+      <root>/usr/lib/qt3</root>
     </qt>
   </kdevcppsupport>
   <cppsupportpart>
@@ -202,7 +210,7 @@
     </display>
   </kdevdebugger>
   <ctagspart>
-    <customArguments></customArguments>
-    <customTagfilePath></customTagfilePath>
+    <customArguments/>
+    <customTagfilePath/>
   </ctagspart>
 </kdevelop>

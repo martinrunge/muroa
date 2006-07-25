@@ -24,11 +24,13 @@
 #include <config.h>
 #endif
 
+#include <stdint.h>
+
 #define SMALL_FILTER_NMULT ((short)13)
 #define SMALL_FILTER_SCALE 13128 /* Unity-gain scale factor */
 #define SMALL_FILTER_NWING 1536 /* Filter table length */
 
-short CFixPointConverter::SMALL_FILTER_IMP[] /* Impulse response */ = {
+const static int16_t SMALL_FILTER_IMP[] /* Impulse response */ = {
 32767,
 32766,
 32764,
@@ -1567,7 +1569,7 @@ short CFixPointConverter::SMALL_FILTER_IMP[] /* Impulse response */ = {
 -1
 };
 
-static short SMALL_FILTER_IMPD[] = {
+const static int16_t SMALL_FILTER_IMPD[] = {
 -1,
 -2,
 -4,

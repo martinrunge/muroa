@@ -89,11 +89,11 @@ public:
 
    int resample(            /* number of output samples returned */
       int& inCount,         /* number of input samples to convert */
-    	int outCount,         /* number of output samples to compute */
+      int outCount,         /* number of output samples to compute */
       short inArray[],      /* input array data (length inCount * nChans) */
-      short outArray[]);    /* output array data (length outCount * nChans) */
- 
- 
+      short outArray[],     /* output array data (length outCount * nChans) */
+      double factor);       /* resampling factor */
+
 private:
 
    CFixPointConverter();
