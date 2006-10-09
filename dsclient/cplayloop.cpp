@@ -73,7 +73,7 @@ CPlayloop::CPlayloop(CPlayer* parent, CPacketRingBuffer* packet_ringbuffer, std:
 
   // m_resampler = new CResampler(m_ringbuffer, SRC_SINC_BEST_QUALITY, 2);
   // m_resampler = static_cast<CResampler*>(new CFloatResampler(m_ringbuffer, high, 2));
-  m_resampler = static_cast<CResampler*>(new CFixPointResampler(m_ringbuffer, poor, 2));
+  m_resampler = static_cast<CResampler*>(new CFixPointResampler(m_ringbuffer, best, 2));
 
   m_resample_factor = (double) m_frames_per_second_post_resampler/m_frames_per_second_pre_resampler; 
   m_correction_factor = 1.0;

@@ -40,6 +40,7 @@ CRingBuffer::CRingBuffer(int size_in_frames, int num_channels)
   m_write_ptr = m_buffer;
   m_read_ptr = m_buffer;
 
+  m_debug_fd0 = fopen("ringbuffer_data.raw", "w");
   m_debug_fd1 = fopen("ringbuffer_input.raw", "w");
   m_debug_fd2 = fopen("ringbuffer_output.raw", "w");
   //m_data_ptr = new char[4096];
@@ -50,6 +51,7 @@ CRingBuffer::CRingBuffer(int size_in_frames, int num_channels)
 
 CRingBuffer::~CRingBuffer()
 {
+  fclose(m_debug_fd0);
   fclose(m_debug_fd1);
   fclose(m_debug_fd2);
   delete [] m_buffer;
@@ -81,7 +83,7 @@ char* CRingBuffer::read(int bytes)
       memcpy(buffer, m_read_ptr, bytes);
       m_read_ptr += bytes;
     }  
-    else {  // write_pre had overflow at buffer end, read pointer not yet.
+    else {  // write_ptr had overflow at buffer end, read pointer not yet.
       int bytes_to_overflow = (m_buffer + m_buffer_size_in_bytes) - m_read_ptr;
       if(bytes_to_overflow > bytes) {  // we can do it in one piece
         memcpy(buffer, m_read_ptr, bytes);
@@ -94,7 +96,7 @@ char* CRingBuffer::read(int bytes)
         m_read_ptr = m_buffer + rest;
       }
     }
-    // fwrite(buffer, 1, bytes, m_debug_fd2);
+    fwrite(buffer, 1, bytes, m_debug_fd2);
     return buffer;
 }
 
@@ -191,26 +193,52 @@ void CRingBuffer::write(short* buffer, int num_samples)
 /*!
     \fn CRingBuffer::write(int16** per_channel_buffers, int num_samples_per_channel )
  */
-int CRingBuffer::write(int16_t** per_channel_buffers, int num_samples_per_channel )
+int CRingBuffer::write(int16_t** per_channel_buffers, int start_offset, int end_offset )
 {
   int16_t* writeptr = reinterpret_cast<int16_t*>(m_write_ptr);
   int16_t* bufferptr = reinterpret_cast<int16_t*>(m_buffer);
-  int16_t* endptr = bufferptr + m_buffer_size_in_bytes / sizeof(int16_t);
+  int16_t* endptr = bufferptr + m_buffer_size_in_bytes / sizeof(int16_t) - 1;
 
-  assert(available() >= num_samples_per_channel * m_num_channels * sizeof(int16_t));
+  assert(available() >= (end_offset - start_offset) * m_num_channels * sizeof(int16_t));
 
-  for(int i = 0; i < num_samples_per_channel; i++) {
+  for(int i = start_offset; i < end_offset; i++) {
     for(int ch = 0; ch < m_num_channels; ch++) {
       *writeptr = per_channel_buffers[ch][i];
+      fwrite(writeptr, 1, sizeof(int16_t), m_debug_fd0);
       if(writeptr < endptr)
         writeptr++;
       else
         writeptr = bufferptr;
     }
-  }  
+  } 
+   
+  int size_in_bytes = (end_offset - start_offset) * m_num_channels * sizeof(int16_t);
+  
+  char *tmp_ptr = m_write_ptr;
+  int bytes_to_end, rest;
+  
+  bytes_to_end = (m_buffer + m_buffer_size_in_bytes) - tmp_ptr;
+  
+  if(bytes_to_end > size_in_bytes) {
+    for(int i = 0; i < size_in_bytes; i++) {
+      fwrite(tmp_ptr + i, 1, 1, m_debug_fd1); 
+    }
+  }
+  else {
+    for(int i = 0; i < bytes_to_end; i++) {
+      fwrite(tmp_ptr + i, 1, 1, m_debug_fd1); 
+    }
+    
+    rest = size_in_bytes - bytes_to_end;
+    for(int j = 0; j < rest; j++) {
+      fwrite(m_buffer + j, 1, 1, m_debug_fd1); 
+    }
+  }
+  
+  
   m_write_ptr = reinterpret_cast<char*>(writeptr);    
 
-  return num_samples_per_channel;
+  return (end_offset - start_offset);
 }
 
 

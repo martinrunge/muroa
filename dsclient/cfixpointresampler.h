@@ -58,7 +58,13 @@ private:
   void addSamplesInX(CAudioFrame* in_frame);
   void resample(float factor);
   int copyResampledFramesToRingbuffer();
+
   long resampleChannelLinear(float factor, int ch, long time);
+  long resampleChannelWithFilter(float factor, int ch, long time);
+
+  int FilterDown( int16_t *Xp, int16_t Ph, int Inc, uint16_t dhb);
+  int FilterUp( int16_t *Xp, int16_t Ph, int Inc);
+  
   int16_t int32toint16(int32_t int32var, int n_fix_point_bits);
 
   int m_frames_resampled;

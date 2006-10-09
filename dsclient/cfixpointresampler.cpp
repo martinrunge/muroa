@@ -117,9 +117,10 @@ CFixPointResampler::CFixPointResampler(CRingBuffer *ringbuffer, enum converter_q
   m_max_factor = 1.2;
   m_min_factor = 0.8;
 
-  m_X_size = 8192 + 256;
+  m_X_size = 4*8192 + 256;
 
   m_volume = 1.0;
+  m_interp_filter = true;
 
   m_num_channels = num_channels;
 
@@ -129,8 +130,9 @@ CFixPointResampler::CFixPointResampler(CRingBuffer *ringbuffer, enum converter_q
 
   init(m_num_channels, m_volume);
  
-  /*m_debug_fd1 = fopen("resampler_output.raw", "w");
-  m_data_ptr = new char[4096];*/
+  m_debug_fd1 = fopen("resampler_input.raw", "w");
+  m_debug_fd2 = fopen("resampler_output.raw", "w");
+  /* m_data_ptr = new char[4096];*/
 
   // m_resampled_frame = new CAudioFrame(PAYLOAD_PCM, 3 * 1024);
 
@@ -141,8 +143,9 @@ CFixPointResampler::~CFixPointResampler()
 {
   // delete m_resampled_frame;
 
-  /*fclose(m_debug_fd1);
-  delete [] m_data_ptr;*/
+  fclose(m_debug_fd1);
+  fclose(m_debug_fd2);
+  /* delete [] m_data_ptr;*/
 
   deleteBuffers();
 }
@@ -159,7 +162,7 @@ void CFixPointResampler::init(int num_channels, double volume) {
   m_volume = volume;
 
    /// TODO: make filter size configurable
-  m_filter = &m_small_filter; 
+  m_filter = &m_large_filter; 
 
    // set initial m_X_read:
    // at the beginning of each m_X, there must be at least as many 
@@ -194,6 +197,7 @@ void CFixPointResampler::init(int num_channels, double volume) {
 
   m_time = m_X_read[0] << Np;
 
+  cerr << "CFixPointResampler::init: m_max_windowfilter_range=" << m_max_windowfilter_range << endl;
 
 }
 
@@ -249,7 +253,7 @@ int CFixPointResampler::resampleFrame(CAudioFrame* in_frame, double factor)
   
   
   int num_frames = copyResampledFramesToRingbuffer();
-  cerr << "CFixPointResampler::resampleFrame copied " << num_frames << " frames to ringbuffer." << endl;
+  // cerr << "CFixPointResampler::resampleFrame copied " << num_frames << " frames to ringbuffer." << endl;
   
   return num_frames;
 }
@@ -281,6 +285,10 @@ void CFixPointResampler::addSamplesInX(CAudioFrame* in_frame) {
   int16_t* inbuffer = reinterpret_cast<int16_t*>(in_frame->dataPtr());
   int inbuffer_size_in_frames = in_frame->dataSize() / (sizeof(int16_t) * m_num_channels);
 
+  int tmp = m_X_write[0];
+  
+  //fwrite(inbuffer, sizeof(int16_t), inbuffer_size_in_frames * m_num_channels, m_debug_fd1);
+  
   for (int ch = 0; ch < m_num_channels; ch++) {  // for each channel
     // make sure that there is still enough space left in buffer m_X[ch]
     if(!(inbuffer_size_in_frames <= (m_X_size - m_X_write[ch]))) {
@@ -289,10 +297,13 @@ void CFixPointResampler::addSamplesInX(CAudioFrame* in_frame) {
     
     // deinterlace channels in input data into different m_X buffers
     for(int i = 0; i < inbuffer_size_in_frames; i++) {
-      m_X[ch][m_X_write[ch]] = inbuffer[i * m_num_channels + ch];  
+      m_X[ch][m_X_write[ch]] = inbuffer[i * m_num_channels + ch];  	
       m_X_write[ch]++;
+      //if(ch==0) fwrite(&inbuffer[i * m_num_channels + ch], sizeof(int16_t), 1, m_debug_fd1);	
+
     }
   }
+  // cerr << " added " << inbuffer_size_in_frames << "samples from " << tmp << " to " << m_X_write[0] << endl;
   
 }
 
@@ -311,17 +322,23 @@ The index variables m_Y_read and m_Y_write are updated.
 int CFixPointResampler::copyResampledFramesToRingbuffer() 
 {
   
-  int frames_copied = m_ringbuffer->write(m_Y, m_Y_write[0]);
+  int frames_copied = m_ringbuffer->write(m_Y, m_Y_read[0], m_Y_write[0]);
     
-  if(frames_copied != m_Y_write[0]) {
+  for(int i= m_Y_read[0]; i <  m_Y_write[0]; i++) {
+    fwrite(&m_Y[0][i], sizeof(int16_t), 1, m_debug_fd2); 
+  }
+  
+  
+  if(frames_copied != m_Y_write[0] - m_Y_read[0] ) {
     cerr << "CFixPointResampler::copyResampledFramesToRingbuffer(): not all samples copied into ringbuffer!" << endl;  
   }
   
   for(int ch = 0; ch < m_num_channels; ch++) {
     m_Y_write[ch] = 0;
+    m_Y_read[ch] = 0;
   }
   
-  /* fwrite(m_data_ptr, 2, num_single_channel_samples, m_debug_fd1); */
+  /*fwrite(m_data_ptr, 2, num_single_channel_samples, m_debug_fd1);*/
   /* m_resampled_frame->dataSizeAdded(num_single_channel_samples * sizeof(short));*/
 
   return frames_copied;
@@ -330,37 +347,6 @@ int CFixPointResampler::copyResampledFramesToRingbuffer()
 
 
 
-
-/*!
-    \fn CFixPointResampler::resampleFrame(CAudioFrame* in_frame)
- */
-// int CFixPointResampler::resampleFrameOld(CAudioFrame* in_frame, double factor)
-// {
-//   int res;
-//   // src_set_ratio (m_src_state, factor);
-// 
-//   short* inbuffer = reinterpret_cast<short*>(in_frame->dataPtr());
-//   int inbuffer_size, tmp_in_size;
-// 
-//   inbuffer_size = in_frame->dataSize() / (sizeof(unsigned short) * m_num_channels);
-//   tmp_in_size = inbuffer_size;
-// 
-//   cerr << "in " << inbuffer_size << endl;
-// 
-//   m_frames_resampled = m_converter->resample(inbuffer_size, m_out_buffer_size, inbuffer, m_out_buffer, factor);
-// 
-//   cerr << "resmapled / used " << m_frames_resampled / 4 << " / " << inbuffer_size << endl;
-// 
-//   if(inbuffer_size < tmp_in_size) {
-//     cerr << "CFixPointResampler::resampleFrame: not all input frames were used!" << endl;
-//   }
-//   
-//   int num_frames = copyResampledFramesToRingbuffer();
-// 
-//   cerr << "out " << num_frames << endl;
-// 
-//   return num_frames;
-// }
 
 
 int CFixPointResampler::reset() {
@@ -389,7 +375,7 @@ void CFixPointResampler::resample(float factor)
       for(int ch = 0; ch < m_num_channels; ch++) {
         time = resampleChannelLinear(factor, ch, m_time);
       }
-	    m_time = time;
+      m_time = time;
       break;
 
     case medium:
@@ -406,8 +392,9 @@ void CFixPointResampler::resample(float factor)
 
     case best:
       for(int ch = 0; ch < m_num_channels; ch++) {
-        //
+        time = resampleChannelWithFilter(factor, ch, m_time);
       }
+      m_time = time;
       break;
 
     default:
@@ -472,7 +459,7 @@ long CFixPointResampler::resampleChannelLinear(float factor, int ch, long time)
 
   
   // copy samples to reuse to beginning of buffer and adjust time variable accordingly
-  cerr << "[" << ch << "]: last input sample used: " << last_input_sample_used << " m_X_write " << m_X_write[ch] << endl;
+  // cerr << "[" << ch << "]: last input sample used: " << last_input_sample_used << " m_X_write " << m_X_write[ch] << endl;
   int i, j;
   for(i = last_input_sample_used, j = 0; i < m_X_write[ch]; i++, j++) {
     m_X[ch][j] = m_X[ch][i];
@@ -481,7 +468,7 @@ long CFixPointResampler::resampleChannelLinear(float factor, int ch, long time)
   m_X_write[ch] = j;
   time -= (last_input_sample_used) << Np;
  
-  cerr << "[" << ch << "]: m_X_read: " << m_X_read[ch] << " m_X_write " << m_X_write[ch] << endl;
+  // cerr << "[" << ch << "]: m_X_read: " << m_X_read[ch] << " m_X_write " << m_X_write[ch] << endl;
 
   return time;
 }
@@ -490,6 +477,108 @@ long CFixPointResampler::resampleChannelLinear(float factor, int ch, long time)
 static int pof = 0;             /* positive overflow count */
 static int nof = 0;             /* negative overflow count */
 #endif
+
+
+/*!
+    \fn CFixPointResampler::resampleChannelWithFilter(float factor, int ch, long time, int filter)
+ */
+long CFixPointResampler::resampleChannelWithFilter(float factor, int ch, long time)
+{
+  double dt = 1.0/factor;                     /* Step through input signal */ 
+  long timestep = (long)(dt*(1<<Np) + 0.5);   /* Fixed-point version of Dt */
+  long end_time;                              /* When m_time reaches end_time, all 
+                                                 samples in inpuit buffers are used. Return
+                                                 to main loop to get new samples.*/
+  long start_time = time;
+  
+  
+  long fract_part;
+  long output_sample;
+
+  int v;
+
+  int samples_produced = 0;
+  int time_shifted = 0;
+
+  
+  int16_t* input_sample_ptr;
+  int16_t* output_sample_ptr = &m_Y[ch][m_Y_write[ch]];
+ 
+  int num_input_samples = m_X_write[ch] - m_X_read[ch] - m_max_windowfilter_range;  // lea because we need two samples to interpolate.
+                                                             // In the loop below, the actual input sample 
+                                                             // and the following sample are used.
+  end_time = time + (1<<Np) * num_input_samples;
+
+  double dh = MIN(Npc, factor*Npc);  /* Filter sampling period */
+  unsigned dhb = (unsigned)(dh*(1<<Na) + 0.5);       /* Fixed-point representation */
+
+  
+  while (time < end_time) {
+
+//        fract_part = time & Pmask;
+        time_shifted = (time >> Np);
+        input_sample_ptr = m_X[ch] + time_shifted;    /* ptr to current input sample */
+        
+//        if(ch==0) fwrite(input_sample_ptr, sizeof(int16_t), 1, m_debug_fd1);
+        
+        if (factor >= 1) { 
+          v = FilterUp( input_sample_ptr, (int)(time&Pmask),-1);
+          /* Perform right-wing inner product */
+          v += FilterUp( input_sample_ptr + 1, (int)((((time)^Pmask)+1)&Pmask),1);
+
+        }
+        else {
+          
+          v = FilterDown(input_sample_ptr, (int)(time&Pmask) ,-1 , dhb);
+          /* Perform right-wing inner product */
+          v += FilterDown( input_sample_ptr + 1, (int)((((time)^Pmask)+1)&Pmask) ,1 , dhb);
+        
+        }
+
+        v >>= Nhg;              /* Make guard bits */
+        //v *= LpScl;             /* Normalize for unity filter gain */
+
+        //*output_sample_ptr++ = int32toint16(v,NLpScl);   /* strip guard bits, deposit output */
+        *output_sample_ptr++ = v;   /* strip guard bits, deposit output */
+        time += timestep;           /* Move to next sample by time increment */
+        samples_produced++;
+
+  }
+
+  long last_time_used = time; // - timestep;
+  long last_input_sample_used = (last_time_used >> Np);      // this sample was the second 
+                                                             // used to interpolate the last output 
+                                                             // sample generated. It will be needed again 
+                                                             // for interpolating the next output sample.
+
+  long num_input_samples_used = last_input_sample_used - (start_time >> Np);
+  
+  m_Y_write[ch] += samples_produced;
+
+  
+  // copy samples to reuse to beginning of buffer and adjust time variable accordingly
+  // if(ch==0)
+  //  cerr << "[" << ch << "]: num_input_samples = " << num_input_samples << " m_X_read = " << m_X_read[ch] << " last input sample used = " << last_input_sample_used << " m_X_write = " << m_X_write[ch] << endl;
+
+  int i, j;
+
+  assert(last_input_sample_used >= m_max_windowfilter_range);
+  assert(last_input_sample_used - m_max_windowfilter_range < m_X_write[ch]);
+  
+                                                         // -1
+  for(i = last_input_sample_used - m_max_windowfilter_range, j = 0; i < m_X_write[ch]; i++, j++) {
+    m_X[ch][j] = m_X[ch][i];
+  }
+  m_X_read[ch] = m_max_windowfilter_range;
+  m_X_write[ch] = j;
+  time -= (num_input_samples_used) << Np;
+ 
+  // if(ch==0)
+  //  cerr << "[" << ch << "]: m_X_read: " << m_X_read[ch] << " m_X_write " << m_X_write[ch] << endl;
+
+  return time;
+}
+
 
 /*!
     \fn CFixPointResampler::int32toint16(int32_t int32var, int n_fix_point_bits)
@@ -522,3 +611,118 @@ int16_t CFixPointResampler::int32toint16(int32_t int32var, int n_fix_point_bits)
     out = (int16_t) int32var;
     return out;
 }
+
+
+
+
+int CFixPointResampler::FilterUp(int16_t *Xp, int16_t Ph, int Inc)
+{
+  const int16_t *Hp, *Hdp = 0, *End;
+  int16_t a = 0;
+  int v, t;
+    
+  v=0;
+  Hp = &(m_filter->m_imp[Ph>>Na]);
+  End = &(m_filter->m_imp[m_filter->nWing()]);
+  if (m_interp_filter == true) 
+  {
+    Hdp = &(m_filter->m_imp_d[Ph>>Na]);
+    a = Ph & Amask;
+  }
+  if (Inc == 1)		/* If doing right wing...              */
+  {				/* ...drop extra coeff, so when Ph is  */
+    End--;			/*    0.5, we don't do too many mult's */
+    if (Ph == 0)		/* If the phase is zero...           */
+    {			/* ...then we've already skipped the */
+      Hp += Npc;		/*    first sample, so we must also  */
+      Hdp += Npc;		/*    skip ahead in Imp[] and ImpD[] */
+    }
+  }
+  if (m_interp_filter == true)
+  {
+    while (Hp < End) 
+    {
+      t = *Hp;		/* Get filter coeff */
+      t += (((int)*Hdp)*a)>>Na; /* t is now interp'd filter coeff */
+      Hdp += Npc;		/* Filter coeff differences step */
+      t *= *Xp;		/* Mult coeff by input sample */
+      if (t & (1<<(Nhxn-1)))  /* Round, if needed */
+      t += (1<<(Nhxn-1));
+      t >>= Nhxn;		/* Leave some guard bits, but come back some */
+      v += t;			/* The filter output */
+      Hp += Npc;		/* Filter coeff step */
+      Xp += Inc;		/* Input signal step. NO CHECK ON BOUNDS */
+    }
+  } 
+  else
+  { 
+    while (Hp < End) 
+    {
+      t = *Hp;		/* Get filter coeff */
+      t *= *Xp;		/* Mult coeff by input sample */
+      if (t & (1<<(Nhxn-1)))   /* Round, if needed */
+      {
+        t += (1<<(Nhxn-1));
+      }
+      t >>= Nhxn;		/* Leave some guard bits, but come back some */
+      v += t;			/* The filter output */
+      Hp += Npc;		/* Filter coeff step */
+      Xp += Inc;		/* Input signal step. NO CHECK ON BOUNDS */
+    }
+  }
+  
+  return(v);
+}
+
+int CFixPointResampler::FilterDown(int16_t *Xp, int16_t Ph, int Inc, uint16_t dhb)
+{
+  int16_t a;
+  const int16_t *Hp, *Hdp, *End;
+  int v, t;
+  unsigned Ho;
+    
+  v=0;
+  Ho = (Ph*(unsigned)dhb)>>Np;
+  End = &(m_filter->m_imp[m_filter->nWing()]);
+  if (Inc == 1)		        /* If doing right wing...              */
+  {				/* ...drop extra coeff, so when Ph is  */
+    End--;			/*    0.5, we don't do too many mult's */
+    if (Ph == 0)		/* If the phase is zero...           */
+      Ho += dhb;		/* ...then we've already skipped the */
+  }				/*    first sample, so we must also  */
+                                /*    skip ahead in Imp[] and ImpD[] */
+   
+  if (m_interp_filter == true)
+  {
+    while ((Hp = &(m_filter->m_imp[Ho>>Na])) < End) 
+    {
+      t = *Hp;		/* Get IR sample */
+      Hdp = &(m_filter->m_imp_d[Ho>>Na]);  /* get interp (lower Na) bits from diff table*/
+      a = Ho & Amask;	/* a is logically between 0 and 1 */
+      t += (((int)*Hdp)*a)>>Na; /* t is now interp'd filter coeff */
+      t *= *Xp;		/* Mult coeff by input sample */
+      if (t & 1<<(Nhxn-1))	/* Round, if needed */
+        t += 1<<(Nhxn-1);
+      t >>= Nhxn;		/* Leave some guard bits, but come back some */
+      v += t;			/* The filter output */
+      Ho += dhb;		/* IR step */
+      Xp += Inc;		/* Input signal step. NO CHECK ON BOUNDS */
+    }
+  }
+  else
+  { 
+    while ((Hp = &(m_filter->m_imp[Ho>>Na])) < End)
+    {
+      t = *Hp;		/* Get IR sample */
+      t *= *Xp;		/* Mult coeff by input sample */
+      if (t & 1<<(Nhxn-1))	/* Round, if needed */
+        t += 1<<(Nhxn-1);
+      t >>= Nhxn;		/* Leave some guard bits, but come back some */
+      v += t;			/* The filter output */
+      Ho += dhb;		/* IR step */
+      Xp += Inc;		/* Input signal step. NO CHECK ON BOUNDS */
+    }
+  }
+  return(v);
+}
+

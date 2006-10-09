@@ -48,7 +48,7 @@ public:
     void write(short* buffer, int num_samples);
 
     int sizeInMultiChannelSamples();
-    int write(int16_t** per_channel_buffers, int num_samples_per_channel );
+    int write(int16_t** per_channel_buffers, int start_offset, int end_offset );
     int capacity(void);
     int available(void);
     
@@ -62,6 +62,7 @@ private:
     int m_num_channels;
     int m_num_frames;
 
+    FILE* m_debug_fd0;
     FILE* m_debug_fd1;
     FILE* m_debug_fd2;
     
