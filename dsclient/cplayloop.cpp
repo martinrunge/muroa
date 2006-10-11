@@ -100,7 +100,7 @@ CPlayloop::CPlayloop(CPlayer* parent, CPacketRingBuffer* packet_ringbuffer, std:
     m_silence_buffer[i] = silence_val;
   }
 
-  m_debug_fd1 = fopen("m_debug_fd1","w");
+  // m_debug_fd1 = fopen("m_debug_fd1","w");
 }
 
 /** D-tor */
@@ -113,7 +113,7 @@ CPlayloop::~CPlayloop()
   delete m_resampler;
   delete m_ringbuffer;
   m_audio_sink->close();
-  fclose(m_debug_fd1);
+  // fclose(m_debug_fd1);
 }
 
 /** the main loop for this thread */

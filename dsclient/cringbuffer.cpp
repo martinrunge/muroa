@@ -40,9 +40,9 @@ CRingBuffer::CRingBuffer(int size_in_frames, int num_channels)
   m_write_ptr = m_buffer;
   m_read_ptr = m_buffer;
 
-  m_debug_fd0 = fopen("ringbuffer_data.raw", "w");
-  m_debug_fd1 = fopen("ringbuffer_input.raw", "w");
-  m_debug_fd2 = fopen("ringbuffer_output.raw", "w");
+  //m_debug_fd0 = fopen("ringbuffer_data.raw", "w");
+  //m_debug_fd1 = fopen("ringbuffer_input.raw", "w");
+  //m_debug_fd2 = fopen("ringbuffer_output.raw", "w");
   //m_data_ptr = new char[4096];
 
 
@@ -51,9 +51,9 @@ CRingBuffer::CRingBuffer(int size_in_frames, int num_channels)
 
 CRingBuffer::~CRingBuffer()
 {
-  fclose(m_debug_fd0);
-  fclose(m_debug_fd1);
-  fclose(m_debug_fd2);
+  //fclose(m_debug_fd0);
+  //fclose(m_debug_fd1);
+  //fclose(m_debug_fd2);
   delete [] m_buffer;
 }
 
@@ -96,7 +96,7 @@ char* CRingBuffer::read(int bytes)
         m_read_ptr = m_buffer + rest;
       }
     }
-    fwrite(buffer, 1, bytes, m_debug_fd2);
+    // fwrite(buffer, 1, bytes, m_debug_fd2);
     return buffer;
 }
 
@@ -204,7 +204,7 @@ int CRingBuffer::write(int16_t** per_channel_buffers, int start_offset, int end_
   for(int i = start_offset; i < end_offset; i++) {
     for(int ch = 0; ch < m_num_channels; ch++) {
       *writeptr = per_channel_buffers[ch][i];
-      fwrite(writeptr, 1, sizeof(int16_t), m_debug_fd0);
+      // fwrite(writeptr, 1, sizeof(int16_t), m_debug_fd0);
       if(writeptr < endptr)
         writeptr++;
       else
@@ -217,7 +217,7 @@ int CRingBuffer::write(int16_t** per_channel_buffers, int start_offset, int end_
   char *tmp_ptr = m_write_ptr;
   int bytes_to_end, rest;
   
-  bytes_to_end = (m_buffer + m_buffer_size_in_bytes) - tmp_ptr;
+/*  bytes_to_end = (m_buffer + m_buffer_size_in_bytes) - tmp_ptr;
   
   if(bytes_to_end > size_in_bytes) {
     for(int i = 0; i < size_in_bytes; i++) {
@@ -235,7 +235,7 @@ int CRingBuffer::write(int16_t** per_channel_buffers, int start_offset, int end_
     }
   }
   
-  
+  */
   m_write_ptr = reinterpret_cast<char*>(writeptr);    
 
   return (end_offset - start_offset);

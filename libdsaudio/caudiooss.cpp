@@ -132,7 +132,7 @@ int CAudioOSS::getDelay()
 int CAudioOSS::getWriteGranularity(void) {
   
   // implement me: fragnment size in OSS
-  return 0;
+  return 4;
   
 }
 

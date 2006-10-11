@@ -130,8 +130,8 @@ CFixPointResampler::CFixPointResampler(CRingBuffer *ringbuffer, enum converter_q
 
   init(m_num_channels, m_volume);
  
-  m_debug_fd1 = fopen("resampler_input.raw", "w");
-  m_debug_fd2 = fopen("resampler_output.raw", "w");
+  //m_debug_fd1 = fopen("resampler_input.raw", "w");
+  //m_debug_fd2 = fopen("resampler_output.raw", "w");
   /* m_data_ptr = new char[4096];*/
 
   // m_resampled_frame = new CAudioFrame(PAYLOAD_PCM, 3 * 1024);
@@ -143,8 +143,8 @@ CFixPointResampler::~CFixPointResampler()
 {
   // delete m_resampled_frame;
 
-  fclose(m_debug_fd1);
-  fclose(m_debug_fd2);
+  //fclose(m_debug_fd1);
+  //fclose(m_debug_fd2);
   /* delete [] m_data_ptr;*/
 
   deleteBuffers();
@@ -324,9 +324,9 @@ int CFixPointResampler::copyResampledFramesToRingbuffer()
   
   int frames_copied = m_ringbuffer->write(m_Y, m_Y_read[0], m_Y_write[0]);
     
-  for(int i= m_Y_read[0]; i <  m_Y_write[0]; i++) {
-    fwrite(&m_Y[0][i], sizeof(int16_t), 1, m_debug_fd2); 
-  }
+  //for(int i= m_Y_read[0]; i <  m_Y_write[0]; i++) {
+  //  fwrite(&m_Y[0][i], sizeof(int16_t), 1, m_debug_fd2); 
+  //}
   
   
   if(frames_copied != m_Y_write[0] - m_Y_read[0] ) {
@@ -589,7 +589,7 @@ int16_t CFixPointResampler::int32toint16(int32_t int32var, int n_fix_point_bits)
     int32_t llsb = (1<<(n_fix_point_bits - 1));
     int32var += llsb;          /* round */
     int32var >>= n_fix_point_bits;
-    if (int32var>INT16_MAX) {
+    if (int32var>SHRT_MAX) {
 #ifdef DEBUG
         if (pof == 0)
           fprintf(stderr, "*** resample: sound sample overflow\n");
@@ -597,8 +597,8 @@ int16_t CFixPointResampler::int32toint16(int32_t int32var, int n_fix_point_bits)
           fprintf(stderr, "*** resample: another ten thousand overflows\n");
         pof++;
 #endif
-        int32var = INT16_MAX;
-    } else if (int32var < INT16_MIN) {
+        int32var = SHRT_MAX;
+    } else if (int32var < SHRT_MIN) {
 #ifdef DEBUG
         if (nof == 0)
           fprintf(stderr, "*** resample: sound sample (-) overflow\n");
@@ -606,7 +606,7 @@ int16_t CFixPointResampler::int32toint16(int32_t int32var, int n_fix_point_bits)
           fprintf(stderr, "*** resample: another thousand (-) overflows\n");
         nof++;
 #endif
-        int32var = INT16_MIN;
+        int32var = SHRT_MIN;
     }   
     out = (int16_t) int32var;
     return out;

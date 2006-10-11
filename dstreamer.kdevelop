@@ -19,7 +19,7 @@
   <kdevautoproject>
     <general>
       <activetarget>dsclient/dsclient</activetarget>
-      <useconfiguration>debug</useconfiguration>
+      <useconfiguration>optimized</useconfiguration>
     </general>
     <run>
       <mainprogram>dsclient/dsclient</mainprogram>

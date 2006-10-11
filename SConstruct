@@ -35,6 +35,8 @@ def compiler_arm_prefix(env):
 	env.Append(CPPPATH= staging_dir + 'include')
 	env.Append(LIBPATH= staging_dir + 'lib')
 
+	env.Append(CXXFLAGS='-O2')
+
 	return env
 
 

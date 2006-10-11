@@ -27,14 +27,14 @@ using namespace std;
 
 CPacketRingBuffer::CPacketRingBuffer(int num_of_frames)
 {
-  m_stream_fd = fopen("debug_file_client.raw", "w");
+  //m_stream_fd = fopen("debug_file_client.raw", "w");
   m_seqnum = -1;
 }
 
 
 CPacketRingBuffer::~CPacketRingBuffer()
 {
-  fclose(m_stream_fd);
+  //fclose(m_stream_fd);
   while(!m_packet_list.empty()) {
     delete *m_packet_list.begin();
     m_packet_list.pop_front();
