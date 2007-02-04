@@ -162,7 +162,7 @@ void CFixPointResampler::init(int num_channels, double volume) {
   m_volume = volume;
 
    /// TODO: make filter size configurable
-  m_filter = &m_large_filter; 
+  m_filter = &m_small_filter; 
 
    // set initial m_X_read:
    // at the beginning of each m_X, there must be at least as many 
