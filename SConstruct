@@ -10,8 +10,8 @@ import SCons.Util
 
 
 def compiler_arm_prefix(env):
-	root_dir_tools = '/home/martin/openembedded/build/tmp/'
-	staging_postfix = '/staging/arm-linux/'
+	root_dir_tools = '/home/martin/openembedded/glomation/tmp/'
+	staging_postfix = '/staging/arm-linux-uclibc/'
 	cross_tools_postfix = '/cross/bin/'
 
 	cross_toos_dir = root_dir_tools + cross_tools_postfix
@@ -25,7 +25,7 @@ def compiler_arm_prefix(env):
 
 	env['ENV']['PATH'] = string.join([cross_toos_dir] + path, os.pathsep)
 
-	cross = 'arm-linux-'
+	cross = 'arm-linux-uclibc-'
 	env['AR'] = cross + 'ar'
 	env['AS'] = cross + 'as'
 	env['CC'] = cross + 'gcc'
@@ -35,10 +35,39 @@ def compiler_arm_prefix(env):
 	env.Append(CPPPATH= staging_dir + 'include')
 	env.Append(LIBPATH= staging_dir + 'lib')
 
-	env.Append(CXXFLAGS='-O2')
+	env.Append(CXXFLAGS='-O2 -D__USE_EXTERN_INLINES -D__USE_ISOC99')
 
 	return env
 
+def compiler_mipsel_prefix(env):
+	root_dir_tools = '/home/martin/build/'
+	staging_postfix = '/kamikaze-addons/mipsel/'
+	cross_tools_postfix = '/kamikaze-buildroot/staging_dir_mipsel/bin/'
+
+	cross_toos_dir = root_dir_tools + cross_tools_postfix
+	staging_dir = root_dir_tools + staging_postfix
+
+	path = env['ENV'].get('PATH', [])
+	if not path:
+		path = []
+	if SCons.Util.is_String(path):
+		path = string.split(path, os.pathsep)
+
+	env['ENV']['PATH'] = string.join([cross_toos_dir] + path, os.pathsep)
+
+	cross = 'mipsel-linux-'
+	env['AR'] = cross + 'ar'
+	env['AS'] = cross + 'as'
+	env['CC'] = cross + 'gcc'
+	env['CXX'] = cross + 'g++'
+	env['RANLIB'] = cross + 'ranlib'
+
+	env.Append(CPPPATH= staging_dir + 'include')
+	env.Append(LIBPATH= staging_dir + 'lib')
+
+	env.Append(CXXFLAGS='-O2 -D__USE_EXTERN_INLINES -D__USE_ISOC99')
+
+	return env
 
 opts = Options()
 opts.Add('target', 'select target for cross compiling (x86, arm, ...)', 'x86')
@@ -49,8 +78,10 @@ x86_env = Environment(optiosn = opts)
 x86_env.Append(CPPPATH=Split("#libdsaudio #libdsserver #libsock++"))
 
 arm_env = x86_env.Copy()
+mipsel_env = x86_env.Copy()
 arm_env.Append(LIBPATH=Split("#arm-obj/libdsaudio #arm-obj/libdsserver #arm-obj/libsock++"))
 x86_env.Append(LIBPATH=Split("#x86-obj/libdsaudio #x86-obj/libdsserver #x86-obj/libsock++"))
+mipsel_env.Append(LIBPATH=Split("#mipsel-obj/libdsaudio #mipsel-obj/libdsserver #mipsel-obj/libsock++"))
 
 prefix = '/usr/'
 
@@ -71,6 +102,11 @@ if 'arm' in target:
 	arm_env = compiler_arm_prefix(arm_env)
 	build_dir = 'arm-obj'
 	env = arm_env
+if 'mipsel' in target:
+	print('Compiling for mipsel')
+	arm_env = compiler_mipsel_prefix(mipsel_env)
+	build_dir = 'mipsel-obj'
+	env = mipsel_env
 if 'x86' in target:
 	print('Compiling for x86')
 	build_dir = 'x86-obj'
