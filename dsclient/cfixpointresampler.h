@@ -28,9 +28,15 @@ audio resampling class
 
 #include <stdint.h>
 #include "cresampler.h"
-#include "CFixPointConverter.h"
+// #include "CFixPointConverter.h"
 #include "cfilterdef.h"
 
+#ifndef MAX
+#define MAX(x,y) ((x)>(y) ?(x):(y))
+#endif
+#ifndef MIN
+#define MIN(x,y) ((x)<(y) ?(x):(y))
+#endif
 
 
 class CAudioFrame;
