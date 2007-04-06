@@ -1,5 +1,7 @@
 #!/bin/env python 
 
+import os.path
+
 source_files = Split('dsserver.cpp')
 
 
@@ -8,4 +10,11 @@ ext_libs = Split('boost_date_time pthread')
 
 
 Import('env')
-env.Program(target='dsserver', LIBS=ds_libs + ext_libs ,source=source_files) 
+target_name = env.Program(target='dsserver', LIBS=ds_libs + ext_libs ,source=source_files) 
+
+target_path = os.path.join(env['prefix'], "bin")
+
+print "installing ", target_name, " into ", target_path
+
+install_name = env.Install(target_path, target_name )
+env.Alias('install', target_path)

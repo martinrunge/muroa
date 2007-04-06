@@ -27,7 +27,7 @@ Ringbuffer implementation for audio data.
 */
 
 #include <stdint.h>
-#include "stdio.h"
+//#include "stdio.h"
 
 
 
@@ -62,9 +62,9 @@ private:
     int m_num_channels;
     int m_num_frames;
 
-    FILE* m_debug_fd0;
-    FILE* m_debug_fd1;
-    FILE* m_debug_fd2;
+    //FILE* m_debug_fd0;
+    //FILE* m_debug_fd1;
+    //FILE* m_debug_fd2;
     
 };
 

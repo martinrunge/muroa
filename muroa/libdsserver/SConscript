@@ -5,4 +5,4 @@ source_files = Split('cstreamconnection.cpp \
 
 
 Import('env')
-env.StaticLibrary(target='libdsserver' ,source=source_files) 
+env.StaticLibrary(target='dsserver' ,source=source_files) 

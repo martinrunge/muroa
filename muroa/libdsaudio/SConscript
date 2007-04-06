@@ -10,4 +10,4 @@ source_files = Split('caudioframe.cpp \
 
 
 Import('env')
-env.StaticLibrary(target='libdsaudio' ,source=source_files) 
+env.StaticLibrary(target='dsaudio' ,source=source_files) 

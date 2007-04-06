@@ -17,10 +17,9 @@
 
 #include <sys/socket.h>
 #include <netinet/in.h>
-#include <stdlib.h>
-#include <stdio.h>
+#include <cstdlib>
 #include <iostream>
-#include <unistd.h>
+// #include <unistd.h>
 
 #include "ctcpserversocket.h"
 #include "csocket.h"

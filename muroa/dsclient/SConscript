@@ -1,10 +1,11 @@
 #!/bin/env python 
 
+import os.path
+
 source_files = Split('cpacketringbuffer.cpp\
                  cplayloop.cpp\
                  cresampler.cpp\
 		 cfilterdef.cpp\
-                 cfloatresampler.cpp\
                  cfixpointresampler.cpp\
                  dsclient.cpp\
                  cplayer.cpp\
@@ -12,9 +13,24 @@ source_files = Split('cpacketringbuffer.cpp\
                  cringbuffer.cpp')
 
 
-ds_libs = Split('dsaudio sock++')
-ext_libs = Split('samplerate boost_date_time asound')
-
-
 Import('env')
-env.Program(target='dsclient', LIBS=ds_libs + ext_libs ,source=source_files) 
+
+ds_libs = Split('dsaudio sock++')
+ext_libs = Split('boost_date_time asound')
+
+if '-DFIXPOINT' in env['CXXFLAGS']:
+  pass
+else:
+  source_files += ['cfloatresampler.cpp']
+  ext_libs += ['samplerate']
+
+
+target_name = env.Program('dsclient', LIBS=ds_libs + ext_libs ,source=source_files) 
+
+target_path = os.path.join(env['prefix'], "bin")
+
+print "installing ", target_name, " into ", target_path
+
+install_name = env.Install(target_path, target_name )
+env.Alias('install', target_path)
+

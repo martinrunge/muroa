@@ -8,6 +8,216 @@ import string
 import SCons.Util
 
 
+def compiler_target_prefix(env, cross):
+    
+    scons_path_string = env['ENV'].get('PATH', [])
+    # print scons_path # path is a single string with colon seperated dirs
+    if not scons_path_string:
+        scons_path_list = []
+    if SCons.Util.is_String(scons_path_string):
+        scons_path_list = string.split(scons_path_string, os.pathsep)
+
+    os_path_list = string.split(os.environ['PATH'], os.pathsep)
+    
+    scons_path_list += os_path_list
+
+
+    # it is possible to specify target as:
+    # 1) target=arm-linux- 
+    # 2) target=arm-linux
+    # so try to find out <target>-gcc or <target>gcc exists in PATH
+
+
+    concatenators = ['', '-']
+    compiler_found = False
+
+    for concat in concatenators:                                              # try if we have to insert a '-'
+      cross_prefix = cross + concat
+      compiler_bin = cross_prefix + env['CC']
+      # print "seraching PATH for compiler binary: " + compiler_bin
+      for directories in scons_path_list:                                     # search to PATH for the binary name
+        compiler_bin_path = os.path.join(directories, compiler_bin)
+        # print "trying if " + compiler_bin_path + " exists ..."
+        if(os.path.exists(compiler_bin_path)):                                #  if the binary is found in PATH use the same cross_prefix for all other tools (ar, as, ...)
+          print "using " + compiler_bin_path + " as compiler."
+          compiler_found = True
+          break
+      else:
+        pass
+        # print compiler_bin + " not found in PATH"
+      if(compiler_found == True):
+        break
+      
+    else:
+       print " Compiler not found in PATH!!! "
+
+    env['ENV']['PATH'] = string.join(scons_path_list, os.pathsep)
+    
+    env['AR'] = cross_prefix + 'ar'
+    env['AS'] = cross_prefix + 'as'
+    env['CC'] = cross_prefix + 'gcc'
+    env['CXX'] = cross_prefix + 'g++'
+    env['RANLIB'] = cross_prefix + 'ranlib'
+
+    return env
+
+
+def compiler_env_vars(env):
+    
+    
+    try:
+      ld_path_list = string.split(os.environ['LDFLAGS'])
+    except:
+      ld_path_list = []
+      print "info: LDFLAGS not set in environment."
+      
+      
+    try:
+      cxx_flags_list = string.split(os.environ['CXXFLAGS'])
+    except:
+      cxx_flags_list = []
+      print "info: CXXFLAGS not set in environment."
+    
+    try:
+      c_flags_list = string.split(os.environ['CFLAGS'])
+    except:
+      c_flags_list = []
+      print "info: CFLAGS not set in environment."
+      
+    try:
+      cpp_flags_list = string.split(os.environ['CPPFLAGS'])
+    except:
+      cpp_flags_list = []
+      print "info: CPPFLAGS not set in environment."
+
+
+    env['LIBPATH'] = []
+    for element in ld_path_list:
+      env.Append(LIBPATH=element.lstrip('-L'))
+
+
+    env['CPPPATH'] = []
+    for element in cpp_flags_list:
+      env.Append(CPPPATH=element.lstrip('-I'))
+      
+    
+    env['CXXFLAGS'] = []
+    for element in cxx_flags_list:
+      if(element.find('-I', 0) == 0):
+        env.Append(CPPPATH=element.lstrip('-I'))
+      elif(element.find('-L', 0) == 0):
+        env.Append(LIBPATH=element.lstrip('-L'))
+      else:
+        env.Append(CXXFLAGS=element)
+        
+        
+    env['CFLAGS'] = []
+    for element in c_flags_list:
+      if(element.find('-I', 0) == 0):
+        env.Append(CPPPATH=element.lstrip('-I'))
+      elif(element.find('-L', 0) == 0):
+        env.Append(LIBPATH=element.lstrip('-L'))
+      else:
+        env.Append(CFLAGS=element)
+
+
+#    print ld_path_list
+    
+    # look for -I and -L entries in CXXFLAGS and CFLAGS and mode them into cpp_flags_list and ld_path_list
+
+    print "LIBPATH: ", env['LIBPATH']
+    print "CPPPATH: ", env['CPPPATH']
+    print "CXXFLAGS: ", env['CXXFLAGS']
+    print "CFLAGS: ",  env['CFLAGS']
+    
+    return env
+
+
+
+
+
+
+opts = Options()
+opts.Add('target', "select compiler target prefix for cross compiling. E.g. if you have 'arm-linux-uclibc-gcc' in your path, specify 'target=arm-linux-uclibc'", 'native')
+opts.Add('prefix', "specify an install prefix. Programs will be installed into 'prefix/bin' libs into 'prefix/lib'", '/usr/local/')
+opts.Add('debug', "add debug information", '0')
+opts.Add('release', "do an optimized release build", '1')
+
+
+env = Environment(options = opts)
+
+# for element in x86_env._dict:
+#   print element 
+
+print "Building for target:", env['target']
+
+target = env['target']
+
+if 'native' in target:
+#     print('Compiling for native')
+    target_prefix=''
+    builddir = 'native'
+    env = compiler_env_vars(env)
+else:
+    builddir = target
+    env = compiler_target_prefix(env, target)
+    env = compiler_env_vars(env)
+    env.Append(CXXFLAGS='-DFIXPOINT')
+    
+
+if env['release']:
+   env.Append(CXXFLAGS='-O2')
+   
+
+
+env.Append(CXXFLAGS=string.split('-D__USE_EXTERN_INLINES -D__USE_ISOC99'))
+
+Help(opts.GenerateHelpText(env))
+
+env.Append(CPPPATH=Split("#libdsaudio #libdsserver #libsock++"))
+
+Export('env')
+
+
+subdirs = Split('dsclient dsserver libdsserver libdsaudio libsock++')
+
+
+# env.SConscript('dsserver/SConscript')
+
+sconscript_list = []
+for subdir in subdirs:
+	build_subdir = os.path.join(builddir, subdir)
+	print build_subdir
+        env.Append(LIBPATH='#'+build_subdir)
+	env.BuildDir(build_subdir, subdir)
+	# env.SConscript(subdir + '/SConscript', build_dir = build_dir + '/' + subdir, duplicate=1) 
+	sconscript_file = os.path.join(build_subdir, 'SConscript')
+	print sconscript_file
+        env.SConscript(sconscript_file)
+	sconscript_list += [sconscript_file]
+
+# env.SConscript(sconscript_list)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 def compiler_arm_prefix(env):
 	root_dir_tools = '/home/martin/openembedded/glomation/tmp/'
@@ -68,60 +278,3 @@ def compiler_mipsel_prefix(env):
 	env.Append(CXXFLAGS='-O2 -D__USE_EXTERN_INLINES -D__USE_ISOC99')
 
 	return env
-
-opts = Options()
-opts.Add('target', 'select target for cross compiling (x86, arm, ...)', 'x86')
-
-
-
-x86_env = Environment(optiosn = opts)
-x86_env.Append(CPPPATH=Split("#libdsaudio #libdsserver #libsock++"))
-
-arm_env = x86_env.Copy()
-mipsel_env = x86_env.Copy()
-arm_env.Append(LIBPATH=Split("#arm-obj/libdsaudio #arm-obj/libdsserver #arm-obj/libsock++"))
-x86_env.Append(LIBPATH=Split("#x86-obj/libdsaudio #x86-obj/libdsserver #x86-obj/libsock++"))
-mipsel_env.Append(LIBPATH=Split("#mipsel-obj/libdsaudio #mipsel-obj/libdsserver #mipsel-obj/libsock++"))
-
-prefix = '/usr/'
-
-
-print(opts.args)
-try:
-  target = opts.args['target']
-  
-except:
-  print("target not set. Using x86")  
-  target = 'x86'
-
-print('target=', target)
-
-
-if 'arm' in target:
-	print('Compiling for arm')
-	arm_env = compiler_arm_prefix(arm_env)
-	build_dir = 'arm-obj'
-	env = arm_env
-if 'mipsel' in target:
-	print('Compiling for mipsel')
-	arm_env = compiler_mipsel_prefix(mipsel_env)
-	build_dir = 'mipsel-obj'
-	env = mipsel_env
-if 'x86' in target:
-	print('Compiling for x86')
-	build_dir = 'x86-obj'
-	env = x86_env
-
-Help(opts.GenerateHelpText(env))
-
-
-
-Export('env')
-
-
-subdirs = Split('libdsaudio libsock++ libdsserver dsclient dsserver')
-
-for subdir in subdirs:
-	env.BuildDir(build_dir + '/' + subdir, subdir)
-	env.SConscript(subdir + '/SConscript', build_dir = build_dir + '/' + subdir, duplicate=0) 
-
