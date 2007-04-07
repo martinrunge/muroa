@@ -171,10 +171,35 @@ if env['release']:
 
 
 env.Append(CXXFLAGS=string.split('-D__USE_EXTERN_INLINES -D__USE_ISOC99'))
+env.Append(LIBS='m')
 
 Help(opts.GenerateHelpText(env))
 
 env.Append(CPPPATH=Split("#libdsaudio #libdsserver #libsock++"))
+
+conf = Configure(env)
+
+
+lrint_test_source_file = """
+#include <math.h>
+int main()
+{
+  int out;
+  out = lrint(0.123456);
+   
+  return 0;
+}
+"""
+
+if not conf.TryLink(lrint_test_source_file, '.c'):
+  print 'Did not find lrint(), using local version'
+  conf.env.Append(CXXFLAGS, '-DOWN_LRINT')
+else:
+  print 'Found lrint() on system, not using own version'
+
+env = conf.Finish()
+
+print "CXXFLAGS=", env['CXXFLAGS']
 
 Export('env')
 

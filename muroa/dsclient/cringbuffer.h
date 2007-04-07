@@ -29,7 +29,15 @@ Ringbuffer implementation for audio data.
 #include <stdint.h>
 //#include "stdio.h"
 
+#ifdef OWN_LRINT
+inline long lrintf(float val) {
+  return (long)(val + 0.5);
+}
 
+inline long lrint(double val) {
+  return (long)(val + 0.5);
+}
+#endif
 
 class CRingBuffer{
 public:
