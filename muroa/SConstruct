@@ -193,7 +193,7 @@ int main()
 }
 """
 
-if not conf.TryLink(lrint_test_source_file, '.c'):
+if not conf.TryLink(lrint_test_source_file, '.cpp'):
   print 'Did not find lrint(), using local version'
   conf.env.Append(CXXFLAGS='-DOWN_LRINT')
 else:
