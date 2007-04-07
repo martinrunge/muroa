@@ -177,6 +177,8 @@ Help(opts.GenerateHelpText(env))
 
 env.Append(CPPPATH=Split("#libdsaudio #libdsserver #libsock++"))
 
+
+
 conf = Configure(env)
 
 
@@ -193,7 +195,7 @@ int main()
 
 if not conf.TryLink(lrint_test_source_file, '.c'):
   print 'Did not find lrint(), using local version'
-  conf.env.Append(CXXFLAGS, '-DOWN_LRINT')
+  conf.env.Append(CXXFLAGS='-DOWN_LRINT')
 else:
   print 'Found lrint() on system, not using own version'
 
