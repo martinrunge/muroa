@@ -46,7 +46,7 @@ typedef struct serialisation_vars{
 
   uint32_t frame_nr;
   /* YYYYMMDDTHHMMSS,fffffffff */
-  char timestamp[32]; // only 27 used
+  uint8_t timestamp[32]; // only 27 used
 }serialisation_vars_t;
 
 typedef union m_serialization_buffer_t{

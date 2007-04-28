@@ -35,22 +35,22 @@ typedef struct rtp_header_bits {
     unsigned CSRC_count:4;
     unsigned marker:1;
     unsigned payload_type:7;
-    unsigned short sequence_number;
-    unsigned long timestamp;
-    unsigned long SSRC; 
+    uint16_t sequence_number;
+    uint32_t timestamp;
+    uint32_t SSRC; 
   } rtp_header_bits_t;
 
 typedef struct rtp_header_extension {
-    unsigned short defined_by_profile;
-    unsigned short num_32bit_words_following;
-    unsigned long ds_session_id;
-    unsigned long ds_stream_id;
+    uint16_t defined_by_profile;
+    uint16_t num_32bit_words_following;
+    uint32_t ds_session_id;
+    uint32_t ds_stream_id;
   } rtp_header_extension_t;
 
 
 
 union rtp_header_t {
-  long three32bitwords[3];
+  uint32_t three32bitwords[3];
   rtp_header_bits_t rtp_header_bits;
 };
 
