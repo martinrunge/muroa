@@ -26,6 +26,7 @@
 
 
 #include <sys/types.h> 
+#include <inttypes.h>
 
 
 typedef struct rtp_header_bits {

@@ -65,7 +65,7 @@ char* CSync::serialize()
 
   m_serialization_buffer.serialisation_vars.frame_nr = htonl(m_frame_nr);
 
-  strcpy(m_serialization_buffer.serialisation_vars.timestamp, to_simple_string(*m_local_time).c_str() );
+  strcpy((char*)m_serialization_buffer.serialisation_vars.timestamp, to_simple_string(*m_local_time).c_str() );
 
   return m_serialization_buffer.raw_buffer;    
 }
