@@ -24,6 +24,7 @@
 #endif
 
 #include <iostream>
+#include "cmuroad.h"
 #include "cplayer.h"
 
 using namespace std;
@@ -33,28 +34,27 @@ int main(int argc, char *argv[])
   int num;
   char c;
   
-  string device_str, device;  
-  device = "hw:0,0";  
 
-  struct sched_param s_param;
-  
-  sched_getparam(0, &s_param);
-  s_param.sched_priority = 50;
-  sched_setparam(0, &s_param);
-  sched_setscheduler(0, SCHED_FIFO, &s_param); 
+  try
+  {
+    Cmuroad muroad(argc, argv);
+    muroad.daemonize();
 
-  if(argc == 3) {
-    device_str = argv[1];
-    if(device_str.compare("--device") == 0)
-      device = argv[2];
     
+
+    CPlayer player(4001, muroad.audioDevice());
+    player.start();
+
+    cin >> c;
+
   }
-
-  cout << "dsclient opening device " << device << endl;
-  CPlayer player(4001, device);
-  player.start();
-
-  cin >> c;
+  catch(string except)
+  {
+    if(except.compare("help") == 0)
+      exit(0);
+    else
+      cerr << except << endl;
+  }
 
   return EXIT_SUCCESS;
 }
