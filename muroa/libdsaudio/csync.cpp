@@ -30,7 +30,7 @@ CSync::CSync(enum sync_type_t sync_type)
 {
   cerr << "CSync::CSync(enum)" << endl;
   m_sync_type = sync_type;
-  m_local_time = new ptime(microsec_clock::local_time());
+  m_local_time = new ptime(microsec_clock::universal_time());
   print();
 
 }
@@ -130,7 +130,7 @@ void CSync::addDuration(boost::posix_time::time_duration duration)
  */
 void CSync::setTimeToNow()
 {
-    *m_local_time = microsec_clock::local_time();
+  *m_local_time = microsec_clock::universal_time();
 }
 
 

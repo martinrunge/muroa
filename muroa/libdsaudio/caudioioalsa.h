@@ -61,6 +61,7 @@ private:
 
     int m_write_granularity;     
     int m_sample_rate;
+    bool m_open;
   
         
 };

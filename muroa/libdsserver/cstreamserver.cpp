@@ -60,7 +60,7 @@ CStreamServer::~CStreamServer()
  */
 int CStreamServer::open(int audio_bytes_per_second)
 {
-  m_last_send_time = microsec_clock::local_time();
+  m_last_send_time = microsec_clock::universal_time();
   m_last_payload_duration = not_a_date_time;
   
   ptime now = m_last_send_time;
@@ -123,7 +123,7 @@ int CStreamServer::write(char* buffer, int length) {
 
 //    measure the quality of the below usleep calculation
     
-    //now = microsec_clock::local_time();
+    //now = microsec_clock::universal_time();
     //interval = now - m_last_send_time;
     //cerr << "interval: " << interval << endl;
 
@@ -142,7 +142,7 @@ int CStreamServer::write(char* buffer, int length) {
       m_last_payload_duration = payload_duration;
       m_time_since_last_packet = m_last_payload_duration;
 
-      m_first_send_time = microsec_clock::local_time();
+      m_first_send_time = microsec_clock::universal_time();
       m_send_time = m_first_send_time;
       
       m_payload_duration_sum = payload_duration;
@@ -150,7 +150,7 @@ int CStreamServer::write(char* buffer, int length) {
 
     }
     else {
-      m_send_time = microsec_clock::local_time();
+      m_send_time = microsec_clock::universal_time();
       m_payload_duration_sum += payload_duration;                  
       // cerr << " payload_duration sum=" << m_payload_duration_sum;
     }

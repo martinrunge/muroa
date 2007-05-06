@@ -41,22 +41,25 @@
 using namespace std;
 using namespace boost::posix_time;
 
-CPlayer::CPlayer(unsigned short port, std::string sound_dev)
+CPlayer::CPlayer(Cmuroad* config)
 {
   
   int num;
   cout << "dsclient" << endl;
- 
+  m_config = config;
+   
   m_packet_ringbuffer = new CPacketRingBuffer(10);
 
-  m_recvloop = new CRecvloop(this, m_packet_ringbuffer, port);
-  m_playloop = new CPlayloop(this, m_packet_ringbuffer, sound_dev);
+  m_recvloop = new CRecvloop(this, config, m_packet_ringbuffer);
+  m_playloop = new CPlayloop(this, config, m_packet_ringbuffer);
 
   m_recvloop_thread = new CPThread(m_recvloop);
   m_playloop_thread = new CPThread(m_playloop);
 
   m_sync_requested_for_stream_id = -1;
-  m_sync_requested_at = microsec_clock::local_time();
+  m_sync_requested_at = microsec_clock::universal_time();
+
+  m_idle_time = 0;
 
   //CSync syncobj;
 }
@@ -148,7 +151,7 @@ void CPlayer::requestSync(int session_id, int stream_id)
     sendRTPPacket(tmp_packet);
 
     m_sync_requested_for_stream_id = stream_id;
-    m_sync_requested_at = microsec_clock::local_time();      
+    m_sync_requested_at = microsec_clock::universal_time();
 
     delete sync_req;
     delete tmp_packet;     

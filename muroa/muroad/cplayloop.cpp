@@ -33,6 +33,7 @@
 #include "cfixpointresampler.h"
 #include "csync.h"
 #include "cplayer.h"
+#include "cmuroad.h"
 #include "crtppacket.h"
 
 #include <time.h> 
@@ -45,13 +46,14 @@ using namespace std;
 using namespace boost::posix_time;
 /** C-tor */
 
-CPlayloop::CPlayloop(CPlayer* parent, CPacketRingBuffer* packet_ringbuffer, std::string sound_dev)
+CPlayloop::CPlayloop(CPlayer* parent, Cmuroad* config, CPacketRingBuffer* packet_ringbuffer)
  : CThreadSlave(), m_counter(0), m_average_size(32)
 {
 
   m_player = parent;
-
-  int desired_sample_rate = 48000;
+  m_config = config;
+  
+  m_desired_sample_rate = 48000;
   m_frames_to_discard = 0;
 
 
@@ -64,10 +66,10 @@ CPlayloop::CPlayloop(CPlayer* parent, CPacketRingBuffer* packet_ringbuffer, std:
 
   // m_audio_sink = new CAudioIoAlsa();  
   m_audio_sink = initSoundSystem();
-  m_audio_sink->open(sound_dev, desired_sample_rate, 2);
+  m_audio_sink->open(m_config->audioDevice(), m_desired_sample_rate, m_num_channels);
   
   int actual_sample_rate = m_audio_sink->getActualSampleRate();
-  cerr << "CPlayloop::CPlayloop: open audio sink: try " << desired_sample_rate << " ... succeeded with " << actual_sample_rate << endl;
+  cerr << "CPlayloop::CPlayloop: open audio sink: try " << m_desired_sample_rate << " ... succeeded with " << actual_sample_rate << endl;
 
 
   m_frames_per_second_pre_resampler = 44100;
@@ -90,7 +92,6 @@ CPlayloop::CPlayloop(CPlayer* parent, CPacketRingBuffer* packet_ringbuffer, std:
   m_num_multi_channel_samples_arrived = 0;
 
 
-
   cerr << "Audio sink granularity = " << m_audio_sink->getWriteGranularity() << endl;
   
   m_seqnum = 0;
@@ -99,6 +100,8 @@ CPlayloop::CPlayloop(CPlayer* parent, CPacketRingBuffer* packet_ringbuffer, std:
   m_session_id = 0;
 
   m_start_time = 0;
+  
+  m_secs_idle = 0;
 
   int num_shorts = m_audio_sink->getWriteGranularity() / sizeof(short);
   m_silence_buffer = new short[num_shorts];
@@ -129,11 +132,30 @@ void CPlayloop::DoLoop() {
   
   if(m_packet_ringbuffer->getRingbufferSize() == 0) {
      // cerr << "CPlayloop::DoLoop: buffer empty!" << endl;
-     usleep(30000);
+     int retval = m_player->m_traffic_cond.Wait(1);
+
+     if(retval == 0)
+     {
+       m_audio_sink->open(m_config->audioDevice(), m_desired_sample_rate, m_num_channels);
+       m_player->idleTime(0);
+     }
+     else
+     {
+       if(retval == ETIMEDOUT) {
+         m_player->idleTime( m_player->idleTime() + 1);
+       }
+     }
+     if(m_player->idleTime() > m_config->maxIdle())
+     {
+       m_audio_sink->close();
+     }
      return;
   }
   CAudioFrame* frame;
 
+  m_player->idleTime(0);
+  
+  
   CRTPPacket* rtp_packet = m_packet_ringbuffer->readPacket();
   //cerr << "packet Buffer size: " << m_packet_ringbuffer->getRingbufferSize() << endl;
   // cerr << "PayloadType " << rtp_packet->payloadType() << " size " << rtp_packet->usedPayloadBufferSize() << endl;
@@ -286,7 +308,7 @@ void CPlayloop::adjustResamplingFactor(int bytes_in_playback_ringbuffer)
   m_num_multi_channel_samples_played = m_num_multi_channel_samples_arrived - bytes_in_playback_ringbuffer - m_audio_sink->getDelay();   // resampled_frame will be playback rungbuffer 
 
 
-  ptime now = microsec_clock::local_time();
+  ptime now = microsec_clock::universal_time();
     
   time_duration play_time_from_clock = now - *(m_player->syncObj()->getPtimePtr());
   time_duration play_time_from_samples = millisec((m_num_multi_channel_samples_played * 10) / 441);  
@@ -298,7 +320,7 @@ void CPlayloop::adjustResamplingFactor(int bytes_in_playback_ringbuffer)
   if(m_counter > m_average_size) {
     
     //    measure the quality of the below usleep calculation
-    // ptime now = microsec_clock::local_time();
+    // ptime now = microsec_clock::universal_time();
     // interval = now - (*m_start_time);
     // cerr << "interval: " << interval << endl;
 
@@ -406,7 +428,7 @@ time_duration CPlayloop::getPlaybackDiff()
                                        - m_audio_sink->getDelay();   // resampled_frame will be playback rungbuffer 
 
 
-  ptime now = microsec_clock::local_time();
+  ptime now = microsec_clock::universal_time();
     
   time_duration play_time_from_clock = now - (*m_player->syncObj()->getPtimePtr());
   time_duration play_time_from_samples = millisec((m_num_multi_channel_samples_played * 10) / 441);  
@@ -420,7 +442,7 @@ time_duration CPlayloop::getPlaybackDiffFromTime() {
 
   long long tmp;
 
-  ptime now = microsec_clock::local_time();
+  ptime now = microsec_clock::universal_time();
 
   ptime pre_soundcard = now - calcSoundCardDelay();
 
@@ -583,7 +605,7 @@ void CPlayloop::handleSyncObj(CSync* sync_obj) {
   if(m_player->syncObj()->streamId() != m_stream_id || m_player->syncObj()->sessionId() != m_session_id) {
     // this is a sync obj for a new stream !!!!
     if(m_start_time != 0)  delete m_start_time;
-    m_start_time = new ptime(microsec_clock::local_time());
+    m_start_time = new ptime(microsec_clock::universal_time());
   }
   
   time_duration sleep_time = (*m_player->syncObj()->getPtimePtr()) - (*m_start_time);

@@ -42,7 +42,7 @@ int main(int argc, char *argv[])
 
     
 
-    CPlayer player(4001, muroad.audioDevice());
+    CPlayer player(&muroad);
     player.start();
 
     cin >> c;

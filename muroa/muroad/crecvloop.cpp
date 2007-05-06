@@ -25,13 +25,15 @@
 
 using namespace std;
 
-CRecvloop::CRecvloop(CPlayer* parent, CPacketRingBuffer* packet_ringbuffer, unsigned short port): CThreadSlave()
+CRecvloop::CRecvloop(CPlayer* parent, Cmuroad* config, CPacketRingBuffer* packet_ringbuffer): CThreadSlave()
 {
 
   m_player = parent;
+  m_config = config;
+  
   m_packet_ringbuffer = packet_ringbuffer;
 
-  m_socket = new CSocket(SOCK_DGRAM, port);  
+  m_socket = new CSocket(SOCK_DGRAM, m_config->port());
   m_socket->recordSenderWithRecv(true);
 
   m_rtp_packet = new CRTPPacket();
@@ -71,6 +73,12 @@ void CRecvloop::DoLoop()
           m_packet_ringbuffer->appendRTPPacket(m_rtp_packet);
           m_rtp_packet = new CRTPPacket();           
         }
+
+        // wake up playback thread
+        if(m_player->idleTime() > m_config->maxIdle() && m_config->maxIdle() != 0) {
+           m_player->m_traffic_cond.Signal();
+        }
+        
         break;
 
       case PAYLOAD_PCM:
@@ -81,6 +89,12 @@ void CRecvloop::DoLoop()
         m_packet_ringbuffer->appendRTPPacket(m_rtp_packet);
         m_rtp_packet = new CRTPPacket(); 
         // cerr << "Sender was: " << m_socket->latestSender()->ipAddress() << " port " << m_socket->latestSender()->port() << endl;
+        
+        // wake up playback thread
+        if(m_player->idleTime() > m_config->maxIdle() && m_config->maxIdle() != 0) {
+           m_player->m_traffic_cond.Signal();
+        }
+
         break;
       default:
         cerr << "CRecvloop::DoLoop(): unknown payload type: " << m_rtp_packet->payloadType() << endl; 

@@ -27,6 +27,7 @@ CAudioIoAlsa::CAudioIoAlsa()
  : IAudioIO()
 {
   m_sample_rate = 0;
+  m_open = false;
 }
 
 
@@ -36,8 +37,13 @@ CAudioIoAlsa::~CAudioIoAlsa()
 
 
 int CAudioIoAlsa::close() {
-  snd_pcm_status_free(m_status_ptr);
-  snd_pcm_close(m_playback_handle);
+  if(m_open == true)
+  {
+    m_open = false;  
+    cerr << "closing audio device" << endl;
+    snd_pcm_status_free(m_status_ptr);
+    snd_pcm_close(m_playback_handle);
+  }
   return 0;
 }
 
@@ -45,6 +51,11 @@ int CAudioIoAlsa::open(std::string device, int samplerate, int channels) {
 
   int err;
   snd_pcm_uframes_t periodsize = 1024;
+
+  if(m_open == true)
+    return 0;
+
+
   
   if ((err = snd_pcm_open(&m_playback_handle, device.c_str(), SND_PCM_STREAM_PLAYBACK, 0)) < 0)
   {
@@ -151,7 +162,8 @@ int CAudioIoAlsa::open(std::string device, int samplerate, int channels) {
     cerr << "failed to allocate snd_pcm_status_t!" << endl;
     return -15;
   }
-   
+  
+  m_open = true; 
   return 0;
 }
 
@@ -206,6 +218,8 @@ int CAudioIoAlsa::getOutOverflows(){
  */
 int CAudioIoAlsa::getDelay()
 {
+  if(m_open == true)
+  {
     snd_pcm_sframes_t delay;
     int retval;
 
@@ -216,6 +230,9 @@ int CAudioIoAlsa::getDelay()
     }
 
     return delay;
+  }
+  else
+    return 0;
 }
 
 

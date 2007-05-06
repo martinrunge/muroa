@@ -28,7 +28,9 @@ Class encapsulates all the playback functioinalty. It inplements an interface to
 
 #include <string>
 #include "csync.h"
+#include "cposixcond.h"
 
+class Cmuroad;
 class CRecvloop;
 class CPlayloop;
 class CRTPPacket;
@@ -37,7 +39,7 @@ class CPacketRingBuffer;
 
 class CPlayer{
 public:
-    CPlayer(unsigned short port, std::string sound_dev);
+    CPlayer(Cmuroad* config);
 
     ~CPlayer();
     void start();
@@ -55,6 +57,20 @@ public:
     void requestSync(int session_id, int stream_id);
     void setRequestedSyncObj(CRTPPacket* rtp_packet);
 
+    
+    void idleTime ( int theValue )
+    {
+        m_idle_time = theValue;
+    }
+
+    int idleTime() const
+    {
+        return m_idle_time;
+    }
+    
+
+    CPosixCond m_traffic_cond;
+
 private:
     CPacketRingBuffer * m_packet_ringbuffer;
   
@@ -68,7 +84,9 @@ private:
 
     int m_sync_requested_for_stream_id;
     boost::posix_time::ptime m_sync_requested_at;
-
+    int m_idle_time;
+    
+    Cmuroad* m_config;
 };
 
 #endif

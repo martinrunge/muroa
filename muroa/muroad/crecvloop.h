@@ -23,6 +23,7 @@
 #include <cthreadslave.h>
 
 #include "csync.h"
+#include "cmuroad.h"
 /**
 @author Martin Runge
 */
@@ -35,7 +36,7 @@ class CPlayer;
 class CRecvloop : public CThreadSlave
 {
 public:
-    CRecvloop(CPlayer* parent, CPacketRingBuffer* packet_ringbuffer, unsigned short port);
+    CRecvloop(CPlayer* parent, Cmuroad *config, CPacketRingBuffer* packet_ringbuffer);
 
     ~CRecvloop();
   
@@ -48,6 +49,7 @@ private:
 
     CPacketRingBuffer *m_packet_ringbuffer;
     CPlayer* m_player;
+    Cmuroad* m_config;
     CSync m_tmp_sync_obj;
 };
 

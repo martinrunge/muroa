@@ -103,6 +103,18 @@ public:
       return m_run_in_dir;
     }
     void daemonize();
+
+    int port() const
+    {
+        return m_port;
+    }
+
+    int maxIdle() const
+    {
+        return m_max_idle;
+    }
+    
+    
     
     
 private:
@@ -140,6 +152,13 @@ These variables hold information that may be changed during runtime by d-bus not
     std::string m_run_in_dir;
     const std::string m_run_in_dir_config_string;
     
+    int m_port;
+    const std::string m_port_config_string;
+    
+    int m_max_idle;
+    const std::string m_max_idle_config_string;
+
+    
 private:
     void parseOptions(int argc, char** argv);
 
@@ -147,6 +166,7 @@ private:
     void forkDaemon();
     void setScheduler();
     void switchUser();
+
 };
 
 #endif

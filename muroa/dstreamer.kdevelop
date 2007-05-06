@@ -24,24 +24,24 @@
       <useconfiguration>debug</useconfiguration>
     </general>
     <run>
-      <mainprogram>/home/martin/devel/muroa/debug/dsserver/dsserver</mainprogram>
+      <mainprogram>/home/martin/devel/muroa/debug/muroad/muroad</mainprogram>
       <terminal>true</terminal>
       <directoryradio>executable</directoryradio>
       <runarguments>
         <dsserver/>
-        <dsclient></dsclient>
+        <dsclient/>
       </runarguments>
       <customdirectory>/</customdirectory>
       <programargs>192.168.13.67</programargs>
       <autocompile>true</autocompile>
       <envvars/>
-      <globaldebugarguments>gericom</globaldebugarguments>
+      <globaldebugarguments></globaldebugarguments>
       <globalcwd>/home/martin/devel/muroa/</globalcwd>
       <useglobalprogram>true</useglobalprogram>
       <autoinstall>false</autoinstall>
       <autokdesu>false</autokdesu>
       <debugarguments>
-        <dsclient></dsclient>
+        <dsclient/>
       </debugarguments>
       <cwd>
         <dsclient>/home/martin/devel/muroa/debug/./dsclient</dsclient>

@@ -138,7 +138,7 @@ int cserver(int argc, char *argv[]) {
 
   m_num_clients = argc - 1;
 
-  ptime m_last_send_time = microsec_clock::local_time();
+  ptime m_last_send_time = microsec_clock::universal_time();
   ptime now = m_last_send_time;
 
   time_duration interval;
@@ -196,7 +196,7 @@ int cserver(int argc, char *argv[]) {
     rtp_packet.payloadType(PAYLOAD_PCM);
 
 //    measure the quality of the below usleep calculation
-//    now = microsec_clock::local_time();
+//    now = microsec_clock::universal_time();
 //    interval = now - m_last_send_time;
 //    cerr << "interval: " << interval << endl;
 

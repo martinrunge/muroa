@@ -43,6 +43,7 @@ class CPacketRingBuffer;
 class CRingBuffer;
 class CResampler;
 class CPlayer;
+class Cmuroad;
 class CRTPPacket;
 
 using namespace boost::posix_time;
@@ -50,7 +51,7 @@ using namespace boost::posix_time;
 class CPlayloop : public CThreadSlave
 {
 public:
-    CPlayloop(CPlayer* parent, CPacketRingBuffer* packet_ringbuffer, std::string sound_dev = "hw:0,0");
+  CPlayloop(CPlayer* parent, Cmuroad* config, CPacketRingBuffer* packet_ringbuffer );
 
     ~CPlayloop();
 
@@ -118,7 +119,7 @@ private:
 
     long long m_nr_of_last_frame_decoded;
 
-
+    int m_desired_sample_rate;
     int m_num_channels;
     int m_sample_size;
     int m_frames_per_second_pre_resampler;
@@ -128,8 +129,13 @@ private:
     int m_frames_to_discard;
 
     FILE* m_debug_fd1;
+    
     CPlayer* m_player;
-private:
+    Cmuroad* m_config;
+    
+    int m_secs_idle;
+
+  private:
     bool checkStream(CRTPPacket* packet);
 };
 

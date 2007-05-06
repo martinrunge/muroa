@@ -43,7 +43,9 @@ Cmuroad::Cmuroad(int argc, char** argv):
     m_fork_config_string("fork"),
     m_log_level_config_string("loglevel"),                         
     m_run_as_user_config_string("user"),
-    m_run_in_dir_config_string("run-dir")
+    m_run_in_dir_config_string("run-dir"),
+    m_port_config_string("port"),
+    m_max_idle_config_string("max-idle")
                            
 {
 
@@ -75,7 +77,9 @@ void Cmuroad::addDescription()
       (m_fork_config_string.c_str(), "fork to background and run in daemon mode.")
     (m_log_level_config_string.c_str(), po::value<int>(&m_log_level)->default_value(0), "Log level: 0 errors only, 1 warnings, 2 info, 3-10 debug.")
     (m_run_as_user_config_string.c_str(), po::value<string>(&m_run_as_user)->default_value("muroa"), "run daemon as special user. Useful, becaue you don't need a shell account for muroa then.")
-    (m_run_in_dir_config_string.c_str(), po::value<string>(&m_run_in_dir)->default_value("/var/run"), "directory in which the murad should run. core files will appear there :-)") 
+    (m_run_in_dir_config_string.c_str(), po::value<string>(&m_run_in_dir)->default_value("/var/run"), "directory in which the murad should run. core files will appear there :-)")
+    (m_port_config_string.c_str(), po::value<int>(&m_port)->default_value(4001), "port number to listen for RTP packets on.")
+    (m_max_idle_config_string.c_str(), po::value<int>(&m_max_idle)->default_value(60), "time in seconds to wait before closing the audio device when no more data is received. Audio device will be opened again as soon as further audio packets are received. Specify 0 here to keep audio device always open.")
     ;
   
 
@@ -164,9 +168,20 @@ void Cmuroad::parseOptions(int argc, char** argv)
     cout << "run dir is missing! There should be a default value!" << endl;
   }
   
+  // see what resampler quality to use
+  if (m_var_map.count(m_port_config_string)) {
+    cout << "using port number: " << m_port  << endl;
+  } else {
+    cout << "port number missing! There should be a default value!" << endl;
+  }
   
+    // see what resampler quality to use
+  if (m_var_map.count(m_max_idle_config_string)) {
+    cout << "Idle time before closing sound device: " << m_max_idle << " seconds." << endl;
+  } else {
+    cout << "Max idle time missing! There should be a default value!" << endl;
+  }
 
-  
 }
 
 
