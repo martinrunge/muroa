@@ -56,7 +56,7 @@ int CStreamConnection::send(char* buffer, const int len)
 {
     // 1) send data away
     int num = m_socket.write(buffer, len);
-  
+    
     // 2) check, if there was a rtp packet sent from the client
     int read_num = m_socket.read(m_rtp_packet.bufferPtr(), m_rtp_packet.bufferSize());   
 

@@ -122,9 +122,10 @@ int CStreamServer::write(char* buffer, int length) {
     m_rtp_packet->payloadType(PAYLOAD_PCM);
 
 //    measure the quality of the below usleep calculation
-//    now = microsec_clock::local_time();
-//    interval = now - m_last_send_time;
-//    cerr << "interval: " << interval << endl;
+    
+    //now = microsec_clock::local_time();
+    //interval = now - m_last_send_time;
+    //cerr << "interval: " << interval << endl;
 
 
     sendToAllClients(m_rtp_packet);
