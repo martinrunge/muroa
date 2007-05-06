@@ -6,7 +6,7 @@ METASOURCES = AUTO
 lib_LTLIBRARIES = libds_plugin.la
 libds_plugin_la_SOURCES = ds_plugin.c ds_cpp_plugin.cpp
 libds_plugin_la_LDFLAGS = -avoid-version -module -no-undefined -export-dynamic \
-	-version-info 0:0:0 -shrext .so
+	-shrext -version-info
 INCLUDES = -I$(top_srcdir)/libdsaudio -I$(top_srcdir)/libdsserver \
 	-I$(top_srcdir)/libsock++ `gtk-config --cflags` `glib-config --cflags`
 libds_plugin_la_LIBADD = $(top_builddir)/libsock++/libsock++.la \

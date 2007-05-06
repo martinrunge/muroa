@@ -3,4 +3,4 @@
 AUTOMAKE_OPTIONS = foreign 1.4
 
 
-SUBDIRS = ds_plugin dsclient dsserver libdsaudio libdsserver libsock++ muroad
+SUBDIRS = libsock++ libdsaudio libdsserver dsserver muroad ds_plugin

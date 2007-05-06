@@ -9,23 +9,24 @@ holds definitions nedded for the filter
 
 #include <stdint.h>
 
-class CFilterDef{
-public:
-    CFilterDef(int nmult, int scale, int nwing, const int16_t* imp, const int16_t* impd);
+class CFilterDef
+{
+	public:
+		CFilterDef ( int nmult, int scale, int nwing, const int16_t* imp, const int16_t* impd );
 
-    ~CFilterDef();
+		~CFilterDef();
 
-    inline int nMult() const {return m_nmult; };
-    inline int scale() const {return m_scale; };
-    inline int nWing() const {return m_nwing; };
+		inline int nMult() const {return m_nmult; };
+		inline int scale() const {return m_scale; };
+		inline int nWing() const {return m_nwing; };
 
-public:
-    int m_nmult;
-    int m_scale;
-    int m_nwing;
+	public:
+		int m_nmult;
+		int m_scale;
+		int m_nwing;
 
-    const int16_t* m_imp;
-    const int16_t* m_imp_d;
+		const int16_t* m_imp;
+		const int16_t* m_imp_d;
 };
 
 #endif

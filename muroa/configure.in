@@ -8,5 +8,5 @@ AC_PROG_CXX
 AM_PROG_LIBTOOL
 
 
-AC_OUTPUT(Makefile ds_plugin/Makefile dsclient/Makefile dsserver/Makefile \
-	libdsaudio/Makefile libdsserver/Makefile libsock++/Makefile muroad/Makefile)
+AC_OUTPUT(Makefile ds_plugin/Makefile dsserver/Makefile libdsaudio/Makefile \
+	libdsserver/Makefile libsock++/Makefile muroad/Makefile)

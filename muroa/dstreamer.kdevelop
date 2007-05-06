@@ -29,7 +29,7 @@
       <directoryradio>executable</directoryradio>
       <runarguments>
         <dsserver/>
-        <dsclient/>
+        <dsclient></dsclient>
       </runarguments>
       <customdirectory>/</customdirectory>
       <programargs>192.168.13.67</programargs>
@@ -40,6 +40,12 @@
       <useglobalprogram>true</useglobalprogram>
       <autoinstall>false</autoinstall>
       <autokdesu>false</autokdesu>
+      <debugarguments>
+        <dsclient></dsclient>
+      </debugarguments>
+      <cwd>
+        <dsclient>/home/martin/devel/muroa/debug/./dsclient</dsclient>
+      </cwd>
     </run>
     <configurations>
       <optimized>
