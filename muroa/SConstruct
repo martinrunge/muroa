@@ -206,7 +206,7 @@ print "CXXFLAGS=", env['CXXFLAGS']
 Export('env')
 
 
-subdirs = Split('dsclient dsserver libdsserver libdsaudio libsock++')
+subdirs = Split('muroad dsserver libdsserver libdsaudio libsock++')
 
 
 # env.SConscript('dsserver/SConscript')
