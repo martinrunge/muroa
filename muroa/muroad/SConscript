@@ -7,7 +7,8 @@ source_files = Split('cpacketringbuffer.cpp\
                  cresampler.cpp\
 		         cfilterdef.cpp\
                  cfixpointresampler.cpp\
-                 dsclient.cpp\
+                 cmuroad.cpp\
+                 main.cpp\
                  cplayer.cpp\
                  crecvloop.cpp\
                  cringbuffer.cpp')
