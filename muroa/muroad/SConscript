@@ -17,7 +17,7 @@ source_files = Split('cpacketringbuffer.cpp\
 Import('env')
 
 ds_libs = Split('dsaudio sock++')
-ext_libs = Split('boost_date_time asound m')
+ext_libs = Split('boost_date_time boost_program_options asound m')
 
 if '-DFIXPOINT' in env['CXXFLAGS']:
   pass
