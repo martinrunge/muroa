@@ -23,6 +23,7 @@
 #include <xmms/util.h>
 #include <xmms/configfile.h>
 
+#include <stdlib.h> 
 #include <stdio.h>
 
 #include "ds_cpp_plugin.h"

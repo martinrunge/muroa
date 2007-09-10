@@ -25,10 +25,12 @@
 #include <string>
 
 #include <unistd.h>
+#include <errno.h>
 
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
+#include <pwd.h> 
 
 #include <boost/program_options/parsers.hpp>
 
@@ -259,7 +261,42 @@ void Cmuroad::forkDaemon()
  */
 void Cmuroad::switchUser()
 {
-    /// @todo implement me
+  struct passwd* pwd;
+  int retval;
+  
+  pwd = getpwnam(m_run_as_user.c_str());
+  if(pwd != 0)
+  {
+    cerr << "setting user to " << m_run_as_user << " (UID=" << pwd->pw_uid << ")...";
+    setgid(pwd->pw_gid);
+    retval = setuid(pwd->pw_uid);
+    if(retval == 0)
+    {
+      
+      cerr << "success." << endl;
+    }
+    else
+    {
+      cerr << "setting UID faild (" << strerror(errno) << "), trying to set EUID insted...";
+      setegid(pwd->pw_gid);
+      retval = seteuid(pwd->pw_uid);
+      if(retval == 0)
+      {
+        
+        cerr << " success." << endl;
+      }
+      else
+      {
+        cerr << "setting EUID faild (" << strerror(errno) << "). Continuing as started" << endl;;
+      }
+    }
+  }
+  else
+  {
+    cerr << "Cannot switch user to '" << m_run_as_user << "'. User does not seem to exists. Continuing as started." << endl;
+  }
+
+  cerr << "gid: " << getgid() << " egid: " << getegid() << endl;
 }
 
 

@@ -24,7 +24,7 @@
 #include <iostream>
 #include <string>
 
-CStreamServer streamserver(1, 300);
+CStreamServer streamserver(1, 600);
 
 
 char* tmp_buffer;

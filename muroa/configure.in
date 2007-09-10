@@ -1,12 +1,14 @@
-AC_INIT(configure.in)
+AC_INIT
+AC_CONFIG_SRCDIR([configure.in])
 
-AM_CONFIG_HEADER(config.h)
+AC_CONFIG_HEADERS([config.h])
 AM_INIT_AUTOMAKE(dstreamer, 0.1)
 
-AC_LANG_CPLUSPLUS
+AC_LANG([C++])
 AC_PROG_CXX
 AM_PROG_LIBTOOL
 
 
-AC_OUTPUT(Makefile ds_plugin/Makefile dsserver/Makefile libdsaudio/Makefile \
-	libdsserver/Makefile libsock++/Makefile muroad/Makefile)
+AC_CONFIG_FILES([Makefile ds_plugin/Makefile dsserver/Makefile libdsaudio/Makefile \
+	libdsserver/Makefile libsock++/Makefile muroad/Makefile])
+AC_OUTPUT
