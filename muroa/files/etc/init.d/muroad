@@ -1,0 +1,42 @@
+#! /bin/sh 
+#
+# This is an init script for muroad
+# Copy it to /etc/init.d/muroad 
+#
+
+muroad=/usr/local/bin/muroad
+test -x "$muroad" || exit 0
+
+# audio-device= 
+# user_arg="--user muroa"
+
+default_args="--realtime-prio --fork"
+
+
+case "$1" in
+  start)
+    echo -n "Starting muroad"
+    start-stop-daemon --start --quiet --exec $muroad -- $default_args $user_arg 
+
+    echo "."
+    ;;
+  stop)
+    echo -n "Stopping muroad"
+    start-stop-daemon --stop --quiet --signal TERM --exec $muroad 
+    echo "."
+    ;;
+  restart)
+    echo -n "Stopping muroad"
+    start-stop-daemon --stop --quiet --signal TERM --exec $muroad
+    echo "."
+    sleep 1
+    echo -n "Starting muroad"
+    start-stop-daemon --start --quiet --exec $muroad -- $default_args $user_arg 
+    echo "."
+    ;;
+  *)
+    echo "Usage: /etc/init.d/muroad {start|stop|restart}"
+    exit 1
+esac
+
+exit 0

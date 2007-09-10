@@ -100,7 +100,7 @@ int CAudioIoAlsa::open(std::string device, int samplerate, int channels) {
     return -7;
   }
 
-  snd_pcm_uframes_t bufsize = periodsize * 8;
+  snd_pcm_uframes_t bufsize = periodsize * 16;
   
   cerr << "trying to set buffer size to " << bufsize << " frames, ";
   err = snd_pcm_hw_params_set_buffer_size_near(m_playback_handle, m_hw_params, &bufsize);
