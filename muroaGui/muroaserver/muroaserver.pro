@@ -4,12 +4,16 @@ QT += core \
     gui \
     xml \
     network
-HEADERS += cconnection.h \
+HEADERS += CCollectionItem.h \
+    CCollection.h \
+    cconnection.h \
     ccontenthandler.h \
     cnetwork.h \
     cstatemachine.h \
     muroaserver.h
-SOURCES += cconnection.cpp \
+SOURCES += CCollectionItem.cpp \
+    CCollection.cpp \
+    cconnection.cpp \
     ccontenthandler.cpp \
     cnetwork.cpp \
     cstatemachine.cpp \

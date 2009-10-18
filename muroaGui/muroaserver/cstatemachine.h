@@ -6,6 +6,7 @@
 class QTcpSocket;
 class QXmlStreamReader;
 class QXmlStreamWriter;
+class CCollection;
 
 class CStateMachine : public QObject
 {
@@ -27,13 +28,19 @@ public slots:
     void endElement(QXmlStreamReader* reader);
     void characters(QXmlStreamReader* reader);
 
+    inline void setCollection(CCollection* collection) { m_collection = collection; };
+
+
     void sendCollection();
+
 
 private:
     int m_state;
     int m_xml_depth;
 
     int m_revision;
+
+    CCollection* m_collection;
 
     QXmlStreamWriter* m_xml_writer;
 

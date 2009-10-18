@@ -10,6 +10,7 @@
 class QXmlInputSource;
 class QXmlSimpleReader;
 class QIODevice;
+class CCollection;
 
 class CConnection : public QObject
 {
@@ -26,6 +27,8 @@ public slots:
     void connectionClosed(QIODevice* ioDev);
 
     void readyRead();
+
+    inline void setCollection(CCollection* collection) { m_sm.setCollection(collection); };
 
 
 private:

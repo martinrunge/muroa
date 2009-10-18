@@ -1,4 +1,5 @@
 #include "cstatemachine.h"
+#include "CCollection.h"
 
 #include <QDebug>
 #include <QXmlStreamReader>
@@ -108,6 +109,9 @@ void CStateMachine::sendCollection()
 {
     m_xml_writer->writeStartElement("collection");
     m_xml_writer->writeAttribute("revision", QString().setNum(m_revision));
+    QString collection = m_collection->asText();
+    // qDebug() << collection;
+    m_xml_writer->writeCharacters(collection);
     m_xml_writer->writeEndElement();
 }
 

@@ -4,9 +4,12 @@
 #include <QXmlStreamReader>
 
 
+#include "CCollectionModel.h"
+
 CStateMachine::CStateMachine()
 {
 	m_revision = 0;
+	m_state = e_no_session;
 }
 
 CStateMachine::~CStateMachine()
@@ -53,6 +56,7 @@ void CStateMachine::startElement(QXmlStreamReader* reader)
     else if(name.toString().startsWith("muroa_server"))
     {
         qDebug() << QString("Begin of Document");
+        m_state = e_session_active;
     }
     else
     {
@@ -76,6 +80,7 @@ void CStateMachine::endElement(QXmlStreamReader* reader)
     else if(name.toString().startsWith("muroa_server"))
     {
         qDebug() << QString("Begin of Document");
+        m_state = e_no_session;
     }
     else
     {
@@ -86,7 +91,20 @@ void CStateMachine::endElement(QXmlStreamReader* reader)
 
 void CStateMachine::characters(QXmlStreamReader* reader)
 {
-    qDebug() << QString("characters");
+    // qDebug() << QString("characters");
+	QStringRef text = reader->text();
+	switch(m_state)
+	{
+		case e_reading_collection:
+			parseCollection(text);
+			break;
+
+		default:
+			if(text.size() > 0)
+			{
+				qDebug() << QString("Received unexpected characters: ").append(text);
+			}
+	}
 }
 
 
@@ -118,10 +136,43 @@ void CStateMachine::readCollection(QXmlStreamReader* reader)
 
 	    qDebug() << QString("readCollection: revision %1").arg(m_revision);
 
+	    m_state = e_reading_collection;
+
 	}
 	else
 	{
 		// end tag -> readCollection is complete
+	    m_state = e_collection_received;
 	}
 }
 
+
+void CStateMachine::parseCollection(QStringRef text)
+{
+	QString characters = text.toString();
+	QTextStream stream(&characters, QIODevice::ReadOnly);
+	QString line;
+	QList<CCollectionItem> items;
+
+	qDebug() << text;
+
+	do {
+	    line = stream.readLine();
+	    CCollectionItem newItem;
+	    // line is supposed to be comma seperated
+
+    	bool ok;
+    	// newItem.setFilename( line.section(',', 0, 0) );
+    	newItem.setArtist( line.section(',', 0, 0) );
+    	newItem.setAlbum( line.section(',', 1, 1) );
+    	newItem.setYear( line.section(',', 2, 2).toInt(&ok) );
+    	newItem.setTitle( line.section(',', 3, 3) );
+    	newItem.setLengthInSec( line.section(',', 4, 4).toInt(&ok) );
+
+	    items.append(newItem);
+
+
+	} while (!line.isNull());
+	m_collectionModelPtr->append(items);
+
+}

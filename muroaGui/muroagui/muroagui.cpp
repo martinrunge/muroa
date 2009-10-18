@@ -12,7 +12,10 @@ muroagui::muroagui(QWidget *parent)
 	statusBar()->addWidget(&m_connection_status_label);
 
 	connect(&m_connection, SIGNAL(connectionStatusChanged(QString)), this, SLOT(connectionStatusChanged(QString)));
+	m_connection.setColletionModelPtr(&m_collectionModel);
 
+	m_collectionModel.setCollection(&m_collection);
+	ui.tableView->setModel(&m_collectionModel);
 
 }
 

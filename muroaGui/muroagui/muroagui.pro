@@ -4,12 +4,18 @@ QT += core \
     gui \
     xml \
     network
-HEADERS += cstatemachine.h \
+HEADERS += CCollectionItem.h \
+    CCollection.h \
+    cstatemachine.h \
     cconnection.h \
-    muroagui.h
-SOURCES += cstatemachine.cpp \
+    muroagui.h \
+    CCollectionModel.h
+SOURCES += CCollectionItem.cpp \
+    CCollection.cpp \
+    cstatemachine.cpp \
     cconnection.cpp \
     main.cpp \
-    muroagui.cpp
+    muroagui.cpp \
+    CCollectionModel.cpp
 FORMS += muroagui.ui
 RESOURCES += 

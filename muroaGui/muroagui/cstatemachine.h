@@ -8,6 +8,13 @@
 class QTcpSocket;
 class QXmlStreamReader;
 class QXmlStreamWriter;
+class CCollectionModel;
+
+enum states { e_no_session,
+			  e_session_active,
+			  e_awaiting_collection,
+			  e_reading_collection,
+			  e_collection_received  };
 
 class CStateMachine : public QObject
 {
@@ -16,7 +23,8 @@ public:
     CStateMachine();
     ~CStateMachine();
 
-    inline void setXmlWriter(QXmlStreamWriter* xml_writer) { m_xml_writer = xml_writer; };
+    inline void setXmlWriter(QXmlStreamWriter* const xml_writer) { m_xml_writer = xml_writer; };
+    inline void setCollectionModelPtr(CCollectionModel* const collectionModelPtr ) { m_collectionModelPtr = collectionModelPtr; };
 
 public slots:
     void close();
@@ -34,11 +42,14 @@ private:
     int m_state;
     int m_xml_depth;
 
+    CCollectionModel* m_collectionModelPtr;
+
     quint64 m_revision;
 
     QXmlStreamWriter* m_xml_writer;
 
     void readCollection(QXmlStreamReader* reader = 0);
+    void parseCollection(QStringRef text);
 
     void parseReadArgs(QXmlStreamReader* reader);
     void parseWriteArgs(QXmlStreamReader* reader);

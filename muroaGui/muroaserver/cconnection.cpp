@@ -49,6 +49,8 @@ void CConnection::connectionClosed(QIODevice* ioDev)
 }
 
 
+
+
 void CConnection::readyRead()
 {
     int avail = m_io_dev->bytesAvailable();

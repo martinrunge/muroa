@@ -17,6 +17,8 @@ public:
     CConnection();
     ~CConnection();
 
+    inline void setColletionModelPtr(CCollectionModel* const collectionModelPtr) {m_sm.setCollectionModelPtr(collectionModelPtr); };
+
 signals:
     void connectionStatusChanged(QString message);
 

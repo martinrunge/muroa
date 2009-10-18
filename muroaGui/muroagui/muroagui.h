@@ -3,6 +3,8 @@
 
 #include <QtGui/QMainWindow>
 #include <QLabel>
+#include "CCollection.h"
+#include "CCollectionModel.h"
 #include "ui_muroagui.h"
 #include "cconnection.h"
 
@@ -24,6 +26,8 @@ public slots:
 private:
     Ui::muroaguiClass ui;
     CConnection m_connection;
+    CCollection m_collection;
+    CCollectionModel m_collectionModel;
 
     QLabel m_connection_status_label;
 
