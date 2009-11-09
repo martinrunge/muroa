@@ -26,6 +26,8 @@ public:
     inline void setXmlWriter(QXmlStreamWriter* const xml_writer) { m_xml_writer = xml_writer; };
     inline void setCollectionModelPtr(CCollectionModel* const collectionModelPtr ) { m_collectionModelPtr = collectionModelPtr; };
 
+    inline int getRevision() { return m_revision; };
+
 public slots:
     void close();
     void open();
@@ -44,7 +46,7 @@ private:
 
     CCollectionModel* m_collectionModelPtr;
 
-    quint64 m_revision;
+    int m_revision;
 
     QXmlStreamWriter* m_xml_writer;
 

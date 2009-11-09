@@ -58,6 +58,14 @@ void CConnection::getCollection()
     m_xml_writer->writeEndElement();
 }
 
+void CConnection::getCollection(int knownRevision)
+{
+    qDebug() << QString("getCollection");
+    m_xml_writer->writeStartElement("getCollection");
+    m_xml_writer->writeAttribute("knownRev", QString().setNum(knownRevision));
+    m_xml_writer->writeEndElement();
+}
+
 
 void CConnection::connected()
 {
@@ -69,7 +77,7 @@ void CConnection::connected()
     m_xml_writer->writeStartDocument(QString("1.0"), true);
     m_xml_writer->writeStartElement("muroa_session");
 
-    getCollection();
+    getCollection(3);
 
 }
 
