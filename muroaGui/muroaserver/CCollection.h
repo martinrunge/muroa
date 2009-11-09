@@ -16,13 +16,25 @@ public:
 	CCollection();
 	virtual ~CCollection();
 
-	void parseLine(QString line);
-	QString asText();
+//	QString asText();
 
+	inline void setText(QString collection, int revision)
+	{
+		m_collectionAsText = collection;
+		m_revision = revision;
+	};
 
+	inline QString getText(void) { return m_collectionAsText; };
+	inline int getRevision(void) { return m_revision; };
 
 private:
 	QList<CCollectionItem> m_items;
+
+	void parse();
+
+
+	QString m_collectionAsText;
+	int m_revision;
 };
 
 #endif /* CCOLLECTION_H_ */

@@ -9,11 +9,14 @@
 #define CCOLLECTIONITEM_H_
 
 #include <QString>
+#include <QStringRef>
 
 class CCollectionItem {
 public:
 	CCollectionItem();
 	virtual ~CCollectionItem();
+
+	void setStringRef(QStringRef stringRef);
 
     inline QString getAlbum() const { return m_album; }
     inline QString getArtist() const { return m_artist; }

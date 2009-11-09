@@ -5,12 +5,13 @@
 #include "cnetwork.h"
 #include "ccontenthandler.h"
 #include "cstatemachine.h"
-
+#include "CSession.h"
 
 class QXmlInputSource;
 class QXmlSimpleReader;
 class QIODevice;
-class CCollection;
+//class CCollection;
+// class CSession;
 
 class CConnection : public QObject
 {
@@ -28,8 +29,12 @@ public slots:
 
     void readyRead();
 
-    inline void setCollection(CCollection* collection) { m_sm.setCollection(collection); };
-
+//    inline void setCollection(CCollection* collection) { m_session->setCollectionPtr(collection); };
+    inline void setSessionPtr(CSession * session)
+    {
+    	m_session = session;
+    	m_sm.setSessionPtr(m_session);
+    };
 
 private:
     CNetwork *m_net;
@@ -40,7 +45,7 @@ private:
     CStateMachine m_sm;
 
     CContentHandler m_contentHandler;
-
+    CSession* m_session;
 };
 
 #endif // CHWTEST_H

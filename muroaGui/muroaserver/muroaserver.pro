@@ -4,14 +4,18 @@ QT += core \
     gui \
     xml \
     network
-HEADERS += CCollectionItem.h \
+HEADERS += CDiff.h \
+    CSession.h \
+    CCollectionItem.h \
     CCollection.h \
     cconnection.h \
     ccontenthandler.h \
     cnetwork.h \
     cstatemachine.h \
     muroaserver.h
-SOURCES += CCollectionItem.cpp \
+SOURCES += CDiff.cpp \
+    CSession.cpp \
+    CCollectionItem.cpp \
     CCollection.cpp \
     cconnection.cpp \
     ccontenthandler.cpp \
@@ -20,4 +24,4 @@ SOURCES += CCollectionItem.cpp \
     main.cpp \
     muroaserver.cpp
 FORMS += muroaserver.ui
-RESOURCES += 
+LIBS += -lxdiff

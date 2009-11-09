@@ -6,6 +6,8 @@
 #include "cconnection.h"
 #include "CCollection.h"
 
+class CSession;
+
 class muroaserver : public QMainWindow
 {
     Q_OBJECT
@@ -23,6 +25,8 @@ public slots:
 
 
 private:
+	CSession *m_session;
+
     Ui::muroaserverClass ui;
 
     CConnection m_connection;

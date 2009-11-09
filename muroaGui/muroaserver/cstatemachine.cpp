@@ -1,5 +1,6 @@
 #include "cstatemachine.h"
 #include "CCollection.h"
+#include "CSession.h"
 
 #include <QDebug>
 #include <QXmlStreamReader>
@@ -7,7 +8,7 @@
 
 CStateMachine::CStateMachine()
 {
-	m_revision = 0;
+	//m_revision = 0;
 }
 
 CStateMachine::~CStateMachine()
@@ -44,7 +45,7 @@ void CStateMachine::startElement(QXmlStreamReader* reader)
     QStringRef name = reader->name();
     if(name.toString().startsWith("getCollection"))
     {
-        parseWriteArgs(reader);
+        parseGetCollectionArgs(reader);
     }
     else if(name.toString().startsWith("addSong"))
     {
@@ -66,7 +67,7 @@ void CStateMachine::endElement(QXmlStreamReader* reader)
     QStringRef name = reader->name();
     if(name.toString().startsWith("getCollection"))
     {
-        sendCollection();
+    	sendCollection();
     }
     else if(name.toString().startsWith("addSong"))
     {
@@ -89,6 +90,26 @@ void CStateMachine::characters(QXmlStreamReader* reader)
 }
 
 
+void CStateMachine::parseGetCollectionArgs(QXmlStreamReader* reader)
+{
+    QXmlStreamAttributes att = reader->attributes();
+    if(att.hasAttribute("knownRev"))
+    {
+	    QStringRef knownRevision = att.value(QString(), QString("knownRev"));
+
+	    bool ok;
+	    m_knownRevision = knownRevision.toString().toULongLong(&ok);
+
+	    qDebug() << QString("getCollection: knownRevision %1").arg(m_knownRevision);
+    }
+    else
+    {
+    	// client does not have and old revision, send whole collection
+    	m_knownRevision = -1;
+    }
+
+}
+
 
 void CStateMachine::parseReadArgs(QXmlStreamReader* reader)
 {
@@ -107,10 +128,21 @@ void CStateMachine::parseWriteArgs(QXmlStreamReader* reader)
 
 void CStateMachine::sendCollection()
 {
+	QString collection;
+
     m_xml_writer->writeStartElement("collection");
-    m_xml_writer->writeAttribute("revision", QString().setNum(m_revision));
-    QString collection = m_collection->asText();
-    // qDebug() << collection;
+    m_xml_writer->writeAttribute("revision", QString().setNum(m_session->getCollectionRevision()));
+
+    collection = m_session->getCollectionDiff(m_knownRevision);
+    if(!collection.isNull())
+    {
+    	m_xml_writer->writeAttribute("diffFromRev", QString().setNum(m_knownRevision));
+    }
+    else
+    {
+    	collection = m_session->getCollection();
+    }
+    qDebug() << collection;
     m_xml_writer->writeCharacters(collection);
     m_xml_writer->writeEndElement();
 }
