@@ -1,0 +1,10 @@
+collection1:   Herbert Grönemeyer 12
+collection2:   Sunrise Avenue hinten angehängt
+collection3:   The White Stripes und P!nk zwischen Grönemeyer und Sunrise Avenue eingefügt
+collection4:   Timberland, Amy MacDonald und Lady Gaga mitten in Sunrise Aveneue eingefügt
+collection5:   Timberland, Amy MacDonald und Lady Gaga ans Ende verschoben
+collection6:   Grönemeyer sortiert
+collection7:   The White Stripes und P!nk entfernt
+
+
+
