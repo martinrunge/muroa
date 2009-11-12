@@ -47,11 +47,13 @@ private:
     CCollectionModel* m_collectionModelPtr;
 
     int m_revision;
+    int m_diffFromRev;
 
     QXmlStreamWriter* m_xml_writer;
 
-    void readCollection(QXmlStreamReader* reader = 0);
+    void parseCollectionArgs(QXmlStreamReader* reader);
     void parseCollection(QStringRef text);
+    void parseCollectionDiff(QStringRef text);
 
     void parseReadArgs(QXmlStreamReader* reader);
     void parseWriteArgs(QXmlStreamReader* reader);

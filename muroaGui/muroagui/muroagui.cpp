@@ -9,6 +9,9 @@ muroagui::muroagui(QWidget *parent)
     connect(ui.actionOpen, SIGNAL(triggered()), this, SLOT(openConnection()));
     connect(ui.actionClose, SIGNAL(triggered()), &m_connection, SLOT(close()));
 
+    connect(ui.actionGet_Revision_1, SIGNAL(triggered()), &m_connection, SLOT(close()));
+    connect(ui.actionGet_next_Revision, SIGNAL(triggered()), &m_connection, SLOT(close()));
+
 	statusBar()->addWidget(&m_connection_status_label);
 
 	connect(&m_connection, SIGNAL(connectionStatusChanged(QString)), this, SLOT(connectionStatusChanged(QString)));

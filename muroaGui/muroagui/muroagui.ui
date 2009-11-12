@@ -1,8 +1,7 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<ui version="4.0">
+<ui version="4.0" >
  <class>muroaguiClass</class>
- <widget class="QMainWindow" name="muroaguiClass">
-  <property name="geometry">
+ <widget class="QMainWindow" name="muroaguiClass" >
+  <property name="geometry" >
    <rect>
     <x>0</x>
     <y>0</y>
@@ -10,70 +9,88 @@
     <height>600</height>
    </rect>
   </property>
-  <property name="windowTitle">
+  <property name="windowTitle" >
    <string>Muroa Gui</string>
   </property>
-  <widget class="QWidget" name="centralwidget">
-   <layout class="QGridLayout" name="gridLayout">
-    <item row="0" column="0">
-     <widget class="QSplitter" name="splitter">
-      <property name="orientation">
+  <widget class="QWidget" name="centralwidget" >
+   <layout class="QGridLayout" name="gridLayout" >
+    <item row="0" column="0" >
+     <widget class="QSplitter" name="splitter" >
+      <property name="orientation" >
        <enum>Qt::Vertical</enum>
       </property>
-      <widget class="QTableView" name="tableView"/>
-      <widget class="QPlainTextEdit" name="plainTextEdit"/>
+      <widget class="QTableView" name="tableView" />
+      <widget class="QPlainTextEdit" name="plainTextEdit" />
      </widget>
     </item>
    </layout>
   </widget>
-  <widget class="QMenuBar" name="menubar">
-   <property name="geometry">
+  <widget class="QMenuBar" name="menubar" >
+   <property name="geometry" >
     <rect>
      <x>0</x>
      <y>0</y>
      <width>800</width>
-     <height>21</height>
+     <height>22</height>
     </rect>
    </property>
-   <widget class="QMenu" name="menu_File">
-    <property name="title">
+   <widget class="QMenu" name="menu_File" >
+    <property name="title" >
      <string>&amp;File</string>
     </property>
-    <addaction name="actionExit"/>
+    <addaction name="actionExit" />
    </widget>
-   <widget class="QMenu" name="menu_Connection">
-    <property name="title">
+   <widget class="QMenu" name="menu_Connection" >
+    <property name="title" >
      <string>&amp;Connection</string>
     </property>
-    <addaction name="actionOpen"/>
-    <addaction name="actionClose"/>
+    <addaction name="actionOpen" />
+    <addaction name="actionClose" />
    </widget>
-   <addaction name="menu_File"/>
-   <addaction name="menu_Connection"/>
+   <widget class="QMenu" name="menuCo_llection" >
+    <property name="title" >
+     <string>Co&amp;llection</string>
+    </property>
+    <addaction name="actionGet_Revision_1" />
+    <addaction name="actionGet_next_Revision" />
+   </widget>
+   <addaction name="menu_File" />
+   <addaction name="menu_Connection" />
+   <addaction name="menuCo_llection" />
   </widget>
-  <widget class="QStatusBar" name="statusbar"/>
-  <action name="actionExit">
-   <property name="text">
+  <widget class="QStatusBar" name="statusbar" />
+  <action name="actionExit" >
+   <property name="text" >
     <string>E&amp;xit</string>
    </property>
-   <property name="shortcut">
+   <property name="shortcut" >
     <string>Alt+X</string>
    </property>
   </action>
-  <action name="actionOpen">
-   <property name="text">
+  <action name="actionOpen" >
+   <property name="text" >
     <string>&amp;Open</string>
    </property>
-   <property name="shortcut">
+   <property name="shortcut" >
     <string>Ctrl+O</string>
    </property>
   </action>
-  <action name="actionClose">
-   <property name="text">
+  <action name="actionClose" >
+   <property name="text" >
     <string>&amp;Close</string>
    </property>
-   <property name="shortcut">
+   <property name="shortcut" >
     <string>Ctrl+X</string>
+   </property>
+  </action>
+  <action name="actionGet_Revision_1" >
+   <property name="text" >
+    <string>get Revision 1</string>
+   </property>
+  </action>
+  <action name="actionGet_next_Revision" >
+   <property name="text" >
+    <string>get next Revision</string>
    </property>
   </action>
  </widget>

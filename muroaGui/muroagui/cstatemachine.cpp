@@ -2,6 +2,7 @@
 
 #include <QDebug>
 #include <QXmlStreamReader>
+#include <QRegExp>
 
 
 #include "CCollectionModel.h"
@@ -47,7 +48,7 @@ void CStateMachine::startElement(QXmlStreamReader* reader)
     m_xml_depth++;
     if(name.toString().startsWith("collection"))
     {
-    	readCollection(reader);
+    	parseCollectionArgs(reader);
     }
     else if(name.toString().startsWith("addSong"))
     {
@@ -71,7 +72,7 @@ void CStateMachine::endElement(QXmlStreamReader* reader)
     m_xml_depth--;
     if(name.toString().startsWith("collection"))
     {
-        readCollection();
+	    m_state = e_collection_received;
     }
     else if(name.toString().startsWith("addSong"))
     {
@@ -96,7 +97,14 @@ void CStateMachine::characters(QXmlStreamReader* reader)
 	switch(m_state)
 	{
 		case e_reading_collection:
-			parseCollection(text);
+			if(m_diffFromRev == -1)
+			{
+				parseCollection(text);
+			}
+			else
+			{
+				parseCollectionDiff(text);
+			}
 			break;
 
 		default:
@@ -124,28 +132,27 @@ void CStateMachine::parseWriteArgs(QXmlStreamReader* reader)
 }
 
 
-void CStateMachine::readCollection(QXmlStreamReader* reader)
+void CStateMachine::parseCollectionArgs(QXmlStreamReader* reader)
 {
-	if(reader)
-	{
-		QXmlStreamAttributes att = reader->attributes();
-	    QStringRef revision = att.value(QString(), QString("revision"));
+	QXmlStreamAttributes att = reader->attributes();
+    QStringRef revision = att.value(QString(), QString("revision"));
 
+    m_diffFromRev = -1;
+    bool ok;
+    m_revision = revision.string()->toULongLong(&ok);
+
+    if(att.hasAttribute("diffFromRev"))
+    {
+	    QStringRef diffFromRev = att.value(QString(), QString("diffFromRev"));
 	    bool ok;
-	    m_revision = revision.toString().toULongLong(&ok);
+	    m_diffFromRev = diffFromRev.string()->toULongLong(&ok);
+    }
 
-	    qDebug() << QString("readCollection: revision %1").arg(m_revision);
+    qDebug() << QString("readCollection: revision %1").arg(m_revision);
 
-	    m_state = e_reading_collection;
+    m_state = e_reading_collection;
 
-	}
-	else
-	{
-		// end tag -> readCollection is complete
-	    m_state = e_collection_received;
-	}
 }
-
 
 void CStateMachine::parseCollection(QStringRef text)
 {
@@ -175,4 +182,50 @@ void CStateMachine::parseCollection(QStringRef text)
 	} while (!line.isNull());
 	m_collectionModelPtr->append(items);
 
+}
+
+void CStateMachine::parseCollectionDiff(QStringRef text)
+{
+	QString characters = text.toString();
+	QTextStream stream(&characters, QIODevice::ReadOnly);
+	QString line;
+	QList<CCollectionItem> items;
+
+	qDebug() << text;
+
+	QRegExp rxdiff("^@@ -(\\d+),(\\d+)\\s+\\+(\\d+),(\\d+)\\s*@@$");
+
+	do {
+	    line = stream.readLine();
+	    if(line.startsWith("@@")) // diff chunk header
+	    {
+	    	int pos = rxdiff.indexIn(line);
+	    	if (pos > -1) {
+	    		QString oldStart = rxdiff.cap(1);
+	    		QString oldLen = rxdiff.cap(2);
+	    		QString newStart = rxdiff.cap(3);
+	    		QString newLen = rxdiff.cap(4);
+
+	    		qDebug() << QString("- %1,%2 + %3,%4").arg(oldStart).arg(oldLen).arg(newStart).arg(newLen);
+	    	}
+
+	    }
+
+
+	    CCollectionItem newItem;
+	    // line is supposed to be comma seperated
+
+    	bool ok;
+    	// newItem.setFilename( line.section(',', 0, 0) );
+    	newItem.setArtist( line.section(',', 0, 0) );
+    	newItem.setAlbum( line.section(',', 1, 1) );
+    	newItem.setYear( line.section(',', 2, 2).toInt(&ok) );
+    	newItem.setTitle( line.section(',', 3, 3) );
+    	newItem.setLengthInSec( line.section(',', 4, 4).toInt(&ok) );
+
+	    items.append(newItem);
+
+
+	} while (!line.isNull());
+	m_collectionModelPtr->append(items);
 }
