@@ -3,110 +3,134 @@
 
 #include <QXmlSimpleReader>
 #include <QXmlInputSource>
+#include <QTcpSocket>
+#include <QDebug>
 
-CConnection::CConnection()
+CConnection::CConnection(QTcpSocket* socket) : m_socket(socket), m_sm(this)
 {
-    CNetwork *m_net = new CNetwork(2678);
+    // CNetwork *m_net = new CNetwork(2678);
 
-    connect(m_net,SIGNAL(newConnection(QIODevice*)), this, SLOT(newConnection(QIODevice*)));
-    connect(m_net,SIGNAL(connectionClosed(QIODevice*)), this, SLOT(connectionClosed(QIODevice*)));
-
-}
-
-
-CConnection::~CConnection()
-{
-    delete m_net;
-}
+    connect(m_socket, SIGNAL(connected()), this, SLOT(connected()));
+    connect(m_socket, SIGNAL(disconnected()), this, SLOT(disconnected()));
+    connect(m_socket, SIGNAL(error(QAbstractSocket::SocketError)), this, SLOT(error(QAbstractSocket::SocketError)));
 
 
-void CConnection::newConnection(QIODevice* ioDev)
-{
+    //connect(m_net,SIGNAL(newConnection(QIODevice*)), this, SLOT(newConnection(QIODevice*)));
+    //connect(m_net,SIGNAL(connectionClosed(QIODevice*)), this, SLOT(connectionClosed(QIODevice*)));
+
     qDebug() << QString("CConnection::newConnection");
-    m_io_dev = ioDev;
-    m_xml_reader = new QXmlStreamReader();
-    m_xml_writer = new QXmlStreamWriter(ioDev);
+    // m_io_dev = ioDev;
+    m_xml_writer = new QXmlStreamWriter(m_socket);
     m_xml_writer->setAutoFormatting(true);
     m_xml_writer->writeStartDocument(QString("1.0"), true);
     m_xml_writer->writeStartElement("muroa_server");
 
     m_sm.setXmlWriter(m_xml_writer);
 
-    connect(m_io_dev, SIGNAL(readyRead()),this, SLOT(readyRead()));
+    connect(m_socket, SIGNAL(readyRead()),this, SLOT(readyRead()));
 
     emit connectionStatusChanged(QString("connected ..."));
+
 }
 
-void CConnection::connectionClosed(QIODevice* ioDev)
+
+CConnection::~CConnection()
 {
-    qDebug() << QString("CConnection::connectionClosed");
-    disconnect(m_io_dev, SIGNAL(readyRead()),this, SLOT(readyRead()));
-//    m_xml_reader->parse(m_xml_src, true);
-    delete m_xml_reader;
-
-    emit connectionStatusChanged(QString("disconnected"));
-
+    // delete m_net;
 }
+
+
+//void CConnection::newConnection(QIODevice* ioDev)
+//{
+//    qDebug() << QString("CConnection::newConnection");
+//    m_io_dev = ioDev;
+//    m_xml_reader = new QXmlStreamReader();
+//    m_xml_writer = new QXmlStreamWriter(ioDev);
+//    m_xml_writer->setAutoFormatting(true);
+//    m_xml_writer->writeStartDocument(QString("1.0"), true);
+//    m_xml_writer->writeStartElement("muroa_server");
+//
+//    m_sm.setXmlWriter(m_xml_writer);
+//
+//    connect(m_io_dev, SIGNAL(readyRead()),this, SLOT(readyRead()));
+//
+//    emit connectionStatusChanged(QString("connected ..."));
+//}
+
+//void CConnection::connectionClosed(QTcpSocket* socket)
+//{
+//    qDebug() << QString("CConnection::connectionClosed");
+//    disconnect(m_socket, SIGNAL(readyRead()),this, SLOT(readyRead()));
+////    m_xml_reader->parse(m_xml_src, true);
+//    // delete m_xml_reader;
+//
+//    emit connectionStatusChanged(QString("disconnected"));
+//
+//}
 
 
 
 
 void CConnection::readyRead()
 {
-    int avail = m_io_dev->bytesAvailable();
+    int avail = m_socket->bytesAvailable();
     qDebug() << QString("readyRead(): %1 bytes available").arg(avail);
-    QByteArray data = m_io_dev->readAll();
+    QByteArray data = m_socket->readAll();
     qDebug() << QString("readyRead(): %1 bytes read").arg(data.size());
-    m_xml_reader->addData(data);
-    enum QXmlStreamReader::TokenType tokenType;
-    do
-    {
-        tokenType = m_xml_reader->readNext();
-        switch(tokenType)
-        {
-            case QXmlStreamReader::NoToken:
-                // nothing yet
-                break;
-            case QXmlStreamReader::Invalid:
-                // check if we have to wait for new data
-                if( m_xml_reader->error() != QXmlStreamReader::PrematureEndOfDocumentError )
-                {
-                    //there is a real error
-                    qDebug() << QString("Parse Error: %1   line %2 col %3  offset %4").arg(m_xml_reader->errorString()).arg(m_xml_reader->lineNumber()).arg(m_xml_reader->columnNumber()).arg(m_xml_reader->characterOffset());
-                    return;
-                }
-                break;
-            case QXmlStreamReader::StartDocument:
-                m_sm.startDocument(m_xml_reader);
-                break;
-            case QXmlStreamReader::EndDocument:
-                m_sm.endDocument(m_xml_reader);
-                break;
-            case QXmlStreamReader::StartElement:
-                m_sm.startElement(m_xml_reader);
-                break;
-            case QXmlStreamReader::EndElement:
-                m_sm.endElement(m_xml_reader);
-                break;
-            case QXmlStreamReader::Characters:
-                m_sm.characters(m_xml_reader);
-                break;
-            case QXmlStreamReader::Comment:
-                // nothing yet
-                break;
-            case QXmlStreamReader::DTD:
-                // nothing yet
-                break;
-            case QXmlStreamReader::EntityReference:
-                // nothing yet
-                break;
-            case QXmlStreamReader::ProcessingInstruction:
-                // nothing yet
-                break;
-
-            default:
-                // nothing yet
-                break;
-        }
-    } while(tokenType != QXmlStreamReader::Invalid );
+    m_sm.addData(data);
 }
+
+
+void CConnection::disconnected()
+{
+    qDebug() << QString("socket disconnected");
+    disconnect(m_socket, SIGNAL(readyRead()),this, SLOT(readyRead()));
+
+    // delete m_xml_reader;
+
+    emit connectionStatusChanged(QString("disconnected"));
+
+
+    disconnect(m_socket, SIGNAL(connected()), this, SLOT(connected()));
+    disconnect(m_socket, SIGNAL(disconnected()), this, SLOT(disconnected()));
+    disconnect(m_socket, SIGNAL(error(QAbstractSocket::SocketError)), this, SLOT(error(QAbstractSocket::SocketError)));
+
+    emit connectionClosed(this);
+
+    m_socket = 0;
+}
+
+void CConnection::error(QAbstractSocket::SocketError socketError)
+{
+    qDebug() << QString("socket error %1").arg(m_socket->errorString());
+
+}
+
+void CConnection::connected()
+{
+    qDebug() << QString("socket connected");
+
+}
+
+void CConnection::sendCollection(int knownRevision)
+{
+	QString collection;
+
+    m_xml_writer->writeStartElement("collection");
+    m_xml_writer->writeAttribute("revision", QString().setNum(m_session->getCollectionRevision()));
+
+    collection = m_session->getCollectionDiff(knownRevision);
+    if(!collection.isNull())
+    {
+    	m_xml_writer->writeAttribute("diffFromRev", QString().setNum(knownRevision));
+    }
+    else
+    {
+    	collection = m_session->getCollection();
+    }
+    qDebug() << collection;
+    m_xml_writer->writeCharacters(collection);
+    m_xml_writer->writeEndElement();
+}
+
+

@@ -7,6 +7,8 @@
 
 #include "CSession.h"
 #include "CDiff.h"
+#include "cconnection.h"
+
 
 CSession::CSession() : m_latestCollectionRevision(0),
                        m_latestPlaylistRevision(0)
@@ -72,10 +74,34 @@ void CSession::addCollectionRev(const QString collection)
 {
 	m_latestCollectionRevision++;
 	m_collectionRevisions[m_latestCollectionRevision] = collection;
+
+	for(int i=0; i < m_connections.size(); i++)
+	{
+		m_connections.at(i)->sendCollection(m_latestCollectionRevision - 1);
+	}
 }
 
 void CSession::addPlaylistRev(const QString playlist)
 {
 	m_latestPlaylistRevision++;
 	m_playlistRevisions[m_latestPlaylistRevision] = playlist;
+}
+
+
+void CSession::addConnection(CConnection* connection)
+{
+	if(!m_connections.contains(connection))
+	{
+		// avoid duplicates
+		m_connections.append(connection);
+		connection->setSessionPtr(this);
+	}
+}
+
+void CSession::connectionClosed(CConnection* conn)
+{
+	//if(m_connections.contains(conn))
+	//{
+	m_connections.removeAll(conn);
+	//}
 }

@@ -2,7 +2,8 @@
 #define CHWTEST_H
 
 #include <QObject>
-#include "cnetwork.h"
+#include <QtNetwork>
+
 #include "ccontenthandler.h"
 #include "cstatemachine.h"
 #include "CSession.h"
@@ -10,22 +11,32 @@
 class QXmlInputSource;
 class QXmlSimpleReader;
 class QIODevice;
-//class CCollection;
+class QTcpSocket;
+
 // class CSession;
 
 class CConnection : public QObject
 {
     Q_OBJECT;
 public:
-    CConnection();
+    CConnection(QTcpSocket* socket);
     ~CConnection();
+
+    void sendCollection(int knownRevision = -1);
 
 signals:
     void connectionStatusChanged(QString message);
+    void connectionClosed(CConnection* self);
+
 
 public slots:
-    void newConnection(QIODevice* ioDev);
-    void connectionClosed(QIODevice* ioDev);
+    // void newConnection(QIODevice* ioDev);
+    // void connectionClosed(QIODevice* ioDev);
+
+    void connected();
+    void disconnected();
+    void error(QAbstractSocket::SocketError socketError);
+
 
     void readyRead();
 
@@ -37,9 +48,9 @@ public slots:
     };
 
 private:
-    CNetwork *m_net;
-    QIODevice* m_io_dev;
-    QXmlStreamReader* m_xml_reader;
+    QTcpSocket* m_socket;
+    //CNetwork *m_net;
+    // QIODevice* m_io_dev;
     QXmlStreamWriter* m_xml_writer;
 
     CStateMachine m_sm;

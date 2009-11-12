@@ -7,10 +7,11 @@
 #include "CCollection.h"
 
 class CSession;
+class CNetwork;
 
 class muroaserver : public QMainWindow
 {
-    Q_OBJECT
+    Q_OBJECT;
 
 public:
     muroaserver(QWidget *parent = 0);
@@ -20,19 +21,23 @@ public:
 
 
 public slots:
+	void newConnection(QTcpSocket* socket);
 	void connectionStatusChanged(QString status);
-
-
+	void nextRevision();
 
 private:
 	CSession *m_session;
 
+	CNetwork* m_net;
+
     Ui::muroaserverClass ui;
 
-    CConnection m_connection;
+    // CConnection m_connection;
     CCollection m_collection;
 
     QLabel m_connection_status_label;
+
+    QStringList m_testfiles;
 
 };
 

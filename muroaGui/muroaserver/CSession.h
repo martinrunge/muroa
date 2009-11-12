@@ -8,11 +8,14 @@
 #ifndef CSESSION_H_
 #define CSESSION_H_
 
+#include <QObject>
 #include <QMap>
 #include <QString>
 
+class CConnection;
 
-class CSession {
+class CSession : public QObject{
+	Q_OBJECT;
 public:
 	CSession();
 	virtual ~CSession();
@@ -32,9 +35,16 @@ public:
 	void addCollectionRev(const QString collection);
 	void addPlaylistRev(const QString playlist);
 
+	void addConnection(CConnection* connection);
+
+public slots:
+	void connectionClosed(CConnection* conn);
+
 private:
 	QMap<int, QString> m_collectionRevisions;
 	QMap<int, QString> m_playlistRevisions;
+
+	QList<CConnection*> m_connections;
 
 	int m_latestCollectionRevision;
 	int m_latestPlaylistRevision;

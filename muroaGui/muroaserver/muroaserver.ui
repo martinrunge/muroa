@@ -78,7 +78,14 @@
     <addaction name="actionExit" />
     <addaction name="action_Open" />
    </widget>
+   <widget class="QMenu" name="menu_Test" >
+    <property name="title" >
+     <string>&amp;Test</string>
+    </property>
+    <addaction name="action_next_Revision" />
+   </widget>
    <addaction name="menu_File" />
+   <addaction name="menu_Test" />
   </widget>
   <widget class="QStatusBar" name="statusbar" />
   <action name="actionExit" >
@@ -92,6 +99,11 @@
   <action name="action_Open" >
    <property name="text" >
     <string>&amp;Open ...</string>
+   </property>
+  </action>
+  <action name="action_next_Revision" >
+   <property name="text" >
+    <string>&amp;next Revision</string>
    </property>
   </action>
  </widget>

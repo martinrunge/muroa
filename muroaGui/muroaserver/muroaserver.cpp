@@ -1,37 +1,55 @@
 #include "muroaserver.h"
 
 #include "CSession.h"
+#include "cnetwork.h"
 
 #include <QMessageBox>
 #include <QFile>
+
 
 muroaserver::muroaserver(QWidget *parent)
     : QMainWindow(parent)
 {
 	ui.setupUi(this);
 	connect(ui.actionExit, SIGNAL(triggered()), qApp, SLOT(quit()));
+	connect(ui.action_next_Revision, SIGNAL(triggered()), this, SLOT(nextRevision()));
+
+	m_net = new CNetwork(2678);
+	connect(m_net, SIGNAL(newConnection(QTcpSocket*)), this, SLOT(newConnection(QTcpSocket*)));
 
 	m_session = new CSession();
 
 	statusBar()->addWidget(&m_connection_status_label);
 
-	connect(&m_connection, SIGNAL(connectionStatusChanged(QString)), this, SLOT(connectionStatusChanged(QString)));
-	readCollectionFile("test/collection1.txt");
-	readCollectionFile("test/collection2.txt");
-	readCollectionFile("test/collection3.txt");
-	readCollectionFile("test/collection4.txt");
-	readCollectionFile("test/collection5.txt");
-	readCollectionFile("test/collection6.txt");
-	readCollectionFile("test/collection7.txt");
-	m_connection.setSessionPtr(m_session);
+	// connect(&m_connection, SIGNAL(connectionStatusChanged(QString)), this, SLOT(connectionStatusChanged(QString)));
+
+	m_testfiles << "test/collection1.txt"
+			    << "test/collection2.txt"
+				<< "test/collection3.txt"
+				<< "test/collection4.txt"
+				<< "test/collection5.txt"
+				<< "test/collection6.txt"
+				<< "test/collection7.txt";
+
+	readCollectionFile(m_testfiles[0]);
+	// m_connection.setSessionPtr(m_session);
 	//m_connection.setCollection(&m_collection);
 }
 
 muroaserver::~muroaserver()
 {
 	delete m_session;
+	delete m_net;
 }
 
+void muroaserver::newConnection(QTcpSocket* socket)
+{
+	CConnection* conn = new CConnection(socket);
+	m_session->addConnection(conn);
+	connect(conn, SIGNAL(connectionStatusChanged(QString)), this, SLOT(connectionStatusChanged(QString)));
+	connect(conn, SIGNAL(connectionClosed(CConnection*)), m_session, SLOT(connectionClosed(CConnection*)));
+
+}
 
 void muroaserver::connectionStatusChanged(QString status)
 {
@@ -62,4 +80,10 @@ void muroaserver::readCollectionFile(QString filename)
 //
 //	}
 //	while(!line.isNull());
+}
+
+
+void muroaserver::nextRevision()
+{
+	readCollectionFile(m_testfiles[m_session->getCollectionRevision()]);
 }

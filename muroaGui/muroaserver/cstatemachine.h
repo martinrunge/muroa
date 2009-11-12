@@ -7,20 +7,24 @@ class QTcpSocket;
 class QXmlStreamReader;
 class QXmlStreamWriter;
 class CCollection;
+class CConnection;
 class CSession;
 
 class CStateMachine : public QObject
 {
     Q_OBJECT;
 public:
-    CStateMachine();
-    ~CStateMachine();
+    CStateMachine(CConnection* connection);
 
+    ~CStateMachine();
     inline void setXmlWriter(QXmlStreamWriter* xml_writer) { m_xml_writer = xml_writer; };
+
 
 public slots:
     void close();
     void open();
+
+    void addData(QByteArray data);
 
     void startDocument(QXmlStreamReader* reader);
     void endDocument(QXmlStreamReader* reader);
@@ -33,18 +37,20 @@ public slots:
     inline void setSessionPtr(CSession* session) { m_session = session; };
 
 
-    void sendCollection();
+    // void sendCollection();
 
 
 private:
     int m_state;
+
+    QXmlStreamReader* m_xml_reader;
     int m_xml_depth;
 
     // int m_revision;
 
     int m_knownRevision;
 
-    // CCollection* m_collection;
+    CConnection* m_connection;
     CSession* m_session;
 
     QXmlStreamWriter* m_xml_writer;
