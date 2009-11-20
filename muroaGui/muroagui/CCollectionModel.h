@@ -29,12 +29,16 @@ public:
 	void append(QList<CCollectionItem> newItems);
 	void append(CCollectionItem newItems);
 
+	bool insertItem(CCollectionItem item, int pos);
+	bool removeItem(int pos);
+
 	bool insertRows(int row, int count, const QModelIndex & parent = QModelIndex());
 	bool removeRows(int row, int count, const QModelIndex & parent = QModelIndex());
 
 	QVariant data(const QModelIndex &index, int role) const;
 	QVariant headerData(int section, Qt::Orientation orientation, int role) const;
 
+	QString getItemAsString(int pos);
 private:
 	CCollection* m_collectionPtr;
 

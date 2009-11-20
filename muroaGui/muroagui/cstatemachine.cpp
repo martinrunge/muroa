@@ -165,7 +165,8 @@ void CStateMachine::parseCollection(QStringRef text)
 
 	do {
 	    line = stream.readLine();
-	    CCollectionItem newItem;
+	    if(line.isEmpty()) continue;
+	    CCollectionItem newItem(line);
 	    // line is supposed to be comma seperated
 
     	bool ok;
@@ -195,37 +196,74 @@ void CStateMachine::parseCollectionDiff(QStringRef text)
 
 	QRegExp rxdiff("^@@ -(\\d+),(\\d+)\\s+\\+(\\d+),(\\d+)\\s*@@$");
 
+	int oldStart(0);
+	int oldLen(0);
+	int newStart(0);
+	int newLen(0);
+
+	int lineNr(0);
+	int chunkSizeSum(0);
+
 	do {
 	    line = stream.readLine();
+	    if(line.isEmpty()) continue;
 	    if(line.startsWith("@@")) // diff chunk header
 	    {
 	    	int pos = rxdiff.indexIn(line);
 	    	if (pos > -1) {
-	    		QString oldStart = rxdiff.cap(1);
-	    		QString oldLen = rxdiff.cap(2);
-	    		QString newStart = rxdiff.cap(3);
-	    		QString newLen = rxdiff.cap(4);
+	    		QString oldStartStr = rxdiff.cap(1);
+	    		QString oldLenStr = rxdiff.cap(2);
+	    		QString newStartStr = rxdiff.cap(3);
+	    		QString newLenStr = rxdiff.cap(4);
+	    		bool ok;
+	    		oldStart = oldStartStr.toInt(&ok);
+	    		oldLen = oldLenStr.toInt(&ok);
+	    		newStart = newStartStr.toInt(&ok);
+	    		newLen = newLenStr.toInt(&ok);
 
-	    		qDebug() << QString("- %1,%2 + %3,%4").arg(oldStart).arg(oldLen).arg(newStart).arg(newLen);
+	    		if(oldLen == 0) oldStart++;
+	    		lineNr = oldStart + chunkSizeSum;
+
+	    		chunkSizeSum += newLen - oldLen;
+	    		// qDebug() << QString("- %1,%2 + %3,%4").arg(oldStart).arg(oldLen).arg(newStart).arg(newLen);
 	    	}
-
 	    }
+	    else
+	    {
+	    	QChar sign = line.at(0);
+	    	QString content = line.right(line.size() - 1);
 
+	    	switch(sign.unicode()){
+				case '+': //insert
+				{
+					qDebug() << QString("adding line : %1").arg(lineNr);
+					qDebug() << QString("from diff : %1").arg(content);
+					CCollectionItem newItem(content);
+					m_collectionModelPtr->insertItem( newItem, lineNr - 1);
+					qDebug() << QString("collection: %1").arg(m_collectionModelPtr->getItemAsString(lineNr - 1));
+					break;
+				}
+				case '-': //remove
+					qDebug() << QString("removing line : %1").arg(lineNr);
+					qDebug() << QString("from diff : %1").arg(content);
+					qDebug() << QString("collection: %1").arg(m_collectionModelPtr->getItemAsString(lineNr - 1));
+					m_collectionModelPtr->removeItem(lineNr - 1);
+					lineNr--;
+					break;
+				case ' ': //check
+					qDebug() << QString("keeping line : %1").arg(lineNr);
+					qDebug() << QString("from diff : %1").arg(content);
+					qDebug() << QString("collection: %1").arg(m_collectionModelPtr->getItemAsString(lineNr - 1));
 
-	    CCollectionItem newItem;
-	    // line is supposed to be comma seperated
+					break;
+				default:
+					break;
 
-    	bool ok;
-    	// newItem.setFilename( line.section(',', 0, 0) );
-    	newItem.setArtist( line.section(',', 0, 0) );
-    	newItem.setAlbum( line.section(',', 1, 1) );
-    	newItem.setYear( line.section(',', 2, 2).toInt(&ok) );
-    	newItem.setTitle( line.section(',', 3, 3) );
-    	newItem.setLengthInSec( line.section(',', 4, 4).toInt(&ok) );
-
-	    items.append(newItem);
-
+	    	}
+			lineNr++;
+	    }
+	    // check if line stays equal, is added or removed
 
 	} while (!line.isNull());
-	m_collectionModelPtr->append(items);
+	// m_collectionModelPtr->append(items);
 }

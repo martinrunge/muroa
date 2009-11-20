@@ -24,7 +24,12 @@ public:
 	void append(CCollectionItem newItems);
 
 	QString data(int row, int column);
-	QString asText();
+	QString asString();
+	QString getItemAsString(int pos);
+	void insertItem(CCollectionItem item, int pos);
+	void insertItems(QList<CCollectionItem> items, int pos);
+	void removeItem(int pos);
+	void removeItems(int pos, int num);
 
 	inline int getNumColumns() {return 5; };
 	QString getTitle(int col);

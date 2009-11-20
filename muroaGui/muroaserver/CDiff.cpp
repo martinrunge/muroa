@@ -8,7 +8,7 @@
 #include "CDiff.h"
 #include <malloc.h>
 
-// #include <iostream>
+#include <iostream>
 
 #include <QDebug>
 
@@ -39,20 +39,26 @@ QString CDiff::diff(QString orig, QString mod)
 	QByteArray origData(orig.toUtf8());
 	QByteArray modData(mod.toUtf8());
 
+	qDebug() << orig;
+	qDebug() << mod;
+	qDebug() << QString(" Size of mod String   : %1").arg(mod.size());
+	qDebug() << QString(" Size of mod ByteArray: %1").arg(modData.size());
+
+	std::cerr << modData.data() << std::endl;
 
 	QByteArray delta;
 
 	m_ecb.priv = &delta;
 	m_ecb.outf = CDiff::output;
 
-	if( xdl_init_mmfile(&m_mf1, 100 * 1024, XDL_MMF_ATOMIC ))
+	if( xdl_init_mmfile(&m_mf1, 150 * 1024, XDL_MMF_ATOMIC ))
 	{
 
 	}
 
 	xdl_mmfile_ptradd(&m_mf1, origData.data(), origData.size(), XDL_MMB_READONLY);
 
-	if( xdl_init_mmfile(&m_mf2, 100 * 1024, XDL_MMF_ATOMIC ))
+	if( xdl_init_mmfile(&m_mf2, 150 * 1024, XDL_MMF_ATOMIC ))
 	{
 		xdl_free_mmfile(&m_mf1);
 		return QString();
@@ -66,6 +72,7 @@ QString CDiff::diff(QString orig, QString mod)
 		xdl_free_mmfile(&m_mf1);
 		return QString();
 	}
+	std::cerr << delta.data() << std::endl;
 
 	return QString::fromUtf8(delta.constData(), delta.size());
 }
@@ -125,12 +132,15 @@ int CDiff::output(void *priv, mmbuffer_t *mb, int nbuf)
 
 	deltaPtr->reserve(deltaPtr->size() + bytesToAdd );
 
+	QString dbg;
+
 	for (i = 0; i < nbuf; i++)
 	{
 		deltaPtr->append(mb[i].ptr, mb[i].size);
-		QString dbg(QString::fromUtf8(mb[i].ptr, mb[i].size));
-		qDebug() << dbg;
+		dbg.append(QString::fromUtf8(*deltaPtr));
 	}
+	qDebug() << dbg;
+
 	return 0;
 
 }

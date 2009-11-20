@@ -6,6 +6,7 @@
  */
 
 #include "CCollection.h"
+#include <QDebug>
 
 CCollection::CCollection() {
 	// TODO Auto-generated constructor stub
@@ -100,4 +101,50 @@ QString CCollection::getTitle(int col)
 
 	}
 	return title;
+}
+
+QString CCollection::asString()
+{
+	QString text;
+	for(int i = 0; i < m_items.size(); i++)
+	{
+		text.append(m_items.at(i).asString());
+		text.append("\n");
+	}
+	return text;
+}
+
+
+QString CCollection::getItemAsString(int pos)
+{
+	return m_items.at(pos).asString();
+}
+
+void CCollection::insertItem(CCollectionItem item, int pos)
+{
+	qDebug() << QString("collection size now : %1").arg(m_items.size());
+	m_items.insert(pos, item);
+}
+
+void CCollection::insertItems(QList<CCollectionItem> items, int pos)
+{
+	// TODO clever handling of multiple inserts
+	for(int i = 0; i < items.size(); i++)
+	{
+		m_items.insert(pos + i, items.at(i));
+	}
+}
+
+void CCollection::removeItem(int pos)
+{
+	m_items.removeAt(pos);
+}
+
+void CCollection::removeItems(int pos, int num)
+{
+	// TODO clever handling of multiple removes
+	for(int i = 0; i < num; i++)
+	{
+		m_items.removeAt(pos + i);
+	}
 }

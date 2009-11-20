@@ -46,13 +46,28 @@ void CCollectionModel::append(CCollectionItem newItem)
 }
 
 
+bool CCollectionModel::insertItem(CCollectionItem item, int pos)
+{
+    beginInsertRows(QModelIndex(), pos, pos);
+	m_collectionPtr->insertItem(item, pos);
+    endInsertRows();
+}
+
+bool CCollectionModel::removeItem(int pos)
+{
+    beginRemoveRows(QModelIndex(), pos, pos);
+	m_collectionPtr->removeItem(pos);
+	endRemoveRows();
+}
+
+
 bool CCollectionModel::insertRows(int row, int count, const QModelIndex & parent)
 {
 
-    beginInsertRows(QModelIndex(), row, row + count - 1);
+    beginInsertRows(parent, row, row + count - 1);
 
     for (int i=0; i < count; i++) {
-
+    	// m_collectionPtr->insert(row, content);
     }
 
     endInsertRows();
@@ -92,3 +107,8 @@ QVariant CCollectionModel::headerData(int section, Qt::Orientation orientation, 
 
 }
 
+
+QString CCollectionModel::getItemAsString(int pos)
+{
+	return m_collectionPtr->getItemAsString(pos);
+}
