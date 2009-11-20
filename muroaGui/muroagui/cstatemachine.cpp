@@ -236,25 +236,30 @@ void CStateMachine::parseCollectionDiff(QStringRef text)
 	    	switch(sign.unicode()){
 				case '+': //insert
 				{
-					qDebug() << QString("adding line : %1").arg(lineNr);
-					qDebug() << QString("from diff : %1").arg(content);
+					//qDebug() << QString("adding line : %1").arg(lineNr);
+					//qDebug() << QString("from diff : %1").arg(content);
 					CCollectionItem newItem(content);
 					m_collectionModelPtr->insertItem( newItem, lineNr - 1);
-					qDebug() << QString("collection: %1").arg(m_collectionModelPtr->getItemAsString(lineNr - 1));
+					//qDebug() << QString("collection: %1").arg(m_collectionModelPtr->getItemAsString(lineNr - 1));
 					break;
 				}
 				case '-': //remove
-					qDebug() << QString("removing line : %1").arg(lineNr);
-					qDebug() << QString("from diff : %1").arg(content);
-					qDebug() << QString("collection: %1").arg(m_collectionModelPtr->getItemAsString(lineNr - 1));
+					if(content.compare(m_collectionModelPtr->getItemAsString(lineNr - 1)) != 0 )	// possible error:
+					{
+						qDebug() << QString("Error when removing line %1:").arg(lineNr);
+						qDebug() << QString("line expected from diff : %1").arg(content);
+						qDebug() << QString("differs form collection : %1").arg(m_collectionModelPtr->getItemAsString(lineNr - 1));
+					}
 					m_collectionModelPtr->removeItem(lineNr - 1);
 					lineNr--;
 					break;
 				case ' ': //check
-					qDebug() << QString("keeping line : %1").arg(lineNr);
-					qDebug() << QString("from diff : %1").arg(content);
-					qDebug() << QString("collection: %1").arg(m_collectionModelPtr->getItemAsString(lineNr - 1));
-
+					if(content.compare(m_collectionModelPtr->getItemAsString(lineNr - 1)) != 0 )	// possible error:
+					{
+						qDebug() << QString("Error when keeping line %1:").arg(lineNr);
+						qDebug() << QString("line expected from diff : %1").arg(content);
+						qDebug() << QString("differs from collection : %1").arg(m_collectionModelPtr->getItemAsString(lineNr - 1));
+					}
 					break;
 				default:
 					break;

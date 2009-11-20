@@ -40,37 +40,6 @@ CConnection::~CConnection()
 }
 
 
-//void CConnection::newConnection(QIODevice* ioDev)
-//{
-//    qDebug() << QString("CConnection::newConnection");
-//    m_io_dev = ioDev;
-//    m_xml_reader = new QXmlStreamReader();
-//    m_xml_writer = new QXmlStreamWriter(ioDev);
-//    m_xml_writer->setAutoFormatting(true);
-//    m_xml_writer->writeStartDocument(QString("1.0"), true);
-//    m_xml_writer->writeStartElement("muroa_server");
-//
-//    m_sm.setXmlWriter(m_xml_writer);
-//
-//    connect(m_io_dev, SIGNAL(readyRead()),this, SLOT(readyRead()));
-//
-//    emit connectionStatusChanged(QString("connected ..."));
-//}
-
-//void CConnection::connectionClosed(QTcpSocket* socket)
-//{
-//    qDebug() << QString("CConnection::connectionClosed");
-//    disconnect(m_socket, SIGNAL(readyRead()),this, SLOT(readyRead()));
-////    m_xml_reader->parse(m_xml_src, true);
-//    // delete m_xml_reader;
-//
-//    emit connectionStatusChanged(QString("disconnected"));
-//
-//}
-
-
-
-
 void CConnection::readyRead()
 {
     int avail = m_socket->bytesAvailable();
@@ -128,7 +97,7 @@ void CConnection::sendCollection(int knownRevision)
     {
     	collection = m_session->getCollection();
     }
-    qDebug() << collection;
+    // qDebug() << collection;
     m_xml_writer->writeCharacters(collection);
     m_xml_writer->writeEndElement();
 }

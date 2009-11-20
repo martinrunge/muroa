@@ -67,19 +67,8 @@ void muroaserver::readCollectionFile(QString filename)
 	}
 
 	QTextStream stream( &collectionFile ); // Set the stream to read from myFile
-
 	QString text = stream.readAll();
-
 	m_session->addCollectionRev( QString( text ) );
-//	do
-//	{
-//		line = stream.readLine();
-//		if(line.isNull()) break;
-//
-//		m_collection.parseLine(line);
-//
-//	}
-//	while(!line.isNull());
 }
 
 

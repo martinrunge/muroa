@@ -7,12 +7,7 @@
 
 #include "CDiff.h"
 #include <malloc.h>
-
-#include <iostream>
-
 #include <QDebug>
-
-using namespace std;
 
 
 CDiff::CDiff() {
@@ -39,32 +34,25 @@ QString CDiff::diff(QString orig, QString mod)
 	QByteArray origData(orig.toUtf8());
 	QByteArray modData(mod.toUtf8());
 
-	qDebug() << orig;
-	qDebug() << mod;
-	qDebug() << QString(" Size of mod String   : %1").arg(mod.size());
-	qDebug() << QString(" Size of mod ByteArray: %1").arg(modData.size());
-
-	std::cerr << modData.data() << std::endl;
-
 	QByteArray delta;
 
 	m_ecb.priv = &delta;
 	m_ecb.outf = CDiff::output;
 
-	if( xdl_init_mmfile(&m_mf1, 150 * 1024, XDL_MMF_ATOMIC ))
+	if( xdl_init_mmfile(&m_mf1, 100 * 1024, XDL_MMF_ATOMIC ))
 	{
 
 	}
 
 	xdl_mmfile_ptradd(&m_mf1, origData.data(), origData.size(), XDL_MMB_READONLY);
 
-	if( xdl_init_mmfile(&m_mf2, 150 * 1024, XDL_MMF_ATOMIC ))
+	if( xdl_init_mmfile(&m_mf2, 100 * 1024, XDL_MMF_ATOMIC ))
 	{
 		xdl_free_mmfile(&m_mf1);
 		return QString();
 	}
 
-	xdl_mmfile_ptradd(&m_mf2, modData.data(), mod.size(), XDL_MMB_READONLY);
+	xdl_mmfile_ptradd(&m_mf2, modData.data(), modData.size(), XDL_MMB_READONLY);
 
 	if(xdl_diff(&m_mf1, &m_mf2, &xpp, &m_xecfg, &m_ecb) < 0) {
 
@@ -72,7 +60,6 @@ QString CDiff::diff(QString orig, QString mod)
 		xdl_free_mmfile(&m_mf1);
 		return QString();
 	}
-	std::cerr << delta.data() << std::endl;
 
 	return QString::fromUtf8(delta.constData(), delta.size());
 }
@@ -120,7 +107,6 @@ QString CDiff::patch(QString orig, QString delta)
 int CDiff::output(void *priv, mmbuffer_t *mb, int nbuf)
 {
 	int i;
-
 	QByteArray* deltaPtr = reinterpret_cast<QByteArray*>(priv);
 
 	// first, calculate additional space in delta QString
@@ -129,26 +115,18 @@ int CDiff::output(void *priv, mmbuffer_t *mb, int nbuf)
 	{
 		bytesToAdd += mb[i].size;
 	}
-
 	deltaPtr->reserve(deltaPtr->size() + bytesToAdd );
-
-	QString dbg;
 
 	for (i = 0; i < nbuf; i++)
 	{
 		deltaPtr->append(mb[i].ptr, mb[i].size);
-		dbg.append(QString::fromUtf8(*deltaPtr));
 	}
-	qDebug() << dbg;
-
 	return 0;
-
 }
 
 int CDiff::rejected(void *priv, mmbuffer_t *mb, int nbuf)
 {
 	int i;
-
 	QByteArray* deltaPtr = reinterpret_cast<QByteArray*>(priv);
 
 	for (i = 0; i < nbuf; i++)
@@ -156,35 +134,20 @@ int CDiff::rejected(void *priv, mmbuffer_t *mb, int nbuf)
 		deltaPtr->append(mb[i].ptr, mb[i].size );
 	}
 	return 0;
-
 }
 
 
 
 void* CDiff::wrap_malloc(void *priv, unsigned int size) {
-
 	return malloc(size);
 }
 
 
 void CDiff::wrap_free(void *priv, void *ptr) {
-
 	free(ptr);
 }
 
 
 void* CDiff::wrap_realloc(void *priv, void *ptr, unsigned int size) {
-
 	return realloc(ptr, size);
 }
-
-//
-//int CDiff::xdlt_outf(void *priv, mmbuffer_t *mb, int nbuf) {
-//	int i;
-//
-//	for (i = 0; i < nbuf; i++)
-//		if (!fwrite(mb[i].ptr, mb[i].size, 1, (FILE *) priv))
-//			return -1;
-//
-//	return 0;
-//}

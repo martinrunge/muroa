@@ -122,7 +122,6 @@ QString CCollection::getItemAsString(int pos)
 
 void CCollection::insertItem(CCollectionItem item, int pos)
 {
-	qDebug() << QString("collection size now : %1").arg(m_items.size());
 	m_items.insert(pos, item);
 }
 
