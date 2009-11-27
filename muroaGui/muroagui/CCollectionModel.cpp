@@ -24,7 +24,7 @@ int CCollectionModel::rowCount(const QModelIndex &parent) const
 
 int CCollectionModel::columnCount(const QModelIndex &parent) const
 {
-	return m_collectionPtr->getNumColumns();
+	return CCollectionItem::getNumColumns();
 }
 
 void CCollectionModel::append(QList<CCollectionItem> newItems)
@@ -98,7 +98,8 @@ QVariant CCollectionModel::headerData(int section, Qt::Orientation orientation, 
 	}
 	if( orientation == Qt::Horizontal )
 	{
-		return m_collectionPtr->getTitle(section);
+		return CCollectionItem::getTitle(section);
+		//return m_collectionPtr->getTitle(section);
 	}
 	else
 	{

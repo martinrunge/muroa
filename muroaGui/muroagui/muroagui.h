@@ -26,7 +26,7 @@ public slots:
 private:
     Ui::muroaguiClass ui;
     CConnection m_connection;
-    CCollection m_collection;
+    CCollection<CCollectionItem> m_collection;
     CCollectionModel m_collectionModel;
 
     QLabel m_connection_status_label;

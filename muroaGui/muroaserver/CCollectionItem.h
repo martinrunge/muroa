@@ -16,7 +16,9 @@ public:
 	CCollectionItem();
 	virtual ~CCollectionItem();
 
-	void setStringRef(QStringRef stringRef);
+	void setText(QString text);
+
+	inline QString getText() const { return m_text; };
 
     inline QString getAlbum() const { return m_album; }
     inline QString getArtist() const { return m_artist; }
@@ -24,14 +26,19 @@ public:
     inline int getLengthInSec() const { return m_length_in_s; }
     inline QString getTitle() const { return m_title; }
     inline int getYear() const  { return m_year; }
-    inline void setAlbum(QString album) { m_album = album; }
-    inline void setArtist(QString artist) { m_artist = artist; }
-    inline void setFilename(QString filename) { m_filename = filename; }
-    inline void setLengthInSec(int lengthInSec) { m_length_in_s = lengthInSec; }
-    inline void setTitle(QString title) { m_title = title; }
-    inline void setYear(int year) { m_year = year; }
+
+    void setAlbum(QString album);
+    void setArtist(QString artist);
+    void setFilename(QString filename);
+    void setLengthInSec(int lengthInSec);
+    void setTitle(QString title);
+    void setYear(int year);
 
 private:
+    void assembleText();
+
+    QString m_text;
+
 	QString m_filename;
 	QString m_artist;
 	QString m_album;

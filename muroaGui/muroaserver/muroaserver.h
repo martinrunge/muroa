@@ -5,6 +5,7 @@
 #include "ui_muroaserver.h"
 #include "cconnection.h"
 #include "CCollection.h"
+#include "CCollectionItem.h"
 
 class CSession;
 class CNetwork;
@@ -33,7 +34,7 @@ private:
     Ui::muroaserverClass ui;
 
     // CConnection m_connection;
-    CCollection m_collection;
+    CCollection<CCollectionItem> m_collection;
 
     QLabel m_connection_status_label;
 

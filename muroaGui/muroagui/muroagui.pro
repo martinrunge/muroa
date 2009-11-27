@@ -9,13 +9,15 @@ HEADERS += CCollectionItem.h \
     cstatemachine.h \
     cconnection.h \
     muroagui.h \
-    CCollectionModel.h
+    CCollectionModel.h \
+    CItemBase.h
 SOURCES += CCollectionItem.cpp \
     CCollection.cpp \
     cstatemachine.cpp \
     cconnection.cpp \
     main.cpp \
     muroagui.cpp \
-    CCollectionModel.cpp
+    CCollectionModel.cpp \
+    CItemBase.cpp
 FORMS += muroagui.ui
 RESOURCES += 

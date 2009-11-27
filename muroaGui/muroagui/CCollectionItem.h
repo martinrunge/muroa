@@ -8,9 +8,11 @@
 #ifndef CCOLLECTIONITEM_H_
 #define CCOLLECTIONITEM_H_
 
+#include "CItemBase.h"
+
 #include <QString>
 
-class CCollectionItem {
+class CCollectionItem : public CItemBase {
 public:
 	CCollectionItem(QString itemStr);
 	virtual ~CCollectionItem();
@@ -28,7 +30,9 @@ public:
     inline void setTitle(QString title) { m_title = title; }
     inline void setYear(int year) { m_year = year; }
 
-    inline QString asString() const { return m_as_string; };
+	static QString getTitle(int col);
+	static inline int getNumColumns() { return 5; };
+
 private:
 	QString m_filename;
 	QString m_artist;
@@ -36,8 +40,6 @@ private:
 	QString m_title;
 	int m_year;
 	int m_length_in_s;
-
-	QString m_as_string;
 };
 
 #endif /* CCOLLECTIONITEM_H_ */

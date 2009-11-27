@@ -8,7 +8,7 @@
 #include "CCollectionItem.h"
 #include <QString>
 
-CCollectionItem::CCollectionItem(QString itemStr) : m_as_string(itemStr)
+CCollectionItem::CCollectionItem(QString itemStr) : CItemBase(itemStr)
 {
 	// TODO parse string here
 	bool ok;
@@ -23,4 +23,35 @@ CCollectionItem::CCollectionItem(QString itemStr) : m_as_string(itemStr)
 
 CCollectionItem::~CCollectionItem() {
 
+}
+
+QString CCollectionItem::getTitle(int col)
+{
+	QString title;
+	switch(col)
+	{
+		case 0:
+			title = "Artist";
+			break;
+		case 1:
+			title = "Album";
+			break;
+
+		case 2:
+			title = "Year";
+			break;
+
+		case 3:
+			title = "Title";
+			break;
+
+		case 4:
+			title = "Length";
+			break;
+
+		default:
+			return QString("Hä?");
+
+	}
+	return title;
 }

@@ -6,7 +6,7 @@
 class QTcpSocket;
 class QXmlStreamReader;
 class QXmlStreamWriter;
-class CCollection;
+// class CCollection<temlate class T>;
 class CConnection;
 class CSession;
 

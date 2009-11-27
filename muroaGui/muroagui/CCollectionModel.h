@@ -21,7 +21,7 @@ public:
 	CCollectionModel(QObject* parent = 0);
 	virtual ~CCollectionModel();
 
-	inline void setCollection(CCollection* collectionPtr) { m_collectionPtr = collectionPtr; };
+	inline void setCollection(CCollection<CCollectionItem>* collectionPtr) { m_collectionPtr = collectionPtr; };
 
 	int rowCount(const QModelIndex &parent) const;
 	int columnCount(const QModelIndex &parent) const;
@@ -40,7 +40,7 @@ public:
 
 	QString getItemAsString(int pos);
 private:
-	CCollection* m_collectionPtr;
+	CCollection<CCollectionItem>* m_collectionPtr;
 
 };
 
