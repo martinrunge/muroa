@@ -16,7 +16,6 @@ HEADERS += CDiff.h \
 SOURCES += CDiff.cpp \
     CSession.cpp \
     CCollectionItem.cpp \
-    CCollection.cpp \
     cconnection.cpp \
     ccontenthandler.cpp \
     cnetwork.cpp \
