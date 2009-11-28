@@ -13,6 +13,7 @@
 #include <QString>
 
 class CConnection;
+class CPlaylistItem;
 
 class CSession : public QObject{
 	Q_OBJECT;
@@ -41,8 +42,8 @@ public slots:
 	void connectionClosed(CConnection* conn);
 
 private:
-	QMap<int, QString> m_collectionRevisions;
-	QMap<int, QString> m_playlistRevisions;
+	QMap<int, CCollection<CCollectionItem>* > m_collectionRevisions;
+	QMap<int, CCollection<CPlaylistItem>* > m_playlistRevisions;
 
 	QList<CConnection*> m_connections;
 

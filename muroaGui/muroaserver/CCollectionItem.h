@@ -11,14 +11,16 @@
 #include <QString>
 #include <QStringRef>
 
-class CCollectionItem {
+#include "CItemBase.h"
+
+class CCollectionItem :public CItemBase {
 public:
 	CCollectionItem();
 	virtual ~CCollectionItem();
 
-	void setText(QString text);
+    void setText(QString text);
 
-	inline QString getText() const { return m_text; };
+//	inline QString getText() const { return m_text; };
 
     inline QString getAlbum() const { return m_album; }
     inline QString getArtist() const { return m_artist; }
@@ -37,7 +39,7 @@ public:
 private:
     void assembleText();
 
-    QString m_text;
+//    QString m_text;
 
 	QString m_filename;
 	QString m_artist;

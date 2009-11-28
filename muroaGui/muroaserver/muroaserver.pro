@@ -4,7 +4,9 @@ QT += core \
     gui \
     xml \
     network
-HEADERS += CDiff.h \
+HEADERS += CItemBase.h \
+    CPlaylistItem.h \
+    CDiff.h \
     CSession.h \
     CCollectionItem.h \
     CCollection.h \
@@ -13,7 +15,9 @@ HEADERS += CDiff.h \
     cnetwork.h \
     cstatemachine.h \
     muroaserver.h
-SOURCES += CDiff.cpp \
+SOURCES += CItemBase.cpp \
+    CPlaylistItem.cpp \
+    CDiff.cpp \
     CSession.cpp \
     CCollectionItem.cpp \
     cconnection.cpp \

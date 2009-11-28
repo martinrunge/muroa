@@ -4,14 +4,16 @@ QT += core \
     gui \
     xml \
     network
-HEADERS += CItemBase.h \
+HEADERS += CPlaylistItem.h \
+    CItemBase.h \
     CCollectionItem.h \
     CCollection.h \
     cstatemachine.h \
     cconnection.h \
     muroagui.h \
     CCollectionModel.h
-SOURCES += CItemBase.cpp \
+SOURCES += CPlaylistItem.cpp \
+    CItemBase.cpp \
     CCollectionItem.cpp \
     cstatemachine.cpp \
     cconnection.cpp \
