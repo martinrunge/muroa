@@ -37,6 +37,11 @@ public slots:
     void getCollection();
     void getCollection(int knownRevision);
 
+    void getPlaylist();
+    void getPlaylist(int knownRevision);
+
+
+
     void test();
 
 

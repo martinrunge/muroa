@@ -68,7 +68,24 @@ void muroaserver::readCollectionFile(QString filename)
 
 	QTextStream stream( &collectionFile ); // Set the stream to read from myFile
 	QString text = stream.readAll();
-	m_session->addCollectionRev( QString( text ) );
+	m_session->addCollectionRev( text );
+
+	if(m_session->getPlaylistRevision() == 0)
+	{
+		// construct initial playlist
+		CCollection<CCollectionItem>* col1 = m_session->getCollection(1);
+
+		QString playlist;
+
+		for(int i = 0; i < col1->size(); i++)
+		{
+			CCollectionItem item = col1->getItem(i);
+			unsigned long hash = item.getHash();
+			playlist.append(QString("%1\n").arg(hash));
+		}
+		m_session->addPlaylistRev( playlist );
+	}
+
 }
 
 

@@ -46,7 +46,11 @@ void CStateMachine::startElement(QXmlStreamReader* reader)
 {
     QStringRef name = reader->name();
     m_xml_depth++;
-    if(name.toString().startsWith("collection"))
+    if(name.toString().startsWith("playlist"))
+    {
+    	parsePlaylistArgs(reader);
+    }
+    else if(name.toString().startsWith("collection"))
     {
     	parseCollectionArgs(reader);
     }
@@ -70,7 +74,11 @@ void CStateMachine::endElement(QXmlStreamReader* reader)
 {
     QStringRef name = reader->name();
     m_xml_depth--;
-    if(name.toString().startsWith("collection"))
+    if(name.toString().startsWith("playlist"))
+    {
+	    m_state = e_playlist_received;
+    }
+    else if(name.toString().startsWith("collection"))
     {
 	    m_state = e_collection_received;
     }
@@ -131,6 +139,28 @@ void CStateMachine::parseWriteArgs(QXmlStreamReader* reader)
 
 }
 
+void CStateMachine::parsePlaylistArgs(QXmlStreamReader* reader)
+{
+	QXmlStreamAttributes att = reader->attributes();
+    QStringRef revision = att.value(QString(), QString("revision"));
+
+    m_diffFromRev = -1;
+    bool ok;
+    m_revision = revision.string()->toULongLong(&ok);
+
+    if(att.hasAttribute("diffFromRev"))
+    {
+	    QStringRef diffFromRev = att.value(QString(), QString("diffFromRev"));
+	    bool ok;
+	    m_diffFromRev = diffFromRev.string()->toULongLong(&ok);
+    }
+
+    qDebug() << QString("readOlaylist: revision %1").arg(m_revision);
+
+    m_state = e_reading_playlist;
+
+}
+
 
 void CStateMachine::parseCollectionArgs(QXmlStreamReader* reader)
 {
@@ -153,6 +183,7 @@ void CStateMachine::parseCollectionArgs(QXmlStreamReader* reader)
     m_state = e_reading_collection;
 
 }
+
 
 void CStateMachine::parseCollection(QStringRef text)
 {

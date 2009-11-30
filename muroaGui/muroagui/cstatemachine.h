@@ -14,7 +14,9 @@ enum states { e_no_session,
 			  e_session_active,
 			  e_awaiting_collection,
 			  e_reading_collection,
-			  e_collection_received  };
+			  e_collection_received,
+			  e_reading_playlist,
+			  e_playlist_received  };
 
 class CStateMachine : public QObject
 {
@@ -50,6 +52,10 @@ private:
     int m_diffFromRev;
 
     QXmlStreamWriter* m_xml_writer;
+
+    void parsePlaylistArgs(QXmlStreamReader* reader);
+    void parsePlaylist(QStringRef text);
+    void parsePlaylistDiff(QStringRef text);
 
     void parseCollectionArgs(QXmlStreamReader* reader);
     void parseCollection(QStringRef text);

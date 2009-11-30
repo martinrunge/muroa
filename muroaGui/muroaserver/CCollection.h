@@ -27,6 +27,9 @@ public:
 		parse();
 	};
 
+	inline int size() const { return m_items.size(); };
+	inline T getItem(int pos) const { return m_items.at(pos); };
+
 	QString getText(void);
 	inline int getRevision(void) { return m_revision; };
 
@@ -34,7 +37,6 @@ private:
 	QList<T> m_items;
 
 	void parse();
-
 
 	QString m_collectionAsText;
 	int m_revision;

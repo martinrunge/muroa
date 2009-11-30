@@ -29,6 +29,8 @@ public:
     inline QString getTitle() const { return m_title; }
     inline int getYear() const  { return m_year; }
 
+    inline unsigned long getHash() const { return m_hash; };
+
     void setAlbum(QString album);
     void setArtist(QString artist);
     void setFilename(QString filename);
@@ -47,6 +49,10 @@ private:
 	QString m_title;
 	int m_year;
 	int m_length_in_s;
+
+	unsigned long m_hash;
+
+	static unsigned long lastUsedHash;
 };
 
 #endif /* CCOLLECTIONITEM_H_ */

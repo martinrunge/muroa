@@ -67,6 +67,23 @@ void CConnection::getCollection(int knownRevision)
 }
 
 
+void CConnection::getPlaylist()
+{
+    qDebug() << QString("getPlaylist");
+    m_xml_writer->writeStartElement("getPlaylist");
+    m_xml_writer->writeEndElement();
+}
+
+void CConnection::getPlaylist(int knownRevision)
+{
+    qDebug() << QString("getPlaylist");
+    m_xml_writer->writeStartElement("getPlaylist");
+    m_xml_writer->writeAttribute("knownRev", QString().setNum(knownRevision));
+    m_xml_writer->writeEndElement();
+}
+
+
+
 void CConnection::connected()
 {
     qDebug() << QString("CStateMachine::connected");
@@ -77,8 +94,8 @@ void CConnection::connected()
     m_xml_writer->writeStartDocument(QString("1.0"), true);
     m_xml_writer->writeStartElement("muroa_session");
 
-    getCollection(3);
-
+    getCollection();
+    getPlaylist();
 }
 
 void CConnection::disconnected()

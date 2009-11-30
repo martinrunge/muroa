@@ -102,7 +102,12 @@ void CStateMachine::endDocument(QXmlStreamReader* reader)
 void CStateMachine::startElement(QXmlStreamReader* reader)
 {
     QStringRef name = reader->name();
-    if(name.toString().startsWith("getCollection"))
+    qDebug() << QString("startElement %1").arg(name.toString());
+    if(name.toString().startsWith("getPlaylist"))
+    {
+        parseGetPlaylistArgs(reader);
+    }
+    else if(name.toString().startsWith("getCollection"))
     {
         parseGetCollectionArgs(reader);
     }
@@ -118,13 +123,16 @@ void CStateMachine::startElement(QXmlStreamReader* reader)
     {
         qDebug() << QString("Unknown tag received: %1").arg(reader->name().toString());
     }
-    qDebug() << QString("startElement %1").arg(reader->name().toString());
 }
 
 void CStateMachine::endElement(QXmlStreamReader* reader)
 {
     QStringRef name = reader->name();
-    if(name.toString().startsWith("getCollection"))
+    if(name.toString().startsWith("getPlaylist"))
+    {
+    	m_connection->sendPlaylist(m_knownRevision);
+    }
+    else if(name.toString().startsWith("getCollection"))
     {
     	m_connection->sendCollection(m_knownRevision);
     }
@@ -148,6 +156,24 @@ void CStateMachine::characters(QXmlStreamReader* reader)
     qDebug() << QString("characters");
 }
 
+void CStateMachine::parseGetPlaylistArgs(QXmlStreamReader* reader)
+{
+    QXmlStreamAttributes att = reader->attributes();
+    if(att.hasAttribute("knownRev"))
+    {
+	    QStringRef knownRevision = att.value(QString(), QString("knownRev"));
+
+	    bool ok;
+	    m_knownRevision = knownRevision.toString().toULongLong(&ok);
+
+	    qDebug() << QString("getPlaylist: knownRevision %1").arg(m_knownRevision);
+    }
+    else
+    {
+    	// client does not have and old revision, send whole collection
+    	m_knownRevision = -1;
+    }
+}
 
 void CStateMachine::parseGetCollectionArgs(QXmlStreamReader* reader)
 {
@@ -166,7 +192,6 @@ void CStateMachine::parseGetCollectionArgs(QXmlStreamReader* reader)
     	// client does not have and old revision, send whole collection
     	m_knownRevision = -1;
     }
-
 }
 
 

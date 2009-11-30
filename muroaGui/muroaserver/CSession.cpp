@@ -116,6 +116,8 @@ void CSession::addPlaylistRev(QString playlist)
 	CCollection<CPlaylistItem>* newPlaylist = new CCollection<CPlaylistItem>();
 	newPlaylist->setText(playlist, m_latestPlaylistRevision);
 
+	qDebug() << newPlaylist->getText();
+
 	m_playlistRevisions[m_latestPlaylistRevision] = newPlaylist;
 
 	for(int i=0; i < m_connections.size(); i++)

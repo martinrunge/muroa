@@ -7,9 +7,12 @@
 
 #include "CCollectionItem.h"
 
-CCollectionItem::CCollectionItem() {
-	// TODO Auto-generated constructor stub
+unsigned long CCollectionItem::lastUsedHash = 0;
 
+
+CCollectionItem::CCollectionItem() {
+	CCollectionItem::lastUsedHash++;
+	m_hash = lastUsedHash;
 }
 
 CCollectionItem::~CCollectionItem() {
@@ -62,6 +65,6 @@ void CCollectionItem::setYear(int year)
 
 void CCollectionItem::assembleText()
 {
-	m_text = QString("%1,%2,%3,%4,%5").arg(m_filename).arg(m_artist).arg(m_album).arg(m_year).arg(m_title).arg(m_length_in_s);
+	m_text = QString("%1,%2,%3,%4,%5,%6").arg(m_filename).arg(m_artist).arg(m_album).arg(m_year).arg(m_title).arg(m_length_in_s).arg(m_hash);
 }
 

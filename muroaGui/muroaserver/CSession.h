@@ -36,7 +36,6 @@ public:
 	inline int getCollectionRevision() { return m_latestCollectionRevision; };
 	inline int getPlaylistRevision() { return m_latestPlaylistRevision; };
 
-
 	void addCollectionRev(QString collection);
 	void addPlaylistRev(QString playlist);
 

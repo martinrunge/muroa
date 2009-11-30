@@ -58,6 +58,7 @@ private:
     void parseReadArgs(QXmlStreamReader* reader);
     void parseWriteArgs(QXmlStreamReader* reader);
 
+    void parseGetPlaylistArgs(QXmlStreamReader* reader);
     void parseGetCollectionArgs(QXmlStreamReader* reader);
 
 

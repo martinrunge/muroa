@@ -20,3 +20,11 @@ void CPlaylistItem::setText(QString text)
 {
 	m_text = text;
 }
+
+
+QString CPlaylistItem::assembleText()
+{
+	QString text(QString("%1\n").arg(m_collectionHash));
+
+	return text;
+}
