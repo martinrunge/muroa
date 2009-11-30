@@ -9,7 +9,9 @@
 #define CCOLLECTION_H_
 
 #include <QList>
+#include <QString>
 #include "CCollectionItem.h"
+#include <QDebug>
 
 template <class T>
 class CCollection
@@ -22,9 +24,10 @@ public:
 	{
 		m_collectionAsText = collection;
 		m_revision = revision;
+		parse();
 	};
 
-	inline QString getText(void);
+	QString getText(void);
 	inline int getRevision(void) { return m_revision; };
 
 private:
@@ -45,23 +48,27 @@ template <class T> void CCollection<T>::parse()
 	int end(-1);
 
 	int index;
-	while( (index = m_collectionAsText.indexOf(QChar::LineSeparator, start)) != -1 )
+	//while( (index = m_collectionAsText.indexOf(QChar::LineSeparator, start)) != -1 )
+	while( (index = m_collectionAsText.indexOf('\n', start)) != -1 )
 	{
 		QStringRef line(&m_collectionAsText, start, index - start);
-		CCollectionItem newItem;
-		newItem.setText(*line.string());
+		qDebug() << QString("parsed line: %1") .arg( line.toString());
+		T newItem;
+		newItem.setText(line.toString());
 		m_items.append(newItem);
+		start = index + 1;
 	}
 }
 
 template <class T> QString CCollection<T>::getText()
 {
 	QString collection;
-
+	qDebug() << QString("CCollection<T>::getText(): m_items.size() = %1").arg(m_items.size());
 	for(int i=0; i < m_items.size(); i++)
 	{
 		QString line = m_items.at(i).getText();
-		collection.append(line);
+		qDebug() << QString("appending %1").arg(line);
+		collection.append(line).append('\n');
 	}
 
 	return collection;

@@ -12,8 +12,11 @@
 #include <QMap>
 #include <QString>
 
+#include "CCollectionItem.h"
+#include "CPlaylistItem.h"
+#include "CCollection.h"
+
 class CConnection;
-class CPlaylistItem;
 
 class CSession : public QObject{
 	Q_OBJECT;
@@ -21,20 +24,21 @@ public:
 	CSession();
 	virtual ~CSession();
 
-	inline const QString getCollection() const { return getCollection(m_latestCollectionRevision); };
-	inline const QString getPlaylist() const { return getPlaylist(m_latestPlaylistRevision); };
+	inline CCollection<CCollectionItem>* getCollection() const { return getCollection(m_latestCollectionRevision); };
+	inline CCollection<CPlaylistItem>* getPlaylist() const { return getPlaylist(m_latestPlaylistRevision); };
 
-	const QString getCollection(int revision) const;
-	const QString getPlaylist(int revision) const;
+	CCollection<CCollectionItem>* getCollection(int revision) const;
+	CCollection<CPlaylistItem>* getPlaylist(int revision) const;
 
 	const QString getCollectionDiff(int fromRevision, int toRevision = -1);
+	const QString getPlaylistDiff(int fromRevision, int toRevision = -1);
 
 	inline int getCollectionRevision() { return m_latestCollectionRevision; };
 	inline int getPlaylistRevision() { return m_latestPlaylistRevision; };
 
 
-	void addCollectionRev(const QString collection);
-	void addPlaylistRev(const QString playlist);
+	void addCollectionRev(QString collection);
+	void addPlaylistRev(QString playlist);
 
 	void addConnection(CConnection* connection);
 
@@ -51,8 +55,6 @@ private:
 	int m_latestPlaylistRevision;
 
 	QString m_name;
-
-
 };
 
 #endif /* CSESSION_H_ */

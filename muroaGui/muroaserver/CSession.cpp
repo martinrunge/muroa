@@ -21,7 +21,7 @@ CSession::~CSession() {
 	// TODO Auto-generated destructor stub
 }
 
-const QString  CSession::getCollection(int revision) const
+CCollection<CCollectionItem>* CSession::getCollection(int revision) const
 {
 	if(m_collectionRevisions.contains(revision))
 	{
@@ -29,11 +29,11 @@ const QString  CSession::getCollection(int revision) const
 	}
 	else
 	{
-		return QString();
+		return 0;
 	}
 }
 
-const QString CSession::getPlaylist(int revision) const
+CCollection<CPlaylistItem>* CSession::getPlaylist(int revision) const
 {
 	if(m_playlistRevisions.contains(revision))
 	{
@@ -41,7 +41,7 @@ const QString CSession::getPlaylist(int revision) const
 	}
 	else
 	{
-		return QString();
+		return 0;
 	}
 }
 
@@ -62,18 +62,47 @@ const QString CSession::getCollectionDiff(int fromRevision, int toRevision)
 
 	CDiff differ;
 
-	QString knownRev = m_collectionRevisions.value(fromRevision);
-	QString targetRev = m_collectionRevisions.value(toRevision);
+	QString knownRev = m_collectionRevisions.value(fromRevision)->getText();
+	QString targetRev = m_collectionRevisions.value(toRevision)->getText();
 	QString diffString = differ.diff(knownRev, targetRev);
 
 	return diffString;
 }
 
 
-void CSession::addCollectionRev(const QString collection)
+const QString CSession::getPlaylistDiff(int fromRevision, int toRevision)
+{
+	if(toRevision == -1)
+	{
+		toRevision = m_latestPlaylistRevision;
+	}
+
+	if(fromRevision == -1
+	   || ! m_playlistRevisions.contains(fromRevision)
+	   || ! m_playlistRevisions.contains(toRevision))
+	{
+		return QString();
+	}
+
+	CDiff differ;
+
+	QString knownRev = m_playlistRevisions.value(fromRevision)->getText();
+	QString targetRev = m_playlistRevisions.value(toRevision)->getText();
+	QString diffString = differ.diff(knownRev, targetRev);
+
+	return diffString;
+}
+
+
+void CSession::addCollectionRev(QString collection)
 {
 	m_latestCollectionRevision++;
-	m_collectionRevisions[m_latestCollectionRevision] = collection;
+	CCollection<CCollectionItem>* newCollection = new CCollection<CCollectionItem>();
+	newCollection->setText(collection, m_latestCollectionRevision);
+
+	qDebug() << newCollection->getText();
+
+	m_collectionRevisions[m_latestCollectionRevision] = newCollection;
 
 	for(int i=0; i < m_connections.size(); i++)
 	{
@@ -81,10 +110,18 @@ void CSession::addCollectionRev(const QString collection)
 	}
 }
 
-void CSession::addPlaylistRev(const QString playlist)
+void CSession::addPlaylistRev(QString playlist)
 {
 	m_latestPlaylistRevision++;
-	m_playlistRevisions[m_latestPlaylistRevision] = playlist;
+	CCollection<CPlaylistItem>* newPlaylist = new CCollection<CPlaylistItem>();
+	newPlaylist->setText(playlist, m_latestPlaylistRevision);
+
+	m_playlistRevisions[m_latestPlaylistRevision] = newPlaylist;
+
+	for(int i=0; i < m_connections.size(); i++)
+	{
+		m_connections.at(i)->sendPlaylist(m_latestPlaylistRevision - 1);
+	}
 }
 
 

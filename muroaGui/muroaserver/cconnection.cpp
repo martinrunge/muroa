@@ -95,11 +95,31 @@ void CConnection::sendCollection(int knownRevision)
     }
     else
     {
-    	collection = m_session->getCollection();
+    	collection = m_session->getCollection()->getText();
     }
     // qDebug() << collection;
     m_xml_writer->writeCharacters(collection);
     m_xml_writer->writeEndElement();
 }
 
+void CConnection::sendPlaylist(int knownRevision)
+{
+	QString playlist;
+
+    m_xml_writer->writeStartElement("playlist");
+    m_xml_writer->writeAttribute("revision", QString().setNum(m_session->getPlaylistRevision()));
+
+    playlist = m_session->getPlaylistDiff(knownRevision);
+    if(!playlist.isNull())
+    {
+    	m_xml_writer->writeAttribute("diffFromRev", QString().setNum(knownRevision));
+    }
+    else
+    {
+    	playlist = m_session->getPlaylist()->getText();
+    }
+    // qDebug() << collection;
+    m_xml_writer->writeCharacters(playlist);
+    m_xml_writer->writeEndElement();
+}
 
