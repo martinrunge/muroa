@@ -27,6 +27,38 @@ CCollectionItem::~CCollectionItem() {
 
 }
 
+QVariant CCollectionItem::data(int column) const
+{
+	QVariant data;
+	switch(column)
+	{
+		case 0:
+			data = m_artist;
+			break;
+		case 1:
+			data = m_album;
+			break;
+
+		case 2:
+			data = m_year;
+			break;
+
+		case 3:
+			data = m_title;
+			break;
+
+		case 4:
+		{
+			data = QString("%1:%2").arg(m_length_in_s / 60).arg(m_length_in_s % 60);
+			break;
+		}
+		default:
+			return QString("Hä?");
+	}
+	return data;
+
+}
+
 QString CCollectionItem::getTitle(int col)
 {
 	QString title;

@@ -4,10 +4,14 @@
 
 #include <QString>
 #include <QObject>
+#include <QAbstractTableModel>
+
+#include "CModelBase.h"
 
 class QTcpSocket;
 class QXmlStreamReader;
 class QXmlStreamWriter;
+class CPlaylistModel;
 class CCollectionModel;
 
 enum states { e_no_session,
@@ -26,6 +30,7 @@ public:
     ~CStateMachine();
 
     inline void setXmlWriter(QXmlStreamWriter* const xml_writer) { m_xml_writer = xml_writer; };
+    inline void setPlaylistModelPtr(CPlaylistModel* const playlistModelPtr ) { m_playlistModelPtr = playlistModelPtr; };
     inline void setCollectionModelPtr(CCollectionModel* const collectionModelPtr ) { m_collectionModelPtr = collectionModelPtr; };
 
     inline int getRevision() { return m_revision; };
@@ -46,6 +51,7 @@ private:
     int m_state;
     int m_xml_depth;
 
+    CPlaylistModel* m_playlistModelPtr;
     CCollectionModel* m_collectionModelPtr;
 
     int m_revision;
@@ -54,12 +60,10 @@ private:
     QXmlStreamWriter* m_xml_writer;
 
     void parsePlaylistArgs(QXmlStreamReader* reader);
-    void parsePlaylist(QStringRef text);
-    void parsePlaylistDiff(QStringRef text);
-
     void parseCollectionArgs(QXmlStreamReader* reader);
-    void parseCollection(QStringRef text);
-    void parseCollectionDiff(QStringRef text);
+
+    template <typename T> void parseCollection(QStringRef text, CModelBase<T>* model);
+    template <typename T> void parseCollectionDiff(QStringRef text, CModelBase<T>* model);
 
     void parseReadArgs(QXmlStreamReader* reader);
     void parseWriteArgs(QXmlStreamReader* reader);

@@ -17,6 +17,7 @@ public:
     CConnection();
     ~CConnection();
 
+    inline void setPlaylistModelPtr(CPlaylistModel* const playlistModelPtr) {m_sm.setPlaylistModelPtr(playlistModelPtr); };
     inline void setColletionModelPtr(CCollectionModel* const collectionModelPtr) {m_sm.setCollectionModelPtr(collectionModelPtr); };
 
 signals:

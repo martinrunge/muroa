@@ -8,7 +8,7 @@
 #include "CCollectionModel.h"
 #include "CCollection.h"
 
-CCollectionModel::CCollectionModel(QObject* parent) : QAbstractTableModel(parent)
+CCollectionModel::CCollectionModel(QObject* parent) : CModelBase<CCollectionItem>(parent)
 {
 }
 

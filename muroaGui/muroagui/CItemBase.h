@@ -8,6 +8,7 @@
 #ifndef CITEMBASE_H_
 #define CITEMBASE_H_
 
+#include <QVariant>
 #include <QString>
 
 class CItemBase {
@@ -19,6 +20,8 @@ public:
 
 	static QString getTitle(int col) { return QString(); };
 	static int getNumColumns() { return 0; };
+
+	virtual QVariant data(int column) const = 0;
 
 
 protected:

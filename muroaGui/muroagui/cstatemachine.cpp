@@ -1,10 +1,16 @@
 #include "cstatemachine.h"
 
+#include <typeinfo>
+
 #include <QDebug>
 #include <QXmlStreamReader>
 #include <QRegExp>
 
+#include "CCollection.h"
+#include "CCollectionItem.h"
+#include "CPlaylistItem.h"
 
+#include "CPlaylistModel.h"
 #include "CCollectionModel.h"
 
 CStateMachine::CStateMachine()
@@ -104,14 +110,25 @@ void CStateMachine::characters(QXmlStreamReader* reader)
 	QStringRef text = reader->text();
 	switch(m_state)
 	{
-		case e_reading_collection:
+		case e_reading_playlist:
 			if(m_diffFromRev == -1)
 			{
-				parseCollection(text);
+				parseCollection<CPlaylistItem>(text, m_playlistModelPtr);
 			}
 			else
 			{
-				parseCollectionDiff(text);
+				parseCollectionDiff<CPlaylistItem>(text, m_playlistModelPtr);
+			}
+			break;
+
+		case e_reading_collection:
+			if(m_diffFromRev == -1)
+			{
+				parseCollection<CCollectionItem>(text, m_collectionModelPtr);
+			}
+			else
+			{
+				parseCollectionDiff<CCollectionItem>(text, m_collectionModelPtr);
 			}
 			break;
 
@@ -185,43 +202,30 @@ void CStateMachine::parseCollectionArgs(QXmlStreamReader* reader)
 }
 
 
-void CStateMachine::parseCollection(QStringRef text)
+template <typename T> void CStateMachine::parseCollection(QStringRef text, CModelBase<T>* model)
 {
 	QString characters = text.toString();
 	QTextStream stream(&characters, QIODevice::ReadOnly);
 	QString line;
-	QList<CCollectionItem> items;
-
+	QList<T> items;
 	qDebug() << text;
 
 	do {
 	    line = stream.readLine();
 	    if(line.isEmpty()) continue;
-	    CCollectionItem newItem(line);
-	    // line is supposed to be comma seperated
-
-    	bool ok;
-    	// newItem.setFilename( line.section(',', 0, 0) );
-    	newItem.setArtist( line.section(',', 0, 0) );
-    	newItem.setAlbum( line.section(',', 1, 1) );
-    	newItem.setYear( line.section(',', 2, 2).toInt(&ok) );
-    	newItem.setTitle( line.section(',', 3, 3) );
-    	newItem.setLengthInSec( line.section(',', 4, 4).toInt(&ok) );
-
+	    T newItem(line);
 	    items.append(newItem);
-
-
 	} while (!line.isNull());
-	m_collectionModelPtr->append(items);
 
+	model->append(items);
 }
 
-void CStateMachine::parseCollectionDiff(QStringRef text)
+template <typename T> void CStateMachine::parseCollectionDiff(QStringRef text, CModelBase<T>* model)
 {
 	QString characters = text.toString();
 	QTextStream stream(&characters, QIODevice::ReadOnly);
 	QString line;
-	QList<CCollectionItem> items;
+	QList<T> items;
 
 	qDebug() << text;
 
@@ -269,27 +273,27 @@ void CStateMachine::parseCollectionDiff(QStringRef text)
 				{
 					//qDebug() << QString("adding line : %1").arg(lineNr);
 					//qDebug() << QString("from diff : %1").arg(content);
-					CCollectionItem newItem(content);
-					m_collectionModelPtr->insertItem( newItem, lineNr - 1);
+					T newItem(content);
+					model->insertItem( newItem, lineNr - 1);
 					//qDebug() << QString("collection: %1").arg(m_collectionModelPtr->getItemAsString(lineNr - 1));
 					break;
 				}
 				case '-': //remove
-					if(content.compare(m_collectionModelPtr->getItemAsString(lineNr - 1)) != 0 )	// possible error:
+					if(content.compare(model->getItemAsString(lineNr - 1)) != 0 )	// possible error:
 					{
 						qDebug() << QString("Error when removing line %1:").arg(lineNr);
 						qDebug() << QString("line expected from diff : %1").arg(content);
-						qDebug() << QString("differs form collection : %1").arg(m_collectionModelPtr->getItemAsString(lineNr - 1));
+						qDebug() << QString("differs form collection : %1").arg(model->getItemAsString(lineNr - 1));
 					}
-					m_collectionModelPtr->removeItem(lineNr - 1);
+					model->removeItem(lineNr - 1);
 					lineNr--;
 					break;
 				case ' ': //check
-					if(content.compare(m_collectionModelPtr->getItemAsString(lineNr - 1)) != 0 )	// possible error:
+					if(content.compare(model->getItemAsString(lineNr - 1)) != 0 )	// possible error:
 					{
 						qDebug() << QString("Error when keeping line %1:").arg(lineNr);
 						qDebug() << QString("line expected from diff : %1").arg(content);
-						qDebug() << QString("differs from collection : %1").arg(m_collectionModelPtr->getItemAsString(lineNr - 1));
+						qDebug() << QString("differs from collection : %1").arg(model->getItemAsString(lineNr - 1));
 					}
 					break;
 				default:

@@ -4,7 +4,9 @@ QT += core \
     gui \
     xml \
     network
-HEADERS += CPlaylistItem.h \
+HEADERS += CModelBase.h \
+    CPlaylistModel.h \
+    CPlaylistItem.h \
     CItemBase.h \
     CCollectionItem.h \
     CCollection.h \
@@ -12,7 +14,9 @@ HEADERS += CPlaylistItem.h \
     cconnection.h \
     muroagui.h \
     CCollectionModel.h
-SOURCES += CPlaylistItem.cpp \
+SOURCES += CModelBase.cpp \
+    CPlaylistModel.cpp \
+    CPlaylistItem.cpp \
     CItemBase.cpp \
     CCollectionItem.cpp \
     cstatemachine.cpp \

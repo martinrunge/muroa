@@ -10,6 +10,7 @@
 
 #include "CItemBase.h"
 
+
 class CPlaylistItem: public CItemBase {
 public:
 	CPlaylistItem(QString itemStr);
@@ -19,6 +20,8 @@ public:
 
 	static QString getTitle(int col);
 	static inline int getNumColumns() { return 1; };
+
+	QVariant data(int column) const;
 
 private:
 	QString m_key;

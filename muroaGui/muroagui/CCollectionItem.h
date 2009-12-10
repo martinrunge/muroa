@@ -10,6 +10,7 @@
 
 #include "CItemBase.h"
 
+#include <QVariant>
 #include <QString>
 
 class CCollectionItem : public CItemBase {
@@ -35,6 +36,9 @@ public:
 
 	static QString getTitle(int col);
 	static inline int getNumColumns() { return 5; };
+
+	QVariant data(int column) const;
+
 
 private:
 	QString m_filename;

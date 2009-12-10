@@ -11,12 +11,12 @@
 #include <QAbstractTableModel>
 #include <QVariant>
 
-
+#include "CModelBase.h"
 #include "CCollection.h"
 #include "CCollectionItem.h"
 
 
-class CCollectionModel : public QAbstractTableModel {
+class CCollectionModel : public CModelBase<CCollectionItem> {
 public:
 	CCollectionModel(QObject* parent = 0);
 	virtual ~CCollectionModel();
