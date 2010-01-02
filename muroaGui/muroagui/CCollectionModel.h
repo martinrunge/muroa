@@ -16,20 +16,20 @@
 #include "CCollectionItem.h"
 
 
-class CCollectionModel : public CModelBase<CCollectionItem> {
+class CCollectionModel : public CModelBase<CCollectionItem*> {
 public:
 	CCollectionModel(QObject* parent = 0);
 	virtual ~CCollectionModel();
 
-	inline void setCollection(CCollection<CCollectionItem>* collectionPtr) { m_collectionPtr = collectionPtr; };
+	inline void setCollection(CCollection<CCollectionItem*>* collectionPtr) { m_collectionPtr = collectionPtr; };
 
 	int rowCount(const QModelIndex &parent) const;
 	int columnCount(const QModelIndex &parent) const;
 
-	void append(QList<CCollectionItem> newItems);
-	void append(CCollectionItem newItems);
+	void append(QList<CCollectionItem*> newItems);
+	void append(CCollectionItem* newItems);
 
-	bool insertItem(CCollectionItem item, int pos);
+	bool insertItem(CCollectionItem* item, int pos);
 	bool removeItem(int pos);
 
 	bool insertRows(int row, int count, const QModelIndex & parent = QModelIndex());
@@ -40,7 +40,7 @@ public:
 
 	QString getItemAsString(int pos);
 private:
-	CCollection<CCollectionItem>* m_collectionPtr;
+	CCollection<CCollectionItem*>* m_collectionPtr;
 
 };
 

@@ -202,30 +202,30 @@ void CStateMachine::parseCollectionArgs(QXmlStreamReader* reader)
 }
 
 
-template <typename T> void CStateMachine::parseCollection(QStringRef text, CModelBase<T>* model)
+template <typename T> void CStateMachine::parseCollection(QStringRef text, CModelBase<T*>* model)
 {
 	QString characters = text.toString();
 	QTextStream stream(&characters, QIODevice::ReadOnly);
 	QString line;
-	QList<T> items;
+	QList<T*> items;
 	qDebug() << text;
 
 	do {
 	    line = stream.readLine();
 	    if(line.isEmpty()) continue;
-	    T newItem(line);
+	    T* newItem = new T(line);
 	    items.append(newItem);
 	} while (!line.isNull());
 
 	model->append(items);
 }
 
-template <typename T> void CStateMachine::parseCollectionDiff(QStringRef text, CModelBase<T>* model)
+template <typename T> void CStateMachine::parseCollectionDiff(QStringRef text, CModelBase<T*>* model)
 {
 	QString characters = text.toString();
 	QTextStream stream(&characters, QIODevice::ReadOnly);
 	QString line;
-	QList<T> items;
+	QList<T*> items;
 
 	qDebug() << text;
 
@@ -273,7 +273,7 @@ template <typename T> void CStateMachine::parseCollectionDiff(QStringRef text, C
 				{
 					//qDebug() << QString("adding line : %1").arg(lineNr);
 					//qDebug() << QString("from diff : %1").arg(content);
-					T newItem(content);
+					T* newItem = new T(content);
 					model->insertItem( newItem, lineNr - 1);
 					//qDebug() << QString("collection: %1").arg(m_collectionModelPtr->getItemAsString(lineNr - 1));
 					break;

@@ -16,7 +16,7 @@ public:
 	CPlaylistItem(QString itemStr);
 	virtual ~CPlaylistItem();
 
-	inline QString asString() const { return m_key; };
+	// inline QString asString() const { return m_asString; };
 
 	static QString getTitle(int col);
 	static inline int getNumColumns() { return 1; };
@@ -24,7 +24,6 @@ public:
 	QVariant data(int column) const;
 
 private:
-	QString m_key;
 
 };
 

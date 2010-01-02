@@ -15,14 +15,14 @@ public:
 	CPlaylistItem();
 	virtual ~CPlaylistItem();
 
-	unsigned long getCollectionHash() const { return m_collectionHash; };
+	unsigned getCollectionHash() const { return m_collectionHash; };
 
     void setText(QString text);
 
 private:
     QString assembleText();
 
-    unsigned long m_collectionHash;
+    unsigned m_collectionHash;
 
 };
 

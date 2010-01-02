@@ -62,8 +62,8 @@ private:
     void parsePlaylistArgs(QXmlStreamReader* reader);
     void parseCollectionArgs(QXmlStreamReader* reader);
 
-    template <typename T> void parseCollection(QStringRef text, CModelBase<T>* model);
-    template <typename T> void parseCollectionDiff(QStringRef text, CModelBase<T>* model);
+    template <typename T> void parseCollection(QStringRef text, CModelBase<T*>* model);
+    template <typename T> void parseCollectionDiff(QStringRef text, CModelBase<T*>* model);
 
     void parseReadArgs(QXmlStreamReader* reader);
     void parseWriteArgs(QXmlStreamReader* reader);

@@ -17,6 +17,7 @@ public:
 	virtual ~CItemBase();
 
 	inline QString asString() const { return m_as_string; };
+    inline unsigned getHash() { return m_hash; };
 
 	static QString getTitle(int col) { return QString(); };
 	static int getNumColumns() { return 0; };
@@ -26,6 +27,8 @@ public:
 
 protected:
 	QString m_as_string;
+	unsigned  m_hash;
+
 };
 
 #endif /* CITEMBASE_H_ */

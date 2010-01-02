@@ -18,7 +18,8 @@ muroagui::muroagui(QWidget *parent)
 	m_connection.setPlaylistModelPtr(&m_playlistModel);
 	m_connection.setColletionModelPtr(&m_collectionModel);
 
-	m_playlistModel.setPlaylist(&m_playlist);
+	//m_playlistModel.setPlaylist(&m_playlist);
+	m_playlistModel.setCollections(&m_playlist, &m_collection);
 	m_collectionModel.setCollection(&m_collection);
 
 	ui.playlistView->setModel(&m_playlistModel);

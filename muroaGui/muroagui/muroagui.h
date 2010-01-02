@@ -26,8 +26,8 @@ public slots:
 private:
     Ui::muroaguiClass ui;
     CConnection m_connection;
-    CCollection<CPlaylistItem> m_playlist;
-    CCollection<CCollectionItem> m_collection;
+    CCollection<CPlaylistItem*> m_playlist;
+    CCollection<CCollectionItem*> m_collection;
     CPlaylistModel m_playlistModel;
     CCollectionModel m_collectionModel;
 

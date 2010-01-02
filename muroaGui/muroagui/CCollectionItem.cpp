@@ -19,7 +19,7 @@ CCollectionItem::CCollectionItem(QString itemStr) : CItemBase(itemStr)
 	setTitle( itemStr.section(',', 3, 3) );
 	setLengthInSec( itemStr.section(',', 4, 4).toInt(&ok) );
 
-	m_hash = itemStr.section(',', 4, 4).toULong(&ok);
+	m_hash = itemStr.section(',', 4, 4).toUInt(&ok);
 
 }
 

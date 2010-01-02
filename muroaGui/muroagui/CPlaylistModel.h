@@ -17,20 +17,25 @@
 #include "CPlaylistItem.h"
 
 
-class CPlaylistModel : public CModelBase<CPlaylistItem> {
+class CPlaylistModel : public CModelBase<CPlaylistItem*> {
 public:
 	CPlaylistModel(QObject* parent = 0);
 	virtual ~CPlaylistModel();
 
-	inline void setPlaylist(CCollection<CPlaylistItem>* playlistPtr) { m_playlistPtr = playlistPtr; };
+	inline void setPlaylist(CCollection<CPlaylistItem*>* playlistPtr) { m_playlistPtr = playlistPtr; };
+	inline void setCollections(CCollection<CPlaylistItem*>* playlistPtr, CCollection<CCollectionItem*>* collectionPtr)
+	{
+		m_playlistPtr = playlistPtr;
+		m_collectionPtr = collectionPtr;
+	};
 
 	int rowCount(const QModelIndex &parent) const;
 	int columnCount(const QModelIndex &parent) const;
 
-	void append(QList<CPlaylistItem> newItems);
-	void append(CPlaylistItem newItems);
+	void append(QList<CPlaylistItem*> newItems);
+	void append(CPlaylistItem* newItems);
 
-	bool insertItem(CPlaylistItem item, int pos);
+	bool insertItem(CPlaylistItem* item, int pos);
 	bool removeItem(int pos);
 
 	bool insertRows(int row, int count, const QModelIndex & parent = QModelIndex());
@@ -41,7 +46,8 @@ public:
 
 	QString getItemAsString(int pos);
 private:
-	CCollection<CPlaylistItem>* m_playlistPtr;
+	CCollection<CPlaylistItem*>* m_playlistPtr;
+	CCollection<CCollectionItem*>* m_collectionPtr;
 
 
 };

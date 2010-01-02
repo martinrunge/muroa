@@ -7,13 +7,13 @@
 
 #include "CPlaylistModel.h"
 
-CPlaylistModel::CPlaylistModel(QObject* parent) : CModelBase<CPlaylistItem>(parent) {
-	// TODO Auto-generated constructor stub
-
+CPlaylistModel::CPlaylistModel(QObject* parent) : CModelBase<CPlaylistItem*>(parent),
+												  m_collectionPtr(0),
+												  m_playlistPtr(0)
+{
 }
 
 CPlaylistModel::~CPlaylistModel() {
-	// TODO Auto-generated destructor stub
 }
 
 
@@ -28,7 +28,7 @@ int CPlaylistModel::columnCount(const QModelIndex &parent) const
 	return CPlaylistItem::getNumColumns();
 }
 
-void CPlaylistModel::append(QList<CPlaylistItem> newItems)
+void CPlaylistModel::append(QList<CPlaylistItem*> newItems)
 {
     beginInsertRows(QModelIndex(), m_playlistPtr->size(), m_playlistPtr->size() + newItems.size() - 1);
 
@@ -37,7 +37,7 @@ void CPlaylistModel::append(QList<CPlaylistItem> newItems)
     endInsertRows();
 }
 
-void CPlaylistModel::append(CPlaylistItem newItem)
+void CPlaylistModel::append(CPlaylistItem* newItem)
 {
     beginInsertRows(QModelIndex(), m_playlistPtr->size(), m_playlistPtr->size());
 
@@ -47,7 +47,7 @@ void CPlaylistModel::append(CPlaylistItem newItem)
 }
 
 
-bool CPlaylistModel::insertItem(CPlaylistItem item, int pos)
+bool CPlaylistModel::insertItem(CPlaylistItem* item, int pos)
 {
     beginInsertRows(QModelIndex(), pos, pos);
 	m_playlistPtr->insertItem(item, pos);
@@ -88,7 +88,18 @@ QVariant CPlaylistModel::data(const QModelIndex &index, int role) const
 	{
 		return QVariant();
 	}
-	return m_playlistPtr->data(index.row(), index.column());
+	int row = index.row();
+	unsigned hash = m_playlistPtr->hash(row);
+	CCollectionItem* item = m_collectionPtr->getByHash(hash);
+
+	// return m_playlistPtr->data(index.row(), index.column());
+	//if(!item) return QVariant();
+	if(!item)
+	{
+		m_playlistPtr->dump();
+	}
+
+	return item->data(5);
 }
 
 QVariant CPlaylistModel::headerData(int section, Qt::Orientation orientation, int role) const

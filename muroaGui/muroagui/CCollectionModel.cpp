@@ -8,7 +8,7 @@
 #include "CCollectionModel.h"
 #include "CCollection.h"
 
-CCollectionModel::CCollectionModel(QObject* parent) : CModelBase<CCollectionItem>(parent)
+CCollectionModel::CCollectionModel(QObject* parent) : CModelBase<CCollectionItem*>(parent)
 {
 }
 
@@ -27,7 +27,7 @@ int CCollectionModel::columnCount(const QModelIndex &parent) const
 	return CCollectionItem::getNumColumns();
 }
 
-void CCollectionModel::append(QList<CCollectionItem> newItems)
+void CCollectionModel::append(QList<CCollectionItem*> newItems)
 {
     beginInsertRows(QModelIndex(), m_collectionPtr->size(), m_collectionPtr->size() + newItems.size() - 1);
 
@@ -36,7 +36,7 @@ void CCollectionModel::append(QList<CCollectionItem> newItems)
     endInsertRows();
 }
 
-void CCollectionModel::append(CCollectionItem newItem)
+void CCollectionModel::append(CCollectionItem* newItem)
 {
     beginInsertRows(QModelIndex(), m_collectionPtr->size(), m_collectionPtr->size());
 
@@ -46,7 +46,7 @@ void CCollectionModel::append(CCollectionItem newItem)
 }
 
 
-bool CCollectionModel::insertItem(CCollectionItem item, int pos)
+bool CCollectionModel::insertItem(CCollectionItem* item, int pos)
 {
     beginInsertRows(QModelIndex(), pos, pos);
 	m_collectionPtr->insertItem(item, pos);

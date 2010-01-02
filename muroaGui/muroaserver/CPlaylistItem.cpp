@@ -19,6 +19,8 @@ CPlaylistItem::~CPlaylistItem() {
 void CPlaylistItem::setText(QString text)
 {
 	m_text = text;
+	bool ok;
+	m_collectionHash = m_text.toULong(&ok);
 }
 
 
