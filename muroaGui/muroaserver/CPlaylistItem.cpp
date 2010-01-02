@@ -7,26 +7,26 @@
 
 #include "CPlaylistItem.h"
 
-CPlaylistItem::CPlaylistItem() {
-	// TODO Auto-generated constructor stub
-
+CPlaylistItem::CPlaylistItem(QString text) {
+	bool ok;
+	m_collectionHash = text.toUInt(&ok);
+	assembleText();
 }
 
 CPlaylistItem::~CPlaylistItem() {
 	// TODO Auto-generated destructor stub
 }
 
-void CPlaylistItem::setText(QString text)
+//void CPlaylistItem::setText(QString text)
+//{
+//	m_text = text;
+//	bool ok;
+//	m_collectionHash = m_text.toULong(&ok);
+//}
+
+
+void CPlaylistItem::assembleText()
 {
+	QString text(QString("%1").arg(m_collectionHash));
 	m_text = text;
-	bool ok;
-	m_collectionHash = m_text.toULong(&ok);
-}
-
-
-QString CPlaylistItem::assembleText()
-{
-	QString text(QString("%1\n").arg(m_collectionHash));
-
-	return text;
 }

@@ -12,14 +12,14 @@ CCollectionItem::CCollectionItem(QString itemStr) : CItemBase(itemStr)
 {
 	// TODO parse string here
 	bool ok;
-	// newItem.setFilename( itemStr.section(',', 0, 0) );
-	setArtist( itemStr.section(',', 0, 0) );
-	setAlbum( itemStr.section(',', 1, 1) );
-	setYear( itemStr.section(',', 2, 2).toInt(&ok) );
-	setTitle( itemStr.section(',', 3, 3) );
-	setLengthInSec( itemStr.section(',', 4, 4).toInt(&ok) );
+	setFilename( itemStr.section(',', 0, 0) );
+	setArtist( itemStr.section(',', 1, 1) );
+	setAlbum( itemStr.section(',', 2, 2) );
+	setYear( itemStr.section(',', 3, 3).toInt(&ok) );
+	setTitle( itemStr.section(',', 4, 4) );
+	setLengthInSec( itemStr.section(',', 5, 5).toInt(&ok) );
 
-	m_hash = itemStr.section(',', 4, 4).toUInt(&ok);
+	m_hash = itemStr.section(',', 6, 6).toUInt(&ok);
 
 }
 
@@ -52,8 +52,12 @@ QVariant CCollectionItem::data(int column) const
 			data = QString("%1:%2").arg(m_length_in_s / 60).arg(m_length_in_s % 60);
 			break;
 		}
+		case 5:
+			data = m_filename;
+			break;
+
 		default:
-			return QString("Hä?");
+			return QString("wrong column index!");
 	}
 	return data;
 

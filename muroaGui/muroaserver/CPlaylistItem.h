@@ -12,15 +12,15 @@
 
 class CPlaylistItem : public CItemBase{
 public:
-	CPlaylistItem();
+	CPlaylistItem(QString text);
 	virtual ~CPlaylistItem();
 
 	unsigned getCollectionHash() const { return m_collectionHash; };
 
-    void setText(QString text);
+//    void setText(QString text);
 
 private:
-    QString assembleText();
+    void assembleText();
 
     unsigned m_collectionHash;
 

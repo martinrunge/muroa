@@ -15,7 +15,7 @@ public:
 	CItemBase();
 	virtual ~CItemBase();
 
-	void setText(QString text);
+//	void setText(QString text);
 	inline QString getText() const { return m_text; };
 
 protected:

@@ -142,6 +142,13 @@ template <class T> void CCollection<T>::dump()
 	{
 		cerr << dec << i << " hash: " << m_items.at(i)->getHash() << " ptr: " << hex << m_items.at(i) << endl;
 	}
+
+	QList<unsigned> keylist = m_hashMap.keys();
+	for(int i = 0; i < keylist.size(); i++)
+	{
+		cerr << dec << "key: " << keylist.at(i) << " ptr: " << hex << m_hashMap.value(keylist.at(i)) << endl;
+	}
+
 }
 
 

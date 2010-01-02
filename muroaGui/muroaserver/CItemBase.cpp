@@ -13,6 +13,6 @@ CItemBase::CItemBase() {
 CItemBase::~CItemBase() {
 }
 
-void CItemBase::setText(QString text) {
-	m_text = text;
-}
+//void CItemBase::setText(QString text) {
+//	m_text = text;
+//}

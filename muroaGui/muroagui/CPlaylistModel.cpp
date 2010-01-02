@@ -96,10 +96,13 @@ QVariant CPlaylistModel::data(const QModelIndex &index, int role) const
 	//if(!item) return QVariant();
 	if(!item)
 	{
-		m_playlistPtr->dump();
+		m_collectionPtr->dump();
+		return QVariant();
 	}
 
-	return item->data(5);
+	QString playlistentry = QString("%1  %2").arg(item->data(0).toString()).arg(item->data(3).toString());
+
+	return playlistentry;
 }
 
 QVariant CPlaylistModel::headerData(int section, Qt::Orientation orientation, int role) const

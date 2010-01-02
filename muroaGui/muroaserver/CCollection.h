@@ -55,8 +55,7 @@ template <class T> void CCollection<T>::parse()
 	{
 		QStringRef line(&m_collectionAsText, start, index - start);
 		qDebug() << QString("parsed line: %1") .arg( line.toString());
-		T newItem;
-		newItem.setText(line.toString());
+		T newItem(line.toString());
 		m_items.append(newItem);
 		start = index + 1;
 	}

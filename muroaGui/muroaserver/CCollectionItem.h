@@ -15,10 +15,10 @@
 
 class CCollectionItem :public CItemBase {
 public:
-	CCollectionItem();
+	CCollectionItem(QString text);
 	virtual ~CCollectionItem();
 
-    void setText(QString text);
+//    void setText(QString text);
 
 //	inline QString getText() const { return m_text; };
 
@@ -29,7 +29,7 @@ public:
     inline QString getTitle() const { return m_title; }
     inline int getYear() const  { return m_year; }
 
-    inline unsigned long getHash() const { return m_hash; };
+    inline unsigned getHash() const { return m_hash; };
 
     void setAlbum(QString album);
     void setArtist(QString artist);
@@ -50,9 +50,9 @@ private:
 	int m_year;
 	int m_length_in_s;
 
-	unsigned long m_hash;
+	unsigned m_hash;
 
-	static unsigned long lastUsedHash;
+	static unsigned lastUsedHash;
 };
 
 #endif /* CCOLLECTIONITEM_H_ */
