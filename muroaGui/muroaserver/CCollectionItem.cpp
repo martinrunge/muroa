@@ -6,13 +6,14 @@
  */
 
 #include "CCollectionItem.h"
+#include <QHash>
 
 unsigned CCollectionItem::lastUsedHash = 0;
 
 
 CCollectionItem::CCollectionItem(QString text) {
 	CCollectionItem::lastUsedHash++;
-	m_hash = lastUsedHash;
+//	m_hash = lastUsedHash;
 
 	bool ok;
 
@@ -23,6 +24,7 @@ CCollectionItem::CCollectionItem(QString text) {
 	m_title = text.section(',', 4, 4);
 	m_length_in_s = text.section(',', 5, 5).toInt(&ok);
 
+	m_hash = qHash(m_filename);
 	assembleText();
 }
 
