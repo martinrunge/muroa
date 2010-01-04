@@ -31,7 +31,23 @@
         <enum>Qt::Horizontal</enum>
        </property>
        <widget class="QTableView" name="collectionView"/>
-       <widget class="QTableView" name="playlistView"/>
+       <widget class="QListView" name="playlistView">
+        <property name="acceptDrops">
+         <bool>true</bool>
+        </property>
+        <property name="dragEnabled">
+         <bool>true</bool>
+        </property>
+        <property name="dragDropOverwriteMode">
+         <bool>true</bool>
+        </property>
+        <property name="dragDropMode">
+         <enum>QAbstractItemView::InternalMove</enum>
+        </property>
+        <property name="selectionBehavior">
+         <enum>QAbstractItemView::SelectRows</enum>
+        </property>
+       </widget>
       </widget>
       <widget class="QPlainTextEdit" name="plainTextEdit">
        <property name="sizePolicy">

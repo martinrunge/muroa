@@ -22,6 +22,7 @@ public:
 	static inline int getNumColumns() { return 1; };
 
 	QVariant data(int column) const;
+	bool setData(int column, QVariant data);
 
 private:
 

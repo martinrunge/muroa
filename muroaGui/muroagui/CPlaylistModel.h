@@ -42,7 +42,18 @@ public:
 	bool removeRows(int row, int count, const QModelIndex & parent = QModelIndex());
 
 	QVariant data(const QModelIndex &index, int role) const;
+	bool setData(const QModelIndex &index, const QVariant & value, int role = Qt::EditRole );
 	QVariant headerData(int section, Qt::Orientation orientation, int role) const;
+
+	inline Qt::ItemFlags flags( const QModelIndex & index ) const
+	{
+		return Qt::ItemIsSelectable | Qt::ItemIsDragEnabled | Qt::ItemIsDropEnabled | Qt::ItemIsEnabled;
+	}
+
+	Qt::DropActions supportedDropActions () const
+	{
+		return Qt::CopyAction | Qt::MoveAction;
+	}
 
 	QString getItemAsString(int pos);
 private:

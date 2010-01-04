@@ -11,6 +11,7 @@ CPlaylistModel::CPlaylistModel(QObject* parent) : CModelBase<CPlaylistItem*>(par
 												  m_collectionPtr(0),
 												  m_playlistPtr(0)
 {
+
 }
 
 CPlaylistModel::~CPlaylistModel() {
@@ -68,7 +69,7 @@ bool CPlaylistModel::insertRows(int row, int count, const QModelIndex & parent)
     beginInsertRows(parent, row, row + count - 1);
 
     for (int i=0; i < count; i++) {
-    	// m_playlistPtr->insert(row, content);
+    	m_playlistPtr->insertItem(new CPlaylistItem(""), row + i);
     }
 
     endInsertRows();
@@ -78,7 +79,11 @@ bool CPlaylistModel::insertRows(int row, int count, const QModelIndex & parent)
 
 bool CPlaylistModel::removeRows(int row, int count, const QModelIndex & parent)
 {
+    beginRemoveRows(parent, row, count);
+    m_playlistPtr->removeItems(row, count);
+    endRemoveRows();
 
+    return true;
 }
 
 
@@ -103,6 +108,20 @@ QVariant CPlaylistModel::data(const QModelIndex &index, int role) const
 	QString playlistentry = QString("%1  %2").arg(item->data(0).toString()).arg(item->data(3).toString());
 
 	return playlistentry;
+}
+
+bool CPlaylistModel::setData(const QModelIndex &index, const QVariant & value, int role)
+{
+	int row = index.row();
+	if( row >= 0 && row < m_playlistPtr->size() && ( role == Qt::EditRole || role == Qt::DisplayRole ))
+	{
+		m_playlistPtr->setData(index.row(), index.column(), value);
+		emit dataChanged(index, index);
+
+	}
+
+
+	return false;
 }
 
 QVariant CPlaylistModel::headerData(int section, Qt::Orientation orientation, int role) const

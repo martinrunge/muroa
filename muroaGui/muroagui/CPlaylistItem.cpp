@@ -12,9 +12,7 @@
 using namespace std;
 
 CPlaylistItem::CPlaylistItem(QString itemStr) : CItemBase(itemStr) {
-	bool ok;
-	m_hash = itemStr.toUInt(&ok);
-	cerr << "CPlaylistItem: hash: " << dec << m_hash << " ptr: " << hex << this << endl;
+	setData(0, itemStr);
 }
 
 CPlaylistItem::~CPlaylistItem() {
@@ -28,4 +26,13 @@ QString CPlaylistItem::getTitle(int col){
 QVariant CPlaylistItem::data(int column) const
 {
 	return QVariant(m_as_string);
+}
+
+
+bool CPlaylistItem::setData(int column, QVariant data)
+{
+	bool ok;
+	m_hash = data.toString().toUInt(&ok);
+	cerr << "CPlaylistItem: hash: " << dec << m_hash << " ptr: " << hex << this << endl;
+	return true;
 }

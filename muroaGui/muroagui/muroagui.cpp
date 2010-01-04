@@ -22,6 +22,13 @@ muroagui::muroagui(QWidget *parent)
 	m_playlistModel.setCollections(&m_playlist, &m_collection);
 	m_collectionModel.setCollection(&m_collection);
 
+	ui.playlistView->setSelectionMode(QAbstractItemView::SingleSelection);
+	ui.playlistView->setDragEnabled(true);
+	ui.playlistView->viewport()->setAcceptDrops(true);
+	ui.playlistView->setDropIndicatorShown(true);
+	ui.playlistView->setDragDropMode(QAbstractItemView::InternalMove);
+	ui.playlistView->setDragDropOverwriteMode( true );
+
 	ui.playlistView->setModel(&m_playlistModel);
 	ui.collectionView->setModel(&m_collectionModel);
 

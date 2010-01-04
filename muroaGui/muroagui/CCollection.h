@@ -32,6 +32,8 @@ public:
 	};
 
 	QString data(int row, int column);
+	bool setData(int row, int column, QVariant data);
+
 	QString asString();
 	inline QString getItemAsString(int pos) { return m_items.at(pos)->asString(); };
 	inline void insertItem(T item, int pos)
@@ -92,6 +94,20 @@ template <class T> QString CCollection<T>::data(int row, int column)
 
 }
 
+template <class T> bool CCollection<T>::setData(int row, int column, QVariant data)
+{
+
+	if(row > size() || column > 5)
+	{
+		return false;
+	}
+
+	m_items.at(row)->setData(column, data);
+	return true;
+
+}
+
+
 
 template <class T> QString CCollection<T>::asString()
 {
@@ -131,7 +147,7 @@ template <class T> void CCollection<T>::removeItems(int pos, int num)
 	// TODO clever handling of multiple removes
 	for(int i = 0; i < num; i++)
 	{
-		m_hashMap.remove(m_items.at(pos + i).getHash());
+		m_hashMap.remove(m_items.at(pos + i)->getHash());
 		m_items.removeAt(pos + i);
 	}
 }
