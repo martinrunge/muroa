@@ -70,6 +70,8 @@ public:
 	//inline int getNumColumns() {return 5; };
 	//QString getTitle(int col);
 
+	T at(int row) { return m_items.at(row); };
+
 	void dump();
 
 private:

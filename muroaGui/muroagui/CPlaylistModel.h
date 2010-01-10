@@ -11,6 +11,7 @@
 
 #include <QVariant>
 #include <QList>
+#include <QStringList>
 
 #include "CModelBase.h"
 #include "CCollection.h"
@@ -50,12 +51,21 @@ public:
 		return Qt::ItemIsSelectable | Qt::ItemIsDragEnabled | Qt::ItemIsDropEnabled | Qt::ItemIsEnabled;
 	}
 
+	QStringList mimeTypes() const;
+
 	Qt::DropActions supportedDropActions () const
 	{
-		return Qt::CopyAction | Qt::MoveAction;
+		return Qt::MoveAction;
 	}
 
 	QString getItemAsString(int pos);
+
+	inline CPlaylistItem* itemAt(int pos)
+	{
+		return m_playlistPtr->at(pos);
+	}
+
+
 private:
 	CCollection<CPlaylistItem*>* m_playlistPtr;
 	CCollection<CCollectionItem*>* m_collectionPtr;

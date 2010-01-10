@@ -32,7 +32,8 @@ QVariant CPlaylistItem::data(int column) const
 bool CPlaylistItem::setData(int column, QVariant data)
 {
 	bool ok;
-	m_hash = data.toString().toUInt(&ok);
+	QString strdata = data.toString();
+	m_hash = strdata.toUInt(&ok);
 	cerr << "CPlaylistItem: hash: " << dec << m_hash << " ptr: " << hex << this << endl;
 	return true;
 }

@@ -79,7 +79,7 @@ bool CPlaylistModel::insertRows(int row, int count, const QModelIndex & parent)
 
 bool CPlaylistModel::removeRows(int row, int count, const QModelIndex & parent)
 {
-    beginRemoveRows(parent, row, count);
+	beginRemoveRows(parent, row, count);
     m_playlistPtr->removeItems(row, count);
     endRemoveRows();
 
@@ -146,4 +146,13 @@ QVariant CPlaylistModel::headerData(int section, Qt::Orientation orientation, in
 QString CPlaylistModel::getItemAsString(int pos)
 {
 	return m_playlistPtr->getItemAsString(pos);
+}
+
+QStringList CPlaylistModel::mimeTypes() const
+{
+	QStringList sl;
+
+	sl << "application/x-muroa-playliust-diff";
+
+	return sl;
 }
