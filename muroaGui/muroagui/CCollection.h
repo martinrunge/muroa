@@ -11,7 +11,7 @@
 #include <QList>
 #include <QString>
 #include "CCollectionItem.h"
-
+#include "CModelDiff.h"
 #include <iostream>
 
 using namespace std;
@@ -35,6 +35,7 @@ public:
 	bool setData(int row, int column, QVariant data);
 
 	QString asString();
+	QString diff(CModelDiff* mdiff);
 	inline QString getItemAsString(int pos) { return m_items.at(pos)->asString(); };
 	inline void insertItem(T item, int pos)
 	{
@@ -123,6 +124,16 @@ template <class T> QString CCollection<T>::asString()
 }
 
 
+template <class T> QString CCollection<T>::diff(CModelDiff* mdiff)
+{
+	QString text;
+
+
+	///TODO create diff representation here !!!
+
+	return text;
+}
+
 template <class T> void CCollection<T>::append(QList<T> newItems)
 {
 	m_items.append(newItems);
@@ -135,7 +146,6 @@ template <class T> void CCollection<T>::append(QList<T> newItems)
 
 template <class T> void CCollection<T>::insertItems(QList<T> items, int pos)
 {
-	// TODO clever handling of multiple inserts
 	for(int i = 0; i < items.size(); i++)
 	{
 		m_items.insert(pos + i, items.at(i));
@@ -146,7 +156,6 @@ template <class T> void CCollection<T>::insertItems(QList<T> items, int pos)
 
 template <class T> void CCollection<T>::removeItems(int pos, int num)
 {
-	// TODO clever handling of multiple removes
 	for(int i = 0; i < num; i++)
 	{
 		m_hashMap.remove(m_items.at(pos + i)->getHash());
