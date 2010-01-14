@@ -156,3 +156,9 @@ QStringList CPlaylistModel::mimeTypes() const
 
 	return sl;
 }
+
+
+void CPlaylistModel::makeDiff(CModelDiff* diff)
+{
+	m_playlistPtr->diff(diff);
+}

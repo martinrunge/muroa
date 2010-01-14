@@ -86,6 +86,8 @@ void CPlaylistView::dropEvent(QDropEvent *event)
 
         qDebug() << QString("Move %1 to %2").arg(md.getRowsToRemove().at(0)).arg(md.getRowsToInsert().at(0));
 
+        CPlaylistModel* plModel = reinterpret_cast<CPlaylistModel*>(model());
+        plModel->makeDiff(&md);
     }
 }
 

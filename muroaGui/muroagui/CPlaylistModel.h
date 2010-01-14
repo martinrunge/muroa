@@ -65,12 +65,11 @@ public:
 		return m_playlistPtr->at(pos);
 	}
 
+	void makeDiff(CModelDiff* diff);
 
 private:
 	CCollection<CPlaylistItem*>* m_playlistPtr;
 	CCollection<CCollectionItem*>* m_collectionPtr;
-
-
 };
 
 #endif /* CPLAYLISTMODEL_H_ */

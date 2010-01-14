@@ -8,6 +8,7 @@
 #ifndef CCOLLECTION_H_
 #define CCOLLECTION_H_
 
+#include <QDebug>
 #include <QList>
 #include <QString>
 #include "CCollectionItem.h"
@@ -36,6 +37,7 @@ public:
 
 	QString asString();
 	QString diff(CModelDiff* mdiff);
+
 	inline QString getItemAsString(int pos) { return m_items.at(pos)->asString(); };
 	inline void insertItem(T item, int pos)
 	{
@@ -128,7 +130,35 @@ template <class T> QString CCollection<T>::diff(CModelDiff* mdiff)
 {
 	QString text;
 
+	int num = mdiff->getNumRowsToRemove();
 
+	int rmFrom = mdiff->getRowsToRemove().at(0);
+	int rmTo = mdiff->getRowsToRemove().at( num - 1 );
+
+	int insTo = mdiff->getRowsToInsert().at(0);
+
+	// ignore, if rows to remove are to be moved into their own range. (dropped on self)
+	if( rmFrom < insTo && rmTo > insTo )
+	{
+		return text;
+	}
+
+	if(rmFrom > insTo)
+	{
+		// insert first, remove then
+		text.append( QString("@@ -%1,%2 +%3,%4 @@").arg(rmFrom).arg(num).arg(insTo).arg(num) );
+		for(int i = 0; i < num; i++)
+		{
+			text.append( QString("+%1").arg(mdiff->getRowsToRemove().at(i)) );
+		}
+	}
+	else
+	{
+
+
+	}
+
+	qDebug() << text;
 	///TODO create diff representation here !!!
 
 	return text;
