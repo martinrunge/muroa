@@ -60,4 +60,9 @@ void CModelDiff::setRowsToRemove(QModelIndexList rowsToRemove)
 	}
 }
 
+void CModelDiff::sort()
+{
+	// m_rowsToRemove.sort();
+	// m_rowsToInsert.sort();
+}
 

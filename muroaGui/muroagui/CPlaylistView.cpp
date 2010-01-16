@@ -84,7 +84,7 @@ void CPlaylistView::dropEvent(QDropEvent *event)
         QModelIndex currentIdx = indexAt( event->pos());
         md.appendRowToInsert(currentIdx.row());
 
-        qDebug() << QString("Move %1 to %2").arg(md.getRowsToRemove().at(0)).arg(md.getRowsToInsert().at(0));
+        qDebug() << QString("Move [%1,%2] to %3").arg(md.getRowsToRemove().at(0)).arg(md.getRowsToRemove().at(md.getNumRowsToRemove() - 1 )).arg(md.getRowsToInsert().at(0));
 
         CPlaylistModel* plModel = reinterpret_cast<CPlaylistModel*>(model());
         plModel->makeDiff(&md);

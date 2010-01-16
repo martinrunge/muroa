@@ -65,6 +65,7 @@ public:
     	m_rowsToInsert.append(row);
     }
 
+    void sort();
 
 private:
 	QList<unsigned> m_rowsToRemove;

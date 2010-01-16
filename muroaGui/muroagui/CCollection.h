@@ -146,21 +146,36 @@ template <class T> QString CCollection<T>::diff(CModelDiff* mdiff)
 	if(rmFrom > insTo)
 	{
 		// insert first, remove then
-		text.append( QString("@@ -%1,%2 +%3,%4 @@").arg(rmFrom).arg(num).arg(insTo).arg(num) );
+		text.append( QString("@@ -%1,%2 +%3,%4 @@\n").arg(insTo).arg(0).arg(insTo +1).arg(num) );
 		for(int i = 0; i < num; i++)
 		{
-			text.append( QString("+%1").arg(mdiff->getRowsToRemove().at(i)) );
+			text.append( QString("+%1\n").arg(mdiff->getRowsToRemove().at(i)) );
 		}
+
+		text.append( QString("@@ -%1,%2 +%3,%4 @@\n").arg(rmFrom + 1).arg(num).arg(rmFrom + num).arg(0) );
+		for(int i = 0; i < num; i++)
+		{
+			text.append( QString("-%1\n").arg(mdiff->getRowsToRemove().at(i)) );
+		}
+
 	}
 	else
 	{
+		// remove first, insert then
+		text.append( QString("@@ -%1,%2 +%3,%4 @@\n").arg(rmFrom + 1).arg(num).arg(rmFrom).arg(0) );
+		for(int i = 0; i < num; i++)
+		{
+			text.append( QString("-%1\n").arg(mdiff->getRowsToRemove().at(i)) );
+		}
 
-
+		text.append( QString("@@ -%1,%2 +%3,%4 @@\n").arg(insTo ).arg(0).arg(insTo - num + 1).arg(num) );
+		for(int i = 0; i < num; i++)
+		{
+			text.append( QString("+%1\n").arg(mdiff->getRowsToRemove().at(i)) );
+		}
 	}
 
 	qDebug() << text;
-	///TODO create diff representation here !!!
-
 	return text;
 }
 
