@@ -6,6 +6,7 @@
 // #include <QXmlInputSource>
 
 #include "cstatemachine.h"
+#include "CCommandBase.h"
 
 class QXmlStreamReader;
 class QXmlStreamWriter;
@@ -41,7 +42,7 @@ public slots:
     void getPlaylist();
     void getPlaylist(int knownRevision);
 
-
+    void sendCommand(const CCommandBase& cmd);
 
     void test();
 

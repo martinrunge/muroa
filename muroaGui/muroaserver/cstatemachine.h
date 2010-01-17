@@ -10,6 +10,15 @@ class QXmlStreamWriter;
 class CConnection;
 class CSession;
 
+enum states { e_not_connected,
+			  e_connected,
+			  e_collection_requested,
+			  e_playlist_requested,
+			  e_awaiting_collection_mod,
+			  e_awaiting_playlist_mod
+			};
+
+
 class CStateMachine : public QObject
 {
     Q_OBJECT;
@@ -49,18 +58,21 @@ private:
     // int m_revision;
 
     int m_knownRevision;
+    int m_diffFromRev;
+
+    QString m_playlistDiff;
+    QString m_collectionDiff;
 
     CConnection* m_connection;
     CSession* m_session;
 
     QXmlStreamWriter* m_xml_writer;
 
-    void parseReadArgs(QXmlStreamReader* reader);
-    void parseWriteArgs(QXmlStreamReader* reader);
-
     void parseGetPlaylistArgs(QXmlStreamReader* reader);
     void parseGetCollectionArgs(QXmlStreamReader* reader);
 
+    void parseModPlaylistArgs(QXmlStreamReader* reader);
+    void parseModCollectionArgs(QXmlStreamReader* reader);
 
 };
 

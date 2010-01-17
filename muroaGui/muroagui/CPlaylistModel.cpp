@@ -7,6 +7,7 @@
 
 #include "CPlaylistModel.h"
 
+
 CPlaylistModel::CPlaylistModel(QObject* parent) : CModelBase<CPlaylistItem*>(parent),
 												  m_collectionPtr(0),
 												  m_playlistPtr(0)
@@ -160,5 +161,9 @@ QStringList CPlaylistModel::mimeTypes() const
 
 void CPlaylistModel::makeDiff(CModelDiff* diff)
 {
-	m_playlistPtr->diff(diff);
+	QString diffStr = m_playlistPtr->diff(diff);
+
+    CPlaylistCommand plCmd(diffStr);
+    emit sendCommand(plCmd);
+
  }

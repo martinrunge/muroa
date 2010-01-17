@@ -10,10 +10,15 @@
 
 #include <QListView>
 
+#include "CCommandBase.h"
+#include "CPlaylistCommand.h"
+
 class QMouseEvent;
 class QDragEnterEvent;
 class QDragMoveEvent;
 class QDropEvent;
+
+
 
 class CPlaylistView : public QListView
 {

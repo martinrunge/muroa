@@ -16,9 +16,12 @@
 #include "CModelBase.h"
 #include "CCollection.h"
 #include "CPlaylistItem.h"
+#include "CPlaylistCommand.h"
+
 
 
 class CPlaylistModel : public CModelBase<CPlaylistItem*> {
+	Q_OBJECT;
 public:
 	CPlaylistModel(QObject* parent = 0);
 	virtual ~CPlaylistModel();
@@ -66,6 +69,9 @@ public:
 	}
 
 	void makeDiff(CModelDiff* diff);
+
+signals:
+	void sendCommand(const CCommandBase& cmd);
 
 private:
 	CCollection<CPlaylistItem*>* m_playlistPtr;

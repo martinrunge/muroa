@@ -32,6 +32,8 @@ muroagui::muroagui(QWidget *parent)
 	ui.playlistView->setModel(&m_playlistModel);
 	ui.collectionView->setModel(&m_collectionModel);
 
+	connect(&m_playlistModel, SIGNAL(sendCommand(const CCommandBase&)), &m_connection, SLOT(sendCommand(const CCommandBase&)));
+
 }
 
 muroagui::~muroagui()

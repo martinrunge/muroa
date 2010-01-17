@@ -127,6 +127,40 @@ void CSession::addPlaylistRev(QString playlist)
 }
 
 
+int CSession::addCollectionRevFromDiff(const QString& collectionDiff, int diffFromRev)
+{
+	CCollection<CCollectionItem>* newCollection = new CCollection<CCollectionItem>( *(getCollection(m_latestCollectionRevision)) );
+	newCollection->patch(collectionDiff, ++m_latestCollectionRevision);
+
+	qDebug() << newCollection->getText();
+
+	m_collectionRevisions[m_latestCollectionRevision] = newCollection;
+
+	for(int i=0; i < m_connections.size(); i++)
+	{
+		m_connections.at(i)->sendCollection(m_latestCollectionRevision - 1);
+	}
+
+}
+
+int CSession::addPlaylistRevFromDiff(const QString& playlistDiff, int diffFromRev)
+{
+	qDebug() << QString("CSession::addPlaylistRevFromDiff %1 %2").arg(playlistDiff).arg(diffFromRev);
+	CCollection<CPlaylistItem>* newPlaylist = new CCollection<CPlaylistItem>( *(getPlaylist(m_latestPlaylistRevision)) );
+	newPlaylist->patch(playlistDiff, ++m_latestPlaylistRevision);
+
+	qDebug() << newPlaylist->getText();
+
+	m_playlistRevisions[m_latestPlaylistRevision] = newPlaylist;
+
+	for(int i=0; i < m_connections.size(); i++)
+	{
+		m_connections.at(i)->sendPlaylist(m_latestPlaylistRevision - 1);
+	}
+}
+
+
+
 void CSession::addConnection(CConnection* connection)
 {
 	if(!m_connections.contains(connection))

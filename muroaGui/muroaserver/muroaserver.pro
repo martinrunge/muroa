@@ -4,7 +4,18 @@ QT += core \
     gui \
     xml \
     network
-HEADERS += CItemBase.h \
+HEADERS += CCollection.h \
+    CCollectionItem.h \
+    CDiff.h \
+    CItemBase.h \
+    CPlaylistItem.h \
+    CSession.h \
+    cconnection.h \
+    ccontenthandler.h \
+    cnetwork.h \
+    cstatemachine.h \
+    muroaserver.h \
+    CItemBase.h \
     CPlaylistItem.h \
     CDiff.h \
     CSession.h \
@@ -15,11 +26,11 @@ HEADERS += CItemBase.h \
     cnetwork.h \
     cstatemachine.h \
     muroaserver.h
-SOURCES += CItemBase.cpp \
-    CPlaylistItem.cpp \
+SOURCES += CCollectionItem.cpp \
     CDiff.cpp \
+    CItemBase.cpp \
+    CPlaylistItem.cpp \
     CSession.cpp \
-    CCollectionItem.cpp \
     cconnection.cpp \
     ccontenthandler.cpp \
     cnetwork.cpp \

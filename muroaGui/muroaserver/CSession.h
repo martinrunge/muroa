@@ -39,6 +39,9 @@ public:
 	void addCollectionRev(QString collection);
 	void addPlaylistRev(QString playlist);
 
+	int addCollectionRevFromDiff(const QString& collectionDiff, int diffFromRev);
+	int addPlaylistRevFromDiff(const QString& playlistDiff, int diffFromRev);
+
 	void addConnection(CConnection* connection);
 
 public slots:

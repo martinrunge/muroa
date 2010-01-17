@@ -64,7 +64,7 @@ void CStateMachine::startElement(QXmlStreamReader* reader)
     {
         parseReadArgs(reader);
     }
-    else if(name.toString().startsWith("muroa_server"))
+    else if(name.toString().startsWith("session"))
     {
         qDebug() << QString("Begin of Document");
         m_state = e_session_active;
@@ -92,7 +92,7 @@ void CStateMachine::endElement(QXmlStreamReader* reader)
     {
         parseReadArgs(reader);
     }
-    else if(name.toString().startsWith("muroa_server"))
+    else if(name.toString().startsWith("session"))
     {
         qDebug() << QString("Begin of Document");
         m_state = e_no_session;
@@ -163,13 +163,13 @@ void CStateMachine::parsePlaylistArgs(QXmlStreamReader* reader)
 
     m_diffFromRev = -1;
     bool ok;
-    m_revision = revision.string()->toULongLong(&ok);
+    m_revision = revision.toString().toULongLong(&ok);
 
     if(att.hasAttribute("diffFromRev"))
     {
 	    QStringRef diffFromRev = att.value(QString(), QString("diffFromRev"));
 	    bool ok;
-	    m_diffFromRev = diffFromRev.string()->toULongLong(&ok);
+	    m_diffFromRev = diffFromRev.toString().toULongLong(&ok);
     }
 
     qDebug() << QString("readOlaylist: revision %1").arg(m_revision);
@@ -182,17 +182,19 @@ void CStateMachine::parsePlaylistArgs(QXmlStreamReader* reader)
 void CStateMachine::parseCollectionArgs(QXmlStreamReader* reader)
 {
 	QXmlStreamAttributes att = reader->attributes();
-    QStringRef revision = att.value(QString(), QString("revision"));
+    QStringRef revision = att.value(QString("revision"));
 
     m_diffFromRev = -1;
     bool ok;
-    m_revision = revision.string()->toULongLong(&ok);
+    QString refStr = revision.toString();
+    qDebug() << QString("revision=%1").arg(refStr);
+    m_revision = refStr.toInt(&ok);
 
     if(att.hasAttribute("diffFromRev"))
     {
-	    QStringRef diffFromRev = att.value(QString(), QString("diffFromRev"));
+	    QStringRef diffFromRev = att.value(QString("diffFromRev"));
 	    bool ok;
-	    m_diffFromRev = diffFromRev.string()->toULongLong(&ok);
+	    m_diffFromRev = diffFromRev.toString().toULongLong(&ok);
     }
 
     qDebug() << QString("readCollection: revision %1").arg(m_revision);

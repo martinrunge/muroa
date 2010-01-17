@@ -10,6 +10,7 @@ CStateMachine::CStateMachine(CConnection* connection) : m_connection(connection)
 {
 	//m_revision = 0;
     m_xml_reader = new QXmlStreamReader();
+    m_state = e_not_connected;
 
 }
 
@@ -88,13 +89,14 @@ void CStateMachine::addData(QByteArray data)
 void CStateMachine::startDocument(QXmlStreamReader* reader)
 {
     QStringRef name = reader->name();
-
+    m_state = e_connected;
     qDebug() << QString("startDocument %1").arg(reader->name().toString());
 }
 
 void CStateMachine::endDocument(QXmlStreamReader* reader)
 {
     QStringRef name = reader->name();
+    m_state = e_not_connected;
     qDebug() << QString("endDocument %1").arg(reader->name().toString());
 }
 
@@ -111,13 +113,17 @@ void CStateMachine::startElement(QXmlStreamReader* reader)
     {
         parseGetCollectionArgs(reader);
     }
-    else if(name.toString().startsWith("addSong"))
+    else if(name.toString().startsWith("modPlaylist"))
     {
-        parseReadArgs(reader);
+        parseModPlaylistArgs(reader);
     }
-    else if(name.toString().startsWith("muroa_session"))
+    else if(name.toString().startsWith("modCollection"))
     {
-        qDebug() << QString("Begin of Document");
+        parseModCollectionArgs(reader);
+    }
+    else if(name.toString().startsWith("session"))
+    {
+        qDebug() << QString("A client joined the session.");
     }
     else
     {
@@ -128,21 +134,27 @@ void CStateMachine::startElement(QXmlStreamReader* reader)
 void CStateMachine::endElement(QXmlStreamReader* reader)
 {
     QStringRef name = reader->name();
-    if(name.toString().startsWith("getPlaylist"))
+    if(name.toString().startsWith("getPlaylist") && m_state == e_playlist_requested)
     {
     	m_connection->sendPlaylist(m_knownRevision);
+    	m_state = e_connected;
     }
-    else if(name.toString().startsWith("getCollection"))
+    else if(name.toString().startsWith("getCollection") && m_state == e_collection_requested)
     {
     	m_connection->sendCollection(m_knownRevision);
+    	m_state = e_connected;
     }
-    else if(name.toString().startsWith("addSong"))
+    else if(name.toString().startsWith("modPlaylist") && m_state == e_awaiting_playlist_mod)
     {
-        parseReadArgs(reader);
+    	m_session->addPlaylistRevFromDiff(m_playlistDiff, m_diffFromRev);
     }
-    else if(name.toString().startsWith("muroa_session"))
+    else if(name.toString().startsWith("modCollection") && m_state == e_awaiting_collection_mod)
     {
-        qDebug() << QString("Begin of Document");
+    	m_session->addCollectionRevFromDiff(m_collectionDiff, m_diffFromRev);
+    }
+    else if(name.toString().startsWith("session"))
+    {
+        qDebug() << QString("This client want's to leave");
     }
     else
     {
@@ -153,13 +165,26 @@ void CStateMachine::endElement(QXmlStreamReader* reader)
 
 void CStateMachine::characters(QXmlStreamReader* reader)
 {
-    qDebug() << QString("characters");
+    switch(m_state)
+    {
+    case e_awaiting_playlist_mod:
+    	m_playlistDiff = reader->text().toString();
+    	qDebug() << QString("characters: %1").arg(m_playlistDiff);
+    	break;
+
+    case e_awaiting_collection_mod:
+    	m_collectionDiff = reader->text().toString();
+    	break;
+
+   	default:
+   	    qDebug() << QString("receiving characters while in unknown state....");
+    }
 }
 
 void CStateMachine::parseGetPlaylistArgs(QXmlStreamReader* reader)
 {
     QXmlStreamAttributes att = reader->attributes();
-    if(att.hasAttribute("knownRev"))
+    if(att.hasAttribute("knownRev") && m_state == e_connected )
     {
 	    QStringRef knownRevision = att.value(QString(), QString("knownRev"));
 
@@ -173,12 +198,13 @@ void CStateMachine::parseGetPlaylistArgs(QXmlStreamReader* reader)
     	// client does not have and old revision, send whole collection
     	m_knownRevision = -1;
     }
+	m_state = e_playlist_requested;
 }
 
 void CStateMachine::parseGetCollectionArgs(QXmlStreamReader* reader)
 {
     QXmlStreamAttributes att = reader->attributes();
-    if(att.hasAttribute("knownRev"))
+    if(att.hasAttribute("knownRev") && m_state == e_connected )
     {
 	    QStringRef knownRevision = att.value(QString(), QString("knownRev"));
 
@@ -192,42 +218,47 @@ void CStateMachine::parseGetCollectionArgs(QXmlStreamReader* reader)
     	// client does not have and old revision, send whole collection
     	m_knownRevision = -1;
     }
+	m_state = e_collection_requested;
 }
 
-
-void CStateMachine::parseReadArgs(QXmlStreamReader* reader)
+void CStateMachine::parseModPlaylistArgs(QXmlStreamReader* reader)
 {
     QXmlStreamAttributes att = reader->attributes();
+    if(att.hasAttribute("fromRev") && m_state == e_connected )
+    {
+	    QStringRef fromRevision = att.value(QString(), QString("fromRev"));
 
+	    bool ok;
+	    m_diffFromRev = fromRevision.toString().toUInt(&ok);
+	    if(ok) {
+	    	m_state = e_awaiting_playlist_mod;
+	    }
+
+	    qDebug() << QString("parsePlaylistMod: diff from Rev %1").arg(m_diffFromRev);
+    }
+    else
+    {
+    	// no fromRev included. ignore.
+    }
 }
 
-
-void CStateMachine::parseWriteArgs(QXmlStreamReader* reader)
+void CStateMachine::parseModCollectionArgs(QXmlStreamReader* reader)
 {
     QXmlStreamAttributes att = reader->attributes();
+    if(att.hasAttribute("fromRev") && m_state == e_connected )
+    {
+	    QStringRef fromRevision = att.value(QString(), QString("fromRev"));
 
+	    bool ok;
+	    m_diffFromRev = fromRevision.toString().toUInt(&ok);
+	    if(ok) {
+	    	m_state = e_awaiting_collection_mod;
+	    }
+	    qDebug() << QString("parsePlaylistMod: diff from Rev %1").arg(m_diffFromRev);
+    }
+    else
+    {
+    	// no fromRev included. ignore.
+    }
 }
-
-
-//
-//void CStateMachine::sendCollection()
-//{
-//	QString collection;
-//
-//    m_xml_writer->writeStartElement("collection");
-//    m_xml_writer->writeAttribute("revision", QString().setNum(m_session->getCollectionRevision()));
-//
-//    collection = m_session->getCollectionDiff(m_knownRevision);
-//    if(!collection.isNull())
-//    {
-//    	m_xml_writer->writeAttribute("diffFromRev", QString().setNum(m_knownRevision));
-//    }
-//    else
-//    {
-//    	collection = m_session->getCollection();
-//    }
-//    qDebug() << collection;
-//    m_xml_writer->writeCharacters(collection);
-//    m_xml_writer->writeEndElement();
-//}
 

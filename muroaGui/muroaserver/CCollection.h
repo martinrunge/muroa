@@ -18,6 +18,7 @@ class CCollection
 {
 public:
 	CCollection() {} ;
+	CCollection(const CCollection<T>& other);
 	virtual ~CCollection() {} ;
 
 	inline void setText(QString collection, int revision)
@@ -26,6 +27,8 @@ public:
 		m_revision = revision;
 		parse();
 	};
+
+	int patch(const QString& diff, int revision);
 
 	inline int size() const { return m_items.size(); };
 	inline T getItem(int pos) const { return m_items.at(pos); };
@@ -43,6 +46,13 @@ private:
 };
 
 
+
+template <class T> CCollection<T>::CCollection(const CCollection<T>& other)
+{
+	m_items = other.m_items;
+	m_collectionAsText = other.m_collectionAsText;
+	m_revision = other.m_revision;
+}
 
 template <class T> void CCollection<T>::parse()
 {
@@ -75,7 +85,10 @@ template <class T> QString CCollection<T>::getText()
 	return collection;
 }
 
-
+template <class T> int CCollection<T>::patch(const QString& diff, int revision)
+{
+	qDebug() << QString("CCollection<T>::patch: %1").arg(diff);
+}
 
 
 #endif /* CCOLLECTION_H_ */

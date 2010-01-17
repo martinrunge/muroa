@@ -23,7 +23,7 @@ CConnection::CConnection(QTcpSocket* socket) : m_socket(socket), m_sm(this)
     m_xml_writer = new QXmlStreamWriter(m_socket);
     m_xml_writer->setAutoFormatting(true);
     m_xml_writer->writeStartDocument(QString("1.0"), true);
-    m_xml_writer->writeStartElement("muroa_server");
+    m_xml_writer->writeStartElement("session");
 
     m_sm.setXmlWriter(m_xml_writer);
 
