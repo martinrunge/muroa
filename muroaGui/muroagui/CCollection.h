@@ -149,13 +149,15 @@ template <class T> QString CCollection<T>::diff(CModelDiff* mdiff)
 		text.append( QString("@@ -%1,%2 +%3,%4 @@\n").arg(insTo).arg(0).arg(insTo +1).arg(num) );
 		for(int i = 0; i < num; i++)
 		{
-			text.append( QString("+%1\n").arg(mdiff->getRowsToRemove().at(i)) );
+			int row = mdiff->getRowsToRemove().at(i);
+			text.append( QString("+%1\n").arg( m_items.at(row)->asString()));
 		}
 
 		text.append( QString("@@ -%1,%2 +%3,%4 @@\n").arg(rmFrom + 1).arg(num).arg(rmFrom + num).arg(0) );
 		for(int i = 0; i < num; i++)
 		{
-			text.append( QString("-%1\n").arg(mdiff->getRowsToRemove().at(i)) );
+			int row = mdiff->getRowsToRemove().at(i);
+			text.append( QString("-%1\n").arg( m_items.at(row)->asString()));
 		}
 
 	}
@@ -165,13 +167,15 @@ template <class T> QString CCollection<T>::diff(CModelDiff* mdiff)
 		text.append( QString("@@ -%1,%2 +%3,%4 @@\n").arg(rmFrom + 1).arg(num).arg(rmFrom).arg(0) );
 		for(int i = 0; i < num; i++)
 		{
-			text.append( QString("-%1\n").arg(mdiff->getRowsToRemove().at(i)) );
+			int row = mdiff->getRowsToRemove().at(i);
+			text.append( QString("-%1\n").arg( m_items.at(row)->asString()));
 		}
 
 		text.append( QString("@@ -%1,%2 +%3,%4 @@\n").arg(insTo ).arg(0).arg(insTo - num + 1).arg(num) );
 		for(int i = 0; i < num; i++)
 		{
-			text.append( QString("+%1\n").arg(mdiff->getRowsToRemove().at(i)) );
+			int row = mdiff->getRowsToRemove().at(i);
+			text.append( QString("+%1\n").arg(m_items.at(row)->asString()));
 		}
 	}
 

@@ -146,11 +146,11 @@ void CStateMachine::endElement(QXmlStreamReader* reader)
     }
     else if(name.toString().startsWith("modPlaylist") && m_state == e_awaiting_playlist_mod)
     {
-    	m_session->addPlaylistRevFromDiff(m_playlistDiff, m_diffFromRev);
+    	m_session->addPlaylistRevFromDiff(&m_playlistDiff, m_diffFromRev);
     }
     else if(name.toString().startsWith("modCollection") && m_state == e_awaiting_collection_mod)
     {
-    	m_session->addCollectionRevFromDiff(m_collectionDiff, m_diffFromRev);
+    	m_session->addCollectionRevFromDiff(&m_collectionDiff, m_diffFromRev);
     }
     else if(name.toString().startsWith("session"))
     {

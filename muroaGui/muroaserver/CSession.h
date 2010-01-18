@@ -39,8 +39,8 @@ public:
 	void addCollectionRev(QString collection);
 	void addPlaylistRev(QString playlist);
 
-	int addCollectionRevFromDiff(const QString& collectionDiff, int diffFromRev);
-	int addPlaylistRevFromDiff(const QString& playlistDiff, int diffFromRev);
+	int addCollectionRevFromDiff(QString* collectionDiff, int diffFromRev);
+	int addPlaylistRevFromDiff(QString* playlistDiff, int diffFromRev);
 
 	void addConnection(CConnection* connection);
 

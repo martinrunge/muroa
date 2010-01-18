@@ -43,7 +43,7 @@ void CNetwork::newConnection()
 
     emit newConnection(socket);
 
-    m_server->close();
+    //m_server->close();
 }
 
 

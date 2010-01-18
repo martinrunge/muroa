@@ -127,7 +127,7 @@ void CSession::addPlaylistRev(QString playlist)
 }
 
 
-int CSession::addCollectionRevFromDiff(const QString& collectionDiff, int diffFromRev)
+int CSession::addCollectionRevFromDiff(QString* collectionDiff, int diffFromRev)
 {
 	CCollection<CCollectionItem>* newCollection = new CCollection<CCollectionItem>( *(getCollection(m_latestCollectionRevision)) );
 	newCollection->patch(collectionDiff, ++m_latestCollectionRevision);
@@ -143,9 +143,9 @@ int CSession::addCollectionRevFromDiff(const QString& collectionDiff, int diffFr
 
 }
 
-int CSession::addPlaylistRevFromDiff(const QString& playlistDiff, int diffFromRev)
+int CSession::addPlaylistRevFromDiff(QString* playlistDiff, int diffFromRev)
 {
-	qDebug() << QString("CSession::addPlaylistRevFromDiff %1 %2").arg(playlistDiff).arg(diffFromRev);
+	qDebug() << QString("CSession::addPlaylistRevFromDiff %1 %2").arg(*playlistDiff).arg(diffFromRev);
 	CCollection<CPlaylistItem>* newPlaylist = new CCollection<CPlaylistItem>( *(getPlaylist(m_latestPlaylistRevision)) );
 	newPlaylist->patch(playlistDiff, ++m_latestPlaylistRevision);
 
