@@ -20,8 +20,9 @@
       <property name="orientation">
        <enum>Qt::Horizontal</enum>
       </property>
-      <widget class="QTableView" name="collectionView"/>
+      <widget class="CCollectionView" name="collectionView"/>
       <widget class="CPlaylistView" name="playlistView"/>
+      <widget class="CPlaylistView" name="nextToPlayView"/>
      </widget>
     </item>
    </layout>
@@ -32,7 +33,7 @@
      <x>0</x>
      <y>0</y>
      <width>935</width>
-     <height>21</height>
+     <height>25</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu_File">
@@ -100,6 +101,11 @@
    <class>CPlaylistView</class>
    <extends>QListView</extends>
    <header>CPlaylistView.h</header>
+  </customwidget>
+  <customwidget>
+   <class>CCollectionView</class>
+   <extends>QTreeView</extends>
+   <header>CCollectionView.h</header>
   </customwidget>
  </customwidgets>
  <resources/>
