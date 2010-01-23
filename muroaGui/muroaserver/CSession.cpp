@@ -173,8 +173,6 @@ void CSession::addConnection(CConnection* connection)
 
 void CSession::connectionClosed(CConnection* conn)
 {
-	//if(m_connections.contains(conn))
-	//{
 	m_connections.removeAll(conn);
-	//}
+	delete conn;
 }
