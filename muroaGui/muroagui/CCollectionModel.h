@@ -14,9 +14,11 @@
 #include "CModelBase.h"
 #include "CCollection.h"
 #include "CCollectionItem.h"
+#include "CCommandBase.h"
 
 
 class CCollectionModel : public CModelBase<CCollectionItem*> {
+	Q_OBJECT;
 public:
 	CCollectionModel(QObject* parent = 0);
 	virtual ~CCollectionModel();
@@ -38,7 +40,20 @@ public:
 	QVariant data(const QModelIndex &index, int role) const;
 	QVariant headerData(int section, Qt::Orientation orientation, int role) const;
 
+	inline Qt::ItemFlags flags( const QModelIndex & index ) const
+	{
+		return Qt::ItemIsSelectable | Qt::ItemIsDragEnabled | Qt::ItemIsDropEnabled | Qt::ItemIsEnabled;
+	}
+
+	QStringList mimeTypes() const;
+
+	void makeDiff(CModelDiff* diff);
+
 	QString getItemAsString(int pos);
+
+signals:
+	void sendCommand(const CCommandBase& cmd);
+
 private:
 	CCollection<CCollectionItem*>* m_collectionPtr;
 

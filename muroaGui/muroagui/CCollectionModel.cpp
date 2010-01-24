@@ -8,6 +8,11 @@
 #include "CCollectionModel.h"
 #include "CCollection.h"
 
+#include "CPlaylistCommand.h"
+
+
+#include <QStringList>
+
 CCollectionModel::CCollectionModel(QObject* parent) : CModelBase<CCollectionItem*>(parent)
 {
 }
@@ -113,3 +118,23 @@ QString CCollectionModel::getItemAsString(int pos)
 {
 	return m_collectionPtr->getItemAsString(pos);
 }
+
+
+QStringList CCollectionModel::mimeTypes() const
+{
+	QStringList sl;
+
+	sl << "application/x-muroa-playliust-diff";
+
+	return sl;
+}
+
+
+void CCollectionModel::makeDiff(CModelDiff* diff)
+{
+	QString diffStr = m_collectionPtr->diff(diff);
+
+    CPlaylistCommand plCmd(diffStr);
+    emit sendCommand(plCmd);
+
+ }
