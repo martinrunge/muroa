@@ -44,7 +44,7 @@ void CPlaylistView::mouseMoveEvent(QMouseEvent *event)
         if (distance >= QApplication::startDragDistance())
             performDrag();
     }
-    QListView::mouseMoveEvent(event);
+    //QListView::mouseMoveEvent(event);
 }
 
 void CPlaylistView::dragEnterEvent(QDragEnterEvent *event)

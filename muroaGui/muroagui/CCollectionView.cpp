@@ -40,7 +40,7 @@ void CCollectionView::mouseMoveEvent(QMouseEvent *event)
         if (distance >= QApplication::startDragDistance())
             performDrag();
     }
-    QTreeView::mouseMoveEvent(event);
+    //QTreeView::mouseMoveEvent(event);
 }
 
 void CCollectionView::dragEnterEvent(QDragEnterEvent *event)
