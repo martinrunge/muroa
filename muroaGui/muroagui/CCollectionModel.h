@@ -49,6 +49,7 @@ public:
 
 	void makeDiff(CModelDiff* diff);
 
+	CCollectionItem* itemAt(int pos) const;
 	QString getItemAsString(int pos);
 
 signals:

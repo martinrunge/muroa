@@ -113,6 +113,10 @@ QVariant CCollectionModel::headerData(int section, Qt::Orientation orientation, 
 
 }
 
+CCollectionItem* CCollectionModel::itemAt(int pos) const
+{
+	return m_collectionPtr->at(pos);
+}
 
 QString CCollectionModel::getItemAsString(int pos)
 {

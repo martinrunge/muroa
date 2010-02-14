@@ -11,10 +11,19 @@
 #include <QByteArray>
 #include <QModelIndex>
 
+#include <assert.h>
+
+enum origin {
+	E_COLLECTION,
+	E_PLAYLIST,
+	E_NEXTLIST,
+	E_EXTERN,
+	E_NONE
+};
 
 class CModelDiff {
 public:
-	CModelDiff();
+	CModelDiff(enum origin orig = E_NONE);
 	CModelDiff(const CModelDiff& other);
 	CModelDiff(const QByteArray& ba);
 
@@ -22,54 +31,60 @@ public:
 
 	QByteArray toQByteArray() const;
 
-    int getNumRowsToInsert() const
+	int getInsertPos() const { return m_insertPos; };
+	void setInsertPos(const int pos) { m_insertPos = pos; };
+
+	enum origin getOrigin() const { return m_origin; };
+	void setOrigin(const enum origin orig) { m_origin = orig; };
+
+
+    int getNumToInsert() const
     {
-        return m_rowsToInsert.size();
+    	int numIdx = m_indexesToInsert.size();
+    	int numRow = m_hashesToInsert.size();
+    	assert(numIdx == numRow);
+        return numIdx;
     }
 
-    int getNumRowsToRemove() const
+    int getNumToRemove() const
     {
-        return m_rowsToRemove.size();
+    	int numIdx = m_indexesToRemove.size();
+    	int numRow = m_hashesToRemove.size();
+    	assert(numIdx == numRow);
+        return numIdx;
     }
 
-    QList<unsigned > getRowsToInsert() const
+    QList<unsigned> getIndexesToInsert() const { return m_indexesToInsert; }
+    QList<unsigned>  getHashesToInsert() const { return m_hashesToInsert; }
+    QList<unsigned> getIndexesToRemove() const { return m_indexesToRemove; }
+    QList<unsigned>  getHashesToRemove() const { return m_hashesToRemove; }
+
+    void setIndexesToInsert(QList<unsigned > indexesToInsert) { m_indexesToInsert = indexesToInsert; }
+    void setIndexesToRemove(QList<unsigned > indexesToRemove) { m_indexesToRemove = indexesToRemove; }
+
+    void appendToRemove(unsigned rowIndex, unsigned hash)
     {
-        return m_rowsToInsert;
+    	m_indexesToRemove.append(rowIndex);
+    	m_hashesToRemove.append(hash);
     }
 
-    QList<unsigned > getRowsToRemove() const
+    void appendToInsert(unsigned rowIndex, unsigned hash)
     {
-        return m_rowsToRemove;
-    }
-
-    void setRowsToInsert(QList<unsigned > rowsToInsert)
-    {
-        m_rowsToInsert = rowsToInsert;
-    }
-
-    void setRowsToRemove(QList<unsigned > rowsToRemove)
-    {
-        m_rowsToRemove = rowsToRemove;
-    }
-
-    void setRowsToInsert(QModelIndexList rowsToInsert);
-    void setRowsToRemove(QModelIndexList rowsToRemove);
-
-    void appendRowToRemove(unsigned row)
-    {
-    	m_rowsToRemove.append(row);
-    }
-
-    void appendRowToInsert(unsigned row)
-    {
-    	m_rowsToInsert.append(row);
+    	m_indexesToInsert.append(rowIndex);
+    	m_hashesToInsert.append(hash);
     }
 
     void sort();
 
 private:
-	QList<unsigned> m_rowsToRemove;
-	QList<unsigned> m_rowsToInsert;
+	QList<unsigned> m_indexesToRemove;
+	QList<unsigned> m_hashesToRemove;
+
+	QList<unsigned> m_indexesToInsert;
+	QList<unsigned> m_hashesToInsert;
+
+	int m_insertPos;
+	enum origin m_origin;
 };
 
 #endif /* CMODELDIFF_H_ */

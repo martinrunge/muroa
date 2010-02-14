@@ -76,13 +76,14 @@ void CCollectionView::dropEvent(QDropEvent *event)
         event->setDropAction(Qt::MoveAction);
         event->accept();
 
+        CCollectionModel* plModel = reinterpret_cast<CCollectionModel*>(model());
+
         CModelDiff md(data->data("application/x-muroa-playlist-diff"));
         QModelIndex currentIdx = indexAt( event->pos());
-        md.appendRowToInsert(currentIdx.row());
+        md.appendToInsert(currentIdx.row(), plModel->itemAt(currentIdx.row())->getHash());
 
-        qDebug() << QString("Move [%1,%2] to %3").arg(md.getRowsToRemove().at(0)).arg(md.getRowsToRemove().at(md.getNumRowsToRemove() - 1 )).arg(md.getRowsToInsert().at(0));
+        qDebug() << QString("Move [%1,%2] to %3").arg(md.getIndexesToRemove().at(0)).arg(md.getIndexesToRemove().at(md.getNumToRemove() - 1 )).arg(md.getIndexesToInsert().at(0));
 
-        CCollectionModel* plModel = reinterpret_cast<CCollectionModel*>(model());
         plModel->makeDiff(&md);
     }
 }
@@ -94,10 +95,15 @@ void CCollectionView::performDrag()
 	CCollectionModel* plModel = reinterpret_cast<CCollectionModel*>(model());
 
     QModelIndexList indexList = selectedIndexes();
-    CModelDiff md;
-    md.setRowsToRemove(indexList);
+    CModelDiff md(E_COLLECTION);
 
-    if (md.getNumRowsToRemove() > 0)
+    for(int i = 0; i < indexList.size(); i++)
+    {
+    	int pos = indexList.at(i).row();
+    	md.appendToRemove(pos, plModel->itemAt(pos)->getHash());
+    }
+
+    if (md.getNumToRemove() > 0)
     {
     	QMimeData *mimeData = new QMimeData;
         //mimeData->setText(item->asString());

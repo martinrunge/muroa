@@ -63,7 +63,7 @@ public:
 
 	QString getItemAsString(int pos);
 
-	inline CPlaylistItem* itemAt(int pos)
+	inline  CPlaylistItem* itemAt(int pos) const
 	{
 		return m_playlistPtr->at(pos);
 	}

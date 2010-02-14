@@ -130,12 +130,12 @@ template <class T> QString CCollection<T>::diff(CModelDiff* mdiff)
 {
 	QString text;
 
-	int num = mdiff->getNumRowsToRemove();
+	int num = mdiff->getNumToRemove();
 
-	int rmFrom = mdiff->getRowsToRemove().at(0);
-	int rmTo = mdiff->getRowsToRemove().at( num - 1 );
+	int rmFrom = mdiff->getIndexesToRemove().at(0);
+	int rmTo = mdiff->getIndexesToRemove().at( num - 1 );
 
-	int insTo = mdiff->getRowsToInsert().at(0);
+	int insTo = mdiff->getInsertPos();
 
 	// ignore, if rows to remove are to be moved into their own range. (dropped on self)
 	if( rmFrom < insTo && rmTo > insTo )
@@ -145,36 +145,38 @@ template <class T> QString CCollection<T>::diff(CModelDiff* mdiff)
 
 	if(rmFrom > insTo)
 	{
-		// insert first, remove then
+		// insert first
 		text.append( QString("@@ -%1,%2 +%3,%4 @@\n").arg(insTo).arg(0).arg(insTo +1).arg(num) );
 		for(int i = 0; i < num; i++)
 		{
-			int row = mdiff->getRowsToRemove().at(i);
+			int row = mdiff->getIndexesToRemove().at(i);
 			text.append( QString("+%1\n").arg( m_items.at(row)->asString()));
 		}
 
+		// remove then
 		text.append( QString("@@ -%1,%2 +%3,%4 @@\n").arg(rmFrom + 1).arg(num).arg(rmFrom + num).arg(0) );
 		for(int i = 0; i < num; i++)
 		{
-			int row = mdiff->getRowsToRemove().at(i);
+			int row = mdiff->getIndexesToRemove().at(i);
 			text.append( QString("-%1\n").arg( m_items.at(row)->asString()));
 		}
 
 	}
 	else
 	{
-		// remove first, insert then
+		// remove first
 		text.append( QString("@@ -%1,%2 +%3,%4 @@\n").arg(rmFrom + 1).arg(num).arg(rmFrom).arg(0) );
 		for(int i = 0; i < num; i++)
 		{
-			int row = mdiff->getRowsToRemove().at(i);
+			int row = mdiff->getIndexesToRemove().at(i);
 			text.append( QString("-%1\n").arg( m_items.at(row)->asString()));
 		}
 
+		// insert then
 		text.append( QString("@@ -%1,%2 +%3,%4 @@\n").arg(insTo ).arg(0).arg(insTo - num + 1).arg(num) );
 		for(int i = 0; i < num; i++)
 		{
-			int row = mdiff->getRowsToRemove().at(i);
+			int row = mdiff->getIndexesToRemove().at(i);
 			text.append( QString("+%1\n").arg(m_items.at(row)->asString()));
 		}
 	}

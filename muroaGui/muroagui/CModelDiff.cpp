@@ -7,24 +7,30 @@
 
 #include "CModelDiff.h"
 
-CModelDiff::CModelDiff()
+CModelDiff::CModelDiff(enum origin orig) : m_insertPos(-1), m_origin(orig)
 {
-	// TODO Auto-generated constructor stub
 
 }
 
 CModelDiff::CModelDiff(const CModelDiff& other)
 {
-	m_rowsToRemove = other.getRowsToRemove();
-	m_rowsToInsert = other.getRowsToInsert();
+	m_indexesToRemove = other.getIndexesToRemove();
+	m_hashesToRemove = other.getHashesToRemove();
+	m_indexesToInsert = other.getIndexesToInsert();
+	m_hashesToInsert = other.getHashesToInsert();
 }
 
 CModelDiff::CModelDiff(const QByteArray& ba)
 {
 	QDataStream ds( ba );
-
-	ds >> m_rowsToRemove;
-	ds >> m_rowsToInsert;
+	unsigned orig;
+	ds >> orig;
+	m_origin = (enum origin)orig;
+	ds >> m_insertPos;
+	ds >> m_indexesToRemove;
+	ds >> m_hashesToRemove;
+	ds >> m_indexesToRemove;
+	ds >> m_hashesToInsert;
 }
 
 CModelDiff::~CModelDiff() {
@@ -36,28 +42,14 @@ QByteArray CModelDiff::toQByteArray() const
 	QByteArray ba;
 	QDataStream ds( &ba, QIODevice::WriteOnly );
 
-	ds << m_rowsToRemove;
-	ds << m_rowsToInsert;
+	ds << (unsigned)m_origin;
+	ds << m_insertPos;
+	ds << m_indexesToRemove;
+	ds << m_hashesToRemove;
+	ds << m_indexesToRemove;
+	ds << m_hashesToInsert;
 
 	return ba;
-}
-
-void CModelDiff::setRowsToInsert(QModelIndexList rowsToInsert)
-{
-	m_rowsToInsert.clear();
-	for(int i = 0; i < rowsToInsert.size(); i++)
-	{
-		m_rowsToInsert.append(rowsToInsert.at(i).row());
-	}
-}
-
-void CModelDiff::setRowsToRemove(QModelIndexList rowsToRemove)
-{
-	m_rowsToRemove.clear();
-	for(int i = 0; i < rowsToRemove.size(); i++)
-	{
-		m_rowsToRemove.append(rowsToRemove.at(i).row());
-	}
 }
 
 void CModelDiff::sort()
