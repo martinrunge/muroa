@@ -1,7 +1,8 @@
 #include "muroagui.h"
 
 muroagui::muroagui(QWidget *parent)
-    : QMainWindow(parent)
+    : QMainWindow(parent) ,
+   	  m_diffBuilder(&m_collection, &m_playlist, &m_playnext)
 {
 	ui.setupUi(this);
 
@@ -20,6 +21,7 @@ muroagui::muroagui(QWidget *parent)
 
 	//m_playlistModel.setPlaylist(&m_playlist);
 	m_playlistModel.setCollections(&m_playlist, &m_collection);
+	m_playnextModel.setCollections(&m_playnext, &m_collection);
 	m_collectionModel.setCollection(&m_collection);
 
 	//ui.playlistView->setSelectionMode(QAbstractItemView::SingleSelection);

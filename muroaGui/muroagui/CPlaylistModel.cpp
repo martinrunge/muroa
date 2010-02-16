@@ -140,7 +140,6 @@ QVariant CPlaylistModel::headerData(int section, Qt::Orientation orientation, in
 	{
 		return QVariant();
 	}
-
 }
 
 
@@ -166,4 +165,4 @@ void CPlaylistModel::makeDiff(CModelDiff* diff)
     CPlaylistCommand plCmd(diffStr);
     emit sendCommand(plCmd);
 
- }
+}

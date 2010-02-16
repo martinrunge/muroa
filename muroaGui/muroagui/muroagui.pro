@@ -33,6 +33,7 @@ SOURCES += CCollectionView.cpp \
     cconnection.cpp \
     main.cpp \
     muroagui.cpp \
-    CCollectionModel.cpp
+    CCollectionModel.cpp \
+    CDiffBuilder.cpp
 FORMS += muroagui.ui
 RESOURCES += 

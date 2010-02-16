@@ -13,6 +13,7 @@
 #include "CPlaylistItem.h"
 
 #include "CModelDiff.h"
+#include "CDiffBuilder.h"
 
 CPlaylistView::CPlaylistView(QWidget * parent ) : QListView( parent ), m_dragActive(false){
 	setAcceptDrops(true);
@@ -89,7 +90,7 @@ void CPlaylistView::dropEvent(QDropEvent *event)
 
         qDebug() << QString("Move [%1,%2] to %3").arg(md.getIndexesToRemove().at(0)).arg(md.getIndexesToRemove().at(md.getNumToRemove() - 1 )).arg(md.getIndexesToInsert().at(0));
         plModel->makeDiff(&md);
-
+        m_diffBuilder->diff(md);
     }
 }
 

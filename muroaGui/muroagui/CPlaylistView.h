@@ -17,8 +17,7 @@ class QMouseEvent;
 class QDragEnterEvent;
 class QDragMoveEvent;
 class QDropEvent;
-
-
+class CDiffBuilder;
 
 class CPlaylistView : public QListView
 {
@@ -26,6 +25,8 @@ class CPlaylistView : public QListView
 public:
 	CPlaylistView(QWidget * parent = 0 );
 	virtual ~CPlaylistView();
+
+	void setDiffBuilderPtr(CDiffBuilder* db) { m_diffBuilder = db; };
 
 protected:
     void mousePressEvent(QMouseEvent *event);
@@ -40,7 +41,7 @@ private:
     QPoint m_startPos;
     bool m_dragActive;
 
-
+    CDiffBuilder* m_diffBuilder;
 };
 
 #endif /* CPLAYLISTVIEW_H_ */

@@ -13,6 +13,7 @@
 #include "CCollectionItem.h"
 
 #include "CModelDiff.h"
+#include "CDiffBuilder.h"
 
 
 CCollectionView::CCollectionView(QWidget * parent) : QTreeView(parent){
@@ -85,6 +86,7 @@ void CCollectionView::dropEvent(QDropEvent *event)
         qDebug() << QString("Move [%1,%2] to %3").arg(md.getIndexesToRemove().at(0)).arg(md.getIndexesToRemove().at(md.getNumToRemove() - 1 )).arg(md.getIndexesToInsert().at(0));
 
         plModel->makeDiff(&md);
+        m_diffBuilder->diff(md);
     }
 }
 

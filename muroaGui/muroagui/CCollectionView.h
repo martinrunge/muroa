@@ -17,12 +17,15 @@ class QMouseEvent;
 class QDragEnterEvent;
 class QDragMoveEvent;
 class QDropEvent;
+class CDiffBuilder;
 
 
 class CCollectionView : public QTreeView {
 public:
 	CCollectionView(QWidget * parent = 0);
 	virtual ~CCollectionView();
+
+	void setDiffBuilderPtr(CDiffBuilder* db) { m_diffBuilder = db; };
 protected:
 
 	void mousePressEvent(QMouseEvent *event);
@@ -36,6 +39,8 @@ private:
 
     QPoint m_startPos;
     bool m_dragActive;
+
+    CDiffBuilder* m_diffBuilder;
 
 };
 
