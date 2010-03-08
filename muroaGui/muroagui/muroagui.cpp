@@ -34,7 +34,13 @@ muroagui::muroagui(QWidget *parent)
 	ui.playlistView->setModel(&m_playlistModel);
 	ui.collectionView->setModel(&m_collectionModel);
 
-	connect(&m_playlistModel, SIGNAL(sendCommand(const CCommandBase&)), &m_connection, SLOT(sendCommand(const CCommandBase&)));
+	ui.collectionView->setDiffBuilderPtr(&m_diffBuilder);
+	ui.playlistView->setDiffBuilderPtr(&m_diffBuilder);
+	ui.nextToPlayView->setDiffBuilderPtr(&m_diffBuilder);
+
+	connect(&m_diffBuilder, SIGNAL(sendCommand(const CCommandBase&)), &m_connection, SLOT(sendCommand(const CCommandBase&)));
+
+	//connect(&m_playlistModel, SIGNAL(sendCommand(const CCommandBase&)), &m_connection, SLOT(sendCommand(const CCommandBase&)));
 
 }
 

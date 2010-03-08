@@ -134,11 +134,11 @@ QStringList CCollectionModel::mimeTypes() const
 }
 
 
-void CCollectionModel::makeDiff(CModelDiff* diff)
-{
-	QString diffStr = m_collectionPtr->diff(diff);
-
-    CPlaylistCommand plCmd(diffStr);
-    emit sendCommand(plCmd);
-
- }
+//void CCollectionModel::makeDiff(CModelDiff* diff)
+//{
+//	QString diffStr = m_collectionPtr->diff(diff);
+//
+//    CPlaylistCommand plCmd(diffStr);
+//    emit sendCommand(plCmd);
+//
+// }

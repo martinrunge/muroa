@@ -126,64 +126,64 @@ template <class T> QString CCollection<T>::asString()
 }
 
 
-template <class T> QString CCollection<T>::diff(CModelDiff* mdiff)
-{
-	QString text;
-
-	int num = mdiff->getNumToRemove();
-
-	int rmFrom = mdiff->getIndexesToRemove().at(0);
-	int rmTo = mdiff->getIndexesToRemove().at( num - 1 );
-
-	int insTo = mdiff->getInsertPos();
-
-	// ignore, if rows to remove are to be moved into their own range. (dropped on self)
-	if( rmFrom < insTo && rmTo > insTo )
-	{
-		return text;
-	}
-
-	if(rmFrom > insTo)
-	{
-		// insert first
-		text.append( QString("@@ -%1,%2 +%3,%4 @@\n").arg(insTo).arg(0).arg(insTo +1).arg(num) );
-		for(int i = 0; i < num; i++)
-		{
-			int row = mdiff->getIndexesToRemove().at(i);
-			text.append( QString("+%1\n").arg( m_items.at(row)->asString()));
-		}
-
-		// remove then
-		text.append( QString("@@ -%1,%2 +%3,%4 @@\n").arg(rmFrom + 1).arg(num).arg(rmFrom + num).arg(0) );
-		for(int i = 0; i < num; i++)
-		{
-			int row = mdiff->getIndexesToRemove().at(i);
-			text.append( QString("-%1\n").arg( m_items.at(row)->asString()));
-		}
-
-	}
-	else
-	{
-		// remove first
-		text.append( QString("@@ -%1,%2 +%3,%4 @@\n").arg(rmFrom + 1).arg(num).arg(rmFrom).arg(0) );
-		for(int i = 0; i < num; i++)
-		{
-			int row = mdiff->getIndexesToRemove().at(i);
-			text.append( QString("-%1\n").arg( m_items.at(row)->asString()));
-		}
-
-		// insert then
-		text.append( QString("@@ -%1,%2 +%3,%4 @@\n").arg(insTo ).arg(0).arg(insTo - num + 1).arg(num) );
-		for(int i = 0; i < num; i++)
-		{
-			int row = mdiff->getIndexesToRemove().at(i);
-			text.append( QString("+%1\n").arg(m_items.at(row)->asString()));
-		}
-	}
-
-	qDebug() << text;
-	return text;
-}
+//template <class T> QString CCollection<T>::diff(CModelDiff* mdiff)
+//{
+//	QString text;
+//
+//	int num = mdiff->getNumToRemove();
+//
+//	int rmFrom = mdiff->getIndexesToRemove().at(0);
+//	int rmTo = mdiff->getIndexesToRemove().at( num - 1 );
+//
+//	int insTo = mdiff->getInsertPos();
+//
+//	// ignore, if rows to remove are to be moved into their own range. (dropped on self)
+//	if( rmFrom < insTo && rmTo > insTo )
+//	{
+//		return text;
+//	}
+//
+//	if(rmFrom > insTo)
+//	{
+//		// insert first
+//		text.append( QString("@@ -%1,%2 +%3,%4 @@\n").arg(insTo).arg(0).arg(insTo +1).arg(num) );
+//		for(int i = 0; i < num; i++)
+//		{
+//			int row = mdiff->getIndexesToRemove().at(i);
+//			text.append( QString("+%1\n").arg( m_items.at(row)->asString()));
+//		}
+//
+//		// remove then
+//		text.append( QString("@@ -%1,%2 +%3,%4 @@\n").arg(rmFrom + 1).arg(num).arg(rmFrom + num).arg(0) );
+//		for(int i = 0; i < num; i++)
+//		{
+//			int row = mdiff->getIndexesToRemove().at(i);
+//			text.append( QString("-%1\n").arg( m_items.at(row)->asString()));
+//		}
+//
+//	}
+//	else
+//	{
+//		// remove first
+//		text.append( QString("@@ -%1,%2 +%3,%4 @@\n").arg(rmFrom + 1).arg(num).arg(rmFrom).arg(0) );
+//		for(int i = 0; i < num; i++)
+//		{
+//			int row = mdiff->getIndexesToRemove().at(i);
+//			text.append( QString("-%1\n").arg( m_items.at(row)->asString()));
+//		}
+//
+//		// insert then
+//		text.append( QString("@@ -%1,%2 +%3,%4 @@\n").arg(insTo ).arg(0).arg(insTo - num + 1).arg(num) );
+//		for(int i = 0; i < num; i++)
+//		{
+//			int row = mdiff->getIndexesToRemove().at(i);
+//			text.append( QString("+%1\n").arg(m_items.at(row)->asString()));
+//		}
+//	}
+//
+//	qDebug() << text;
+//	return text;
+//}
 
 template <class T> void CCollection<T>::append(QList<T> newItems)
 {

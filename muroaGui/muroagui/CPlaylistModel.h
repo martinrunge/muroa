@@ -68,7 +68,7 @@ public:
 		return m_playlistPtr->at(pos);
 	}
 
-	void makeDiff(CModelDiff* diff);
+	//void makeDiff(CModelDiff* diff);
 
 signals:
 	void sendCommand(const CCommandBase& cmd);

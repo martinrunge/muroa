@@ -37,54 +37,38 @@ public:
 	enum origin getOrigin() const { return m_origin; };
 	void setOrigin(const enum origin orig) { m_origin = orig; };
 
+	enum origin getDestination() const { return m_destination; };
+	void setDestination(const enum origin dest) { m_destination = dest; };
 
-    int getNumToInsert() const
+    int getNumSelected() const { return m_selectedIndexes.size(); };
+
+    int getNumToInsert() const { return m_numToInsert; };
+    void setNumToInsert(int numIns) { m_numToInsert = numIns; };
+    int getNumToRemove() const { return m_numToRemove; };
+    void setNumToRemove(int numRem) { m_numToRemove = numRem; };
+
+
+    QList<unsigned> getSelectedIndexes() const { return m_selectedIndexes; }
+    void setSelectedIndexes(QList<unsigned > selectedIndexes) { m_selectedIndexes = selectedIndexes; }
+
+    void appendToSelectedIndexes(unsigned rowIndex)
     {
-    	int numIdx = m_indexesToInsert.size();
-    	int numRow = m_hashesToInsert.size();
-    	assert(numIdx == numRow);
-        return numIdx;
+    	m_selectedIndexes.append(rowIndex);
     }
 
-    int getNumToRemove() const
-    {
-    	int numIdx = m_indexesToRemove.size();
-    	int numRow = m_hashesToRemove.size();
-    	assert(numIdx == numRow);
-        return numIdx;
-    }
-
-    QList<unsigned> getIndexesToInsert() const { return m_indexesToInsert; }
-    QList<unsigned>  getHashesToInsert() const { return m_hashesToInsert; }
-    QList<unsigned> getIndexesToRemove() const { return m_indexesToRemove; }
-    QList<unsigned>  getHashesToRemove() const { return m_hashesToRemove; }
-
-    void setIndexesToInsert(QList<unsigned > indexesToInsert) { m_indexesToInsert = indexesToInsert; }
-    void setIndexesToRemove(QList<unsigned > indexesToRemove) { m_indexesToRemove = indexesToRemove; }
-
-    void appendToRemove(unsigned rowIndex, unsigned hash)
-    {
-    	m_indexesToRemove.append(rowIndex);
-    	m_hashesToRemove.append(hash);
-    }
-
-    void appendToInsert(unsigned rowIndex, unsigned hash)
-    {
-    	m_indexesToInsert.append(rowIndex);
-    	m_hashesToInsert.append(hash);
-    }
 
     void sort();
 
 private:
-	QList<unsigned> m_indexesToRemove;
-	QList<unsigned> m_hashesToRemove;
-
-	QList<unsigned> m_indexesToInsert;
-	QList<unsigned> m_hashesToInsert;
+	QList<unsigned> m_selectedIndexes;
 
 	int m_insertPos;
+
+	int m_numToInsert;
+	int m_numToRemove;
+
 	enum origin m_origin;
+	enum origin m_destination;
 };
 
 #endif /* CMODELDIFF_H_ */

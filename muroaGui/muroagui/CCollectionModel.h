@@ -47,7 +47,7 @@ public:
 
 	QStringList mimeTypes() const;
 
-	void makeDiff(CModelDiff* diff);
+	//void makeDiff(CModelDiff* diff);
 
 	CCollectionItem* itemAt(int pos) const;
 	QString getItemAsString(int pos);

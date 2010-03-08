@@ -158,11 +158,11 @@ QStringList CPlaylistModel::mimeTypes() const
 }
 
 
-void CPlaylistModel::makeDiff(CModelDiff* diff)
-{
-	QString diffStr = m_playlistPtr->diff(diff);
-
-    CPlaylistCommand plCmd(diffStr);
-    emit sendCommand(plCmd);
-
-}
+//void CPlaylistModel::makeDiff(CModelDiff* diff)
+//{
+//	QString diffStr = m_playlistPtr->diff(diff);
+//
+//    CPlaylistCommand plCmd(diffStr);
+//    emit sendCommand(plCmd);
+//
+//}

@@ -18,7 +18,8 @@ HEADERS += CCollectionView.h \
     cstatemachine.h \
     cconnection.h \
     muroagui.h \
-    CCollectionModel.h
+    CCollectionModel.h \
+    CDiffBuilder.h
 SOURCES += CCollectionView.cpp \
     CCommandBase.cpp \
     CPlaylistCommand.cpp \

@@ -81,15 +81,16 @@ void CPlaylistView::dropEvent(QDropEvent *event)
         event->setDropAction(Qt::MoveAction);
         event->accept();
 
-        CPlaylistModel* plModel = reinterpret_cast<CPlaylistModel*>(model());
+        //CPlaylistModel* plModel = reinterpret_cast<CPlaylistModel*>(model());
 
         CModelDiff md(data->data("application/x-muroa-playlist-diff"));
         QModelIndex currentIdx = indexAt( event->pos());
         //md.appendToInsert(currentIdx.row(), plModel->itemAt(currentIdx.row())->getHash());
         md.setInsertPos( currentIdx.row() );
+        md.setDestination(E_PLAYLIST);
 
-        qDebug() << QString("Move [%1,%2] to %3").arg(md.getIndexesToRemove().at(0)).arg(md.getIndexesToRemove().at(md.getNumToRemove() - 1 )).arg(md.getIndexesToInsert().at(0));
-        plModel->makeDiff(&md);
+        qDebug() << QString("Move [%1,%2] to %3").arg(md.getSelectedIndexes().at(0)).arg(md.getSelectedIndexes().at(md.getNumSelected() - 1 )).arg(md.getInsertPos());
+        // plModel->makeDiff(&md);
         m_diffBuilder->diff(md);
     }
 }
@@ -98,7 +99,7 @@ void CPlaylistView::performDrag()
 {
 	qDebug() << QString("performDrag");
 
-    CPlaylistModel* plModel = reinterpret_cast<CPlaylistModel*>(model());
+    //CPlaylistModel* plModel = reinterpret_cast<CPlaylistModel*>(model());
 
     QModelIndexList indexList = selectedIndexes();
     CModelDiff md(E_PLAYLIST);
@@ -106,10 +107,10 @@ void CPlaylistView::performDrag()
     for(int i = 0; i < indexList.size(); i++)
     {
     	int pos = indexList.at(i).row();
-    	md.appendToRemove(pos, plModel->itemAt(pos)->getHash());
+    	md.appendToSelectedIndexes(pos);
     }
 
-    if (md.getNumToRemove() > 0)
+    if (md.getNumSelected() > 0)
     {
     	QMimeData *mimeData = new QMimeData;
         //mimeData->setText(item->asString());
