@@ -1,4 +1,4 @@
-#include "cconnection.h"
+#include "CConnection.h"
 
 #include <QXmlStreamWriter>
 #include <QXmlStreamReader>
@@ -81,6 +81,22 @@ void CConnection::getPlaylist(int knownRevision)
     m_xml_writer->writeAttribute("knownRev", QString().setNum(knownRevision));
     m_xml_writer->writeEndElement();
 }
+
+void CConnection::getNextlist()
+{
+    qDebug() << QString("getNextlist");
+    m_xml_writer->writeStartElement("getNextlist");
+    m_xml_writer->writeEndElement();
+}
+
+void CConnection::getNextlist(int knownRevision)
+{
+    qDebug() << QString("getNextlist");
+    m_xml_writer->writeStartElement("getNextlist");
+    m_xml_writer->writeAttribute("knownRev", QString().setNum(knownRevision));
+    m_xml_writer->writeEndElement();
+}
+
 
 
 

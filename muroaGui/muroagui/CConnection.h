@@ -42,6 +42,9 @@ public slots:
     void getPlaylist();
     void getPlaylist(int knownRevision);
 
+    void getNextlist();
+    void getNextlist(int knownRevision);
+
     void sendCommand(const CCommandBase& cmd);
 
     void test();

@@ -12,10 +12,11 @@
 #include "CPlaylistModel.h"
 #include "CPlaylistItem.h"
 
-#include "CModelDiff.h"
 #include "CDiffBuilder.h"
 
-CPlaylistView::CPlaylistView(QWidget * parent ) : QListView( parent ), m_dragActive(false){
+CPlaylistView::CPlaylistView(QWidget * parent ) : QListView( parent ),
+                                                  m_dragActive(false),
+                                                  m_role(E_PLAYLIST) {
 	setAcceptDrops(true);
 	viewport()->setAcceptDrops(true);
 	setDragDropMode(QAbstractItemView::DragDrop);
@@ -87,7 +88,7 @@ void CPlaylistView::dropEvent(QDropEvent *event)
         QModelIndex currentIdx = indexAt( event->pos());
         //md.appendToInsert(currentIdx.row(), plModel->itemAt(currentIdx.row())->getHash());
         md.setInsertPos( currentIdx.row() );
-        md.setDestination(E_PLAYLIST);
+        md.setDestination(m_role);
 
         qDebug() << QString("Move [%1,%2] to %3").arg(md.getSelectedIndexes().at(0)).arg(md.getSelectedIndexes().at(md.getNumSelected() - 1 )).arg(md.getInsertPos());
         // plModel->makeDiff(&md);
@@ -102,7 +103,7 @@ void CPlaylistView::performDrag()
     //CPlaylistModel* plModel = reinterpret_cast<CPlaylistModel*>(model());
 
     QModelIndexList indexList = selectedIndexes();
-    CModelDiff md(E_PLAYLIST);
+    CModelDiff md(m_role);
 
     for(int i = 0; i < indexList.size(); i++)
     {

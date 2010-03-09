@@ -12,6 +12,7 @@
 
 #include "CCommandBase.h"
 #include "CPlaylistCommand.h"
+#include "CModelDiff.h"
 
 class QMouseEvent;
 class QDragEnterEvent;
@@ -27,6 +28,8 @@ public:
 	virtual ~CPlaylistView();
 
 	void setDiffBuilderPtr(CDiffBuilder* db) { m_diffBuilder = db; };
+	void setRole(enum origin role ) { m_role = role; };
+	enum origin getRole() { return m_role; };
 
 protected:
     void mousePressEvent(QMouseEvent *event);
@@ -37,6 +40,8 @@ protected:
 
 private:
     void performDrag();
+
+    enum origin m_role;
 
     QPoint m_startPos;
     bool m_dragActive;

@@ -31,17 +31,16 @@ muroagui::muroagui(QWidget *parent)
 	// ui.playlistView->setDragDropMode(QAbstractItemView::InternalMove);
 	ui.playlistView->setDragDropOverwriteMode( false );
 
-	ui.playlistView->setModel(&m_playlistModel);
 	ui.collectionView->setModel(&m_collectionModel);
+	ui.playlistView->setModel(&m_playlistModel);
+	ui.nextToPlayView->setModel(&m_playnextModel);
 
 	ui.collectionView->setDiffBuilderPtr(&m_diffBuilder);
 	ui.playlistView->setDiffBuilderPtr(&m_diffBuilder);
 	ui.nextToPlayView->setDiffBuilderPtr(&m_diffBuilder);
+	ui.nextToPlayView->setRole(E_NEXTLIST);
 
 	connect(&m_diffBuilder, SIGNAL(sendCommand(const CCommandBase&)), &m_connection, SLOT(sendCommand(const CCommandBase&)));
-
-	//connect(&m_playlistModel, SIGNAL(sendCommand(const CCommandBase&)), &m_connection, SLOT(sendCommand(const CCommandBase&)));
-
 }
 
 muroagui::~muroagui()
