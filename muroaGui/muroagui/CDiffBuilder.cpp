@@ -8,7 +8,9 @@
 #include "CDiffBuilder.h"
 #include "CPlaylistItem.h"
 
+#include "CCollectionCommand.h"
 #include "CPlaylistCommand.h"
+#include "CNextlistCommand.h"
 
 
 CDiffBuilder::CDiffBuilder(CCollection<CCollectionItem*>* colPtr,
@@ -31,6 +33,8 @@ void CDiffBuilder::prepareDiff(CModelDiff* md)
 	enum origin dest = md->getDestination();
 	enum origin orig = md->getOrigin();
 
+	enum origin commandType;
+
 	int numToRemove = 0;
 	int numToInsert = 0;
 
@@ -42,18 +46,21 @@ void CDiffBuilder::prepareDiff(CModelDiff* md)
 		{
 		case E_COLLECTION:
 			// move inside collection
+			commandType = E_COLLECTION;
 			numToRemove = md->getNumSelected();
 			numToInsert = numToRemove;
 			getItemToInsert = &CDiffBuilder::insertFromCollectionToCollection;
 
 		case E_PLAYLIST:
 			// insert songs from collection into playlist
+			commandType = E_PLAYLIST;
 			numToInsert = md->getNumSelected();
 			getItemToInsert = &CDiffBuilder::insertFromCollectionToPlaylist;
 
 			break;
 
 		case E_NEXTLIST:
+			commandType = E_NEXTLIST;
 			// two possible modes:
 			// insert songs from collection into nextlist AND append to playlist
 			// insert songs into nextlist only, so they disappear after playing
@@ -72,12 +79,14 @@ void CDiffBuilder::prepareDiff(CModelDiff* md)
 		{
 		case E_COLLECTION:
 			// remove songs from playlist
+			commandType = E_PLAYLIST;
 			numToRemove = md->getNumSelected();
 			getItemToInsert = &CDiffBuilder::dummy;
 			break;
 
 		case E_PLAYLIST:
 			// move songs inside playlist
+			commandType = E_PLAYLIST;
 			numToRemove = md->getNumSelected();
 			numToInsert = numToRemove;
 			getItemToInsert = &CDiffBuilder::insertFromPlaylist;
@@ -85,6 +94,7 @@ void CDiffBuilder::prepareDiff(CModelDiff* md)
 
 		case E_NEXTLIST:
 			// insert songs from playlist into nextlist at drop position
+			commandType = E_NEXTLIST;
 			numToInsert = md->getNumSelected();
 			getItemToInsert = &CDiffBuilder::insertFromPlaylist;  // playlist is same as nectlist in this case
 			break;
@@ -101,12 +111,14 @@ void CDiffBuilder::prepareDiff(CModelDiff* md)
 		case E_COLLECTION:
 		case E_PLAYLIST:
 			// remove selected songs from nextlist
+			commandType = E_NEXTLIST;
 			numToRemove = md->getNumSelected();
 			getItemToInsert = &CDiffBuilder::dummy;
 			break;
 
 		case E_NEXTLIST:
 			// move selected songs inside nextlist
+			commandType = E_NEXTLIST;
 			numToInsert = md->getNumSelected();
 			numToRemove = numToInsert;
 			getItemToInsert = &CDiffBuilder::insertFromNextlist;
@@ -121,9 +133,9 @@ void CDiffBuilder::prepareDiff(CModelDiff* md)
 		qDebug() << QString("CDiffBuilder::getText: unknown origin: %1").arg(orig);
 	}
 
+	md->setCommandType(commandType);
 	md->setNumToInsert(numToInsert);
 	md->setNumToRemove(numToRemove);
-
 }
 
 QString CDiffBuilder::diff(CModelDiff md)
@@ -197,11 +209,30 @@ QString CDiffBuilder::diff(CModelDiff md)
 	}
 
 	qDebug() << text;
+	CCommandBase* cmd;
 
-	CPlaylistCommand plCmd(text);
-	emit sendCommand(plCmd);
+	enum origin commandType = md.getCommandType();
 
-	return text;
+	switch(commandType)
+	{
+	case E_COLLECTION:
+		cmd = new CCollectionCommand(text);
+		break;
+
+	case E_PLAYLIST:
+		cmd = new CPlaylistCommand(text);
+		break;
+
+	case E_NEXTLIST:
+		cmd = new CNextlistCommand(text);
+		break;
+
+	default:
+		qDebug() << QString("unknown command type: %1").arg(commandType);
+	}
+
+	emit sendCommand(cmd);
+	// return text;
 }
 
 

@@ -196,13 +196,15 @@ void CConnection::readyRead()
 //  m_xml_reader->parse(&m_xml_src, true);
 //}
 
-void CConnection::sendCommand(const CCommandBase& cmd)
+void CConnection::sendCommand(CCommandBase* cmd)
 {
-    qDebug() << QString("sendCommand %1").arg(cmd.commandName());
-    m_xml_writer->writeStartElement(cmd.commandName());
+    qDebug() << QString("sendCommand %1").arg(cmd->commandName());
+    m_xml_writer->writeStartElement(cmd->commandName());
     m_xml_writer->writeAttribute("fromRev", QString().setNum(m_sm.getRevision()));
-    m_xml_writer->writeCharacters(cmd.commandData());
+    m_xml_writer->writeCharacters(cmd->commandData());
     m_xml_writer->writeEndElement();
+
+    delete cmd;
 }
 
 

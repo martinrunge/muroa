@@ -45,7 +45,7 @@ public slots:
     void getNextlist();
     void getNextlist(int knownRevision);
 
-    void sendCommand(const CCommandBase& cmd);
+    void sendCommand(CCommandBase* cmd);
 
     void test();
 

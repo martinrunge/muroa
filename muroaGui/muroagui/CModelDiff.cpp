@@ -18,6 +18,8 @@ CModelDiff::CModelDiff(const CModelDiff& other)
 	m_origin = other.getOrigin();
 	m_destination = other.getDestination();
 
+	m_commandType = other.getCommandType();
+
 	m_insertPos = other.getInsertPos();
 
 	m_numToInsert = other.getNumToInsert();
@@ -27,11 +29,14 @@ CModelDiff::CModelDiff(const CModelDiff& other)
 CModelDiff::CModelDiff(const QByteArray& ba)
 {
 	QDataStream ds( ba );
-	unsigned orig, dest;
+	unsigned orig, dest, commandType;
 	ds >> orig;
 	m_origin = (enum origin)orig;
 	ds >> dest;
 	m_destination = (enum origin)dest;
+	ds >> commandType;
+	m_commandType = (enum origin)commandType;
+
 	ds >> m_insertPos;
 	ds >> m_selectedIndexes;
 }
@@ -47,6 +52,7 @@ QByteArray CModelDiff::toQByteArray() const
 
 	ds << (unsigned)m_origin;
 	ds << (unsigned)m_destination;
+	ds << (unsigned)m_commandType;
 	ds << m_insertPos;
 	ds << m_selectedIndexes;
 

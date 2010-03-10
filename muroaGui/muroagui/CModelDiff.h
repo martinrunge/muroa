@@ -40,6 +40,10 @@ public:
 	enum origin getDestination() const { return m_destination; };
 	void setDestination(const enum origin dest) { m_destination = dest; };
 
+	enum origin getCommandType() const { return m_commandType; };
+	void setCommandType(const enum origin commandType) { m_commandType = commandType; };
+
+
     int getNumSelected() const { return m_selectedIndexes.size(); };
 
     int getNumToInsert() const { return m_numToInsert; };
@@ -69,6 +73,8 @@ private:
 
 	enum origin m_origin;
 	enum origin m_destination;
+
+	enum origin m_commandType;
 };
 
 #endif /* CMODELDIFF_H_ */

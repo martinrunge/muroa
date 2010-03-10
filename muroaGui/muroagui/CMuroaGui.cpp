@@ -40,7 +40,7 @@ CMuroaGui::CMuroaGui(QWidget *parent)
 	ui.nextToPlayView->setDiffBuilderPtr(&m_diffBuilder);
 	ui.nextToPlayView->setRole(E_NEXTLIST);
 
-	connect(&m_diffBuilder, SIGNAL(sendCommand(const CCommandBase&)), &m_connection, SLOT(sendCommand(const CCommandBase&)));
+	connect(&m_diffBuilder, SIGNAL(sendCommand(CCommandBase*)), &m_connection, SLOT(sendCommand(CCommandBase*)));
 }
 
 CMuroaGui::~CMuroaGui()

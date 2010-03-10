@@ -28,7 +28,7 @@ public:
 	QString diff(CModelDiff md);
 
 signals:
-	void sendCommand(const CCommandBase& cmd);
+	void sendCommand(CCommandBase* cmd);
 
 
 private:
