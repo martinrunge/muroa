@@ -7,7 +7,7 @@
 
 #include "CSession.h"
 #include "CDiff.h"
-#include "cconnection.h"
+#include "CConnection.h"
 
 
 CSession::CSession() : m_latestCollectionRevision(0),

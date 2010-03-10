@@ -3,20 +3,20 @@
 
 #include <QtGui/QMainWindow>
 #include "ui_muroaserver.h"
-#include "cconnection.h"
+#include "CConnection.h"
 #include "CCollection.h"
 #include "CCollectionItem.h"
 
 class CSession;
 class CNetwork;
 
-class muroaserver : public QMainWindow
+class CMuroaServer : public QMainWindow
 {
     Q_OBJECT;
 
 public:
-    muroaserver(QWidget *parent = 0);
-    ~muroaserver();
+    CMuroaServer(QWidget *parent = 0);
+    ~CMuroaServer();
 
     void readCollectionFile(QString filename);
 

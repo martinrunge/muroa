@@ -1,4 +1,4 @@
-#include "cstatemachine.h"
+#include "CStateMachine.h"
 
 #include <typeinfo>
 

@@ -5,7 +5,7 @@
 #include <QTcpSocket>
 // #include <QXmlInputSource>
 
-#include "cstatemachine.h"
+#include "CStateMachine.h"
 #include "CCommandBase.h"
 
 class QXmlStreamReader;

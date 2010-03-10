@@ -1,13 +1,13 @@
-#include "muroaserver.h"
+#include "CMuroaServer.h"
 
 #include "CSession.h"
-#include "cnetwork.h"
+#include "CNetwork.h"
 
 #include <QMessageBox>
 #include <QFile>
 
 
-muroaserver::muroaserver(QWidget *parent)
+CMuroaServer::CMuroaServer(QWidget *parent)
     : QMainWindow(parent)
 {
 	ui.setupUi(this);
@@ -36,13 +36,13 @@ muroaserver::muroaserver(QWidget *parent)
 	//m_connection.setCollection(&m_collection);
 }
 
-muroaserver::~muroaserver()
+CMuroaServer::~CMuroaServer()
 {
 	delete m_session;
 	delete m_net;
 }
 
-void muroaserver::newConnection(QTcpSocket* socket)
+void CMuroaServer::newConnection(QTcpSocket* socket)
 {
 	CConnection* conn = new CConnection(socket);
 	m_session->addConnection(conn);
@@ -51,12 +51,12 @@ void muroaserver::newConnection(QTcpSocket* socket)
 
 }
 
-void muroaserver::connectionStatusChanged(QString status)
+void CMuroaServer::connectionStatusChanged(QString status)
 {
 	m_connection_status_label.setText(status);
 }
 
-void muroaserver::readCollectionFile(QString filename)
+void CMuroaServer::readCollectionFile(QString filename)
 {
 	QFile collectionFile(filename);
 	QString line;
@@ -89,7 +89,7 @@ void muroaserver::readCollectionFile(QString filename)
 }
 
 
-void muroaserver::nextRevision()
+void CMuroaServer::nextRevision()
 {
 	readCollectionFile(m_testfiles[m_session->getCollectionRevision()]);
 }

@@ -15,9 +15,9 @@ HEADERS += CCollectionView.h \
     CItemBase.h \
     CCollectionItem.h \
     CCollection.h \
-    cstatemachine.h \
-    cconnection.h \
-    muroagui.h \
+    CStateMachine.h \
+    CConnection.h \
+    CMuroaGui.h \
     CCollectionModel.h \
     CDiffBuilder.h
 SOURCES += CCollectionView.cpp \
@@ -30,11 +30,11 @@ SOURCES += CCollectionView.cpp \
     CPlaylistItem.cpp \
     CItemBase.cpp \
     CCollectionItem.cpp \
-    cstatemachine.cpp \
-    cconnection.cpp \
+    CStateMachine.cpp \
+    CConnection.cpp \
     main.cpp \
-    muroagui.cpp \
+    CMuroaGui.cpp \
     CCollectionModel.cpp \
     CDiffBuilder.cpp
-FORMS += muroagui.ui
+FORMS += MuroaGui.ui
 RESOURCES += 

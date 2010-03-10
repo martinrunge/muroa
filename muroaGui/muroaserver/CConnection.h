@@ -4,8 +4,8 @@
 #include <QObject>
 #include <QtNetwork>
 
-#include "ccontenthandler.h"
-#include "cstatemachine.h"
+#include "CContentHandler.h"
+#include "CStateMachine.h"
 #include "CSession.h"
 
 class QXmlInputSource;

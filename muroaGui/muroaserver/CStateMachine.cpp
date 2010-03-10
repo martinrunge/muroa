@@ -1,5 +1,5 @@
-#include "cstatemachine.h"
-#include "cconnection.h"
+#include "CStateMachine.h"
+#include "CConnection.h"
 #include "CSession.h"
 
 #include <QDebug>

@@ -1,4 +1,4 @@
-#include "muroagui.h"
+#include "CMuroaGui.h"
 
 #include <QtGui>
 #include <QApplication>
@@ -6,7 +6,7 @@
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
-    muroagui w;
+    CMuroaGui w;
     w.show();
     return a.exec();
 }

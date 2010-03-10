@@ -10,15 +10,15 @@
 #include "CPlaylistModel.h"
 #include "CCollectionModel.h"
 #include "ui_muroagui.h"
-#include "cconnection.h"
+#include "CConnection.h"
 
-class muroagui : public QMainWindow
+class CMuroaGui : public QMainWindow
 {
     Q_OBJECT
 
 public:
-    muroagui(QWidget *parent = 0);
-    ~muroagui();
+    CMuroaGui(QWidget *parent = 0);
+    ~CMuroaGui();
 
 public slots:
     void openConnection();

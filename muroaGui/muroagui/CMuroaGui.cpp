@@ -1,6 +1,6 @@
-#include "muroagui.h"
+#include "CMuroaGui.h"
 
-muroagui::muroagui(QWidget *parent)
+CMuroaGui::CMuroaGui(QWidget *parent)
     : QMainWindow(parent) ,
    	  m_diffBuilder(&m_collection, &m_playlist, &m_playnext)
 {
@@ -43,20 +43,20 @@ muroagui::muroagui(QWidget *parent)
 	connect(&m_diffBuilder, SIGNAL(sendCommand(const CCommandBase&)), &m_connection, SLOT(sendCommand(const CCommandBase&)));
 }
 
-muroagui::~muroagui()
+CMuroaGui::~CMuroaGui()
 {
 
 }
 
 
 
-void muroagui::openConnection()
+void CMuroaGui::openConnection()
 {
     m_connection.open("localhost", 2678);
 }
 
 
-void muroagui::connectionStatusChanged(QString status)
+void CMuroaGui::connectionStatusChanged(QString status)
 {
 	m_connection_status_label.setText(status);
 }

@@ -1,4 +1,4 @@
-#include "cnetwork.h"
+#include "CNetwork.h"
 #include <QString>
 #include <QDebug>
 

@@ -1,5 +1,5 @@
-#include "muroaserver.h"
-#include "cconnection.h"
+#include "CMuroaServer.h"
+#include "CConnection.h"
 
 #include <QtGui>
 #include <QApplication>
@@ -10,7 +10,7 @@ int main(int argc, char *argv[])
 {
     int retval;
     QApplication a(argc, argv);
-    muroaserver w;
+    CMuroaServer w;
 
     try
     {

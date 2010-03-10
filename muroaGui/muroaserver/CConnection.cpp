@@ -1,5 +1,5 @@
 
-#include "cconnection.h"
+#include "CConnection.h"
 
 #include <QXmlSimpleReader>
 #include <QXmlInputSource>
