@@ -14,6 +14,7 @@ enum states { e_not_connected,
 			  e_connected,
 			  e_collection_requested,
 			  e_playlist_requested,
+			  e_nextlist_requested,
 			  e_awaiting_collection_mod,
 			  e_awaiting_playlist_mod,
 			  e_awaiting_nextlist_mod,
@@ -66,6 +67,7 @@ private:
 
     QXmlStreamWriter* m_xml_writer;
 
+    void parseGetNextlistArgs(QXmlStreamReader* reader);
     void parseGetPlaylistArgs(QXmlStreamReader* reader);
     void parseGetCollectionArgs(QXmlStreamReader* reader);
 

@@ -105,7 +105,11 @@ void CStateMachine::startElement(QXmlStreamReader* reader)
 {
     QStringRef name = reader->name();
     qDebug() << QString("startElement %1").arg(name.toString());
-    if(name.toString().startsWith("getPlaylist"))
+    if(name.toString().startsWith("getNextlist"))
+    {
+        parseGetNextlistArgs(reader);
+    }
+    else if(name.toString().startsWith("getPlaylist"))
     {
         parseGetPlaylistArgs(reader);
     }
@@ -138,7 +142,12 @@ void CStateMachine::startElement(QXmlStreamReader* reader)
 void CStateMachine::endElement(QXmlStreamReader* reader)
 {
     QStringRef name = reader->name();
-    if(name.toString().startsWith("getPlaylist") && m_state == e_playlist_requested)
+    if(name.toString().startsWith("getNextlist") && m_state == e_nextlist_requested)
+    {
+    	m_connection->sendNextlist(m_knownRevision);
+    	m_state = e_connected;
+    }
+    else if(name.toString().startsWith("getPlaylist") && m_state == e_playlist_requested)
     {
     	m_connection->sendPlaylist(m_knownRevision);
     	m_state = e_connected;
@@ -192,6 +201,26 @@ void CStateMachine::characters(QXmlStreamReader* reader)
    	default:
    	    qDebug() << QString("receiving characters while in unknown state....");
     }
+}
+
+void CStateMachine::parseGetNextlistArgs(QXmlStreamReader* reader)
+{
+    QXmlStreamAttributes att = reader->attributes();
+    if(att.hasAttribute("knownRev") && m_state == e_connected )
+    {
+	    QStringRef knownRevision = att.value(QString(), QString("knownRev"));
+
+	    bool ok;
+	    m_knownRevision = knownRevision.toString().toULongLong(&ok);
+
+	    qDebug() << QString("getNextlist: knownRevision %1").arg(m_knownRevision);
+    }
+    else
+    {
+    	// client does not have and old revision, send whole nextlist
+    	m_knownRevision = -1;
+    }
+	m_state = e_nextlist_requested;
 }
 
 void CStateMachine::parseGetPlaylistArgs(QXmlStreamReader* reader)

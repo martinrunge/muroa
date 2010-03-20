@@ -2,7 +2,7 @@
 
 CMuroaGui::CMuroaGui(QWidget *parent)
     : QMainWindow(parent) ,
-   	  m_diffBuilder(&m_collection, &m_playlist, &m_playnext)
+   	  m_diffBuilder(&m_collection, &m_playlist, &m_nextlist)
 {
 	ui.setupUi(this);
 
@@ -16,16 +16,17 @@ CMuroaGui::CMuroaGui(QWidget *parent)
 	statusBar()->addWidget(&m_connection_status_label);
 
 	connect(&m_connection, SIGNAL(connectionStatusChanged(QString)), this, SLOT(connectionStatusChanged(QString)));
+	m_connection.setNextlistModelPtr(&m_nextlistModel);
 	m_connection.setPlaylistModelPtr(&m_playlistModel);
 	m_connection.setColletionModelPtr(&m_collectionModel);
 
+	m_nextlistModel.setCollections(&m_nextlist, &m_collection);
 	m_playlistModel.setCollections(&m_playlist, &m_collection);
-	m_playnextModel.setCollections(&m_playnext, &m_collection);
 	m_collectionModel.setCollection(&m_collection);
 
 	ui.collectionView->setModel(&m_collectionModel);
 	ui.playlistView->setModel(&m_playlistModel);
-	ui.nextToPlayView->setModel(&m_playnextModel);
+	ui.nextToPlayView->setModel(&m_nextlistModel);
 
 	ui.collectionView->setDiffBuilderPtr(&m_diffBuilder);
 	ui.playlistView->setDiffBuilderPtr(&m_diffBuilder);

@@ -18,6 +18,7 @@ public:
     CConnection();
     ~CConnection();
 
+    inline void setNextlistModelPtr(CPlaylistModel* const nextlistModelPtr) {m_sm.setNextlistModelPtr(nextlistModelPtr); };
     inline void setPlaylistModelPtr(CPlaylistModel* const playlistModelPtr) {m_sm.setPlaylistModelPtr(playlistModelPtr); };
     inline void setColletionModelPtr(CCollectionModel* const collectionModelPtr) {m_sm.setCollectionModelPtr(collectionModelPtr); };
 

@@ -84,6 +84,7 @@ void CMuroaServer::readCollectionFile(QString filename)
 			playlist.append(QString("%1\n").arg(hash));
 		}
 		m_session->addPlaylistRev( playlist );
+		m_session->addNextlistRev( QString() );
 	}
 
 }

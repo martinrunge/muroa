@@ -112,6 +112,7 @@ void CConnection::connected()
 
     getCollection();
     getPlaylist();
+    getNextlist();
 }
 
 void CConnection::disconnected()

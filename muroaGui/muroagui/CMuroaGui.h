@@ -32,13 +32,13 @@ private:
 
     CCollection<CCollectionItem*> m_collection;
     CCollection<CPlaylistItem*> m_playlist;
-    CCollection<CPlaylistItem*> m_playnext;
+    CCollection<CPlaylistItem*> m_nextlist;
 
     CDiffBuilder m_diffBuilder;
 
     CCollectionModel m_collectionModel;
     CPlaylistModel m_playlistModel;
-    CPlaylistModel m_playnextModel;
+    CPlaylistModel m_nextlistModel;
 
     QLabel m_connection_status_label;
 

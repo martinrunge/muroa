@@ -14,12 +14,11 @@ CSession::CSession() : m_latestCollectionRevision(0),
                        m_latestPlaylistRevision(0),
                        m_latestNextlistRevision(0)
 {
-	// TODO Auto-generated constructor stub
 
 }
 
 CSession::~CSession() {
-	// TODO Auto-generated destructor stub
+
 }
 
 CCollection<CCollectionItem>* CSession::getCollection(int revision) const
@@ -144,6 +143,8 @@ void CSession::addCollectionRev(QString collection)
 	}
 }
 
+
+
 void CSession::addPlaylistRev(QString playlist)
 {
 	m_latestPlaylistRevision++;
@@ -157,6 +158,22 @@ void CSession::addPlaylistRev(QString playlist)
 	for(int i=0; i < m_connections.size(); i++)
 	{
 		m_connections.at(i)->sendPlaylist(m_latestPlaylistRevision - 1);
+	}
+}
+
+void CSession::addNextlistRev(QString nextlist)
+{
+	m_latestNextlistRevision++;
+	CCollection<CPlaylistItem>* newNextlist = new CCollection<CPlaylistItem>();
+	newNextlist->setText(nextlist, m_latestNextlistRevision);
+
+	qDebug() << newNextlist->getText();
+
+	m_nextlistRevisions[m_latestNextlistRevision] = newNextlist;
+
+	for(int i=0; i < m_connections.size(); i++)
+	{
+		m_connections.at(i)->sendNextlist(m_latestNextlistRevision - 1);
 	}
 }
 

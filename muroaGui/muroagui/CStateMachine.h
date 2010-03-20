@@ -19,6 +19,8 @@ enum states { e_no_session,
 			  e_awaiting_collection,
 			  e_reading_collection,
 			  e_collection_received,
+			  e_reading_nextlist,
+			  e_nextlist_received,
 			  e_reading_playlist,
 			  e_playlist_received  };
 
@@ -30,6 +32,7 @@ public:
     ~CStateMachine();
 
     inline void setXmlWriter(QXmlStreamWriter* const xml_writer) { m_xml_writer = xml_writer; };
+    inline void setNextlistModelPtr(CPlaylistModel* const nextlistModelPtr ) { m_nextlistModelPtr = nextlistModelPtr; };
     inline void setPlaylistModelPtr(CPlaylistModel* const playlistModelPtr ) { m_playlistModelPtr = playlistModelPtr; };
     inline void setCollectionModelPtr(CCollectionModel* const collectionModelPtr ) { m_collectionModelPtr = collectionModelPtr; };
 
@@ -52,6 +55,7 @@ private:
     int m_xml_depth;
 
     CPlaylistModel* m_playlistModelPtr;
+    CPlaylistModel* m_nextlistModelPtr;
     CCollectionModel* m_collectionModelPtr;
 
     int m_revision;
@@ -59,6 +63,7 @@ private:
 
     QXmlStreamWriter* m_xml_writer;
 
+    void parseNextlistArgs(QXmlStreamReader* reader);
     void parsePlaylistArgs(QXmlStreamReader* reader);
     void parseCollectionArgs(QXmlStreamReader* reader);
 
