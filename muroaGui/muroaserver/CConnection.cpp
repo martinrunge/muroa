@@ -123,3 +123,24 @@ void CConnection::sendPlaylist(int knownRevision)
     m_xml_writer->writeEndElement();
 }
 
+void CConnection::sendNextlist(int knownRevision)
+{
+	QString nextlist;
+
+    m_xml_writer->writeStartElement("nextlist");
+    m_xml_writer->writeAttribute("revision", QString().setNum(m_session->getNextlistRevision()));
+
+    nextlist = m_session->getNextlistDiff(knownRevision);
+    if(!nextlist.isNull())
+    {
+    	m_xml_writer->writeAttribute("diffFromRev", QString().setNum(knownRevision));
+    }
+    else
+    {
+    	nextlist = m_session->getNextlist()->getText();
+    }
+
+    m_xml_writer->writeCharacters(nextlist);
+    m_xml_writer->writeEndElement();
+}
+

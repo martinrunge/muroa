@@ -15,7 +15,8 @@ enum states { e_not_connected,
 			  e_collection_requested,
 			  e_playlist_requested,
 			  e_awaiting_collection_mod,
-			  e_awaiting_playlist_mod
+			  e_awaiting_playlist_mod,
+			  e_awaiting_nextlist_mod,
 			};
 
 
@@ -27,7 +28,6 @@ public:
 
     ~CStateMachine();
     inline void setXmlWriter(QXmlStreamWriter* xml_writer) { m_xml_writer = xml_writer; };
-
 
 public slots:
     void close();
@@ -45,9 +45,7 @@ public slots:
     // inline void setCollection(CCollection* collection) { m_collection = collection; };
     inline void setSessionPtr(CSession* session) { m_session = session; };
 
-
     // void sendCollection();
-
 
 private:
     int m_state;
@@ -56,10 +54,10 @@ private:
     int m_xml_depth;
 
     // int m_revision;
-
     int m_knownRevision;
     int m_diffFromRev;
 
+    QString m_nextlistDiff;
     QString m_playlistDiff;
     QString m_collectionDiff;
 
@@ -71,9 +69,9 @@ private:
     void parseGetPlaylistArgs(QXmlStreamReader* reader);
     void parseGetCollectionArgs(QXmlStreamReader* reader);
 
+    void parseModNextlistArgs(QXmlStreamReader* reader);
     void parseModPlaylistArgs(QXmlStreamReader* reader);
     void parseModCollectionArgs(QXmlStreamReader* reader);
-
 };
 
 #endif // CSTATEMACHINE_H

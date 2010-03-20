@@ -17,8 +17,11 @@
 
 
 CCollectionView::CCollectionView(QWidget * parent) : QTreeView(parent){
-	// TODO Auto-generated constructor stub
-
+	setAcceptDrops(true);
+	viewport()->setAcceptDrops(true);
+	setDragDropMode(QAbstractItemView::DragDrop);
+	setDropIndicatorShown(true);
+	setSelectionMode(QAbstractItemView::ExtendedSelection);
 }
 
 CCollectionView::~CCollectionView() {

@@ -11,7 +11,8 @@
 
 
 CSession::CSession() : m_latestCollectionRevision(0),
-                       m_latestPlaylistRevision(0)
+                       m_latestPlaylistRevision(0),
+                       m_latestNextlistRevision(0)
 {
 	// TODO Auto-generated constructor stub
 
@@ -45,6 +46,17 @@ CCollection<CPlaylistItem>* CSession::getPlaylist(int revision) const
 	}
 }
 
+CCollection<CPlaylistItem>* CSession::getNextlist(int revision) const
+{
+	if(m_nextlistRevisions.contains(revision))
+	{
+		return m_nextlistRevisions.value(revision);
+	}
+	else
+	{
+		return 0;
+	}
+}
 
 const QString CSession::getCollectionDiff(int fromRevision, int toRevision)
 {
@@ -93,6 +105,28 @@ const QString CSession::getPlaylistDiff(int fromRevision, int toRevision)
 	return diffString;
 }
 
+const QString CSession::getNextlistDiff(int fromRevision, int toRevision)
+{
+	if(toRevision == -1)
+	{
+		toRevision = m_latestNextlistRevision;
+	}
+
+	if(fromRevision == -1
+	   || ! m_nextlistRevisions.contains(fromRevision)
+	   || ! m_nextlistRevisions.contains(toRevision))
+	{
+		return QString();
+	}
+
+	CDiff differ;
+
+	QString knownRev = m_nextlistRevisions.value(fromRevision)->getText();
+	QString targetRev = m_nextlistRevisions.value(toRevision)->getText();
+	QString diffString = differ.diff(knownRev, targetRev);
+
+	return diffString;
+}
 
 void CSession::addCollectionRev(QString collection)
 {
@@ -126,7 +160,6 @@ void CSession::addPlaylistRev(QString playlist)
 	}
 }
 
-
 int CSession::addCollectionRevFromDiff(QString* collectionDiff, int diffFromRev)
 {
 	CCollection<CCollectionItem>* newCollection = new CCollection<CCollectionItem>( *(getCollection(m_latestCollectionRevision)) );
@@ -159,6 +192,21 @@ int CSession::addPlaylistRevFromDiff(QString* playlistDiff, int diffFromRev)
 	}
 }
 
+int CSession::addNextlistRevFromDiff(QString* nextlistDiff, int diffFromRev)
+{
+	qDebug() << QString("CSession::addNextlistRevFromDiff %1 %2").arg(*nextlistDiff).arg(diffFromRev);
+	CCollection<CPlaylistItem>* newNextlist = new CCollection<CPlaylistItem>( *(getNextlist(m_latestNextlistRevision)) );
+	newNextlist->patch(nextlistDiff, ++m_latestNextlistRevision);
+
+	qDebug() << newNextlist->getText();
+
+	m_nextlistRevisions[m_latestNextlistRevision] = newNextlist;
+
+	for(int i=0; i < m_connections.size(); i++)
+	{
+		m_connections.at(i)->sendNextlist(m_latestNextlistRevision - 1);
+	}
+}
 
 
 void CSession::addConnection(CConnection* connection)

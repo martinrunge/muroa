@@ -24,6 +24,7 @@ public:
 
     void sendCollection(int knownRevision = -1);
     void sendPlaylist(int knownRevision = -1);
+    void sendNextlist(int knownRevision = -1);
 
 signals:
     void connectionStatusChanged(QString message);

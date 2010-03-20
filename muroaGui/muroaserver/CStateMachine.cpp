@@ -113,6 +113,10 @@ void CStateMachine::startElement(QXmlStreamReader* reader)
     {
         parseGetCollectionArgs(reader);
     }
+    else if(name.toString().startsWith("modNextlist"))
+    {
+        parseModNextlistArgs(reader);
+    }
     else if(name.toString().startsWith("modPlaylist"))
     {
         parseModPlaylistArgs(reader);
@@ -144,6 +148,10 @@ void CStateMachine::endElement(QXmlStreamReader* reader)
     	m_connection->sendCollection(m_knownRevision);
     	m_state = e_connected;
     }
+    else if(name.toString().startsWith("modNextlist") && m_state == e_awaiting_nextlist_mod)
+    {
+    	m_session->addNextlistRevFromDiff(&m_nextlistDiff, m_diffFromRev);
+    }
     else if(name.toString().startsWith("modPlaylist") && m_state == e_awaiting_playlist_mod)
     {
     	m_session->addPlaylistRevFromDiff(&m_playlistDiff, m_diffFromRev);
@@ -167,6 +175,11 @@ void CStateMachine::characters(QXmlStreamReader* reader)
 {
     switch(m_state)
     {
+    case e_awaiting_nextlist_mod:
+    	m_nextlistDiff = reader->text().toString();
+    	qDebug() << QString("characters: %1").arg(m_nextlistDiff);
+    	break;
+
     case e_awaiting_playlist_mod:
     	m_playlistDiff = reader->text().toString();
     	qDebug() << QString("characters: %1").arg(m_playlistDiff);
@@ -219,6 +232,27 @@ void CStateMachine::parseGetCollectionArgs(QXmlStreamReader* reader)
     	m_knownRevision = -1;
     }
 	m_state = e_collection_requested;
+}
+
+void CStateMachine::parseModNextlistArgs(QXmlStreamReader* reader)
+{
+    QXmlStreamAttributes att = reader->attributes();
+    if(att.hasAttribute("fromRev") && m_state == e_connected )
+    {
+	    QStringRef fromRevision = att.value(QString(), QString("fromRev"));
+
+	    bool ok;
+	    m_diffFromRev = fromRevision.toString().toUInt(&ok);
+	    if(ok) {
+	    	m_state = e_awaiting_nextlist_mod;
+	    }
+
+	    qDebug() << QString("parseNextlistMod: diff from Rev %1").arg(m_diffFromRev);
+    }
+    else
+    {
+    	// no fromRev included. ignore.
+    }
 }
 
 void CStateMachine::parseModPlaylistArgs(QXmlStreamReader* reader)

@@ -19,17 +19,9 @@ CMuroaGui::CMuroaGui(QWidget *parent)
 	m_connection.setPlaylistModelPtr(&m_playlistModel);
 	m_connection.setColletionModelPtr(&m_collectionModel);
 
-	//m_playlistModel.setPlaylist(&m_playlist);
 	m_playlistModel.setCollections(&m_playlist, &m_collection);
 	m_playnextModel.setCollections(&m_playnext, &m_collection);
 	m_collectionModel.setCollection(&m_collection);
-
-	//ui.playlistView->setSelectionMode(QAbstractItemView::SingleSelection);
-	ui.playlistView->setDragEnabled(true);
-	ui.playlistView->viewport()->setAcceptDrops(true);
-	ui.playlistView->setDropIndicatorShown(true);
-	// ui.playlistView->setDragDropMode(QAbstractItemView::InternalMove);
-	ui.playlistView->setDragDropOverwriteMode( false );
 
 	ui.collectionView->setModel(&m_collectionModel);
 	ui.playlistView->setModel(&m_playlistModel);
