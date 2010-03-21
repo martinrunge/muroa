@@ -8,7 +8,7 @@
 
 CStateMachine::CStateMachine(CConnection* connection) : m_connection(connection)
 {
-	//m_revision = 0;
+	m_xml_depth = 0;
     m_xml_reader = new QXmlStreamReader();
     m_state = e_not_connected;
 
@@ -89,22 +89,25 @@ void CStateMachine::addData(QByteArray data)
 void CStateMachine::startDocument(QXmlStreamReader* reader)
 {
     QStringRef name = reader->name();
+    m_xml_depth++;
     m_state = e_connected;
-    qDebug() << QString("startDocument %1").arg(reader->name().toString());
+    qDebug() << QString("startDocument %1 (depth %2)").arg(reader->name().toString()).arg(m_xml_depth);
 }
 
 void CStateMachine::endDocument(QXmlStreamReader* reader)
 {
     QStringRef name = reader->name();
     m_state = e_not_connected;
-    qDebug() << QString("endDocument %1").arg(reader->name().toString());
+    qDebug() << QString("endDocument %1 (depth %2)").arg(reader->name().toString()).arg(m_xml_depth);
+    m_xml_depth--;
 }
 
 
 void CStateMachine::startElement(QXmlStreamReader* reader)
 {
     QStringRef name = reader->name();
-    qDebug() << QString("startElement %1").arg(name.toString());
+    m_xml_depth++;
+    qDebug() << QString("startElement %1 (depth %2)").arg(name.toString()).arg(m_xml_depth);
     if(name.toString().startsWith("getNextlist"))
     {
         parseGetNextlistArgs(reader);
@@ -135,7 +138,7 @@ void CStateMachine::startElement(QXmlStreamReader* reader)
     }
     else
     {
-        qDebug() << QString("Unknown tag received: %1").arg(reader->name().toString());
+        qDebug() << QString("Unknown start tag received: %1").arg(reader->name().toString());
     }
 }
 
@@ -160,14 +163,17 @@ void CStateMachine::endElement(QXmlStreamReader* reader)
     else if(name.toString().startsWith("modNextlist") && m_state == e_awaiting_nextlist_mod)
     {
     	m_session->addNextlistRevFromDiff(&m_nextlistDiff, m_diffFromRev);
+    	m_state = e_connected;
     }
     else if(name.toString().startsWith("modPlaylist") && m_state == e_awaiting_playlist_mod)
     {
     	m_session->addPlaylistRevFromDiff(&m_playlistDiff, m_diffFromRev);
+    	m_state = e_connected;
     }
     else if(name.toString().startsWith("modCollection") && m_state == e_awaiting_collection_mod)
     {
     	m_session->addCollectionRevFromDiff(&m_collectionDiff, m_diffFromRev);
+    	m_state = e_connected;
     }
     else if(name.toString().startsWith("session"))
     {
@@ -175,9 +181,10 @@ void CStateMachine::endElement(QXmlStreamReader* reader)
     }
     else
     {
-        qDebug() << QString("Unknown tag received: %1").arg(reader->name().toString());
+        qDebug() << QString("Unknown end tag received: %1").arg(reader->name().toString());
     }
-    qDebug() << QString("endElement %1").arg(reader->name().toString());
+    qDebug() << QString("endElement %1 (depth %2)").arg(reader->name().toString()).arg(m_xml_depth);
+    m_xml_depth--;
 }
 
 void CStateMachine::characters(QXmlStreamReader* reader)

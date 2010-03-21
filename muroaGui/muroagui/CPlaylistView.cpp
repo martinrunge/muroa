@@ -82,12 +82,17 @@ void CPlaylistView::dropEvent(QDropEvent *event)
         event->setDropAction(Qt::MoveAction);
         event->accept();
 
-        //CPlaylistModel* plModel = reinterpret_cast<CPlaylistModel*>(model());
+        // CPlaylistModel* plModel = reinterpret_cast<CPlaylistModel*>(model());
 
         CModelDiff md(data->data("application/x-muroa-playlist-diff"));
         QModelIndex currentIdx = indexAt( event->pos());
         //md.appendToInsert(currentIdx.row(), plModel->itemAt(currentIdx.row())->getHash());
-        md.setInsertPos( currentIdx.row() );
+        int insertPos = currentIdx.row();
+        if(insertPos == -1)
+        {
+        	insertPos = model()->rowCount();
+        }
+        md.setInsertPos( insertPos );
         md.setDestination(m_role);
 
         qDebug() << QString("Move [%1,%2] to %3").arg(md.getSelectedIndexes().at(0)).arg(md.getSelectedIndexes().at(md.getNumSelected() - 1 )).arg(md.getInsertPos());
