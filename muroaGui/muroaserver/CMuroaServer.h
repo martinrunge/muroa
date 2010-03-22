@@ -6,6 +6,7 @@
 #include "CConnection.h"
 #include "CCollection.h"
 #include "CCollectionItem.h"
+#include "CDnsSd.h"
 
 class CSession;
 class CNetwork;
@@ -39,6 +40,8 @@ private:
     QLabel m_connection_status_label;
 
     QStringList m_testfiles;
+
+    CDnsSd m_dnssd;
 
 };
 

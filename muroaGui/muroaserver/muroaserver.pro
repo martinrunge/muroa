@@ -3,8 +3,10 @@ TARGET = muroaserver
 QT += core \
     gui \
     xml \
-    network
-HEADERS += CConnection.h \
+    network \
+    dbus
+HEADERS += CDnsSd.h \
+    CConnection.h \
     CContentHandler.h \
     CMuroaServer.h \
     CNetwork.h \
@@ -21,7 +23,8 @@ HEADERS += CConnection.h \
     CSession.h \
     CCollectionItem.h \
     CCollection.h
-SOURCES += CConnection.cpp \
+SOURCES += CDnsSd.cpp \
+    CConnection.cpp \
     CCollectionItem.cpp \
     CDiff.cpp \
     CItemBase.cpp \
