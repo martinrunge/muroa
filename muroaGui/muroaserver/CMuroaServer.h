@@ -6,7 +6,9 @@
 #include "CConnection.h"
 #include "CCollection.h"
 #include "CCollectionItem.h"
-#include "CDnsSd.h"
+#include "CDnsSdAvahiViaQtDBus.h"
+#include "CDnsSdAvahi.h"
+
 
 class CSession;
 class CNetwork;
@@ -41,7 +43,8 @@ private:
 
     QStringList m_testfiles;
 
-    CDnsSd m_dnssd;
+    //CDnsSdAvahiViaQtDBus m_dnssd;
+    CDnsSdAvahi m_dnssd;
 
 };
 

@@ -36,6 +36,7 @@ CMuroaServer::CMuroaServer(QWidget *parent)
 	readCollectionFile(m_testfiles[0]);
 	// m_connection.setSessionPtr(m_session);
 	//m_connection.setCollection(&m_collection);
+	m_dnssd.registerService("muroa", 4567);
 }
 
 CMuroaServer::~CMuroaServer()

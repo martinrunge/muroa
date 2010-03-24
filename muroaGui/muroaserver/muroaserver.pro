@@ -5,7 +5,9 @@ QT += core \
     xml \
     network \
     dbus
-HEADERS += CDnsSd.h \
+HEADERS += CDnsSdAvahi.h \
+    CDnsSdAvahiViaQtDBus.h \
+    IDnsSd.h \
     CConnection.h \
     CContentHandler.h \
     CMuroaServer.h \
@@ -23,7 +25,9 @@ HEADERS += CDnsSd.h \
     CSession.h \
     CCollectionItem.h \
     CCollection.h
-SOURCES += CDnsSd.cpp \
+SOURCES += CDnsSdAvahi.cpp \
+    CDnsSdAvahiViaQtDBus.cpp \
+    IDnsSd.cpp \
     CConnection.cpp \
     CCollectionItem.cpp \
     CDiff.cpp \
@@ -36,4 +40,6 @@ SOURCES += CDnsSd.cpp \
     CMuroaServer.cpp \
     CNetwork.cpp
 FORMS += MuroaServer.ui
-LIBS += -lxdiff
+LIBS += -lxdiff \
+    -lavahi-client \
+    -lavahi-qt4
