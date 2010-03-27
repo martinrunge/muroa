@@ -3,8 +3,11 @@ TARGET = muroagui
 QT += core \
     gui \
     xml \
-    network
-HEADERS += CCollectionCommand.h \
+    network \
+    dbus
+HEADERS += IDnsSd.h \
+    CDnsSdAvahiViaQtDBus.h \
+    CCollectionCommand.h \
     CNextlistCommand.h \
     CCollectionView.h \
     CCommandBase.h \
@@ -22,7 +25,9 @@ HEADERS += CCollectionCommand.h \
     CMuroaGui.h \
     CCollectionModel.h \
     CDiffBuilder.h
-SOURCES += CCollectionCommand.cpp \
+SOURCES += IDnsSd.cpp \
+    CDnsSdAvahiViaQtDBus.cpp \
+    CCollectionCommand.cpp \
     CNextlistCommand.cpp \
     CCollectionView.cpp \
     CCommandBase.cpp \

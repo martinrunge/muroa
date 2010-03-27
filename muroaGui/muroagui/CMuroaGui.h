@@ -12,6 +12,8 @@
 #include "ui_muroagui.h"
 #include "CConnection.h"
 
+#include "CDnsSdAvahiViaQtDBus.h"
+
 class CMuroaGui : public QMainWindow
 {
     Q_OBJECT
@@ -29,6 +31,7 @@ public slots:
 private:
     Ui::muroaguiClass ui;
     CConnection m_connection;
+    CDnsSdAvahiViaQtDBus m_dnssd;
 
     CCollection<CCollectionItem*> m_collection;
     CCollection<CPlaylistItem*> m_playlist;
