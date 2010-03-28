@@ -57,7 +57,7 @@ void CDnsSdAvahi::registerService(string serviceName, unsigned short servicePort
 	}
 
 	m_serviceName = serviceName;
-	m_servicePort = m_servicePort;
+	m_servicePort = servicePort;
 	m_userdata.thisPtr = this;
     /* Allocate a new client */
 	int error;
@@ -185,7 +185,7 @@ void CDnsSdAvahi::createService(AvahiClient *client)
          * same name should be put in the same entry group. */
 
         /* Add the service for IPP */
-        if ((ret = avahi_entry_group_add_service(m_group, AVAHI_IF_UNSPEC, AVAHI_PROTO_UNSPEC, AvahiPublishFlags(0), m_serviceName.c_str(), "_muroa._tcp", NULL, NULL, 651, "role=session server", NULL)) < 0) {
+        if ((ret = avahi_entry_group_add_service(m_group, AVAHI_IF_UNSPEC, AVAHI_PROTO_UNSPEC, AvahiPublishFlags(0), m_serviceName.c_str(), "_muroa._tcp", NULL, NULL, m_servicePort, "role=session server", NULL)) < 0) {
 
             if (ret == AVAHI_ERR_COLLISION)
                 goto collision;

@@ -14,6 +14,8 @@
 
 #include "CDnsSdAvahiViaQtDBus.h"
 
+class CServiceBrowser;
+
 class CMuroaGui : public QMainWindow
 {
     Q_OBJECT
@@ -24,13 +26,15 @@ public:
 
 public slots:
     void openConnection();
-
     void connectionStatusChanged(QString status);
+
 
 
 private:
     Ui::muroaguiClass ui;
     CConnection m_connection;
+
+    CServiceBrowser* m_serviceBrowser;
     CDnsSdAvahiViaQtDBus m_dnssd;
 
     CCollection<CCollectionItem*> m_collection;

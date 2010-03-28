@@ -16,7 +16,17 @@ CMuroaServer::CMuroaServer(QWidget *parent)
 	connect(ui.actionExit, SIGNAL(triggered()), qApp, SLOT(quit()));
 	connect(ui.action_next_Revision, SIGNAL(triggered()), this, SLOT(nextRevision()));
 
-	m_net = new CNetwork(2678);
+	int portnr = 16320 - 1;
+	int retval;
+
+	m_net = new CNetwork();
+
+	do {
+		retval = m_net->listen(++portnr);
+	} while(retval == -1 );
+
+	m_portNr = portnr;
+
 	connect(m_net, SIGNAL(newConnection(QTcpSocket*)), this, SLOT(newConnection(QTcpSocket*)));
 
 	m_session = new CSession();
@@ -36,7 +46,7 @@ CMuroaServer::CMuroaServer(QWidget *parent)
 	readCollectionFile(m_testfiles[0]);
 	// m_connection.setSessionPtr(m_session);
 	//m_connection.setCollection(&m_collection);
-	m_dnssd.registerService("muroa", 4567);
+	m_dnssd.registerService("muroa", m_portNr);
 }
 
 CMuroaServer::~CMuroaServer()

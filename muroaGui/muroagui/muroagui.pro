@@ -5,7 +5,9 @@ QT += core \
     xml \
     network \
     dbus
-HEADERS += IDnsSd.h \
+HEADERS += CServiceDesc.h \
+    CServiceBrowser.h \
+    IDnsSd.h \
     CDnsSdAvahiViaQtDBus.h \
     CCollectionCommand.h \
     CNextlistCommand.h \
@@ -25,7 +27,9 @@ HEADERS += IDnsSd.h \
     CMuroaGui.h \
     CCollectionModel.h \
     CDiffBuilder.h
-SOURCES += IDnsSd.cpp \
+SOURCES += CServiceDesc.cpp \
+    CServiceBrowser.cpp \
+    IDnsSd.cpp \
     CDnsSdAvahiViaQtDBus.cpp \
     CCollectionCommand.cpp \
     CNextlistCommand.cpp \
@@ -45,5 +49,6 @@ SOURCES += IDnsSd.cpp \
     CMuroaGui.cpp \
     CCollectionModel.cpp \
     CDiffBuilder.cpp
-FORMS += MuroaGui.ui
+FORMS += ServiceBrowser.ui \
+    MuroaGui.ui
 RESOURCES += 

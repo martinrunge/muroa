@@ -9,8 +9,10 @@ class CNetwork : public QObject
 {
     Q_OBJECT;
 public:
-    CNetwork(int portNr);
+    CNetwork();
     ~CNetwork();
+
+    int listen(int portNr);
 
 signals:
     void newConnection(QTcpSocket* socket);
@@ -25,7 +27,7 @@ public slots:
 
 private:
 
-    void listen();
+
 
     int m_port_nr;
 

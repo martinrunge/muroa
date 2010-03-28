@@ -46,6 +46,7 @@ private:
     //CDnsSdAvahiViaQtDBus m_dnssd;
     CDnsSdAvahi m_dnssd;
 
+    int m_portNr;
 };
 
 #endif // MUROASERVER_H

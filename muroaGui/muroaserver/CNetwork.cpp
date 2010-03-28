@@ -2,18 +2,15 @@
 #include <QString>
 #include <QDebug>
 
-#include<exception>
+#include <exception>
 
-CNetwork::CNetwork(int portNr)
+CNetwork::CNetwork()
 {
     qDebug() << QString("CNetwork::CNetwork()");
     m_server = new QTcpServer();
     qDebug() << QString("new QTcpServer() returned 0x%1").arg((ulong)m_server, 8, 16, QLatin1Char('0'));
 
-    m_port_nr = portNr;
     connect(m_server, SIGNAL(newConnection()), this, SLOT(newConnection()));
-
-    listen();
 }
 
 CNetwork::~CNetwork()
@@ -21,12 +18,16 @@ CNetwork::~CNetwork()
     delete m_server;
 }
 
-void CNetwork::listen()
+int CNetwork::listen(int portNr)
 {
-    if (!m_server->listen(QHostAddress::Any, m_port_nr )) {
-        qDebug() << QString("throwing exception!");
-        throw std::exception();
-        return;
+    if (!m_server->listen(QHostAddress::Any, portNr )) {
+    //    qDebug() << QString("throwing exception!");
+    //    throw std::exception();
+        return -1;
+     }
+     else {
+    	 m_port_nr = portNr;
+    	 return m_port_nr;
      }
 }
 

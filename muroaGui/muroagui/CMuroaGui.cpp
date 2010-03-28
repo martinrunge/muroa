@@ -1,4 +1,6 @@
 #include "CMuroaGui.h"
+#include "CServiceBrowser.h"
+
 
 CMuroaGui::CMuroaGui(QWidget *parent)
     : QMainWindow(parent) ,
@@ -34,22 +36,24 @@ CMuroaGui::CMuroaGui(QWidget *parent)
 	ui.nextToPlayView->setRole(E_NEXTLIST);
 
 	connect(&m_diffBuilder, SIGNAL(sendCommand(CCommandBase*)), &m_connection, SLOT(sendCommand(CCommandBase*)));
+	m_serviceBrowser = new CServiceBrowser();
+	connect(&m_dnssd, SIGNAL(serviceFound(QString, QString, QString, int)), m_serviceBrowser, SLOT(addService(QString, QString, QString, int)));
+	connect(&m_dnssd, SIGNAL(serviceRemoved(QString, QString)), m_serviceBrowser, SLOT(removeService(QString, QString)));
+	m_serviceBrowser->show();
 }
 
 CMuroaGui::~CMuroaGui()
 {
-
+	delete m_serviceBrowser;
 }
-
-
 
 void CMuroaGui::openConnection()
 {
     m_connection.open("localhost", 2678);
 }
 
-
 void CMuroaGui::connectionStatusChanged(QString status)
 {
 	m_connection_status_label.setText(status);
 }
+

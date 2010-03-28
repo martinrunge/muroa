@@ -14,11 +14,15 @@
 #include <QtDBus/QtDBus>
 
 
-class CDnsSdAvahiViaQtDBus :  public QObject {
+class CDnsSdAvahiViaQtDBus : public CDnsSdBase, public QObject {
 	Q_OBJECT;
 public:
 	CDnsSdAvahiViaQtDBus();
 	virtual ~CDnsSdAvahiViaQtDBus();
+
+signals:
+	void serviceFound(QString serviceName, QString hostName, QString domainName, int portNr);
+	void serviceRemoved(QString serviceName, QString domainName);
 
 public slots:
 	void gotServiceBrowser(QDBusPendingCallWatcher* result);
@@ -26,14 +30,12 @@ public slots:
 	void newItemHandler(int interface, int protocol, QString name, QString stype, QString domain, unsigned flags);
 	void delItemHandler(int interface, int protocol, QString name, QString stype, QString domain, unsigned flags);
 
-
 private:
 	QDBusConnection m_dbusConn;
 	QDBusInterface *m_if;
 	QDBusInterface *m_serviceBrowser;
 
 	void resolveService(int interface, int protocol, QString name, QString stype, QString domain, unsigned flags);
-
 };
 
 #endif /* CDNSSD_H_ */
