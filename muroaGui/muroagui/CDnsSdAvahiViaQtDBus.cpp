@@ -12,6 +12,8 @@
 #include <avahi-common/defs.h>
 #include <avahi-common/address.h>
 
+#include "CServiceDesc.h"
+
 
 CDnsSdAvahiViaQtDBus::CDnsSdAvahiViaQtDBus() : m_dbusConn(QDBusConnection::systemBus()), m_serviceBrowser(0)
 {
@@ -35,7 +37,6 @@ CDnsSdAvahiViaQtDBus::CDnsSdAvahiViaQtDBus() : m_dbusConn(QDBusConnection::syste
 CDnsSdAvahiViaQtDBus::~CDnsSdAvahiViaQtDBus() {
 	delete m_if;
 }
-
 
 
 void CDnsSdAvahiViaQtDBus::gotServiceBrowser(QDBusPendingCallWatcher* result)
@@ -73,6 +74,8 @@ void CDnsSdAvahiViaQtDBus::newItemHandler(int interface, int protocol, QString n
 void CDnsSdAvahiViaQtDBus::delItemHandler(int interface, int protocol, QString name, QString stype, QString domain, unsigned flags)
 {
 	qDebug() << QString("delItemHandler if=%1 prot=%2 name=%3 stype=%4 domain=%5 flags=%6").arg(interface).arg(protocol).arg(name).arg(stype).arg(domain).arg(flags);
+	removeService(name);
+	emit servicesChanged();
 	emit serviceRemoved(name, domain);
 }
 
@@ -111,6 +114,8 @@ void CDnsSdAvahiViaQtDBus::resolveService(int interface, int protocol, QString n
 
 		qDebug() << QString("Service resolved if=%1 prot=%2 name=%3 type=%4 domain=%5 host= %6 addr=%7 port=%8").arg(retinterface).arg(retprotocol).arg(retname).arg(rettype).arg(domainName).arg(hostName).arg(retaddress).arg(portNr);
 
+		addService(new CServiceDesc(name, hostName, domainName, portNr));
+		emit servicesChanged();
 		emit serviceFound(name, hostName, domainName, portNr);
 	}
 }

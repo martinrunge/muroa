@@ -12,6 +12,15 @@ CServiceDesc::CServiceDesc() {
 
 }
 
+CServiceDesc::CServiceDesc(QString serviceName, QString hostName, QString domainName, int portNr)
+{
+	m_serviceName = serviceName;
+	m_hostName = hostName;
+	m_domainName = domainName;
+	m_portNr = portNr;
+}
+
+
 CServiceDesc::~CServiceDesc() {
 	// TODO Auto-generated destructor stub
 }

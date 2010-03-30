@@ -13,10 +13,12 @@
 
 #include "ui_ServiceBrowser.h"
 
+class CDnsSdBase;
+
 class CServiceBrowser : public QDialog, public Ui::ServiceBrowserDialog {
 	Q_OBJECT;
 public:
-	CServiceBrowser();
+	CServiceBrowser(CDnsSdBase* dnssdObj);
 	virtual ~CServiceBrowser();
 
 	void accept();
@@ -26,6 +28,7 @@ signals:
 	void serviceSelected(int index);
 
 public slots:
+	void servicesChanged();
 	void addService(QString service, QString host, QString domain, int port);
 	void removeService(QString service, QString domain);
 	void removeService(int index);
@@ -33,6 +36,9 @@ public slots:
 private:
 	QStringListModel m_model;
 	QStringList m_serviceList;
+	CDnsSdBase* m_dnssdObj;
+
+	void setupServiceList();
 };
 
 #endif /* CSERVICEBROWSER_H_ */

@@ -8,19 +8,20 @@
 #ifndef CDNSSD_H_
 #define CDNSSD_H_
 
-#include "IDnsSd.h"
+#include "CDnsSdBase.h"
 
 #include <QObject>
 #include <QtDBus/QtDBus>
 
 
-class CDnsSdAvahiViaQtDBus : public CDnsSdBase, public QObject {
+class CDnsSdAvahiViaQtDBus : public CDnsSdBase {
 	Q_OBJECT;
 public:
 	CDnsSdAvahiViaQtDBus();
 	virtual ~CDnsSdAvahiViaQtDBus();
 
 signals:
+	void servicesChanged();
 	void serviceFound(QString serviceName, QString hostName, QString domainName, int portNr);
 	void serviceRemoved(QString serviceName, QString domainName);
 

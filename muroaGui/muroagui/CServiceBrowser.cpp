@@ -7,10 +7,15 @@
 
 #include "CServiceBrowser.h"
 
+#include "CDnsSdBase.h"
+#include "CServiceDesc.h"
 #include <QDebug>
 
-CServiceBrowser::CServiceBrowser() {
+CServiceBrowser::CServiceBrowser(CDnsSdBase* dnssdObj) {
 	setupUi(this);
+	m_dnssdObj = dnssdObj;
+
+	setupServiceList();
 
 	m_model.setStringList(m_serviceList);
 	listView->setModel(&m_model);
@@ -32,7 +37,21 @@ void CServiceBrowser::reject()
 	hide();
 }
 
+void CServiceBrowser::servicesChanged()
+{
+	setupServiceList();
+}
 
+void CServiceBrowser::setupServiceList()
+{
+	m_serviceList.clear();
+	QList<CServiceDesc*> services = m_dnssdObj->getServiceList();
+	for(int i=0; i < services.size(); i++)
+	{
+		m_serviceList.append(services.at(i)->getServiceName());
+	}
+	m_model.setStringList(m_serviceList);
+}
 
 void CServiceBrowser::addService(QString service, QString host, QString domain, int port)
 {

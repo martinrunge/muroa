@@ -13,11 +13,12 @@
 class CServiceDesc {
 public:
 	CServiceDesc();
+	CServiceDesc(QString serviceName, QString hostName,	QString domainName, int portNr);
 	virtual ~CServiceDesc();
 
     QString getDomainName() const
     {
-        return m_DomainName;
+        return m_domainName;
     }
 
     QString getHostName() const
@@ -35,9 +36,9 @@ public:
         return m_serviceName;
     }
 
-    void setDomainName(QString m_DomainName)
+    void setDomainName(QString m_domainName)
     {
-        this->m_DomainName = m_DomainName;
+        this->m_domainName = m_domainName;
     }
 
     void setHostName(QString m_hostName)
@@ -58,7 +59,7 @@ public:
 private:
 	QString m_serviceName;
 	QString m_hostName;
-	QString m_DomainName;
+	QString m_domainName;
 	int m_portNr;
 
 };

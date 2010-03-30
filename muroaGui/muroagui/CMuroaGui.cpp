@@ -36,9 +36,8 @@ CMuroaGui::CMuroaGui(QWidget *parent)
 	ui.nextToPlayView->setRole(E_NEXTLIST);
 
 	connect(&m_diffBuilder, SIGNAL(sendCommand(CCommandBase*)), &m_connection, SLOT(sendCommand(CCommandBase*)));
-	m_serviceBrowser = new CServiceBrowser();
-	connect(&m_dnssd, SIGNAL(serviceFound(QString, QString, QString, int)), m_serviceBrowser, SLOT(addService(QString, QString, QString, int)));
-	connect(&m_dnssd, SIGNAL(serviceRemoved(QString, QString)), m_serviceBrowser, SLOT(removeService(QString, QString)));
+	m_serviceBrowser = new CServiceBrowser(&m_dnssd);
+	connect(&m_dnssd, SIGNAL(servicesChanged()), m_serviceBrowser, SLOT(servicesChanged()));
 	m_serviceBrowser->show();
 }
 
