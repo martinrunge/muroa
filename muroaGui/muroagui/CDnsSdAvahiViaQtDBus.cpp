@@ -23,14 +23,14 @@ CDnsSdAvahiViaQtDBus::CDnsSdAvahiViaQtDBus() : m_dbusConn(QDBusConnection::syste
 	arglist.append(AVAHI_IF_UNSPEC);
 	arglist.append(AVAHI_PROTO_UNSPEC);
 	arglist.append(QString("_muroa._tcp"));
-	arglist.append(QString("local"));
+	arglist.append(QString());
 	arglist.append(unsigned(0));
 
 	QDBusPendingCall pcall = m_if->asyncCallWithArgumentList("ServiceBrowserNew", arglist);
 	QDBusPendingCallWatcher *watcher = new QDBusPendingCallWatcher(pcall, this);
 	QObject::connect(watcher, SIGNAL(finished(QDBusPendingCallWatcher*)), this, SLOT(gotServiceBrowser(QDBusPendingCallWatcher*)));
 
-	resolveService(AVAHI_IF_UNSPEC, AVAHI_PROTO_UNSPEC, "muroa", "_muroa._tcp", "local", unsigned(0));
+	// resolveService(AVAHI_IF_UNSPEC, AVAHI_PROTO_UNSPEC, "", "_muroa._tcp", "local", unsigned(0));
 }
 
 
@@ -114,7 +114,7 @@ void CDnsSdAvahiViaQtDBus::resolveService(int interface, int protocol, QString n
 
 		qDebug() << QString("Service resolved if=%1 prot=%2 name=%3 type=%4 domain=%5 host= %6 addr=%7 port=%8").arg(retinterface).arg(retprotocol).arg(retname).arg(rettype).arg(domainName).arg(hostName).arg(retaddress).arg(portNr);
 
-		addService(new CServiceDesc(name, hostName, domainName, portNr));
+		addService(new CServiceDesc(name, hostName, domainName, portNr, interface, protocol));
 		emit servicesChanged();
 		emit serviceFound(name, hostName, domainName, portNr);
 	}

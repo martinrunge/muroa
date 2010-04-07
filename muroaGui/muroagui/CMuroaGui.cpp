@@ -4,6 +4,7 @@
 
 CMuroaGui::CMuroaGui(QWidget *parent)
     : QMainWindow(parent) ,
+      m_dnssd("_muroa._tcp"),
    	  m_diffBuilder(&m_collection, &m_playlist, &m_nextlist)
 {
 	ui.setupUi(this);
@@ -38,7 +39,7 @@ CMuroaGui::CMuroaGui(QWidget *parent)
 	connect(&m_diffBuilder, SIGNAL(sendCommand(CCommandBase*)), &m_connection, SLOT(sendCommand(CCommandBase*)));
 	m_serviceBrowser = new CServiceBrowser(&m_dnssd);
 	connect(&m_dnssd, SIGNAL(servicesChanged()), m_serviceBrowser, SLOT(servicesChanged()));
-	m_serviceBrowser->show();
+	// m_serviceBrowser->exec();
 }
 
 CMuroaGui::~CMuroaGui()
@@ -48,7 +49,10 @@ CMuroaGui::~CMuroaGui()
 
 void CMuroaGui::openConnection()
 {
-    m_connection.open("localhost", 2678);
+	int index = m_serviceBrowser->exec();
+	CServiceDesc* sd = m_dnssd.getService(index);
+
+    m_connection.open(sd->getHostName(), sd->getPortNr());
 }
 
 void CMuroaGui::connectionStatusChanged(QString status)

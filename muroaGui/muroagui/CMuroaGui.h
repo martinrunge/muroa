@@ -13,6 +13,7 @@
 #include "CConnection.h"
 
 #include "CDnsSdAvahiViaQtDBus.h"
+#include "CDnsSdServiceBrowserAvahi.h"
 
 class CServiceBrowser;
 
@@ -35,7 +36,8 @@ private:
     CConnection m_connection;
 
     CServiceBrowser* m_serviceBrowser;
-    CDnsSdAvahiViaQtDBus m_dnssd;
+//    CDnsSdAvahiViaQtDBus m_dnssd;
+    CDnsSdServiceBrowserAvahi m_dnssd;
 
     CCollection<CCollectionItem*> m_collection;
     CCollection<CPlaylistItem*> m_playlist;

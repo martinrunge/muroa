@@ -5,7 +5,8 @@ QT += core \
     xml \
     network \
     dbus
-HEADERS += CDnsSdBase.h \
+HEADERS += CDnsSdServiceBrowserAvahi.h \
+    CDnsSdBase.h \
     CServiceDesc.h \
     CServiceBrowser.h \
     CDnsSdAvahiViaQtDBus.h \
@@ -27,7 +28,8 @@ HEADERS += CDnsSdBase.h \
     CMuroaGui.h \
     CCollectionModel.h \
     CDiffBuilder.h
-SOURCES += CDnsSdBase.cpp \
+SOURCES += CDnsSdServiceBrowserAvahi.cpp \
+    CDnsSdBase.cpp \
     CServiceDesc.cpp \
     CServiceBrowser.cpp \
     CDnsSdAvahiViaQtDBus.cpp \
@@ -50,5 +52,8 @@ SOURCES += CDnsSdBase.cpp \
     CCollectionModel.cpp \
     CDiffBuilder.cpp
 FORMS += ServiceBrowser.ui \
+    ServiceBrowser.ui \
     MuroaGui.ui
 RESOURCES += 
+LIBS += -lavahi-client \
+    -lavahi-qt4

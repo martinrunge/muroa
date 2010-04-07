@@ -11,7 +11,7 @@
 #include <QList>
 #include <QObject>
 
-class CServiceDesc;
+#include "CServiceDesc.h"
 
 class CDnsSdBase: public QObject {
 	Q_OBJECT;
@@ -29,10 +29,16 @@ public:
         this->m_serviceList = m_serviceList;
     }
 
+    CServiceDesc* getService(QString name, int which = 0);
+    CServiceDesc* getService(int index) { return m_serviceList.at(index); };
+
     void addService(CServiceDesc* newService);
     int removeService(QString name);
+    int removeService(const CServiceDesc& rmSd );
     int hasService(QString name);
 
+signals:
+    void servicesChanged();
 
 protected:
 	QList<CServiceDesc*> m_serviceList;

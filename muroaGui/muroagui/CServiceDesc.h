@@ -13,8 +13,27 @@
 class CServiceDesc {
 public:
 	CServiceDesc();
-	CServiceDesc(QString serviceName, QString hostName,	QString domainName, int portNr);
+	CServiceDesc(QString serviceName, QString hostName,	QString domainName, int portNr, int interface, int protocol);
 	virtual ~CServiceDesc();
+    int getInterface() const
+    {
+        return m_interface;
+    }
+
+    int getProtocol() const
+    {
+        return m_protocol;
+    }
+
+    void setInterface(int m_interface)
+    {
+        this->m_interface = m_interface;
+    }
+
+    void setProtocol(int m_protocol)
+    {
+        this->m_protocol = m_protocol;
+    }
 
     QString getDomainName() const
     {
@@ -56,11 +75,27 @@ public:
         this->m_serviceName = m_serviceName;
     }
 
+    inline bool operator ==(const CServiceDesc &other)
+	{
+    	if(m_serviceName == other.getServiceName() &&
+    	   m_domainName  == other.getDomainName() &&
+    	   m_protocol    == other.getProtocol() &&
+    	   m_interface   == other.getInterface())
+    	{
+    		return true;
+    	}
+    	else
+    		return false;
+	}
+
 private:
 	QString m_serviceName;
 	QString m_hostName;
 	QString m_domainName;
 	int m_portNr;
+
+	int m_protocol;
+	int m_interface;
 
 };
 

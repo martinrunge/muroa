@@ -6,7 +6,6 @@
  */
 
 #include "CDnsSdBase.h"
-#include "CServiceDesc.h"
 
 CDnsSdBase::CDnsSdBase() {
 }
@@ -35,6 +34,21 @@ int CDnsSdBase::removeService(QString name)
 	return num;
 }
 
+int CDnsSdBase::removeService(const CServiceDesc& rmSd )
+{
+	int num = 0;
+	for(int i=0; i < m_serviceList.size(); i++)
+	{
+		if( *m_serviceList.at(i) == rmSd )
+		{
+			CServiceDesc* serv = m_serviceList.takeAt(i);
+			delete serv;
+			num++;
+		}
+	}
+	return num;
+}
+
 int CDnsSdBase::hasService(QString name)
 {
 	int num = 0;
@@ -46,4 +60,22 @@ int CDnsSdBase::hasService(QString name)
 		}
 	}
 	return num;
+}
+
+
+CServiceDesc* CDnsSdBase::getService(QString name, int which)
+{
+	int num = 0;
+	for(int i=0; i < m_serviceList.size(); i++)
+	{
+		if( name.compare( m_serviceList.at(i)->getServiceName() ) == 0 )
+		{
+			if(num == which)
+			{
+				return m_serviceList.at(i);
+			}
+			num++;
+		}
+	}
+	return 0;
 }
