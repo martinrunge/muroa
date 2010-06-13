@@ -9,12 +9,16 @@ CMuroaGui::CMuroaGui(QWidget *parent)
 {
 	ui.setupUi(this);
 
+
 	connect(ui.actionExit, SIGNAL(triggered()), qApp, SLOT(quit()));
     connect(ui.actionOpen, SIGNAL(triggered()), this, SLOT(openConnection()));
     connect(ui.actionClose, SIGNAL(triggered()), &m_connection, SLOT(close()));
 
     connect(ui.actionGet_Revision_1, SIGNAL(triggered()), &m_connection, SLOT(close()));
     connect(ui.actionGet_next_Revision, SIGNAL(triggered()), &m_connection, SLOT(close()));
+
+    connect(ui.actionPlayPause, SIGNAL(triggered()), &m_connection, SLOT(play()));
+    connect(ui.actionStop, SIGNAL(triggered()), &m_connection, SLOT(stop()));
 
 	statusBar()->addWidget(&m_connection_status_label);
 
@@ -40,6 +44,12 @@ CMuroaGui::CMuroaGui(QWidget *parent)
 	m_serviceBrowser = new CServiceBrowser(&m_dnssd);
 	connect(&m_dnssd, SIGNAL(servicesChanged()), m_serviceBrowser, SLOT(servicesChanged()));
 	// m_serviceBrowser->exec();
+
+	ui.playBtn->insertAction( 0, ui.actionPlayPause);
+	ui.stopBtn->insertAction( 0, ui.actionStop);
+
+	connect(&m_connection, SIGNAL(progressSig(int, int)), this, SLOT(progress(int,int)));
+
 }
 
 CMuroaGui::~CMuroaGui()
@@ -58,5 +68,19 @@ void CMuroaGui::openConnection()
 void CMuroaGui::connectionStatusChanged(QString status)
 {
 	m_connection_status_label.setText(status);
+}
+
+void CMuroaGui::progress(int done, int total)
+{
+	int done_min = done % 60;
+	int done_sec = done - done_min * 60;
+
+	int total_min = total % 60;
+	int total_sec = total - total_min * 60;
+
+	QString progLabel = QString("%1:%2 / %3:%4").arg(done_min).arg(done_sec, 2, '0').arg(total_min).arg(total_sec, 2, '0');
+	ui.progressLabel->setText( progLabel );
+
+	ui.posSlider->setValue(done / total);
 }
 

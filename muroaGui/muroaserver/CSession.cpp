@@ -14,6 +14,8 @@ CSession::CSession() : m_latestCollectionRevision(0),
                        m_latestPlaylistRevision(0),
                        m_latestNextlistRevision(0)
 {
+	connect(&m_stream, SIGNAL(finished()), this, SLOT(next()));
+	connect(&m_stream, SIGNAL(progress(int, int)), this, SLOT(progress(int, int)));
 
 }
 
@@ -240,4 +242,34 @@ void CSession::connectionClosed(CConnection* conn)
 {
 	m_connections.removeAll(conn);
 	delete conn;
+}
+
+
+void CSession::play()
+{
+	m_stream.play();
+}
+
+void CSession::stop()
+{
+	m_stream.stop();
+}
+
+void CSession::next()
+{
+
+}
+
+void CSession::prev()
+{
+
+}
+
+
+void CSession::progress(int done, int total)
+{
+	for(int i=0; i < m_connections.size(); i++)
+	{
+		m_connections.at(i)->sendProgress(done, total);
+	}
 }

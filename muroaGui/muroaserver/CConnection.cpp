@@ -81,6 +81,26 @@ void CConnection::connected()
 
 }
 
+void CConnection::next()
+{
+    m_session->next();
+}
+
+void CConnection::prev()
+{
+    m_session->prev();
+}
+
+void CConnection::play()
+{
+    m_session->play();
+}
+
+void CConnection::stop()
+{
+    m_session->stop();
+}
+
 void CConnection::sendCollection(int knownRevision)
 {
 	QString collection;
@@ -144,3 +164,11 @@ void CConnection::sendNextlist(int knownRevision)
     m_xml_writer->writeEndElement();
 }
 
+
+void CConnection::sendProgress(int done, int total)
+{
+    m_xml_writer->writeStartElement("progress");
+    m_xml_writer->writeAttribute("done", QString().setNum(done));
+    m_xml_writer->writeAttribute("total", QString().setNum(total));
+    m_xml_writer->writeEndElement();
+}

@@ -3,6 +3,7 @@
 #include <QXmlStreamWriter>
 #include <QXmlStreamReader>
 
+#include "CSessionCommand.h"
 #include <QDebug>
 
 CConnection::CConnection() : m_xml_reader(0)
@@ -10,6 +11,8 @@ CConnection::CConnection() : m_xml_reader(0)
     connect(&m_socket, SIGNAL(connected()), this, SLOT(connected()));
     connect(&m_socket, SIGNAL(disconnected()), this, SLOT(disconnected()));
     connect(&m_socket, SIGNAL(readyRead()), this, SLOT(readyRead()));
+
+    connect(&m_sm, SIGNAL(progress(int,int)), this, SLOT(progress(int, int)));
 }
 
 CConnection::~CConnection()
@@ -209,9 +212,25 @@ void CConnection::sendCommand(CCommandBase* cmd)
 }
 
 
+void CConnection::play()
+{
+	CSessionCommand *cmd = new CSessionCommand("play");
+	sendCommand(cmd);
+}
+
+void CConnection::stop()
+{
+	CSessionCommand *cmd = new CSessionCommand("stop");
+	sendCommand(cmd);
+}
+
 void CConnection::test()
 {
     getCollection();
 }
 
 
+void CConnection::progress(int done, int total)
+{
+	emit progressSig(done, total);
+}

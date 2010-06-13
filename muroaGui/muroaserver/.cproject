@@ -140,8 +140,9 @@
 <pathentry base-path="/usr/include/qt4" include="QtAssistant" kind="inc" path="" system="true"/>
 <pathentry include="/usr/include" kind="inc" path="" system="true"/>
 <pathentry include="/usr/include/c++/4.4" kind="inc" path="" system="true"/>
-<pathentry kind="src" path=""/>
+<pathentry excluding="mediaprocessing/" kind="src" path=""/>
 <pathentry kind="out" path=""/>
+<pathentry kind="src" path="mediaprocessing"/>
 </storageModule>
 </cconfiguration>
 </storageModule>

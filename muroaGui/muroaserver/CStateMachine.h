@@ -12,6 +12,10 @@ class CSession;
 
 enum states { e_not_connected,
 			  e_connected,
+			  e_next_requested,
+			  e_prev_requested,
+			  e_play_requested,
+			  e_stop_requested,
 			  e_collection_requested,
 			  e_playlist_requested,
 			  e_nextlist_requested,
@@ -66,6 +70,11 @@ private:
     CSession* m_session;
 
     QXmlStreamWriter* m_xml_writer;
+
+    void parseNextArgs(QXmlStreamReader* reader);
+    void parsePrevArgs(QXmlStreamReader* reader);
+    void parseStopArgs(QXmlStreamReader* reader);
+    void parsePlayArgs(QXmlStreamReader* reader);
 
     void parseGetNextlistArgs(QXmlStreamReader* reader);
     void parseGetPlaylistArgs(QXmlStreamReader* reader);

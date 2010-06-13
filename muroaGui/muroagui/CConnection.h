@@ -24,7 +24,7 @@ public:
 
 signals:
     void connectionStatusChanged(QString message);
-
+    void progressSig(int done, int total);
 
 public slots:
     void close();
@@ -34,7 +34,8 @@ public slots:
     void disconnected();
     void error();
 
-    void readyRead();
+    void play();
+    void stop();
 
     void addSong(QString artist, QString album, QString title);
     void getCollection();
@@ -48,7 +49,10 @@ public slots:
 
     void sendCommand(CCommandBase* cmd);
 
+    void readyRead();
     void test();
+
+    void progress(int done, int total);
 
 
 private:

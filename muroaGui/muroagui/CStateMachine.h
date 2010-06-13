@@ -14,6 +14,13 @@ class QXmlStreamWriter;
 class CPlaylistModel;
 class CCollectionModel;
 
+enum sessionState {
+	e_stopped = 0,
+	e_playing = 1,
+	e_paused = 2,
+	e_none,
+};
+
 enum states { e_no_session,
 			  e_session_active,
 			  e_awaiting_collection,
@@ -22,7 +29,9 @@ enum states { e_no_session,
 			  e_reading_nextlist,
 			  e_nextlist_received,
 			  e_reading_playlist,
-			  e_playlist_received  };
+			  e_playlist_received,
+              e_progress,
+			  e_state_changed };
 
 class CStateMachine : public QObject
 {
@@ -38,6 +47,10 @@ public:
 
     inline int getRevision() { return m_revision; };
 
+signals:
+    void progress( int done, int total );
+    void stateChanged( int sessionState );
+
 public slots:
     void close();
     void open();
@@ -52,6 +65,7 @@ public slots:
 
 private:
     int m_state;
+    int m_sessionState;
     int m_xml_depth;
 
     CPlaylistModel* m_playlistModelPtr;
@@ -61,7 +75,13 @@ private:
     int m_revision;
     int m_diffFromRev;
 
+    int m_done;
+    int m_total;
+
     QXmlStreamWriter* m_xml_writer;
+
+    void parseProgressArgs(QXmlStreamReader* reader);
+    void parseStateChangedArgs(QXmlStreamReader* reader);
 
     void parseNextlistArgs(QXmlStreamReader* reader);
     void parsePlaylistArgs(QXmlStreamReader* reader);

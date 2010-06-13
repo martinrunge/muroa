@@ -5,7 +5,8 @@ QT += core \
     xml \
     network \
     dbus
-HEADERS += CDnsSdAvahi.h \
+HEADERS += mediaprocessing/CStream.h \
+    CDnsSdAvahi.h \
     CDnsSdAvahiViaQtDBus.h \
     IDnsSd.h \
     CConnection.h \
@@ -25,7 +26,8 @@ HEADERS += CDnsSdAvahi.h \
     CSession.h \
     CCollectionItem.h \
     CCollection.h
-SOURCES += CDnsSdAvahi.cpp \
+SOURCES += mediaprocessing/CStream.cpp \
+    CDnsSdAvahi.cpp \
     CDnsSdAvahiViaQtDBus.cpp \
     IDnsSd.cpp \
     CConnection.cpp \

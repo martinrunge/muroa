@@ -16,6 +16,57 @@
   <widget class="QWidget" name="centralwidget">
    <layout class="QGridLayout" name="gridLayout">
     <item row="0" column="0">
+     <widget class="QLabel" name="titleLabel">
+      <property name="text">
+       <string>current artist - current title</string>
+      </property>
+     </widget>
+    </item>
+    <item row="0" column="1">
+     <widget class="QPushButton" name="playBtn">
+      <property name="text">
+       <string/>
+      </property>
+      <property name="icon">
+       <iconset>
+        <normalon>:/icons/icons/media-playback-start.png</normalon>
+        <activeoff>:/icons/icons/media-playback-pause.png</activeoff>
+       </iconset>
+      </property>
+      <property name="checkable">
+       <bool>true</bool>
+      </property>
+      <property name="checked">
+       <bool>true</bool>
+      </property>
+     </widget>
+    </item>
+    <item row="0" column="2">
+     <widget class="QPushButton" name="stopBtn">
+      <property name="text">
+       <string/>
+      </property>
+      <property name="icon">
+       <iconset resource="MuroaGui.qrc">
+        <normaloff>:/icons/icons/media-playback-stop.png</normaloff>:/icons/icons/media-playback-stop.png</iconset>
+      </property>
+     </widget>
+    </item>
+    <item row="0" column="3">
+     <widget class="QSlider" name="posSlider">
+      <property name="orientation">
+       <enum>Qt::Horizontal</enum>
+      </property>
+     </widget>
+    </item>
+    <item row="0" column="4">
+     <widget class="QLabel" name="progressLabel">
+      <property name="text">
+       <string>00:00 / 00:00</string>
+      </property>
+     </widget>
+    </item>
+    <item row="1" column="0" colspan="5">
      <widget class="QSplitter" name="splitter">
       <property name="orientation">
        <enum>Qt::Horizontal</enum>
@@ -33,7 +84,7 @@
      <x>0</x>
      <y>0</y>
      <width>935</width>
-     <height>25</height>
+     <height>26</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu_File">
@@ -48,6 +99,9 @@
     </property>
     <addaction name="actionOpen"/>
     <addaction name="actionClose"/>
+    <addaction name="separator"/>
+    <addaction name="actionPlayPause"/>
+    <addaction name="actionStop"/>
    </widget>
    <widget class="QMenu" name="menuCo_llection">
     <property name="title">
@@ -95,6 +149,22 @@
     <string>get next Revision</string>
    </property>
   </action>
+  <action name="actionPlayPause">
+   <property name="text">
+    <string>&amp;Play/Pause</string>
+   </property>
+   <property name="shortcut">
+    <string>Space</string>
+   </property>
+  </action>
+  <action name="actionStop">
+   <property name="text">
+    <string>&amp;Stop</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+X</string>
+   </property>
+  </action>
  </widget>
  <customwidgets>
   <customwidget>
@@ -108,6 +178,8 @@
    <header>CCollectionView.h</header>
   </customwidget>
  </customwidgets>
- <resources/>
+ <resources>
+  <include location="MuroaGui.qrc"/>
+ </resources>
  <connections/>
 </ui>

@@ -16,6 +16,8 @@
 #include "CPlaylistItem.h"
 #include "CCollection.h"
 
+#include "mediaprocessing/CStream.h"
+
 class CConnection;
 
 class CSession : public QObject{
@@ -51,9 +53,18 @@ public:
 	void addConnection(CConnection* connection);
 
 public slots:
+	void play();
+	void stop();
+	void next();
+	void prev();
+
 	void connectionClosed(CConnection* conn);
 
+	void progress(int done, int total);
+
 private:
+	CStream m_stream;
+
 	QMap<int, CCollection<CCollectionItem>* > m_collectionRevisions;
 	QMap<int, CCollection<CPlaylistItem>* > m_playlistRevisions;
 	QMap<int, CCollection<CPlaylistItem>* > m_nextlistRevisions;

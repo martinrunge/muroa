@@ -52,7 +52,15 @@ void CStateMachine::startElement(QXmlStreamReader* reader)
 {
     QStringRef name = reader->name();
     m_xml_depth++;
-    if(name.toString().startsWith("nextlist"))
+    if(name.toString().startsWith("progress"))
+    {
+    	parseProgressArgs(reader);
+    }
+    else if(name.toString().startsWith("stateChanged"))
+    {
+    	parseStateChangedArgs(reader);
+    }
+    else if(name.toString().startsWith("nextlist"))
     {
     	parseNextlistArgs(reader);
     }
@@ -84,7 +92,17 @@ void CStateMachine::endElement(QXmlStreamReader* reader)
 {
     QStringRef name = reader->name();
     m_xml_depth--;
-    if(name.toString().startsWith("nextlist"))
+    if(name.toString().startsWith("progress") && m_state == e_progress)
+    {
+    	emit progress(m_done, m_total);
+	    m_state = e_session_active;
+    }
+    else if(name.toString().startsWith("stateChanged") && m_state == e_state_changed)
+    {
+    	emit stateChanged(m_sessionState);
+	    m_state = e_session_active;
+    }
+    else if(name.toString().startsWith("nextlist"))
     {
 	    m_state = e_nextlist_received;
     }
@@ -174,6 +192,35 @@ void CStateMachine::parseWriteArgs(QXmlStreamReader* reader)
 
 
 }
+
+void CStateMachine::parseProgressArgs(QXmlStreamReader* reader)
+{
+	m_state = e_progress;
+
+	QXmlStreamAttributes att = reader->attributes();
+    QStringRef doneStrRef = att.value(QString(), QString("done"));
+    QStringRef totalStrRef = att.value(QString(), QString("total"));
+
+    bool ok;
+    m_done = doneStrRef.toString().toInt(&ok);
+    if(!ok) m_done = -1;
+    m_total = totalStrRef.toString().toInt(&ok);
+    if(!ok) m_total = -1;
+}
+
+void CStateMachine::parseStateChangedArgs(QXmlStreamReader* reader)
+{
+	m_state = e_state_changed;
+
+	QXmlStreamAttributes att = reader->attributes();
+    QStringRef stateStrRef = att.value(QString(), QString("state"));
+
+    bool ok;
+    m_sessionState = stateStrRef.toString().toInt(&ok);
+    if(!ok) m_sessionState = e_stopped;
+}
+
+
 
 void CStateMachine::parseNextlistArgs(QXmlStreamReader* reader)
 {

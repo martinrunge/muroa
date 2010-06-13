@@ -9,7 +9,7 @@
 
 #include "CPlaylistModel.h"
 #include "CCollectionModel.h"
-#include "ui_muroagui.h"
+#include "ui_MuroaGui.h"
 #include "CConnection.h"
 
 #include "CDnsSdAvahiViaQtDBus.h"
@@ -29,6 +29,8 @@ public slots:
     void openConnection();
     void connectionStatusChanged(QString status);
 
+    void progress(int done, int total);
+    // void setCurrentTitle( );
 
 
 private:

@@ -22,9 +22,16 @@ public:
     CConnection(QTcpSocket* socket);
     ~CConnection();
 
+    void next();
+    void prev();
+    void play();
+    void stop();
+
     void sendCollection(int knownRevision = -1);
     void sendPlaylist(int knownRevision = -1);
     void sendNextlist(int knownRevision = -1);
+
+    void sendProgress(int done, int total);
 
 signals:
     void connectionStatusChanged(QString message);

@@ -102,13 +102,28 @@ void CStateMachine::endDocument(QXmlStreamReader* reader)
     m_xml_depth--;
 }
 
-
 void CStateMachine::startElement(QXmlStreamReader* reader)
 {
     QStringRef name = reader->name();
     m_xml_depth++;
     qDebug() << QString("startElement %1 (depth %2)").arg(name.toString()).arg(m_xml_depth);
-    if(name.toString().startsWith("getNextlist"))
+    if(name.toString().startsWith("next"))
+    {
+        parseNextArgs(reader);
+    }
+    else if(name.toString().startsWith("prev"))
+    {
+        parsePrevArgs(reader);
+    }
+    else if(name.toString().startsWith("play"))
+    {
+        parsePlayArgs(reader);
+    }
+    else if(name.toString().startsWith("stop"))
+    {
+        parseStopArgs(reader);
+    }
+    else if(name.toString().startsWith("getNextlist"))
     {
         parseGetNextlistArgs(reader);
     }
@@ -145,7 +160,32 @@ void CStateMachine::startElement(QXmlStreamReader* reader)
 void CStateMachine::endElement(QXmlStreamReader* reader)
 {
     QStringRef name = reader->name();
-    if(name.toString().startsWith("getNextlist") && m_state == e_nextlist_requested)
+    if(name.toString().startsWith("next") && m_state == e_next_requested)
+    {
+    	m_connection->next();
+    	m_state = e_connected;
+    }
+    else if(name.toString().startsWith("prev") && m_state == e_prev_requested)
+    {
+    	m_connection->prev();
+    	m_state = e_connected;
+    }
+    else if(name.toString().startsWith("play") && m_state == e_play_requested)
+    {
+    	m_connection->play();
+    	m_state = e_connected;
+    }
+    else if(name.toString().startsWith("stop") && m_state == e_stop_requested)
+    {
+    	m_connection->stop();
+    	m_state = e_connected;
+    }
+    else if(name.toString().startsWith("getNextlist") && m_state == e_nextlist_requested)
+    {
+    	m_connection->sendNextlist(m_knownRevision);
+    	m_state = e_connected;
+    }
+    else if(name.toString().startsWith("getNextlist") && m_state == e_nextlist_requested)
     {
     	m_connection->sendNextlist(m_knownRevision);
     	m_state = e_connected;
@@ -207,6 +247,38 @@ void CStateMachine::characters(QXmlStreamReader* reader)
 
    	default:
    	    qDebug() << QString("receiving characters while in unknown state....");
+    }
+}
+
+void CStateMachine::parseNextArgs(QXmlStreamReader* reader)
+{
+    if( m_state == e_connected )
+    {
+    	m_state = e_next_requested;
+    }
+}
+
+void CStateMachine::parsePrevArgs(QXmlStreamReader* reader)
+{
+    if( m_state == e_connected )
+    {
+    	m_state = e_prev_requested;
+    }
+}
+
+void CStateMachine::parseStopArgs(QXmlStreamReader* reader)
+{
+    if( m_state == e_connected )
+    {
+    	m_state = e_stop_requested;
+    }
+}
+
+void CStateMachine::parsePlayArgs(QXmlStreamReader* reader)
+{
+    if( m_state == e_connected )
+    {
+    	m_state = e_play_requested;
     }
 }
 
