@@ -72,15 +72,15 @@ void CMuroaGui::connectionStatusChanged(QString status)
 
 void CMuroaGui::progress(int done, int total)
 {
-	int done_min = done % 60;
+	int done_min = done / 60;
 	int done_sec = done - done_min * 60;
 
-	int total_min = total % 60;
+	int total_min = total / 60;
 	int total_sec = total - total_min * 60;
 
-	QString progLabel = QString("%1:%2 / %3:%4").arg(done_min).arg(done_sec, 2, '0').arg(total_min).arg(total_sec, 2, '0');
+	QString progLabel = QString("%1:%2 / %3:%4").arg(done_min).arg(done_sec, 2, 10, QChar('0')).arg(total_min).arg(total_sec, 2, 10, QChar('0'));
 	ui.progressLabel->setText( progLabel );
 
-	ui.posSlider->setValue(done / total);
+	ui.posSlider->setValue((done * 100) / total);
 }
 

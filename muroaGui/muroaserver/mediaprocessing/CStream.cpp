@@ -74,4 +74,8 @@ void CStream::timeout()
 	m_done ++;
 	emit progress(m_done, m_total);
 	qDebug() << QString("timeout");
+	if( m_done >= m_total )
+	{
+		emit finished();
+	}
 }

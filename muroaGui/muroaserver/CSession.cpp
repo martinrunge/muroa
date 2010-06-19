@@ -247,6 +247,7 @@ void CSession::connectionClosed(CConnection* conn)
 
 void CSession::play()
 {
+	next();
 	m_stream.play();
 }
 
@@ -257,6 +258,8 @@ void CSession::stop()
 
 void CSession::next()
 {
+	CCollectionItem item = getCollection()->getItem(0);
+	m_stream.setSong( &item );
 
 }
 
