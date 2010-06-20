@@ -92,8 +92,8 @@ void CMuroaServer::readCollectionFile(QString filename)
 
 		for(int i = 0; i < col1->size(); i++)
 		{
-			CCollectionItem item = col1->getItem(i);
-			unsigned long hash = item.getHash();
+			CCollectionItem* item = col1->getItem(i);
+			unsigned long hash = item->getHash();
 			playlist.append(QString("%1\n").arg(hash));
 		}
 		m_session->addPlaylistRev( playlist );

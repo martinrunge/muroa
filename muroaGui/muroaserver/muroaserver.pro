@@ -5,7 +5,11 @@ QT += core \
     xml \
     network \
     dbus
-HEADERS += mediaprocessing/CStream.h \
+HEADERS += mediaprocessing/CAudioIOAlsa.h \
+    mediaprocessing/IAudioIO.h \
+    mediaprocessing/CAudioIOlibao.h \
+    mediaprocessing/CDecoder.h \
+    mediaprocessing/CStream.h \
     CDnsSdAvahi.h \
     CDnsSdAvahiViaQtDBus.h \
     IDnsSd.h \
@@ -26,7 +30,11 @@ HEADERS += mediaprocessing/CStream.h \
     CSession.h \
     CCollectionItem.h \
     CCollection.h
-SOURCES += mediaprocessing/CStream.cpp \
+SOURCES += mediaprocessing/CAudioIOAlsa.cpp \
+    mediaprocessing/IAudioIO.cpp \
+    mediaprocessing/CAudioIOlibao.cpp \
+    mediaprocessing/CDecoder.cpp \
+    mediaprocessing/CStream.cpp \
     CDnsSdAvahi.cpp \
     CDnsSdAvahiViaQtDBus.cpp \
     IDnsSd.cpp \
@@ -44,4 +52,12 @@ SOURCES += mediaprocessing/CStream.cpp \
 FORMS += MuroaServer.ui
 LIBS += -lxdiff \
     -lavahi-client \
-    -lavahi-qt4
+    -lavahi-qt4 \
+    -lao \
+    -lasound \
+    -lavformat \
+    -lavcodec
+INCLUDEPATH += 
+QMAKE_CXXFLAGS += -std=gnu++0x
+# QMAKE_LFLAGS += -Wl,-rpath=/usr/lib
+

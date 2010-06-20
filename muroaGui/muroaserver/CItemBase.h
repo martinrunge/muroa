@@ -17,10 +17,11 @@ public:
 
 //	void setText(QString text);
 	inline QString getText() const { return m_text; };
+    inline unsigned getHash() const { return m_hash; };
 
 protected:
     QString m_text;
-
+    unsigned m_hash;
 };
 
 #endif /* CITEMBASE_H_ */

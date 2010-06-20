@@ -10,8 +10,11 @@
 
 #include <QObject>
 
+#include "CDecoder.h"
+
 class CCollectionItem;
 class QTimer;
+class IAudioIO;
 
 enum sessionState {
 	e_stopped = 0,
@@ -27,6 +30,8 @@ public:
 	CStream();
 	virtual ~CStream();
 
+	int write(char* data, int size)  const;
+
 signals:
 	void finished();
 	void progress(int done, int total);
@@ -40,12 +45,17 @@ public slots:
 
 
 private:
+	void start();
+
 	enum sessionState m_state;
 	QString m_fileName;
 	QTimer *m_timer;
 
 	int m_done;
 	int m_total;
+
+	CDecoder m_decoder;
+	IAudioIO* m_audioIO;
 };
 
 #endif /* CSTREAM_H_ */

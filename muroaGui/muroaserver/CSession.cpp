@@ -258,9 +258,12 @@ void CSession::stop()
 
 void CSession::next()
 {
-	CCollectionItem item = getCollection()->getItem(0);
-	m_stream.setSong( &item );
-
+	CPlaylistItem*  plItem = getNextlist()->getItem(0);
+	CCollectionItem* item = getCollection()->getByHash( plItem->getCollectionHash() );
+	if(item != 0)
+	{
+		m_stream.setSong( item );
+	}
 }
 
 void CSession::prev()

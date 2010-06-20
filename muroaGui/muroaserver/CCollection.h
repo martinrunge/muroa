@@ -20,7 +20,7 @@ class CCollection
 public:
 	CCollection() {} ;
 	CCollection(const CCollection<T>& other);
-	virtual ~CCollection() {} ;
+	virtual ~CCollection();
 
 	inline void setText(QString collection, int revision)
 	{
@@ -32,13 +32,26 @@ public:
 	int patch(QString* diff, int revision);
 
 	inline int size() const { return m_items.size(); };
-	inline T getItem(int pos) const { return m_items.at(pos); };
+	inline T* getItem(int pos) const { return m_items.at(pos); };
+	inline T* getByHash(unsigned hash)
+	{
+		if(m_hashMap.contains(hash))
+		{
+			return m_hashMap.value(hash);
+		}
+		else
+		{
+			return 0;
+		}
+	}
+
 
 	QString getText(void);
 	inline int getRevision(void) { return m_revision; };
 
 private:
-	QList<T> m_items;
+	QList<T*> m_items;
+	QHash<unsigned, T*> m_hashMap;
 
 	void parse();
 
@@ -50,10 +63,26 @@ private:
 
 template <class T> CCollection<T>::CCollection(const CCollection<T>& other)
 {
-	m_items = other.m_items;
+	for(int i = 0; i < m_items.size(); i++)
+	{
+		T* item = new T(*(other.m_items.at(i)));
+		m_items.append(item);
+		m_hashMap.insert(item->getHash(), item);
+	}
 	m_collectionAsText = other.m_collectionAsText;
 	m_revision = other.m_revision;
 }
+
+template <class T> CCollection<T>::~CCollection()
+{
+	while(m_items.size() > 0)
+	{
+		T* item = m_items.takeFirst();
+		m_hashMap.remove(item->getHash());
+		delete item;
+	}
+}
+
 
 template <class T> void CCollection<T>::parse()
 {
@@ -66,7 +95,8 @@ template <class T> void CCollection<T>::parse()
 	{
 		QStringRef line(&m_collectionAsText, start, index - start);
 		qDebug() << QString("parsed line: %1") .arg( line.toString());
-		T newItem(line.toString());
+		T* newItem= new T(line.toString());
+		m_hashMap.insert(newItem->getHash(), newItem);
 		m_items.append(newItem);
 		start = index + 1;
 	}
@@ -78,7 +108,7 @@ template <class T> QString CCollection<T>::getText()
 	qDebug() << QString("CCollection<T>::getText(): m_items.size() = %1").arg(m_items.size());
 	for(int i=0; i < m_items.size(); i++)
 	{
-		QString line = m_items.at(i).getText();
+		QString line = m_items.at(i)->getText();
 		qDebug() << QString("appending %1").arg(line);
 		collection.append(line).append('\n');
 	}
@@ -137,29 +167,35 @@ template <class T> int CCollection<T>::patch(QString* diff, int revision)
 				{
 					//qDebug() << QString("adding line : %1").arg(lineNr);
 					//qDebug() << QString("from diff : %1").arg(content);
-					T newItem(content);
+					T* newItem = new T(content);
 					m_items.insert(lineNr - 1, newItem );
 					//qDebug() << QString("collection: %1").arg(m_collectionModelPtr->getItemAsString(lineNr - 1));
 					break;
 				}
 				case '-': //remove
-					if(content.compare(m_items.at(lineNr - 1).getText()) != 0 )	// possible error:
+				{
+					if(content.compare(m_items.at(lineNr - 1)->getText()) != 0 )	// possible error:
 					{
 						qDebug() << QString("Error when removing line %1:").arg(lineNr);
 						qDebug() << QString("line expected from diff : %1").arg(content);
-						qDebug() << QString("differs form collection : %1").arg(m_items.at(lineNr - 1).getText());
+						qDebug() << QString("differs form collection : %1").arg(m_items.at(lineNr - 1)->getText());
 					}
-					m_items.removeAt(lineNr - 1);
+					T* item = m_items.takeAt(lineNr - 1);
+					m_hashMap.remove(item->getHash());
+					delete item;
 					lineNr--;
 					break;
+				}
 				case ' ': //check
-					if(content.compare(m_items.at(lineNr - 1).getText()) != 0 )	// possible error:
+				{
+					if(content.compare(m_items.at(lineNr - 1)->getText()) != 0 )	// possible error:
 					{
 						qDebug() << QString("Error when keeping line %1:").arg(lineNr);
 						qDebug() << QString("line expected from diff : %1").arg(content);
-						qDebug() << QString("differs from collection : %1").arg(m_items.at(lineNr - 1).getText());
+						qDebug() << QString("differs from collection : %1").arg(m_items.at(lineNr - 1)->getText());
 					}
 					break;
+				}
 				default:
 					break;
 

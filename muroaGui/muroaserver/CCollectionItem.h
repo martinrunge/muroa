@@ -29,7 +29,6 @@ public:
     inline QString getTitle() const { return m_title; }
     inline int getYear() const  { return m_year; }
 
-    inline unsigned getHash() const { return m_hash; };
 
     void setAlbum(QString album);
     void setArtist(QString artist);
@@ -50,7 +49,6 @@ private:
 	int m_year;
 	int m_length_in_s;
 
-	unsigned m_hash;
 
 	static unsigned lastUsedHash;
 };
