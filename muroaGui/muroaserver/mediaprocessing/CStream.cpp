@@ -10,7 +10,7 @@
 
 #include <QDebug>
 
-#include "CCollectionItem.h"
+#include "../CCollectionItem.h"
 #include "IAudioIO.h"
 #include "CAudioIOAlsa.h"
 

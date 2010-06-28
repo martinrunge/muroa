@@ -2,7 +2,7 @@
 #define MUROASERVER_H
 
 #include <QtGui/QMainWindow>
-#include "ui_muroaserver.h"
+#include "ui_MuroaServer.h"
 #include "CConnection.h"
 #include "CCollection.h"
 #include "CCollectionItem.h"
