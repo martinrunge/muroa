@@ -23,8 +23,7 @@ CConnection::~CConnection()
 void CConnection::open(QString host, int port)
 {
     m_socket.connectToHost(host, port);
-    emit connectionStatusChanged(QString("connection established ..."));
-
+//    emit connectionStatusChanged( e_connected );
 }
 
 void CConnection::close()
@@ -37,10 +36,7 @@ void CConnection::close()
         m_xml_reader = 0;
     }
     m_socket.disconnectFromHost();
-
-    emit connectionStatusChanged(QString("connection closed."));
-
-
+//
 }
 
 
@@ -116,6 +112,8 @@ void CConnection::connected()
     getCollection();
     getPlaylist();
     getNextlist();
+
+    emit connectionStatusChanged( e_connected );
 }
 
 void CConnection::disconnected()
@@ -131,6 +129,7 @@ void CConnection::disconnected()
         delete m_xml_writer;
         m_xml_writer = 0;
     }
+    emit connectionStatusChanged( e_disconnected );
 }
 
 void CConnection::error()

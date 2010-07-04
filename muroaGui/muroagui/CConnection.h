@@ -11,6 +11,11 @@
 class QXmlStreamReader;
 class QXmlStreamWriter;
 
+enum connectionState {
+	e_disconnected,
+	e_connected
+};
+
 class CConnection : public QObject
 {
     Q_OBJECT;
@@ -23,7 +28,7 @@ public:
     inline void setColletionModelPtr(CCollectionModel* const collectionModelPtr) {m_sm.setCollectionModelPtr(collectionModelPtr); };
 
 signals:
-    void connectionStatusChanged(QString message);
+    void connectionStatusChanged(enum connectionState state);
     void progressSig(int done, int total);
 
 public slots:

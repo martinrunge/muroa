@@ -22,36 +22,6 @@
       </property>
      </widget>
     </item>
-    <item row="0" column="1">
-     <widget class="QPushButton" name="playBtn">
-      <property name="text">
-       <string/>
-      </property>
-      <property name="icon">
-       <iconset>
-        <normalon>:/icons/icons/media-playback-start.png</normalon>
-        <activeoff>:/icons/icons/media-playback-pause.png</activeoff>
-       </iconset>
-      </property>
-      <property name="checkable">
-       <bool>true</bool>
-      </property>
-      <property name="checked">
-       <bool>true</bool>
-      </property>
-     </widget>
-    </item>
-    <item row="0" column="2">
-     <widget class="QPushButton" name="stopBtn">
-      <property name="text">
-       <string/>
-      </property>
-      <property name="icon">
-       <iconset resource="MuroaGui.qrc">
-        <normaloff>:/icons/icons/media-playback-stop.png</normaloff>:/icons/icons/media-playback-stop.png</iconset>
-      </property>
-     </widget>
-    </item>
     <item row="0" column="3">
      <widget class="QSlider" name="posSlider">
       <property name="orientation">
@@ -74,6 +44,34 @@
       <widget class="CCollectionView" name="collectionView"/>
       <widget class="CPlaylistView" name="playlistView"/>
       <widget class="CPlaylistView" name="nextToPlayView"/>
+     </widget>
+    </item>
+    <item row="0" column="2">
+     <widget class="QToolButton" name="stopBtn">
+      <property name="text">
+       <string/>
+      </property>
+      <property name="icon">
+       <iconset resource="MuroaGui.qrc">
+        <normaloff>:/icons/icons/media-playback-stop.png</normaloff>:/icons/icons/media-playback-stop.png</iconset>
+      </property>
+     </widget>
+    </item>
+    <item row="0" column="1">
+     <widget class="QToolButton" name="playBtn">
+      <property name="text">
+       <string/>
+      </property>
+      <property name="icon">
+       <iconset resource="MuroaGui.qrc">
+        <normaloff>:/icons/icons/media-playback-start.png</normaloff>:/icons/icons/media-playback-start.png</iconset>
+      </property>
+      <property name="checkable">
+       <bool>false</bool>
+      </property>
+      <property name="checked">
+       <bool>false</bool>
+      </property>
      </widget>
     </item>
    </layout>
@@ -150,6 +148,10 @@
    </property>
   </action>
   <action name="actionPlayPause">
+   <property name="icon">
+    <iconset resource="MuroaGui.qrc">
+     <normaloff>:/icons/icons/media-playback-start.png</normaloff>:/icons/icons/media-playback-start.png</iconset>
+   </property>
    <property name="text">
     <string>&amp;Play/Pause</string>
    </property>
@@ -158,6 +160,10 @@
    </property>
   </action>
   <action name="actionStop">
+   <property name="icon">
+    <iconset resource="MuroaGui.qrc">
+     <normaloff>:/icons/icons/media-playback-stop.png</normaloff>:/icons/icons/media-playback-stop.png</iconset>
+   </property>
    <property name="text">
     <string>&amp;Stop</string>
    </property>

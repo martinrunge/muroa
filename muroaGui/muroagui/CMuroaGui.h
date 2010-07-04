@@ -27,7 +27,7 @@ public:
 
 public slots:
     void openConnection();
-    void connectionStatusChanged(QString status);
+    void connectionStatusChanged(enum connectionState status);
 
     void progress(int done, int total);
     // void setCurrentTitle( );

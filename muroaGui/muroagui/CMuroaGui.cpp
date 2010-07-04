@@ -9,6 +9,9 @@ CMuroaGui::CMuroaGui(QWidget *parent)
 {
 	ui.setupUi(this);
 
+	ui.playBtn->setDefaultAction(ui.actionPlayPause);
+	ui.stopBtn->setDefaultAction(ui.actionStop);
+
 
 	connect(ui.actionExit, SIGNAL(triggered()), qApp, SLOT(quit()));
     connect(ui.actionOpen, SIGNAL(triggered()), this, SLOT(openConnection()));
@@ -22,7 +25,7 @@ CMuroaGui::CMuroaGui(QWidget *parent)
 
 	statusBar()->addWidget(&m_connection_status_label);
 
-	connect(&m_connection, SIGNAL(connectionStatusChanged(QString)), this, SLOT(connectionStatusChanged(QString)));
+	connect(&m_connection, SIGNAL(connectionStatusChanged(enum connectionState)), this, SLOT(connectionStatusChanged(enum connectionState)));
 	m_connection.setNextlistModelPtr(&m_nextlistModel);
 	m_connection.setPlaylistModelPtr(&m_playlistModel);
 	m_connection.setColletionModelPtr(&m_collectionModel);
@@ -45,10 +48,9 @@ CMuroaGui::CMuroaGui(QWidget *parent)
 	connect(&m_dnssd, SIGNAL(servicesChanged()), m_serviceBrowser, SLOT(servicesChanged()));
 	// m_serviceBrowser->exec();
 
-	ui.playBtn->insertAction( 0, ui.actionPlayPause);
-	ui.stopBtn->insertAction( 0, ui.actionStop);
 
 	connect(&m_connection, SIGNAL(progressSig(int, int)), this, SLOT(progress(int,int)));
+	connectionStatusChanged( e_disconnected );
 
 }
 
@@ -65,9 +67,24 @@ void CMuroaGui::openConnection()
     m_connection.open(sd->getHostName(), sd->getPortNr());
 }
 
-void CMuroaGui::connectionStatusChanged(QString status)
+void CMuroaGui::connectionStatusChanged(enum connectionState status)
 {
-	m_connection_status_label.setText(status);
+	QString statusMsg;
+	if( status == e_connected ) {
+		statusMsg = QString("Connected.");
+		ui.actionPlayPause->setEnabled( true );
+		ui.actionStop->setEnabled( true );
+		ui.actionClose->setEnabled(true);
+		ui.actionOpen->setEnabled( false );
+	}
+	else {
+		statusMsg = QString("Not Connected.");
+		ui.actionPlayPause->setEnabled( false );
+		ui.actionStop->setEnabled( false );
+		ui.actionClose->setEnabled(false);
+		ui.actionOpen->setEnabled( true );
+	}
+	m_connection_status_label.setText(statusMsg);
 }
 
 void CMuroaGui::progress(int done, int total)
