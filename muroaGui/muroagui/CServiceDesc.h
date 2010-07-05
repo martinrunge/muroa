@@ -13,7 +13,7 @@
 class CServiceDesc {
 public:
 	CServiceDesc();
-	CServiceDesc(QString serviceName, QString hostName,	QString domainName, int portNr, int interface, int protocol);
+	CServiceDesc(QString serviceName, QString hostName,	QString domainName, int portNr = 0, int interface = 0, int protocol = 0);
 	virtual ~CServiceDesc();
     int getInterface() const
     {

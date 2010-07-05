@@ -11,6 +11,7 @@
 #include <QDialog>
 #include <QStringListModel>
 
+#include "CServiceDesc.h"
 #include "ui_ServiceBrowser.h"
 
 class CDnsSdBase;
@@ -26,12 +27,14 @@ public:
 
 signals:
 	void serviceSelected(int index);
+	void notifyService( const CServiceDesc& sd);
 
 public slots:
 	void servicesChanged();
 	void addService(QString service, QString host, QString domain, int port);
 	void removeService(QString service, QString domain);
 	void removeService(int index);
+
 
 private:
 	QStringListModel m_model;

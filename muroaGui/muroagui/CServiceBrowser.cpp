@@ -42,6 +42,7 @@ void CServiceBrowser::servicesChanged()
 	setupServiceList();
 }
 
+
 void CServiceBrowser::setupServiceList()
 {
 	m_serviceList.clear();
@@ -58,6 +59,7 @@ void CServiceBrowser::addService(QString service, QString host, QString domain, 
 	qDebug() << QString("CServiceBrowser::addService %1 %2 %3").arg(service).arg(host).arg(port);
 	m_serviceList.append(service);
 	m_model.setStringList(m_serviceList);
+
 }
 
 void CServiceBrowser::removeService(QString service, QString domain)

@@ -31,6 +31,7 @@ set( SRC           CCollectionCommand.cpp
                    CModelBase.cpp
                    CPlaylistCommand.cpp
                    CServiceBrowser.cpp
+                   CPreferencesDlg.cpp
                    main.cpp )
                   
 
@@ -57,14 +58,18 @@ set( MOC_H         CCollectionCommand.h
                    CMuroaGui.h
                    CPlaylistItem.h
                    CServiceBrowser.h
-                   CStateMachine.h )
+                   CStateMachine.h 
+                   CPreferencesDlg.h)
                    
 SET(UIS            MuroaGui.ui  
-                   ServiceBrowser.ui )
+                   ServiceBrowser.ui 
+                   PreferencesDlg.ui )
 
+set(RCCS           MuroaGui.qrc )      
 
 QT4_WRAP_UI(UIS_H ${UIS})
 
+QT4_ADD_RESOURCES( RCCS_SRC  ${RCCS} )
 
 # Don't forget to include output directory, otherwise
 # the UI file won't be wrapped!
@@ -80,7 +85,7 @@ include_directories( ${CMAKE_CURRENT_BINARY_DIR}  ${CMAKE_SOURCE_DIR})
 
 link_directories( ${QT_LIB_DIR} )
 
-add_executable( muroagui ${SRC} ${MOC_SOURCES} ${UIS_H})
+add_executable( muroagui ${SRC} ${MOC_SOURCES} ${UIS_H} ${RCCS_SRC})
 target_link_libraries( muroagui    avahi-client
                                    avahi-qt4
                                    ${QT_LIBRARIES} )

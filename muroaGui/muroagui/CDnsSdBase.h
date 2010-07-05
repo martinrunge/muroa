@@ -37,11 +37,20 @@ public:
     int removeService(const CServiceDesc& rmSd );
     int hasService(QString name);
 
+    void notifyOn(QString service, QString host, QString domain);
+
 signals:
     void servicesChanged();
+	void notifyService( const CServiceDesc& sd);
 
 protected:
 	QList<CServiceDesc*> m_serviceList;
+
+private:
+	bool m_notify;
+	QString m_notify_service;
+	QString m_notify_host;
+	QString m_notify_domain;
 };
 
 #endif /* IDNSSD_H_ */

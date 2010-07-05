@@ -26,7 +26,9 @@ public:
     ~CMuroaGui();
 
 public slots:
+	void showPreferences();
     void openConnection();
+    void openConnection(const CServiceDesc& sd);
     void connectionStatusChanged(enum connectionState status);
 
     void progress(int done, int total);
@@ -36,6 +38,8 @@ public slots:
 private:
     Ui::muroaguiClass ui;
     CConnection m_connection;
+
+    void setupServiceBrowser();
 
     CServiceBrowser* m_serviceBrowser;
 //    CDnsSdAvahiViaQtDBus m_dnssd;

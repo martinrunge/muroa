@@ -1,5 +1,6 @@
 #include "CMuroaGui.h"
 #include "CServiceBrowser.h"
+#include "CPreferencesDlg.h"
 
 
 CMuroaGui::CMuroaGui(QWidget *parent)
@@ -12,7 +13,6 @@ CMuroaGui::CMuroaGui(QWidget *parent)
 	ui.playBtn->setDefaultAction(ui.actionPlayPause);
 	ui.stopBtn->setDefaultAction(ui.actionStop);
 
-
 	connect(ui.actionExit, SIGNAL(triggered()), qApp, SLOT(quit()));
     connect(ui.actionOpen, SIGNAL(triggered()), this, SLOT(openConnection()));
     connect(ui.actionClose, SIGNAL(triggered()), &m_connection, SLOT(close()));
@@ -22,6 +22,8 @@ CMuroaGui::CMuroaGui(QWidget *parent)
 
     connect(ui.actionPlayPause, SIGNAL(triggered()), &m_connection, SLOT(play()));
     connect(ui.actionStop, SIGNAL(triggered()), &m_connection, SLOT(stop()));
+
+    connect(ui.action_Preferences, SIGNAL(triggered()), this, SLOT(showPreferences()));
 
 	statusBar()->addWidget(&m_connection_status_label);
 
@@ -44,14 +46,10 @@ CMuroaGui::CMuroaGui(QWidget *parent)
 	ui.nextToPlayView->setRole(E_NEXTLIST);
 
 	connect(&m_diffBuilder, SIGNAL(sendCommand(CCommandBase*)), &m_connection, SLOT(sendCommand(CCommandBase*)));
-	m_serviceBrowser = new CServiceBrowser(&m_dnssd);
-	connect(&m_dnssd, SIGNAL(servicesChanged()), m_serviceBrowser, SLOT(servicesChanged()));
-	// m_serviceBrowser->exec();
-
+	setupServiceBrowser();
 
 	connect(&m_connection, SIGNAL(progressSig(int, int)), this, SLOT(progress(int,int)));
 	connectionStatusChanged( e_disconnected );
-
 }
 
 CMuroaGui::~CMuroaGui()
@@ -59,16 +57,31 @@ CMuroaGui::~CMuroaGui()
 	delete m_serviceBrowser;
 }
 
-void CMuroaGui::openConnection()
+void CMuroaGui::showPreferences()
 {
+	CPreferencesDlg prefs;
+	prefs.exec();
+}
+
+void CMuroaGui::openConnection() {
 	int index = m_serviceBrowser->exec();
 	CServiceDesc* sd = m_dnssd.getService(index);
 
-    m_connection.open(sd->getHostName(), sd->getPortNr());
+	openConnection(*sd);
 }
 
-void CMuroaGui::connectionStatusChanged(enum connectionState status)
-{
+void CMuroaGui::openConnection(const CServiceDesc &sd) {
+    m_connection.open(sd.getHostName(), sd.getPortNr());
+
+	QSettings settings;
+	settings.setValue("rejoin_service", sd.getServiceName());
+	settings.setValue("rejoin_host", sd.getHostName());
+	settings.setValue("rejoin_domain", sd.getDomainName());
+
+}
+
+
+void CMuroaGui::connectionStatusChanged(enum connectionState status) {
 	QString statusMsg;
 	if( status == e_connected ) {
 		statusMsg = QString("Connected.");
@@ -101,3 +114,21 @@ void CMuroaGui::progress(int done, int total)
 	ui.posSlider->setValue((done * 100) / total);
 }
 
+
+void CMuroaGui::setupServiceBrowser()
+{
+	m_serviceBrowser = new CServiceBrowser(&m_dnssd);
+	connect(&m_dnssd, SIGNAL(servicesChanged()), m_serviceBrowser, SLOT(servicesChanged()));
+
+	QSettings settings;
+	bool rejoin = settings.value("rejoin").toBool();
+	if( rejoin ) {
+
+		QString service = settings.value("rejoin_service").toString();
+		QString host = settings.value("rejoin_host").toString();
+		QString domain = settings.value("rejoin_domain").toString();
+
+		m_dnssd.notifyOn( service, host, domain );
+	}
+	connect(&m_dnssd, SIGNAL(notifyService(const CServiceDesc&)), this, SLOT(openConnection(const CServiceDesc&)));
+}
