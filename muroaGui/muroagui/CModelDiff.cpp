@@ -6,6 +6,8 @@
  */
 
 #include "CModelDiff.h"
+#include <QtAlgorithms>
+#include <QDebug>
 
 CModelDiff::CModelDiff(enum origin orig) : m_insertPos(-1), m_origin(orig)
 {
@@ -61,7 +63,17 @@ QByteArray CModelDiff::toQByteArray() const
 
 void CModelDiff::sort()
 {
-	// m_rowsToRemove.sort();
-	// m_rowsToInsert.sort();
+	qSort(m_selectedIndexes.begin(), m_selectedIndexes.end());
+}
+
+
+void CModelDiff::dump() {
+	qDebug() << QString("##########  CModelDiff::dump  ###########");
+	qDebug() << QString(" %1 item from %2 to %3 pos %4").arg(m_numToRemove).arg(m_origin).arg(m_destination).arg(m_insertPos);
+	for(int i = 0; i < m_selectedIndexes.size(); i++)
+	{
+		qDebug() << QString(" selected index: %1 ").arg(m_selectedIndexes.at(i));
+	}
+	qDebug() << QString("##########  CModelDiff::dump  ###########");
 }
 

@@ -38,6 +38,8 @@ void CDiffBuilder::prepareDiff(CModelDiff* md)
 	int numToRemove = 0;
 	int numToInsert = 0;
 
+	md->sort();
+
 	switch(orig)
 	{
 	case E_COLLECTION:
@@ -153,9 +155,16 @@ QString CDiffBuilder::diff(CModelDiff md)
 	int insTo = md.getInsertPos();
 
 	// ignore, if rows to remove are to be moved into their own range. (dropped on self)
-	if( rmFrom < insTo && rmTo > insTo )
+	if( rmFrom < insTo && rmTo > insTo && md.getOrigin() == md.getDestination() )
 	{
+		//qDebug() << QString("dropped on origin -> ignore: [%1, %2] -> %3").arg(rmFrom).arg(rmTo).arg(insTo);
+		//qDebug() << QString("from: %1 to: %2 ").arg(md.getOrigin()).arg(md.getDestination());
+		//md.dump();
 		return text;
+	}
+	else {
+		//qDebug() << QString("building diff: [%1, %2] -> %3").arg(rmFrom).arg(rmTo).arg(insTo);
+		//md.dump();
 	}
 
 	if(rmFrom > insTo)

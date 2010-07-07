@@ -215,8 +215,8 @@ int CSession::addNextlistRevFromDiff(QString* nextlistDiff, int diffFromRev)
 {
 	qDebug() << QString("CSession::addNextlistRevFromDiff %1 %2").arg(*nextlistDiff).arg(diffFromRev);
 	CCollection<CPlaylistItem>* newNextlist = new CCollection<CPlaylistItem>( *(getNextlist(m_latestNextlistRevision)) );
+	qDebug() << newNextlist->getText();
 	newNextlist->patch(nextlistDiff, ++m_latestNextlistRevision);
-
 	qDebug() << newNextlist->getText();
 
 	m_nextlistRevisions[m_latestNextlistRevision] = newNextlist;

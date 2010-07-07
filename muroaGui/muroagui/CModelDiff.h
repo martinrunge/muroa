@@ -60,6 +60,7 @@ public:
     	m_selectedIndexes.append(rowIndex);
     }
 
+    void dump();
 
     void sort();
 

@@ -63,7 +63,7 @@ private:
 
 template <class T> CCollection<T>::CCollection(const CCollection<T>& other)
 {
-	for(int i = 0; i < m_items.size(); i++)
+	for(int i = 0; i < other.m_items.size(); i++)
 	{
 		T* item = new T(*(other.m_items.at(i)));
 		m_items.append(item);
@@ -109,10 +109,9 @@ template <class T> QString CCollection<T>::getText()
 	for(int i=0; i < m_items.size(); i++)
 	{
 		QString line = m_items.at(i)->getText();
-		qDebug() << QString("appending %1").arg(line);
+		// qDebug() << QString("appending %1").arg(line);
 		collection.append(line).append('\n');
 	}
-
 	return collection;
 }
 
