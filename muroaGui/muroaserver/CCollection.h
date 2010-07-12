@@ -30,6 +30,8 @@ public:
 	};
 
 	int patch(QString* diff, int revision);
+	int insert(T*, int pos = -1);
+	T* takeAt(int pos);
 
 	inline int size() const { return m_items.size(); };
 	inline T* getItem(int pos) const { return m_items.at(pos); };
@@ -168,6 +170,7 @@ template <class T> int CCollection<T>::patch(QString* diff, int revision)
 					//qDebug() << QString("from diff : %1").arg(content);
 					T* newItem = new T(content);
 					m_items.insert(lineNr - 1, newItem );
+					m_hashMap.insert(newItem->getHash(), newItem);
 					//qDebug() << QString("collection: %1").arg(m_collectionModelPtr->getItemAsString(lineNr - 1));
 					break;
 				}
@@ -204,7 +207,19 @@ template <class T> int CCollection<T>::patch(QString* diff, int revision)
 		// check if line stays equal, is added or removed
 
 	} while (!line.isNull());
+}
 
+template <class T> int CCollection<T>::insert(T* item, int pos) {
+	if (pos == -1) {pos = size(); };
+	m_items.insert( pos, item );
+	m_hashMap.insert( item->getHash(), item );
+	return 0;
+}
+
+template <class T> T* CCollection<T>::takeAt(int pos) {
+	T* item = m_items.takeAt(pos);
+	m_hashMap.remove(item->getHash());
+	return item;
 }
 
 

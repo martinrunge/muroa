@@ -11,7 +11,7 @@
 
 #include "CStream.h"
 
-CDecoder::CDecoder(const CStream* streamPtr) : m_streamPtr(streamPtr), m_pFormatCtx(0), m_pCodecCtx(0), m_pCodec(0), m_thread(0) {
+CDecoder::CDecoder(const CStream* streamPtr) : m_streamPtr(streamPtr), m_pFormatCtx(0), m_pCodecCtx(0), m_pCodec(0), m_thread(0), m_open(false) {
 
 	// This registers all available file formats and codecs with the library so
     // they will be used automatically when a file with the corresponding format/codec
@@ -21,17 +21,24 @@ CDecoder::CDecoder(const CStream* streamPtr) : m_streamPtr(streamPtr), m_pFormat
     // there's usually no reason why you would have to do that.
 	av_register_all();
 
-	av_init_packet(&m_packet);
 
 }
 
 CDecoder::~CDecoder() {
-	// TODO Auto-generated destructor stub
+	if(m_open) close();
 }
 
 
 void CDecoder::open(const char* filename)
 {
+	if(m_open) {
+		cerr << "Warning: CDecoder::open called while decoder was still open." << endl
+			 << "Decoder can beo opened only once. Call CDecoder::close() before." << endl;
+		return;
+	}
+
+	av_init_packet(&m_packet);
+
 	// The last three parameters specify the file format, buffer size and format parameters;
 	// by simply specifying NULL or 0 we ask libavformat to auto-detect the format and
 	// use a default buffer size.
@@ -78,6 +85,7 @@ void CDecoder::open(const char* filename)
 		cerr << " Could not open codec." << endl;
 
 	m_stop = false;
+	m_open = true;
 
 	m_thread = new thread( &CDecoder::decodingLoop, this);
 
@@ -85,6 +93,8 @@ void CDecoder::open(const char* filename)
 
 void CDecoder::close()
 {
+	cerr << "CDecoder::close" << endl;
+
 	m_stop = true;
 	if(m_thread != 0) {
 		m_thread->join();
@@ -107,6 +117,7 @@ void CDecoder::close()
     	av_close_input_file(m_pFormatCtx);
     	m_pFormatCtx = 0;
     }
+    m_open = false;
 }
 
 void CDecoder::decodingLoop()
@@ -132,7 +143,7 @@ void CDecoder::decodingLoop()
     	} while(m_packet.stream_index != m_audioStreamID);
     	// here, a new audio packet from the stream is available
 
-        cerr << "packetsize = " << m_packet.size << endl;
+        // cerr << "packetsize = " << m_packet.size << endl;
 
         // to simulate a network connection, pass just the packet itself, the codecID
         // and the presentation time to the receiver. This is the same information like
@@ -153,5 +164,9 @@ void CDecoder::decodingLoop()
 
 
  	} while(!end_of_stream && !m_stop );
+
+	cerr << "close called. now calling m_streamPtr->next();" << endl;
+
+ 	m_streamPtr->next();
 }
 

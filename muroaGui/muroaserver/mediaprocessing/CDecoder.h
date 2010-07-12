@@ -30,6 +30,7 @@ public:
 
 	void open(const char* filename);
 	void close();
+	inline bool isOpen() const { return m_open;};
 
 	void decodingLoop();
 
@@ -61,6 +62,7 @@ private:
 
 	std::thread *m_thread;
 	bool m_stop;
+	bool m_open;
 
 };
 

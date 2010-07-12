@@ -50,6 +50,9 @@ public:
 	int addPlaylistRevFromDiff(QString* playlistDiff, int diffFromRev);
 	int addNextlistRevFromDiff(QString* nextlistDiff, int diffFromRev);
 
+	int addNextlistRevFromNextCmd();
+	int addNextlistRevFromPrevCmd();
+
 	void addConnection(CConnection* connection);
 
 public slots:
@@ -74,6 +77,8 @@ private:
 	int m_latestCollectionRevision;
 	int m_latestPlaylistRevision;
 	int m_latestNextlistRevision;
+
+	int m_playlistPos;
 
 	QString m_name;
 };

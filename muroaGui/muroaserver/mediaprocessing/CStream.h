@@ -30,10 +30,11 @@ public:
 	CStream();
 	virtual ~CStream();
 
+	void next() const;
 	int write(char* data, int size)  const;
 
 signals:
-	void finished();
+	void finished() const;
 	void progress(int done, int total);
 
 public slots:
@@ -56,6 +57,8 @@ private:
 
 	CDecoder m_decoder;
 	IAudioIO* m_audioIO;
+
+
 };
 
 #endif /* CSTREAM_H_ */

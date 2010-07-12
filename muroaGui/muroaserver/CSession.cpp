@@ -12,7 +12,8 @@
 
 CSession::CSession() : m_latestCollectionRevision(0),
                        m_latestPlaylistRevision(0),
-                       m_latestNextlistRevision(0)
+                       m_latestNextlistRevision(0),
+                       m_playlistPos(0)
 {
 	connect(&m_stream, SIGNAL(finished()), this, SLOT(next()));
 	connect(&m_stream, SIGNAL(progress(int, int)), this, SLOT(progress(int, int)));
@@ -228,6 +229,44 @@ int CSession::addNextlistRevFromDiff(QString* nextlistDiff, int diffFromRev)
 }
 
 
+int CSession::addNextlistRevFromNextCmd() {
+	qDebug() << QString("CSession::addNextlistRevFromNextCmd");
+	CCollection<CPlaylistItem>* newNextlist = new CCollection<CPlaylistItem>( *(getNextlist(m_latestNextlistRevision)) );
+	m_latestNextlistRevision++;
+	qDebug() << newNextlist->getText();
+
+	// handle next cmd here:
+	//  1) if there are any items in nextlist, remove first one. It has just been played.
+	//  2) if nextlist is empty now, append the playlist item from m_playlistpos to nextlist.
+	if( newNextlist->size() > 0 ) {
+		CPlaylistItem* item = newNextlist->takeAt(0);
+		delete item;
+	}
+
+	if( newNextlist->size() < 1 ) {
+		// append item from playlist
+		CPlaylistItem * item = getPlaylist()->getItem( m_playlistPos );
+		m_playlistPos++;
+		newNextlist->insert(item, -1);
+	}
+
+	qDebug() << newNextlist->getText();
+
+	m_nextlistRevisions[m_latestNextlistRevision] = newNextlist;
+
+	for(int i=0; i < m_connections.size(); i++)
+	{
+		m_connections.at(i)->sendNextlist(m_latestNextlistRevision - 1);
+	}
+
+}
+
+int CSession::addNextlistRevFromPrevCmd() {
+
+}
+
+
+
 void CSession::addConnection(CConnection* connection)
 {
 	if(!m_connections.contains(connection))
@@ -258,6 +297,7 @@ void CSession::stop()
 
 void CSession::next()
 {
+	addNextlistRevFromNextCmd();
 	CPlaylistItem*  plItem = getNextlist()->getItem(0);
 	CCollectionItem* item = getCollection()->getByHash( plItem->getCollectionHash() );
 	if(item != 0)
@@ -268,7 +308,7 @@ void CSession::next()
 
 void CSession::prev()
 {
-
+	addNextlistRevFromPrevCmd();
 }
 
 

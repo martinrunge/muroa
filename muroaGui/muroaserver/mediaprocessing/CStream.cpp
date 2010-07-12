@@ -48,6 +48,7 @@ void CStream::start()
 {
     m_audioIO->open("default" , 44100, 2);
 
+    if(m_decoder.isOpen()) m_decoder.close();
 	m_decoder.open(m_fileName.toUtf8());
 }
 
@@ -99,9 +100,15 @@ void CStream::timeout()
 {
 	m_done ++;
 	emit progress(m_done, m_total);
-	qDebug() << QString("timeout");
-	if( m_done >= m_total )
-	{
-		emit finished();
-	}
+//	qDebug() << QString("timeout");
+//	if( m_done >= m_total )
+//	{
+//		next();
+//	}
 }
+
+void CStream::next() const
+{
+	emit finished();
+}
+

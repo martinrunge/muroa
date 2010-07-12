@@ -6,6 +6,8 @@ set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake" ${CMAKE_MODULE_PATH})
 find_package ( Qt4 REQUIRED )
 find_package ( ALSA REQUIRED )
 
+add_subdirectory(unittest)
+
 add_definitions( ${QT4_DEFINITIONS} )
 
 
