@@ -25,7 +25,7 @@ CCollectionUpdater::~CCollectionUpdater() {
 	// TODO Auto-generated destructor stub
 }
 
-CCollection<CCollectionItem> CCollectionUpdater::walkTree(string dir) {
+CCollection<CCollectionItem>* CCollectionUpdater::walkTree(string dir) {
 
 	fs::path full_path( dir );
 
@@ -34,8 +34,7 @@ CCollection<CCollectionItem> CCollectionUpdater::walkTree(string dir) {
 	unsigned long other_count = 0;
 	unsigned long err_count = 0;
 
-	CCollection<CCollectionItem> collection;
-
+	CCollection<CCollectionItem>* collection = new CCollection<CCollectionItem>;
 
 	if ( !fs::exists( full_path ) || !fs::is_directory( full_path ) )
 	{
@@ -78,7 +77,7 @@ CCollection<CCollectionItem> CCollectionUpdater::walkTree(string dir) {
 					if( knownType( state.dirIter->path() ) ) {
 						CCollectionItem* item = readTag(state.dirIter->path());
 						if(item != 0) {
-							collection.insert(item);
+							collection->insert(item);
 						}
 					}
 				}

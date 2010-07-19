@@ -130,6 +130,15 @@ const QString CSession::getNextlistDiff(int fromRevision, int toRevision)
 	return diffString;
 }
 
+void CSession::addCollectionRev(CCollection<CCollectionItem>* collection) {
+	m_collectionRevisions[m_latestCollectionRevision] = collection;
+
+	for(int i=0; i < m_connections.size(); i++)
+	{
+		m_connections.at(i)->sendCollection(m_latestCollectionRevision - 1);
+	}
+}
+
 void CSession::addCollectionRev(QString collection)
 {
 	m_latestCollectionRevision++;
@@ -138,12 +147,7 @@ void CSession::addCollectionRev(QString collection)
 
 	qDebug() << newCollection->getText();
 
-	m_collectionRevisions[m_latestCollectionRevision] = newCollection;
-
-	for(int i=0; i < m_connections.size(); i++)
-	{
-		m_connections.at(i)->sendCollection(m_latestCollectionRevision - 1);
-	}
+	addCollectionRev(newCollection);
 }
 
 

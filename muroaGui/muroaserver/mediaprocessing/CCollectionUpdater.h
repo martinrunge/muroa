@@ -28,7 +28,7 @@ public:
 	inline void setFileTypes(std::vector<std::string> types) { m_types = types; };
 	inline std::vector<std::string> getFileTypes() { return m_types; };
 
-	CCollection<CCollectionItem> walkTree(std::string dir);
+	CCollection<CCollectionItem>* walkTree(std::string dir);
 
 private:
 	bool knownType( fs::path path );

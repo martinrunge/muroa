@@ -23,6 +23,8 @@ public:
     CMuroaServer(QWidget *parent = 0);
     ~CMuroaServer();
 
+    void addCollectionRev(CCollection<CCollectionItem>* collection);
+
     void readCollectionFile(QString filename);
 
 

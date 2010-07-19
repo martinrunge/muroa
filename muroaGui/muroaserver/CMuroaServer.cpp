@@ -34,7 +34,10 @@ CMuroaServer::CMuroaServer(QWidget *parent)
 	statusBar()->addWidget(&m_connection_status_label);
 
 	readSettings();
-	m_collectionUpdater.walkTree( m_mediadir.toStdString() );
+	CCollection<CCollectionItem>* collection = m_collectionUpdater.walkTree( m_mediadir.toStdString() );
+
+	addCollectionRev(collection);
+
 
 	m_testfiles << "test/collection1.txt"
 			    << "test/collection2.txt"
@@ -46,7 +49,7 @@ CMuroaServer::CMuroaServer(QWidget *parent)
 
 
 
-	readCollectionFile(m_testfiles[0]);
+	// readCollectionFile(m_testfiles[0]);
 	// m_connection.setSessionPtr(m_session);
 	//m_connection.setCollection(&m_collection);
 	m_dnssd.registerService("muroa", m_portNr);
@@ -71,6 +74,29 @@ void CMuroaServer::connectionStatusChanged(QString status)
 {
 	m_connection_status_label.setText(status);
 }
+
+void CMuroaServer::addCollectionRev(CCollection<CCollectionItem>* collection)
+{
+	m_session->addCollectionRev( collection );
+
+	if(m_session->getPlaylistRevision() == 0)
+	{
+		// construct initial playlist
+		CCollection<CCollectionItem>* col1 = m_session->getCollection();
+
+		QString playlist;
+
+		for(int i = 0; i < col1->size(); i++)
+		{
+			CCollectionItem* item = col1->getItem(i);
+			unsigned long hash = item->getHash();
+			playlist.append(QString("%1\n").arg(hash));
+		}
+		m_session->addPlaylistRev( playlist );
+		m_session->addNextlistRev( QString() );
+	}
+}
+
 
 void CMuroaServer::readCollectionFile(QString filename)
 {
