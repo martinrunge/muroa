@@ -223,6 +223,17 @@ void CConnection::stop()
 	sendCommand(cmd);
 }
 
+void CConnection::next() {
+	CSessionCommand *cmd = new CSessionCommand("next");
+	sendCommand(cmd);
+}
+
+void CConnection::prev() {
+	CSessionCommand *cmd = new CSessionCommand("prev");
+	sendCommand(cmd);
+}
+
+
 void CConnection::test()
 {
     getCollection();

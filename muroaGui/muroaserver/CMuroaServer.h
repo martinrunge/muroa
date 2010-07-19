@@ -9,6 +9,8 @@
 #include "CDnsSdAvahiViaQtDBus.h"
 #include "CDnsSdAvahi.h"
 
+#include "mediaprocessing/CCollectionUpdater.h"
+
 
 class CSession;
 class CNetwork;
@@ -31,21 +33,23 @@ public slots:
 
 private:
 	CSession *m_session;
-
 	CNetwork* m_net;
 
+	void readSettings();
+	void writeSettings();
+
+	QString m_mediadir;
+	CCollectionUpdater m_collectionUpdater;
+
     Ui::muroaserverClass ui;
+    QLabel m_connection_status_label;
 
     // CConnection m_connection;
     CCollection<CCollectionItem> m_collection;
-
-    QLabel m_connection_status_label;
-
     QStringList m_testfiles;
 
     //CDnsSdAvahiViaQtDBus m_dnssd;
     CDnsSdAvahi m_dnssd;
-
     int m_portNr;
 };
 

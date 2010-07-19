@@ -3,8 +3,15 @@ project (muroaserver)
 
 set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake" ${CMAKE_MODULE_PATH})
 
+find_package(PkgConfig)
+
 find_package ( Qt4 REQUIRED )
 find_package ( ALSA REQUIRED )
+
+set(Boost_USE_STATIC_LIBS   ON)
+set(Boost_USE_MULTITHREADED ON)
+find_package( Boost 1.36.0 COMPONENTS filesystem system REQUIRED )
+find_package( TagLib REQUIRED)
 
 add_subdirectory(unittest)
 
@@ -30,14 +37,16 @@ set( MEDPROC_SRC    mediaprocessing/CAudioIOAlsa.cpp
                     mediaprocessing/CAudioIOlibao.cpp
                     mediaprocessing/CDecoder.cpp
                     mediaprocessing/CStream.cpp
-                    mediaprocessing/IAudioIO.cpp ) 
+                    mediaprocessing/IAudioIO.cpp 
+                    mediaprocessing/CCollectionUpdater.cpp ) 
                   
 
 set( MEDPROC_MOC_H  mediaprocessing/CAudioIOAlsa.h
                     mediaprocessing/CAudioIOlibao.h
                     mediaprocessing/CDecoder.h
                     mediaprocessing/CStream.h
-                    mediaprocessing/IAudioIO.h )
+                    mediaprocessing/IAudioIO.h
+                    mediaprocessing/CCollectionUpdater.h )
 
 set( MOC_H          CCollection.h
                     CConnection.h
@@ -71,7 +80,7 @@ set (QT_USE_QTNETWORK true )
 include ( ${QT_USE_FILE} )
 qt4_wrap_cpp( MOC_SOURCES ${MOC_H} ${MOC_MEDPROC_H} )
 
-include_directories(${CMAKE_CURRENT_BINARY_DIR} )
+include_directories(${CMAKE_CURRENT_BINARY_DIR} ${Boost_INCLUDE_DIRS} ${Taglib_CFLAGS})
 
 link_directories( ${QT_LIB_DIR} )
 
@@ -83,7 +92,9 @@ target_link_libraries( muroaserver xdiff
                                    ${ALSA_LIBRARY}
                                    avformat
                                    avcodec
-                                   ${QT_LIBRARIES} )
+                                   ${QT_LIBRARIES} 
+                                   ${Boost_LIBRARIES}
+                                   ${Taglib_LIBRARIES} )
 
 set_target_properties( muroaserver PROPERTIES  COMPILE_FLAGS "-std=gnu++0x" ) 
 

@@ -22,41 +22,6 @@
       </property>
      </widget>
     </item>
-    <item row="0" column="3">
-     <widget class="QSlider" name="posSlider">
-      <property name="orientation">
-       <enum>Qt::Horizontal</enum>
-      </property>
-     </widget>
-    </item>
-    <item row="0" column="4">
-     <widget class="QLabel" name="progressLabel">
-      <property name="text">
-       <string>00:00 / 00:00</string>
-      </property>
-     </widget>
-    </item>
-    <item row="1" column="0" colspan="5">
-     <widget class="QSplitter" name="splitter">
-      <property name="orientation">
-       <enum>Qt::Horizontal</enum>
-      </property>
-      <widget class="CCollectionView" name="collectionView"/>
-      <widget class="CPlaylistView" name="playlistView"/>
-      <widget class="CPlaylistView" name="nextToPlayView"/>
-     </widget>
-    </item>
-    <item row="0" column="2">
-     <widget class="QToolButton" name="stopBtn">
-      <property name="text">
-       <string/>
-      </property>
-      <property name="icon">
-       <iconset resource="MuroaGui.qrc">
-        <normaloff>:/icons/icons/media-playback-stop.png</normaloff>:/icons/icons/media-playback-stop.png</iconset>
-      </property>
-     </widget>
-    </item>
     <item row="0" column="1">
      <widget class="QToolButton" name="playBtn">
       <property name="text">
@@ -74,6 +39,55 @@
       </property>
      </widget>
     </item>
+    <item row="0" column="2">
+     <widget class="QToolButton" name="stopBtn">
+      <property name="text">
+       <string/>
+      </property>
+      <property name="icon">
+       <iconset resource="MuroaGui.qrc">
+        <normaloff>:/icons/icons/media-playback-stop.png</normaloff>:/icons/icons/media-playback-stop.png</iconset>
+      </property>
+     </widget>
+    </item>
+    <item row="0" column="3">
+     <widget class="QToolButton" name="prevBtn">
+      <property name="text">
+       <string/>
+      </property>
+     </widget>
+    </item>
+    <item row="0" column="4">
+     <widget class="QToolButton" name="nextBtn">
+      <property name="text">
+       <string/>
+      </property>
+     </widget>
+    </item>
+    <item row="0" column="6">
+     <widget class="QLabel" name="progressLabel">
+      <property name="text">
+       <string>00:00 / 00:00</string>
+      </property>
+     </widget>
+    </item>
+    <item row="1" column="0" colspan="7">
+     <widget class="QSplitter" name="splitter">
+      <property name="orientation">
+       <enum>Qt::Horizontal</enum>
+      </property>
+      <widget class="CCollectionView" name="collectionView"/>
+      <widget class="CPlaylistView" name="playlistView"/>
+      <widget class="CPlaylistView" name="nextToPlayView"/>
+     </widget>
+    </item>
+    <item row="0" column="5">
+     <widget class="QSlider" name="posSlider">
+      <property name="orientation">
+       <enum>Qt::Horizontal</enum>
+      </property>
+     </widget>
+    </item>
    </layout>
   </widget>
   <widget class="QMenuBar" name="menubar">
@@ -85,16 +99,6 @@
      <height>21</height>
     </rect>
    </property>
-   <widget class="QMenu" name="menu_Connection">
-    <property name="title">
-     <string>&amp;Connection</string>
-    </property>
-    <addaction name="actionOpen"/>
-    <addaction name="actionClose"/>
-    <addaction name="separator"/>
-    <addaction name="actionPlayPause"/>
-    <addaction name="actionStop"/>
-   </widget>
    <widget class="QMenu" name="menuCo_llection">
     <property name="title">
      <string>Co&amp;llection</string>
@@ -113,6 +117,18 @@
      <string>&amp;Settings</string>
     </property>
     <addaction name="action_Preferences"/>
+   </widget>
+   <widget class="QMenu" name="menu_Connection">
+    <property name="title">
+     <string>&amp;Connection</string>
+    </property>
+    <addaction name="actionOpen"/>
+    <addaction name="actionClose"/>
+    <addaction name="separator"/>
+    <addaction name="actionPlayPause"/>
+    <addaction name="actionStop"/>
+    <addaction name="actionNext"/>
+    <addaction name="actionPrevious"/>
    </widget>
    <addaction name="menu_File"/>
    <addaction name="menu_Connection"/>
@@ -181,6 +197,24 @@
   <action name="action_Preferences">
    <property name="text">
     <string>&amp;Preferences</string>
+   </property>
+  </action>
+  <action name="actionNext">
+   <property name="icon">
+    <iconset resource="MuroaGui.qrc">
+     <normaloff>:/icons/icons/media-skip-forward.png</normaloff>:/icons/icons/media-skip-forward.png</iconset>
+   </property>
+   <property name="text">
+    <string>&amp;Next</string>
+   </property>
+  </action>
+  <action name="actionPrevious">
+   <property name="icon">
+    <iconset resource="MuroaGui.qrc">
+     <normaloff>:/icons/icons/media-skip-backward.png</normaloff>:/icons/icons/media-skip-backward.png</iconset>
+   </property>
+   <property name="text">
+    <string>P&amp;revious</string>
    </property>
   </action>
  </widget>

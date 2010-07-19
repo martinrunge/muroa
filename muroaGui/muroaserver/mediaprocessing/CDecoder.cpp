@@ -21,7 +21,6 @@ CDecoder::CDecoder(const CStream* streamPtr) : m_streamPtr(streamPtr), m_pFormat
     // there's usually no reason why you would have to do that.
 	av_register_all();
 
-
 }
 
 CDecoder::~CDecoder() {
@@ -33,7 +32,7 @@ void CDecoder::open(const char* filename)
 {
 	if(m_open) {
 		cerr << "Warning: CDecoder::open called while decoder was still open." << endl
-			 << "Decoder can beo opened only once. Call CDecoder::close() before." << endl;
+			 << "Decoder can be opened only once. Call CDecoder::close() before." << endl;
 		return;
 	}
 
@@ -74,6 +73,13 @@ void CDecoder::open(const char* filename)
 	// e.g. if timebase is 1/90000, a packet with duration 4500
 	// is 4500 * 1/90000 seconds long, that is 0.05 seconds == 20 ms.
 	m_timeBase = m_pFormatCtx->streams[m_audioStreamID]->time_base;
+
+	// duration in m_timBase
+	int64_t tmp = m_pFormatCtx->streams[m_audioStreamID]->duration * m_timeBase.num;
+	m_durationInSecs = tmp / m_timeBase.den;
+	m_posInSecs = 0;
+	// set pos to 0 to ensure gui client see 0 seconds progress so they can set title, artist, etc of new song in the gui.
+	m_streamPtr->setProgress( m_posInSecs, m_durationInSecs );
 
 
 	m_pCodec=avcodec_find_decoder(m_pCodecCtx->codec_id);
@@ -158,6 +164,15 @@ void CDecoder::decodingLoop()
         int bytesUsed;
         bytesUsed = avcodec_decode_audio2(m_pCodecCtx, sampleBuffer, &sb, m_packet.data, m_packet.size);
 
+        // only call m_streamPtr->setProgress every second
+        int64_t tmp = m_packet.pts * m_timeBase.num;
+        int playedInSecs = tmp / m_timeBase.den;
+
+        if( playedInSecs > m_posInSecs) {
+        	m_posInSecs = playedInSecs;
+        	m_streamPtr->setProgress( m_posInSecs, m_durationInSecs );
+        }
+
         // write the decoded data to the output file.
         // fwrite(sampleBuffer, sb, 1, outfile);
         m_streamPtr->write((char*)sampleBuffer, sb);
@@ -165,8 +180,8 @@ void CDecoder::decodingLoop()
 
  	} while(!end_of_stream && !m_stop );
 
-	cerr << "close called. now calling m_streamPtr->next();" << endl;
-
- 	m_streamPtr->next();
+	if(! m_stop ) {
+		m_streamPtr->next();
+	}
 }
 

@@ -9,6 +9,11 @@
 int main(int argc, char *argv[])
 {
     int retval;
+
+    QCoreApplication::setOrganizationName("muroa");
+    QCoreApplication::setOrganizationDomain("muroa.org");
+    QCoreApplication::setApplicationName("muroaserver");
+
     QApplication a(argc, argv);
     CMuroaServer w;
 

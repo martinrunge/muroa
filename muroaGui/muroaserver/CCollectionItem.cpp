@@ -10,6 +10,9 @@
 
 unsigned CCollectionItem::lastUsedHash = 0;
 
+CCollectionItem::CCollectionItem() {
+}
+
 
 CCollectionItem::CCollectionItem(QString text) {
 	CCollectionItem::lastUsedHash++;
@@ -51,16 +54,32 @@ void CCollectionItem::setAlbum(QString album)
 	assembleText();
 }
 
+void CCollectionItem::setAlbum(std::string album) {
+	setAlbum(QString::fromUtf8(album.c_str(), album.size()));
+}
+
+
 void CCollectionItem::setArtist(QString artist)
 {
 	m_artist = artist;
 	assembleText();
 }
 
+void CCollectionItem::setArtist(std::string artist) {
+	setArtist(QString::fromUtf8(artist.c_str(), artist.size()));
+}
+
+
 void CCollectionItem::setFilename(QString filename)
 {
 	m_filename = filename;
+	m_hash = qHash(m_filename);
 	assembleText();
+}
+
+void CCollectionItem::setFilename(std::string filename)
+{
+	setFilename(QString::fromUtf8(filename.c_str(), filename.size()));
 }
 
 void CCollectionItem::setLengthInSec(int lengthInSec)
@@ -73,6 +92,11 @@ void CCollectionItem::setTitle(QString title)
 {
 	m_title = title;
 	assembleText();
+}
+
+void CCollectionItem::setTitle(std::string title)
+{
+	setTitle( QString::fromUtf8( title.c_str(), title.size() ) );
 }
 
 void CCollectionItem::setYear(int year)

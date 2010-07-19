@@ -15,6 +15,7 @@
 
 class CCollectionItem :public CItemBase {
 public:
+	CCollectionItem();
 	CCollectionItem(QString text);
 	virtual ~CCollectionItem();
 
@@ -31,10 +32,15 @@ public:
 
 
     void setAlbum(QString album);
+    void setAlbum(std::string album);
+
     void setArtist(QString artist);
+    void setArtist(std::string artist);
     void setFilename(QString filename);
+    void setFilename(std::string filename);
     void setLengthInSec(int lengthInSec);
     void setTitle(QString title);
+    void setTitle(std::string title);
     void setYear(int year);
 
 private:

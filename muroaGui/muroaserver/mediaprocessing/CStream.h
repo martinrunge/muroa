@@ -31,26 +31,25 @@ public:
 	virtual ~CStream();
 
 	void next() const;
+	void setProgress( int playedSecs, int totalSecs ) const ;
+
+	// TODO: get rid of write in the public API here.
 	int write(char* data, int size)  const;
 
 signals:
 	void finished() const;
-	void progress(int done, int total);
+	void progress(int done, int total) const;
 
 public slots:
 	void setSong(CCollectionItem* item);
 	void play();
 	void stop();
 
-	void timeout();
-
-
 private:
 	void start();
 
 	enum sessionState m_state;
 	QString m_fileName;
-	QTimer *m_timer;
 
 	int m_done;
 	int m_total;

@@ -59,6 +59,9 @@ private:
 	int m_audioStreamID;
 
 	AVRational m_timeBase;
+	int        m_durationInSecs;
+	int        m_posInSecs;
+
 
 	std::thread *m_thread;
 	bool m_stop;

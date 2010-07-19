@@ -42,6 +42,9 @@ public slots:
     void play();
     void stop();
 
+    void next();
+    void prev();
+
     void addSong(QString artist, QString album, QString title);
     void getCollection();
     void getCollection(int knownRevision);

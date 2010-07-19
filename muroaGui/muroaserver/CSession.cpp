@@ -286,7 +286,7 @@ void CSession::connectionClosed(CConnection* conn)
 
 void CSession::play()
 {
-	next();
+	setSong();
 	m_stream.play();
 }
 
@@ -298,6 +298,13 @@ void CSession::stop()
 void CSession::next()
 {
 	addNextlistRevFromNextCmd();
+	setSong();
+}
+
+void CSession::setSong() {
+	if( getNextlist()->size() == 0 ) {
+		addNextlistRevFromNextCmd();
+	}
 	CPlaylistItem*  plItem = getNextlist()->getItem(0);
 	CCollectionItem* item = getCollection()->getByHash( plItem->getCollectionHash() );
 	if(item != 0)
@@ -305,6 +312,7 @@ void CSession::next()
 		m_stream.setSong( item );
 	}
 }
+
 
 void CSession::prev()
 {

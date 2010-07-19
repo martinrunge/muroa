@@ -12,6 +12,9 @@ CMuroaGui::CMuroaGui(QWidget *parent)
 
 	ui.playBtn->setDefaultAction(ui.actionPlayPause);
 	ui.stopBtn->setDefaultAction(ui.actionStop);
+	ui.nextBtn->setDefaultAction(ui.actionNext);
+	ui.prevBtn->setDefaultAction(ui.actionPrevious);
+
 
 	connect(ui.actionExit, SIGNAL(triggered()), qApp, SLOT(quit()));
     connect(ui.actionOpen, SIGNAL(triggered()), this, SLOT(openConnection()));
@@ -22,6 +25,8 @@ CMuroaGui::CMuroaGui(QWidget *parent)
 
     connect(ui.actionPlayPause, SIGNAL(triggered()), &m_connection, SLOT(play()));
     connect(ui.actionStop, SIGNAL(triggered()), &m_connection, SLOT(stop()));
+    connect(ui.actionNext, SIGNAL(triggered()), &m_connection, SLOT(next()));
+    connect(ui.actionPrevious, SIGNAL(triggered()), &m_connection, SLOT(prev()));
 
     connect(ui.action_Preferences, SIGNAL(triggered()), this, SLOT(showPreferences()));
 
@@ -112,6 +117,12 @@ void CMuroaGui::progress(int done, int total)
 	ui.progressLabel->setText( progLabel );
 
 	ui.posSlider->setValue((done * 100) / total);
+
+	if(done == 0) {
+		CPlaylistItem* plItem = m_nextlist.at(0);
+		CCollectionItem* colItem = m_collection.getByHash( plItem->getHash() );
+		ui.titleLabel->setText( QString("%1 - %2").arg(colItem->getArtist()).arg(colItem->getTitle()) );
+	}
 }
 
 

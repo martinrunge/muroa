@@ -33,7 +33,8 @@ CMuroaServer::CMuroaServer(QWidget *parent)
 
 	statusBar()->addWidget(&m_connection_status_label);
 
-	// connect(&m_connection, SIGNAL(connectionStatusChanged(QString)), this, SLOT(connectionStatusChanged(QString)));
+	readSettings();
+	m_collectionUpdater.walkTree( m_mediadir.toStdString() );
 
 	m_testfiles << "test/collection1.txt"
 			    << "test/collection2.txt"
@@ -42,6 +43,8 @@ CMuroaServer::CMuroaServer(QWidget *parent)
 				<< "test/collection5.txt"
 				<< "test/collection6.txt"
 				<< "test/collection7.txt";
+
+
 
 	readCollectionFile(m_testfiles[0]);
 	// m_connection.setSessionPtr(m_session);
@@ -106,4 +109,38 @@ void CMuroaServer::readCollectionFile(QString filename)
 void CMuroaServer::nextRevision()
 {
 	readCollectionFile(m_testfiles[m_session->getCollectionRevision()]);
+}
+
+
+void CMuroaServer::readSettings() {
+	QSettings settings;
+
+	if(settings.contains("mediadir") ) {
+		m_mediadir = settings.value("mediadir").toString();
+	}
+	else {
+		// mediadir was not mentioned in config file, make a dummy entry for it so the user can change that.
+		settings.setValue("mediadir", "/path/to/media/collection");
+	}
+
+	QStringList mtypes;
+	if(settings.contains("mediatypes") ) {
+		mtypes = settings.value("mediatypes").toStringList();
+	}
+	else {
+		// mediadir was not mentioned in config file, make a dummy entry for it so the user can change that.
+		mtypes << ".mp3" << ".ogg";
+		settings.setValue("mediatypes", QVariant(mtypes));
+	}
+	std::vector<string> types;
+	types.reserve( mtypes.size());
+
+	for(int i = 0; i < mtypes.size(); i++) {
+		types.push_back( mtypes.at(i).toStdString());
+	}
+	m_collectionUpdater.setFileTypes( types );
+}
+
+void writeSettings() {
+
 }

@@ -74,6 +74,8 @@ private:
 
 	QList<CConnection*> m_connections;
 
+	void setSong();
+
 	int m_latestCollectionRevision;
 	int m_latestPlaylistRevision;
 	int m_latestNextlistRevision;

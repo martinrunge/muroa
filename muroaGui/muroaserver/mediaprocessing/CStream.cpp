@@ -16,14 +16,11 @@
 
 
 CStream::CStream(): m_done(0), m_state(e_stopped), m_decoder(this) {
-    m_timer = new QTimer(this);
-    connect(m_timer, SIGNAL(timeout()), this, SLOT(timeout()));
     m_audioIO = new CAudioIoAlsa();
 }
 
 CStream::~CStream() {
 	stop();
-	delete m_timer;
 	delete m_audioIO;
 }
 
@@ -33,7 +30,9 @@ int CStream::write(char* data, int size) const
 	return amount;
 }
 
-
+void CStream::setProgress(  int playedSecs, int totalSecs ) const {
+	emit progress(playedSecs, totalSecs);
+}
 
 void CStream::setSong( CCollectionItem* item )
 {
@@ -60,19 +59,16 @@ void CStream::play()
 	{
 	case e_stopped:
 
-	    m_timer->start(1000);
 		m_state = e_playing;
 		break;
 
 	case e_paused:
 
-		m_timer->start(1000);
 		m_state = e_playing;
 		break;
 
 	case e_playing:
 
-	    m_timer->stop();
 		m_state = e_paused;
 		break;
 
@@ -88,24 +84,11 @@ void CStream::stop()
 	m_decoder.close();
     m_audioIO->close();
 
-    m_timer->stop();
 	m_state = e_stopped;
 	m_done = 0;
 	emit progress(m_done, m_total );
 }
 
-
-
-void CStream::timeout()
-{
-	m_done ++;
-	emit progress(m_done, m_total);
-//	qDebug() << QString("timeout");
-//	if( m_done >= m_total )
-//	{
-//		next();
-//	}
-}
 
 void CStream::next() const
 {
