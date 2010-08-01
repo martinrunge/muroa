@@ -12,10 +12,11 @@ set(Boost_USE_STATIC_LIBS   ON)
 set(Boost_USE_MULTITHREADED ON)
 find_package( Boost 1.36.0 COMPONENTS filesystem system REQUIRED )
 find_package( TagLib REQUIRED)
+find_package( Sqlite REQUIRED )
 
 add_subdirectory(unittest)
 
-add_definitions( ${QT4_DEFINITIONS} )
+add_definitions( ${QT4_DEFINITIONS} ${SQLITE_DEFINITIONS})
 
 
 set( SRC          CCollectionItem.cpp
@@ -31,6 +32,7 @@ set( SRC          CCollectionItem.cpp
                   CMuroaServer.cpp
                   CPlaylistItem.cpp
                   CStateMachine.cpp
+                  CStateDB.cpp
                   main.cpp )
                   
 set( MEDPROC_SRC    mediaprocessing/CAudioIOAlsa.cpp
@@ -80,7 +82,7 @@ set (QT_USE_QTNETWORK true )
 include ( ${QT_USE_FILE} )
 qt4_wrap_cpp( MOC_SOURCES ${MOC_H} ${MOC_MEDPROC_H} )
 
-include_directories(${CMAKE_CURRENT_BINARY_DIR} ${Boost_INCLUDE_DIRS} ${Taglib_CFLAGS})
+include_directories(${CMAKE_CURRENT_BINARY_DIR} ${Boost_INCLUDE_DIRS} ${Taglib_CFLAGS} ${SQLITE_INCLUDE_DIR} )
 
 link_directories( ${QT_LIB_DIR} )
 
@@ -94,7 +96,8 @@ target_link_libraries( muroaserver xdiff
                                    avcodec
                                    ${QT_LIBRARIES} 
                                    ${Boost_LIBRARIES}
-                                   ${Taglib_LIBRARIES} )
+                                   ${Taglib_LIBRARIES} 
+                                   ${SQLITE_LIBRARIES} )
 
 set_target_properties( muroaserver PROPERTIES  COMPILE_FLAGS "-std=gnu++0x" ) 
 

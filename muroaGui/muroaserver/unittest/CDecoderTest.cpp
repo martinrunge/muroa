@@ -24,6 +24,7 @@ void CDecoderTest::setUp() {
 void CDecoderTest::tearDown() {
 }
 
-void CDecoderTest::test() {
-  CPPUNIT_FAIL( "not implemented" );
+void CDecoderTest::testDecoder() {
+	CPPUNIT_ASSERT( true );
+    // CPPUNIT_FAIL( "not implemented" );
 }

@@ -12,7 +12,7 @@
 
 class CDecoderTest : public CppUnit::TestFixture{
 	  CPPUNIT_TEST_SUITE( CDecoderTest );
-	  CPPUNIT_TEST( test );
+	  CPPUNIT_TEST( testDecoder );
 	  CPPUNIT_TEST_SUITE_END();
 public:
 	CDecoderTest();
@@ -21,7 +21,7 @@ public:
   void setUp();
   void tearDown();
 
-  void test();
+  void testDecoder();
 
 };
 

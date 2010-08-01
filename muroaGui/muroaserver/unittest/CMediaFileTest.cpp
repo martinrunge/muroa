@@ -38,8 +38,12 @@ void CMediaFileTest::recurseDir() {
 	types.push_back(".mp3");
 	types.push_back(".ogg");
 
-	m_colUpdater->setFileTypes(types);
-	m_colUpdater->walkTree("/home/martin");
+	CCollection<CCollectionItem>* collection = 0;
 
-	CPPUNIT_FAIL( "not implemented" );
+	m_colUpdater->setFileTypes(types);
+	collection = m_colUpdater->walkTree("/home/martin");
+
+	CPPUNIT_ASSERT( collection != 0 );
+	CPPUNIT_ASSERT( collection->size() > 0 );
+
 }
