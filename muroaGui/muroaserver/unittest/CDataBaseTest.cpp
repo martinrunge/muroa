@@ -30,7 +30,6 @@ void CDataBaseTest::testDB()
 {
 	int rc = 0;
 	m_stateDB->open();
-
 	m_stateDB->close();
 
 	CPPUNIT_ASSERT( rc == 0 );

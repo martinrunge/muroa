@@ -26,9 +26,12 @@ private:
 	std::string m_dbFileName;
     sqlite3 *m_db;
 
-    void createRevisionsTable();
-    void createCollectionsTable();
+    /** Revision table is very simple: rev_id , rev_nr
+     *  There is a revision table for the collection, playlist and nextlist.
+     */
+    void createRevisionsTable(std::string name);
 
+    void createCollectionTable(std::string name);
 };
 
 #endif /* CSTATEDB_H_ */
