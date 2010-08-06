@@ -30,8 +30,10 @@ private:
      *  There is a revision table for the collection, playlist and nextlist.
      */
     void createRevisionsTable(std::string name);
-
     void createCollectionTable(std::string name);
+
+    void updateCollectionDB(std::string name);
+
 };
 
 #endif /* CSTATEDB_H_ */

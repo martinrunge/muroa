@@ -7,7 +7,7 @@
 			<storageModule buildSystemId="org.eclipse.cdt.core.defaultConfigDataProvider" id="org.eclipse.cdt.core.default.config.1151095047" moduleId="org.eclipse.cdt.core.settings" name="Configuration">
 				<externalSettings/>
 				<extensions>
-					<extension id="org.eclipse.cdt.core.ELF" point="org.eclipse.cdt.core.BinaryParser"/>
+					<extension id="org.eclipse.cdt.core.GNU_ELF" point="org.eclipse.cdt.core.BinaryParser"/>
 				</extensions>
 			</storageModule>
 			<storageModule moduleId="org.eclipse.cdt.core.externalSettings"/>
@@ -97,6 +97,10 @@
 				</profile>
 			</storageModule>
 			<storageModule moduleId="org.eclipse.cdt.core.pathentry">
+				<pathentry excluding="mediaprocessing/|unittest/" kind="src" path=""/>
+				<pathentry kind="out" path=""/>
+				<pathentry kind="src" path="mediaprocessing"/>
+				<pathentry kind="src" path="unittest"/>
 				<pathentry base-path="/usr/include/qt4" include="" kind="inc" path="" system="true"/>
 				<pathentry base-path="/usr/include/qt4" include="QtMultimedia" kind="inc" path="" system="true"/>
 				<pathentry base-path="/usr/include/qt4" include="Qt3Support" kind="inc" path="" system="true"/>
@@ -120,15 +124,12 @@
 				<pathentry base-path="/usr/include/qt4" include="QtAssistant" kind="inc" path="" system="true"/>
 				<pathentry include="/usr/include" kind="inc" path="" system="true"/>
 				<pathentry include="/usr/include/c++/4.4" kind="inc" path="" system="true"/>
-				<pathentry excluding="mediaprocessing/|unittest/" kind="src" path=""/>
-				<pathentry kind="out" path=""/>
-				<pathentry kind="src" path="mediaprocessing"/>
-				<pathentry kind="src" path="unittest"/>
 			</storageModule>
 			<storageModule moduleId="org.eclipse.cdt.make.core.buildtargets">
 				<buildTargets>
 					<target name="Qt Release Build" path="" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
 						<buildCommand>make</buildCommand>
+						<buildArguments/>
 						<buildTarget>release</buildTarget>
 						<stopOnError>false</stopOnError>
 						<useDefaultCommand>false</useDefaultCommand>
@@ -136,6 +137,7 @@
 					</target>
 					<target name="Qt Debug Build" path="" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
 						<buildCommand>make</buildCommand>
+						<buildArguments/>
 						<buildTarget>debug</buildTarget>
 						<stopOnError>false</stopOnError>
 						<useDefaultCommand>false</useDefaultCommand>
@@ -151,7 +153,14 @@
 					<target name="Clean" path="" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
 						<buildCommand>rm</buildCommand>
 						<buildArguments>-Rf build/</buildArguments>
-						<buildTarget/>
+						<stopOnError>false</stopOnError>
+						<useDefaultCommand>false</useDefaultCommand>
+						<runAllBuilders>true</runAllBuilders>
+					</target>
+					<target name="CMake Release" path="" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
+						<buildCommand>cmake</buildCommand>
+						<buildArguments>-E chdir release cmake _DCMAKE_BUILD_TYPE=Release ..</buildArguments>
+						<buildTarget>CMake Release</buildTarget>
 						<stopOnError>false</stopOnError>
 						<useDefaultCommand>false</useDefaultCommand>
 						<runAllBuilders>true</runAllBuilders>

@@ -109,3 +109,34 @@ void CStateDB::createCollectionTable( string name ) {
 	}
 }
 
+
+void CStateDB::updateCollectionDB(std::string name) {
+	sqlite3_stmt *pStmt;    /* OUT: Statement handle */
+	const char *pzTail;      /* OUT: Pointer to unused portion of zSql */
+
+	stringstream ss;
+	// (song_id INTEGER, file TEXT, hash INTEGER, artist TEXT, album TEXT, title TEXT, duration INTEGER, num_played INTEGER, num_skipped INTEGER, num_repeated INTEGER, rating INTEGER)";
+	ss << "INSERT OR REPLACE INTO " << name << " (name, number) VALUES ('John Doe', '555-1212') "
+	string sql_stmt = ss.str();
+
+	cerr << "SQL statement: " << sql_stmt << endl;
+	int retval = sqlite3_prepare_v2(m_db, sql_stmt.c_str(), sql_stmt.size(), &pStmt, &pzTail);
+
+	if(retval != SQLITE_OK ) {
+		cerr << "Error preparing SQL statement: " << sqlite3_errmsg(m_db);
+	}
+
+	do {
+		retval = sqlite3_step( pStmt );
+	}while (retval == SQLITE_ROW);
+
+	if(retval != SQLITE_DONE) {
+		cerr << "Error finalizing create table: " << sqlite3_errmsg(m_db);
+	}
+
+	retval = sqlite3_finalize( pStmt );
+	if(retval != SQLITE_OK) {
+		cerr << "Error finalizing create table: " << sqlite3_errmsg(m_db);
+	}
+}
+
