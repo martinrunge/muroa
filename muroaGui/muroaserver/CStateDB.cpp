@@ -10,6 +10,8 @@
 #include <iostream>
 #include <sstream>
 
+#include <QDebug>
+
 using namespace std;
 
 CStateDB::CStateDB(std::string dbFileName) : m_dbFileName( dbFileName ), m_db(0) {
@@ -126,9 +128,10 @@ void CStateDB::updateCollectionItem( CCollectionItem* item ) {
 	ss << "INSERT OR REPLACE INTO collection "
 	   << "(song_id, file, hash, artist, album, title, duration, num_played, num_skipped, num_repeated, rating)"
 	   << " VALUES "
-	   << "('" << id << "','" << item->getFilename().toUtf8() << "','" << item->getHash() << "','" << item->getArtist().toUtf8() << "','" << item->getAlbum().toUtf8() << "','" << item->getTitle().toUtf8() << "','" << item->getLengthInSec() << "','"<< 0 <<"','""','"<< 0 <<"','" << 0 << "') ";
+	   << "('" << id << "','" << item->getFilename().toUtf8().data() << "','" << item->getHash() << "','" << item->getArtist().toUtf8().data() << "','" << item->getAlbum().toUtf8().data() << "','" << item->getTitle().toUtf8().data() << "','" << item->getLengthInSec() << "','"<< 0 <<"','" << 0 << "','"<< 0 <<"','" << 0 << "') ";
 	string sql_stmt = ss.str();
 
+	cerr << "file: " << item->getFilename().toUtf8().data() << endl;
 	cerr << "SQL statement: " << sql_stmt << endl;
 	int retval = sqlite3_prepare_v2(m_db, sql_stmt.c_str(), sql_stmt.size(), &pStmt, &pzTail);
 

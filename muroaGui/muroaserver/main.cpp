@@ -14,6 +14,8 @@ int main(int argc, char *argv[])
     QCoreApplication::setOrganizationDomain("muroa.org");
     QCoreApplication::setApplicationName("muroaserver");
 
+    QTextCodec::setCodecForTr(QTextCodec::codecForName("UTF-8"));
+
     QApplication a(argc, argv);
     CMuroaServer w;
 
