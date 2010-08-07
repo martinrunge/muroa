@@ -109,14 +109,24 @@ void CStateDB::createCollectionTable( string name ) {
 	}
 }
 
+void CStateDB::updateCollectionDB( CCollection<CCollectionItem>* collection ) {
+	for(int i = 0; i < collection->size(); i++) {
+		CCollectionItem* item = collection->getItem(i);
+		updateCollectionItem(item);
+	}
+}
 
-void CStateDB::updateCollectionDB(std::string name) {
+void CStateDB::updateCollectionItem( CCollectionItem* item ) {
 	sqlite3_stmt *pStmt;    /* OUT: Statement handle */
 	const char *pzTail;      /* OUT: Pointer to unused portion of zSql */
-
+	static int id = 0;
+	id++;
 	stringstream ss;
 	// (song_id INTEGER, file TEXT, hash INTEGER, artist TEXT, album TEXT, title TEXT, duration INTEGER, num_played INTEGER, num_skipped INTEGER, num_repeated INTEGER, rating INTEGER)";
-	ss << "INSERT OR REPLACE INTO " << name << " (name, number) VALUES ('John Doe', '555-1212') "
+	ss << "INSERT OR REPLACE INTO collection "
+	   << "(song_id, file, hash, artist, album, title, duration, num_played, num_skipped, num_repeated, rating)"
+	   << " VALUES "
+	   << "('" << id << "','" << item->getFilename().toUtf8() << "','" << item->getHash() << "','" << item->getArtist().toUtf8() << "','" << item->getAlbum().toUtf8() << "','" << item->getTitle().toUtf8() << "','" << item->getLengthInSec() << "','"<< 0 <<"','""','"<< 0 <<"','" << 0 << "') ";
 	string sql_stmt = ss.str();
 
 	cerr << "SQL statement: " << sql_stmt << endl;

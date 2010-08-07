@@ -11,6 +11,9 @@
 #include <string>
 #include <sqlite3.h>
 
+#include "CCollection.h"
+class CCollectionItem;
+
 class CStateDB {
 public:
 	CStateDB(std::string dbFileName);
@@ -20,6 +23,7 @@ public:
 	int close();
 
 	int callback(void* data, int numresult, char** columns, char** columnNames);
+    void updateCollectionDB( CCollection<CCollectionItem>* collection ) ;
 
 
 private:
@@ -32,7 +36,7 @@ private:
     void createRevisionsTable(std::string name);
     void createCollectionTable(std::string name);
 
-    void updateCollectionDB(std::string name);
+    void updateCollectionItem( CCollectionItem* item ) ;
 
 };
 

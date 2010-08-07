@@ -11,6 +11,7 @@
 #include <cppunit/extensions/HelperMacros.h>
 
 class CStateDB;
+class CCollectionUpdater;
 
 class CDataBaseTest : public CppUnit::TestFixture {
 	  CPPUNIT_TEST_SUITE( CDataBaseTest );
@@ -27,6 +28,7 @@ public:
 	void testDB();
 
 	CStateDB* m_stateDB;
+    CCollectionUpdater* m_colUpdater;
 
 };
 
