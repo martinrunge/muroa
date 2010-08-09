@@ -153,3 +153,74 @@ void CStateDB::updateCollectionItem( CCollectionItem* item ) {
 	}
 }
 
+
+unsigned CStateDB::getSongIdByHash(unsigned hash) {
+	sqlite3_stmt *pStmt;    /* OUT: Statement handle */
+	const char *pzTail;      /* OUT: Pointer to unused portion of zSql */
+	stringstream ss;
+	// (song_id INTEGER, file TEXT, hash INTEGER, artist TEXT, album TEXT, title TEXT, duration INTEGER, num_played INTEGER, num_skipped INTEGER, num_repeated INTEGER, rating INTEGER)";
+	ss << "SELECT * FROM collection WHERE hash='" << hash << "'";
+	string sql_stmt = ss.str();
+
+	int retval = sqlite3_prepare_v2(m_db, sql_stmt.c_str(), sql_stmt.size(), &pStmt, &pzTail);
+
+	if(retval != SQLITE_OK ) {
+		cerr << "Error preparing SQL statement: " << sqlite3_errmsg(m_db);
+	}
+
+	do {
+		CCollectionItem* item;
+
+		retval = sqlite3_step( pStmt );
+		switch(retval) {
+		case SQLITE_ROW:
+			item = getItemFromStmt(pStmt);
+			break;
+
+		case SQLITE_DONE:
+			// no more rows match search
+			break;
+
+		default:
+			cerr << "Error during step command: " << sqlite3_errmsg(m_db);
+			break;
+		}
+
+	}while (retval == SQLITE_ROW);
+
+	if(retval != SQLITE_DONE) {
+		cerr << "Error finalizing create table: " << sqlite3_errmsg(m_db);
+	}
+
+	retval = sqlite3_finalize( pStmt );
+	if(retval != SQLITE_OK) {
+		cerr << "Error finalizing create table: " << sqlite3_errmsg(m_db);
+	}
+}
+
+CCollectionItem* CStateDB::getItemFromStmt(sqlite3_stmt *pStmt) {
+	CCollectionItem* item = new CCollectionItem;
+	// (song_id INTEGER, file TEXT, hash INTEGER, artist TEXT, album TEXT, title TEXT, duration INTEGER, num_played INTEGER, num_skipped INTEGER, num_repeated INTEGER, rating INTEGER)";
+	int numCol = sqlite3_column_count(pStmt);
+	cerr << "result has " << numCol << " columns" << endl;
+
+	int song_id = sqlite3_column_int(pStmt, 0);
+
+	const unsigned char *filename = sqlite3_column_text(pStmt, 1);
+	int filenameSize = sqlite3_column_bytes(pStmt, 1);
+
+	int hash = sqlite3_column_int(pStmt, 2);
+
+	const unsigned char *artist = sqlite3_column_text(pStmt, 3);
+	int artistSize = sqlite3_column_bytes(pStmt, 3);
+
+	const unsigned char *album = sqlite3_column_text(pStmt, 4);
+	int albumSize = sqlite3_column_bytes(pStmt, 4);
+
+	const unsigned char *title = sqlite3_column_text(pStmt, 5);
+	int titleSize = sqlite3_column_bytes(pStmt, 5);
+
+	cerr << "SELECT: " << filename << " " << artist << " " << album << " " << title << endl;
+
+	return item;
+}

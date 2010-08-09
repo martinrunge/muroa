@@ -25,6 +25,7 @@ public:
 	int callback(void* data, int numresult, char** columns, char** columnNames);
     void updateCollectionDB( CCollection<CCollectionItem>* collection ) ;
 
+    unsigned getSongIdByHash(unsigned hash);
 
 private:
 	std::string m_dbFileName;
@@ -36,7 +37,9 @@ private:
     void createRevisionsTable(std::string name);
     void createCollectionTable(std::string name);
 
-    void updateCollectionItem( CCollectionItem* item ) ;
+    void updateCollectionItem( CCollectionItem* item );
+
+    CCollectionItem* getItemFromStmt(sqlite3_stmt *pStmt);
 
 };
 

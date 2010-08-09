@@ -50,6 +50,8 @@ void CDataBaseTest::testDB()
 
 	m_stateDB->updateCollectionDB(collection);
 
+	m_stateDB->getSongIdByHash( 90039379 );
+
 	m_stateDB->close();
 
 	CPPUNIT_ASSERT( rc == 0 );
