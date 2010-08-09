@@ -87,7 +87,7 @@ void CStateDB::createCollectionTable( string name ) {
 	const char *pzTail;      /* OUT: Pointer to unused portion of zSql */
 
 	stringstream ss;
-	ss << "CREATE TABLE IF NOT EXISTS " << name << " (song_id INTEGER, file TEXT, hash INTEGER, artist TEXT, album TEXT, title TEXT, duration INTEGER, num_played INTEGER, num_skipped INTEGER, num_repeated INTEGER, rating INTEGER)";
+	ss << "CREATE TABLE IF NOT EXISTS " << name << " (song_id INTEGER PRIMARY KEY AUTOINCREMENT, file TEXT, hash INTEGER, artist TEXT, album TEXT, title TEXT, duration INTEGER, num_played INTEGER, num_skipped INTEGER, num_repeated INTEGER, rating INTEGER)";
 	string sql_stmt = ss.str();
 
 	cerr << "SQL statement: " << sql_stmt << endl;
@@ -126,9 +126,9 @@ void CStateDB::updateCollectionItem( CCollectionItem* item ) {
 	stringstream ss;
 	// (song_id INTEGER, file TEXT, hash INTEGER, artist TEXT, album TEXT, title TEXT, duration INTEGER, num_played INTEGER, num_skipped INTEGER, num_repeated INTEGER, rating INTEGER)";
 	ss << "INSERT OR REPLACE INTO collection "
-	   << "(song_id, file, hash, artist, album, title, duration, num_played, num_skipped, num_repeated, rating)"
+	   << "( file, hash, artist, album, title, duration, num_played, num_skipped, num_repeated, rating)"
 	   << " VALUES "
-	   << "('" << id << "','" << item->getFilename().toUtf8().data() << "','" << item->getHash() << "','" << item->getArtist().toUtf8().data() << "','" << item->getAlbum().toUtf8().data() << "','" << item->getTitle().toUtf8().data() << "','" << item->getLengthInSec() << "','"<< 0 <<"','" << 0 << "','"<< 0 <<"','" << 0 << "') ";
+	   << "('" << item->getFilename().toUtf8().data() << "','" << item->getHash() << "','" << item->getArtist().toUtf8().data() << "','" << item->getAlbum().toUtf8().data() << "','" << item->getTitle().toUtf8().data() << "','" << item->getLengthInSec() << "','"<< 0 <<"','" << 0 << "','"<< 0 <<"','" << 0 << "') ";
 	string sql_stmt = ss.str();
 
 	cerr << "file: " << item->getFilename().toUtf8().data() << endl;
