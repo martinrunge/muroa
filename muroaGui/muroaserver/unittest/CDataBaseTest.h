@@ -16,6 +16,7 @@ class CCollectionUpdater;
 class CDataBaseTest : public CppUnit::TestFixture {
 	  CPPUNIT_TEST_SUITE( CDataBaseTest );
 	  CPPUNIT_TEST( testDB );
+	  CPPUNIT_TEST( readGeneral );
 	  CPPUNIT_TEST_SUITE_END();
 
 public:
@@ -26,9 +27,21 @@ public:
 	void tearDown();
 
 	void testDB();
+	void readGeneral();
 
 	CStateDB* m_stateDB;
     CCollectionUpdater* m_colUpdater;
+
+private:
+	const std::string colMinRevVal;
+	const std::string colMaxRevVal;
+
+	const std::string plMinRevVal;
+	const std::string plMaxRevVal;
+
+	const std::string nlMinRevVal;
+	const std::string nlMaxRevVal;
+
 
 };
 

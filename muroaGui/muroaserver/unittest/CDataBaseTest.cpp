@@ -15,7 +15,13 @@ CPPUNIT_TEST_SUITE_REGISTRATION( CDataBaseTest );
 
 using namespace std;
 
-CDataBaseTest::CDataBaseTest() {
+CDataBaseTest::CDataBaseTest() : colMinRevVal("1"),
+                                 colMaxRevVal("101"),
+                                 plMinRevVal("2"),
+                                 plMaxRevVal("102"),
+                                 nlMinRevVal("3"),
+                                 nlMaxRevVal("103")
+{
 }
 
 CDataBaseTest::~CDataBaseTest() {
@@ -52,8 +58,42 @@ void CDataBaseTest::testDB()
 
 	m_stateDB->getSongIdByHash( 90039379 );
 
+	m_stateDB->setValue("CollectionRevMin", colMinRevVal);
+	m_stateDB->setValue("CollectionRevMax", colMaxRevVal);
+
+	m_stateDB->setValue("PlaylistRevMin", plMinRevVal);
+	m_stateDB->setValue("PlaylistRevMax", plMaxRevVal);
+
+	m_stateDB->setValue("NextlistRevMin", nlMinRevVal);
+	m_stateDB->setValue("NextlistRevMax", nlMaxRevVal);
+
 	m_stateDB->close();
 
 	CPPUNIT_ASSERT( rc == 0 );
+}
 
+
+void CDataBaseTest::readGeneral() {
+	m_stateDB->open();
+
+	std::string colMinRev = m_stateDB->getValue("CollectionRevMin");
+	std::string colMaxRev = m_stateDB->getValue("CollectionRevMax");
+
+	std::string plMinRev = m_stateDB->getValue("PlaylistRevMin");
+	std::string plMaxRev = m_stateDB->getValue("PlaylistRevMax");
+
+	std::string nlMinRev = m_stateDB->getValue("NextlistRevMin");
+	std::string nlMaxRev = m_stateDB->getValue("NextlistRevMax");
+
+	cerr << "Collection revs: [" << colMinRev << ".." << colMaxRev << "]" << endl;
+	cerr << "Playlist revs:   [" << plMinRev << ".." << plMaxRev << "]" << endl;
+	cerr << "Nextlist revs:   [" << nlMinRev << ".." << nlMaxRev << "]" << endl;
+
+	m_stateDB->close();
+	CPPUNIT_ASSERT( colMinRev.compare(colMinRevVal) == 0 &&
+                    colMaxRev.compare(colMaxRevVal) == 0 &&
+                    plMinRev.compare(plMinRevVal) == 0 &&
+                    plMaxRev.compare(plMaxRevVal) == 0 &&
+                    nlMinRev.compare(nlMinRevVal) == 0 &&
+                    nlMaxRev.compare(nlMaxRevVal) == 0 );
 }

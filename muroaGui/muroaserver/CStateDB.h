@@ -22,9 +22,10 @@ public:
 	int open();
 	int close();
 
-	int callback(void* data, int numresult, char** columns, char** columnNames);
-    void updateCollectionDB( CCollection<CCollectionItem>* collection ) ;
+	std::string getValue(std::string key);
+	void setValue(std::string key, std::string value);
 
+    void updateCollectionDB( CCollection<CCollectionItem>* collection ) ;
     unsigned getSongIdByHash(unsigned hash);
 
 private:
@@ -34,8 +35,12 @@ private:
     /** Revision table is very simple: rev_id , rev_nr
      *  There is a revision table for the collection, playlist and nextlist.
      */
-    void createRevisionsTable(std::string name);
-    void createCollectionTable(std::string name);
+    void createGeneralTable();
+    void createCollectionTable();
+    void createPlaylistsTable();
+    void createNextlistsTable();
+
+    void createTable(std::string name, std::string schema);
 
     void updateCollectionItem( CCollectionItem* item );
 
