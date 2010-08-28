@@ -7,6 +7,8 @@
 
 #include "CStateDB.h"
 
+#include "CSession.h"
+
 #include <iostream>
 #include <sstream>
 
@@ -32,6 +34,7 @@ int CStateDB::open() {
 	else {
 		createGeneralTable();
 		createCollectionTable();
+		createCollectionRevisionsTable();
 		createPlaylistsTable();
 		createNextlistsTable();
 	}
@@ -119,12 +122,30 @@ void CStateDB::setValue(std::string key, std::string value) {
 	}
 }
 
+void CStateDB::saveSession(CSession const * const session) {
+	updateCollectionDB(session);
+	updatePlaylistsTable(session);
+	updateNextlistsTable(session);
+}
+
+void CStateDB::restoreSession(CSession const * session) {
+	restoreCollection(session);
+	restorePlaylists(session);
+	restoreNextlists(session);
+}
+
+
+
 void CStateDB::createGeneralTable() {
 	createTable("general", "(key TEXT UNIQUE, value TEXT)");
 }
 
 void CStateDB::createCollectionTable( ) {
-	createTable("collection" , "(song_id INTEGER PRIMARY KEY AUTOINCREMENT, file TEXT, hash INTEGER, artist TEXT, album TEXT, title TEXT, duration INTEGER, num_played INTEGER, num_skipped INTEGER, num_repeated INTEGER, rating INTEGER)");
+	createTable("collection" , "(hash INTEGER PRIMARY KEY, file TEXT, artist TEXT, album TEXT, title TEXT, duration INTEGER, num_played INTEGER, num_skipped INTEGER, num_repeated INTEGER, rating INTEGER)");
+}
+
+void CStateDB::createCollectionRevisionsTable() {
+	createTable("collectionRevs" , "(colPos INTEGER, colHash INTEGER REFERENCES collection (hash),  ColRev INTEGER)");
 }
 
 void CStateDB::createPlaylistsTable() {
@@ -136,10 +157,18 @@ void CStateDB::createNextlistsTable() {
 }
 
 
-void CStateDB::updateCollectionDB( CCollection<CCollectionItem>* collection ) {
-	for(int i = 0; i < collection->size(); i++) {
-		CCollectionItem* item = collection->getItem(i);
-		updateCollectionItem(item);
+void CStateDB::updateCollectionDB( CSession const * const session, int minrev, int maxrev ) {
+	if(minrev == -1) minrev = session->getMinCollectionRevision();
+	if(maxrev == -1) maxrev = session->getCollectionRevision();
+
+	for(int rev = minrev; rev < maxrev; rev++) {
+		CCollection<CCollectionItem>* collection = session->getCollection(rev);
+
+		for(int i = 0; i < collection->size(); i++) {
+			CCollectionItem* item = collection->getItem(i);
+			updateCollectionItem(item);
+			updateCollectionRevItem(i, item->getHash(), rev );
+		}
 	}
 }
 
@@ -158,6 +187,40 @@ void CStateDB::updateCollectionItem( CCollectionItem* item ) {
 
 	cerr << "file: " << item->getFilename().toUtf8().data() << endl;
 	cerr << "SQL statement: " << sql_stmt << endl;
+	int retval = sqlite3_prepare_v2(m_db, sql_stmt.c_str(), sql_stmt.size(), &pStmt, &pzTail);
+
+	if(retval != SQLITE_OK ) {
+		cerr << "Error preparing SQL statement: " << sqlite3_errmsg(m_db);
+	}
+
+	do {
+		retval = sqlite3_step( pStmt );
+	}while (retval == SQLITE_ROW);
+
+	if(retval != SQLITE_DONE) {
+		cerr << "Error finalizing create table: " << sqlite3_errmsg(m_db);
+	}
+
+	retval = sqlite3_finalize( pStmt );
+	if(retval != SQLITE_OK) {
+		cerr << "Error finalizing create table: " << sqlite3_errmsg(m_db);
+	}
+}
+
+void CStateDB::updateCollectionRevItem( int pos, int hash, int rev ) {
+	sqlite3_stmt *pStmt;    /* OUT: Statement handle */
+	const char *pzTail;      /* OUT: Pointer to unused portion of zSql */
+	static int id = 0;
+	id++;
+	stringstream ss;
+	// (pos INTEGER, hash INTEGER, rev INTEGER)";
+	ss << "INSERT OR REPLACE INTO collectionRevs "
+	   << "( colPos, colHash, colRev)"
+	   << " VALUES "
+	   << "('" << pos << "','" << hash << "','" << rev << "') ";
+	string sql_stmt = ss.str();
+
+	cerr << "update collectionRev SQL statement: " << sql_stmt << endl;
 	int retval = sqlite3_prepare_v2(m_db, sql_stmt.c_str(), sql_stmt.size(), &pStmt, &pzTail);
 
 	if(retval != SQLITE_OK ) {
@@ -283,4 +346,25 @@ void CStateDB::createTable(std::string name, std::string schema) {
 	if(retval != SQLITE_OK) {
 		cerr << "Error finalizing create table: " << sqlite3_errmsg(m_db);
 	}
+}
+
+
+void CStateDB::updatePlaylistsTable(CSession const * const session) {
+
+}
+
+void CStateDB::updateNextlistsTable(CSession const * const session) {
+
+}
+
+void CStateDB::restoreCollection(CSession const * session) {
+
+}
+
+void CStateDB::restorePlaylists(CSession const * session) {
+
+}
+
+void CStateDB::restoreNextlists(CSession const * session) {
+
 }

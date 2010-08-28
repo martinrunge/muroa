@@ -13,11 +13,14 @@
 CSession::CSession() : m_latestCollectionRevision(0),
                        m_latestPlaylistRevision(0),
                        m_latestNextlistRevision(0),
-                       m_playlistPos(0)
+                       m_minCollectionRevision(0),
+                       m_minPlaylistRevision(0),
+                       m_minNextlistRevision(0),
+                       m_playlistPos(0),
+                       m_stateDB("state.db")
 {
 	connect(&m_stream, SIGNAL(finished()), this, SLOT(next()));
 	connect(&m_stream, SIGNAL(progress(int, int)), this, SLOT(progress(int, int)));
-
 }
 
 CSession::~CSession() {
@@ -135,13 +138,14 @@ void CSession::addCollectionRev(CCollection<CCollectionItem>* collection) {
 
 	for(int i=0; i < m_connections.size(); i++)
 	{
-		m_connections.at(i)->sendCollection(m_latestCollectionRevision - 1);
+		m_connections.at(i)->sendCollection(m_latestCollectionRevision);
 	}
+	m_latestCollectionRevision++;
+
 }
 
 void CSession::addCollectionRev(QString collection)
 {
-	m_latestCollectionRevision++;
 	CCollection<CCollectionItem>* newCollection = new CCollection<CCollectionItem>();
 	newCollection->setText(collection, m_latestCollectionRevision);
 
@@ -154,7 +158,6 @@ void CSession::addCollectionRev(QString collection)
 
 void CSession::addPlaylistRev(QString playlist)
 {
-	m_latestPlaylistRevision++;
 	CCollection<CPlaylistItem>* newPlaylist = new CCollection<CPlaylistItem>();
 	newPlaylist->setText(playlist, m_latestPlaylistRevision);
 
@@ -164,13 +167,13 @@ void CSession::addPlaylistRev(QString playlist)
 
 	for(int i=0; i < m_connections.size(); i++)
 	{
-		m_connections.at(i)->sendPlaylist(m_latestPlaylistRevision - 1);
+		m_connections.at(i)->sendPlaylist(m_latestPlaylistRevision);
 	}
+	m_latestPlaylistRevision++;
 }
 
 void CSession::addNextlistRev(QString nextlist)
 {
-	m_latestNextlistRevision++;
 	CCollection<CPlaylistItem>* newNextlist = new CCollection<CPlaylistItem>();
 	newNextlist->setText(nextlist, m_latestNextlistRevision);
 
@@ -180,14 +183,15 @@ void CSession::addNextlistRev(QString nextlist)
 
 	for(int i=0; i < m_connections.size(); i++)
 	{
-		m_connections.at(i)->sendNextlist(m_latestNextlistRevision - 1);
+		m_connections.at(i)->sendNextlist(m_latestNextlistRevision);
 	}
+	m_latestNextlistRevision++;
 }
 
 int CSession::addCollectionRevFromDiff(QString* collectionDiff, int diffFromRev)
 {
 	CCollection<CCollectionItem>* newCollection = new CCollection<CCollectionItem>( *(getCollection(m_latestCollectionRevision)) );
-	newCollection->patch(collectionDiff, ++m_latestCollectionRevision);
+	newCollection->patch(collectionDiff, m_latestCollectionRevision);
 
 	qDebug() << newCollection->getText();
 
@@ -195,16 +199,16 @@ int CSession::addCollectionRevFromDiff(QString* collectionDiff, int diffFromRev)
 
 	for(int i=0; i < m_connections.size(); i++)
 	{
-		m_connections.at(i)->sendCollection(m_latestCollectionRevision - 1);
+		m_connections.at(i)->sendCollection(m_latestCollectionRevision);
 	}
-
+	m_latestCollectionRevision++;
 }
 
 int CSession::addPlaylistRevFromDiff(QString* playlistDiff, int diffFromRev)
 {
 	qDebug() << QString("CSession::addPlaylistRevFromDiff %1 %2").arg(*playlistDiff).arg(diffFromRev);
 	CCollection<CPlaylistItem>* newPlaylist = new CCollection<CPlaylistItem>( *(getPlaylist(m_latestPlaylistRevision)) );
-	newPlaylist->patch(playlistDiff, ++m_latestPlaylistRevision);
+	newPlaylist->patch(playlistDiff, m_latestPlaylistRevision);
 
 	qDebug() << newPlaylist->getText();
 
@@ -212,8 +216,9 @@ int CSession::addPlaylistRevFromDiff(QString* playlistDiff, int diffFromRev)
 
 	for(int i=0; i < m_connections.size(); i++)
 	{
-		m_connections.at(i)->sendPlaylist(m_latestPlaylistRevision - 1);
+		m_connections.at(i)->sendPlaylist(m_latestPlaylistRevision);
 	}
+	m_latestPlaylistRevision++;
 }
 
 int CSession::addNextlistRevFromDiff(QString* nextlistDiff, int diffFromRev)
@@ -221,15 +226,16 @@ int CSession::addNextlistRevFromDiff(QString* nextlistDiff, int diffFromRev)
 	qDebug() << QString("CSession::addNextlistRevFromDiff %1 %2").arg(*nextlistDiff).arg(diffFromRev);
 	CCollection<CPlaylistItem>* newNextlist = new CCollection<CPlaylistItem>( *(getNextlist(m_latestNextlistRevision)) );
 	qDebug() << newNextlist->getText();
-	newNextlist->patch(nextlistDiff, ++m_latestNextlistRevision);
+	newNextlist->patch(nextlistDiff, m_latestNextlistRevision);
 	qDebug() << newNextlist->getText();
 
 	m_nextlistRevisions[m_latestNextlistRevision] = newNextlist;
 
 	for(int i=0; i < m_connections.size(); i++)
 	{
-		m_connections.at(i)->sendNextlist(m_latestNextlistRevision - 1);
+		m_connections.at(i)->sendNextlist(m_latestNextlistRevision);
 	}
+	m_latestNextlistRevision++;
 }
 
 
@@ -331,3 +337,13 @@ void CSession::progress(int done, int total)
 		m_connections.at(i)->sendProgress(done, total);
 	}
 }
+
+
+void CSession::saveState() {
+
+}
+
+void CSession::restoreState() {
+
+}
+

@@ -13,6 +13,7 @@
 
 #include "CCollection.h"
 class CCollectionItem;
+class CSession;
 
 class CStateDB {
 public:
@@ -25,8 +26,22 @@ public:
 	std::string getValue(std::string key);
 	void setValue(std::string key, std::string value);
 
-    void updateCollectionDB( CCollection<CCollectionItem>* collection ) ;
+	void saveSession(CSession const * const session);
+	void restoreSession(CSession const * session);
+
+    void updateCollectionDB( CSession const * const session, int minrev = -1, int maxrev = -1 );
+    void updateCollectionTable( CCollection<CCollectionItem>* collection );
+
+    void updateCollectionRevItem( int pos, int hash, int rev );
+
     unsigned getSongIdByHash(unsigned hash);
+
+    void updatePlaylistsTable(CSession const * const session);
+    void updateNextlistsTable(CSession const * const session);
+
+    void restoreCollection(CSession const * session);
+    void restorePlaylists(CSession const * session);
+    void restoreNextlists(CSession const * session);
 
 private:
 	std::string m_dbFileName;
@@ -37,6 +52,7 @@ private:
      */
     void createGeneralTable();
     void createCollectionTable();
+    void createCollectionRevisionsTable();
     void createPlaylistsTable();
     void createNextlistsTable();
 

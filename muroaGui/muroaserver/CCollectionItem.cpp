@@ -27,8 +27,9 @@ CCollectionItem::CCollectionItem(QString text) {
 	m_title = text.section(',', 4, 4);
 	m_length_in_s = text.section(',', 5, 5).toInt(&ok);
 
-	m_hash = qHash(m_filename);
 	assembleText();
+	// use textual representation of all fields as has hash -> no dublicate hashes in collection DB.
+	m_hash = qHash(m_text);
 }
 
 CCollectionItem::~CCollectionItem() {

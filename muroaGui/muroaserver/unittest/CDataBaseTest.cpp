@@ -8,6 +8,7 @@
 #include "CDataBaseTest.h"
 #include "../CStateDB.h"
 #include "CCollectionUpdater.h"
+#include "../CSession.h"
 
 #include <vector>
 
@@ -53,8 +54,11 @@ void CDataBaseTest::testDB()
 
 	m_colUpdater->setFileTypes(types);
 	collection = m_colUpdater->walkTree("/home/martin");
+	CSession session;
+	session.addCollectionRev(collection);
+	session.addCollectionRev(collection);
 
-	m_stateDB->updateCollectionDB(collection);
+	m_stateDB->updateCollectionDB(&session);
 
 	m_stateDB->getSongIdByHash( 90039379 );
 

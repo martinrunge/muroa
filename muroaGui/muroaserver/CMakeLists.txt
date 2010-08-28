@@ -48,23 +48,24 @@ set( MEDPROC_MOC_H  mediaprocessing/CAudioIOAlsa.h
                     mediaprocessing/CDecoder.h
                     mediaprocessing/CStream.h
                     mediaprocessing/IAudioIO.h
-                    mediaprocessing/CCollectionUpdater.h )
-
-set( MOC_H          CCollection.h
-                    CConnection.h
-                    CDiff.h
+                    mediaprocessing/CCollectionUpdater.h
+                    mediaprocessing/CStream.h )
+                    
+set( MOC_H          CConnection.h
                     CDnsSdAvahiViaQtDBus.h
                     CMuroaServer.h
-                    CPlaylistItem.h
                     CStateMachine.h
-                    CCollectionItem.h
-                    CContentHandler.h
-                    CDnsSdAvahi.h
-                    CItemBase.h
                     CNetwork.h
-                    CSession.h
+                    CSession.h )
+ 
+set(HEADERS         CCollection.h   
+                    CDiff.h
+                    CItemBase.h
+                    CCollectionItem.h
+                    CPlaylistItem.h
+                    CContentHandler.h
                     IDnsSd.h 
-                    mediaprocessing/CStream.h )
+                    CDnsSdAvahi.h )
  
 SET(UIS             MuroaServer.ui )
 
@@ -80,13 +81,13 @@ set (QT_USE_QTXML true )
 set (QT_USE_QTDBUS true )
 set (QT_USE_QTNETWORK true )
 include ( ${QT_USE_FILE} )
-qt4_wrap_cpp( MOC_SOURCES ${MOC_H} ${MOC_MEDPROC_H} )
+qt4_wrap_cpp( MOC_SOURCES ${MOC_H} ${MEDPROC_MOC_H} )
 
 include_directories(${CMAKE_CURRENT_BINARY_DIR} ${Boost_INCLUDE_DIRS} ${Taglib_CFLAGS} ${SQLITE_INCLUDE_DIR} )
 
 link_directories( ${QT_LIB_DIR} )
 
-add_executable( muroaserver ${SRC} ${MEDPROC_SRC} ${MOC_SOURCES} ${UIS_H})
+add_executable( muroaserver ${SRC} ${MEDPROC_SRC} ${HEADERS} ${MOC_SOURCES} ${UIS_H})
 target_link_libraries( muroaserver xdiff 
                                    avahi-client
                                    avahi-qt4

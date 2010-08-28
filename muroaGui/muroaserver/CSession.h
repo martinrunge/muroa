@@ -15,6 +15,7 @@
 #include "CCollectionItem.h"
 #include "CPlaylistItem.h"
 #include "CCollection.h"
+#include "CStateDB.h"
 
 #include "mediaprocessing/CStream.h"
 
@@ -38,9 +39,14 @@ public:
 	const QString getPlaylistDiff(int fromRevision, int toRevision = -1);
 	const QString getNextlistDiff(int fromRevision, int toRevision = -1);
 
-	inline int getCollectionRevision() { return m_latestCollectionRevision; };
-	inline int getPlaylistRevision() { return m_latestPlaylistRevision; };
-	inline int getNextlistRevision() { return m_latestNextlistRevision; };
+	inline int getCollectionRevision() const { return m_latestCollectionRevision; };
+	inline int getPlaylistRevision() const { return m_latestPlaylistRevision; };
+	inline int getNextlistRevision() const { return m_latestNextlistRevision; };
+
+	inline int getMinCollectionRevision() const { return m_minCollectionRevision; };
+	inline int getMinPlaylistRevision() const { return m_minPlaylistRevision; };
+	inline int getMinNextlistRevision() const { return m_minNextlistRevision; };
+
 
 	void addCollectionRev(CCollection<CCollectionItem>* collection);
 	void addCollectionRev(QString collection);
@@ -63,8 +69,10 @@ public slots:
 	void prev();
 
 	void connectionClosed(CConnection* conn);
-
 	void progress(int done, int total);
+
+	void saveState();
+	void restoreState();
 
 private:
 	CStream m_stream;
@@ -81,8 +89,13 @@ private:
 	int m_latestPlaylistRevision;
 	int m_latestNextlistRevision;
 
+	int m_minCollectionRevision;
+	int m_minPlaylistRevision;
+	int m_minNextlistRevision;
+
 	int m_playlistPos;
 
+	CStateDB m_stateDB;
 	QString m_name;
 };
 
