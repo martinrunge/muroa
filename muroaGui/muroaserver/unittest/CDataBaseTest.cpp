@@ -101,3 +101,16 @@ void CDataBaseTest::readGeneral() {
                     nlMinRev.compare(nlMinRevVal) == 0 &&
                     nlMaxRev.compare(nlMaxRevVal) == 0 );
 }
+
+
+void CDataBaseTest::selectColRevs() {
+	m_stateDB->open();
+
+	int rowID = m_stateDB->rowIDofColRevEntry(1, 20722355, 0);
+
+	cerr << "RowID of (1, 20722355, 0): "<< rowID << endl;
+
+	m_stateDB->close();
+	CPPUNIT_ASSERT( rowID != 0 );
+
+}

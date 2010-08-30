@@ -36,6 +36,8 @@ public:
 
     unsigned getSongIdByHash(unsigned hash);
 
+    int rowIDofColRevEntry(int colPos, int colHash, int colRev);
+
     void updatePlaylistsTable(CSession const * const session);
     void updateNextlistsTable(CSession const * const session);
 
@@ -60,7 +62,12 @@ private:
 
     void updateCollectionItem( CCollectionItem* item );
 
-    CCollectionItem* getItemFromStmt(sqlite3_stmt *pStmt);
+    CCollectionItem* getCollectionItemFromStmt(sqlite3_stmt *pStmt);
+
+	sqlite3_stmt *m_selectColRevStmt;
+	void prepareSelectColRevStmt();
+	void finalizeSelectColRevStmt();
+
 
 };
 

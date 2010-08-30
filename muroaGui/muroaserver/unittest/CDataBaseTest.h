@@ -17,6 +17,7 @@ class CDataBaseTest : public CppUnit::TestFixture {
 	  CPPUNIT_TEST_SUITE( CDataBaseTest );
 	  CPPUNIT_TEST( testDB );
 	  CPPUNIT_TEST( readGeneral );
+	  CPPUNIT_TEST( selectColRevs );
 	  CPPUNIT_TEST_SUITE_END();
 
 public:
@@ -28,6 +29,7 @@ public:
 
 	void testDB();
 	void readGeneral();
+	void selectColRevs();
 
 	CStateDB* m_stateDB;
     CCollectionUpdater* m_colUpdater;

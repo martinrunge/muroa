@@ -16,7 +16,7 @@
 
 using namespace std;
 
-CStateDB::CStateDB(std::string dbFileName) : m_dbFileName( dbFileName ), m_db(0) {
+CStateDB::CStateDB(std::string dbFileName) : m_dbFileName( dbFileName ), m_db(0), m_selectColRevStmt(0) {
 }
 
 CStateDB::~CStateDB() {
@@ -35,12 +35,15 @@ int CStateDB::open() {
 		createGeneralTable();
 		createCollectionTable();
 		createCollectionRevisionsTable();
+		prepareSelectColRevStmt();
+
 		createPlaylistsTable();
 		createNextlistsTable();
 	}
 }
 
 int CStateDB::close() {
+    finalizeSelectColRevStmt();
 	if(m_db != 0) {
 		sqlite3_close(m_db);
 	}
@@ -212,37 +215,42 @@ void CStateDB::updateCollectionRevItem( int pos, int hash, int rev ) {
 	const char *pzTail;      /* OUT: Pointer to unused portion of zSql */
 	static int id = 0;
 	id++;
-	stringstream ss;
-	// (pos INTEGER, hash INTEGER, rev INTEGER)";
-	ss << "INSERT OR REPLACE INTO collectionRevs "
-	   << "( colPos, colHash, colRev)"
-	   << " VALUES "
-	   << "('" << pos << "','" << hash << "','" << rev << "') ";
-	string sql_stmt = ss.str();
 
-	cerr << "update collectionRev SQL statement: " << sql_stmt << endl;
-	int retval = sqlite3_prepare_v2(m_db, sql_stmt.c_str(), sql_stmt.size(), &pStmt, &pzTail);
+	int rowid = rowIDofColRevEntry(pos, hash, rev);
+	if(rowid == 0) {  // this entry does not exist yet
+		stringstream ss;
+		// (pos INTEGER, hash INTEGER, rev INTEGER)";
+		ss << "INSERT OR REPLACE INTO collectionRevs "
+		   << "( colPos, colHash, colRev)"
+		   << " VALUES "
+		   << "('" << pos << "','" << hash << "','" << rev << "') ";
+		string sql_stmt = ss.str();
 
-	if(retval != SQLITE_OK ) {
-		cerr << "Error preparing SQL statement: " << sqlite3_errmsg(m_db);
-	}
+		cerr << "update collectionRev SQL statement: " << sql_stmt << endl;
+		int retval = sqlite3_prepare_v2(m_db, sql_stmt.c_str(), sql_stmt.size(), &pStmt, &pzTail);
 
-	do {
-		retval = sqlite3_step( pStmt );
-	}while (retval == SQLITE_ROW);
+		if(retval != SQLITE_OK ) {
+			cerr << "Error preparing SQL statement: " << sqlite3_errmsg(m_db);
+		}
 
-	if(retval != SQLITE_DONE) {
-		cerr << "Error finalizing create table: " << sqlite3_errmsg(m_db);
-	}
+		do {
+			retval = sqlite3_step( pStmt );
+		}while (retval == SQLITE_ROW);
 
-	retval = sqlite3_finalize( pStmt );
-	if(retval != SQLITE_OK) {
-		cerr << "Error finalizing create table: " << sqlite3_errmsg(m_db);
+		if(retval != SQLITE_DONE) {
+			cerr << "Error finalizing create table: " << sqlite3_errmsg(m_db);
+		}
+
+		retval = sqlite3_finalize( pStmt );
+		if(retval != SQLITE_OK) {
+			cerr << "Error finalizing create table: " << sqlite3_errmsg(m_db);
+		}
 	}
 }
 
 
-unsigned CStateDB::getSongIdByHash(unsigned hash) {
+CCollectionItem* CStateDB::getCollectionItemByHash(unsigned hash) {
+	CCollectionItem* item;
 	sqlite3_stmt *pStmt;    /* OUT: Statement handle */
 	const char *pzTail;      /* OUT: Pointer to unused portion of zSql */
 	stringstream ss;
@@ -257,12 +265,10 @@ unsigned CStateDB::getSongIdByHash(unsigned hash) {
 	}
 
 	do {
-		CCollectionItem* item;
-
 		retval = sqlite3_step( pStmt );
 		switch(retval) {
 		case SQLITE_ROW:
-			item = getItemFromStmt(pStmt);
+			item = getCollectionItemFromStmt(pStmt);
 			break;
 
 		case SQLITE_DONE:
@@ -284,9 +290,10 @@ unsigned CStateDB::getSongIdByHash(unsigned hash) {
 	if(retval != SQLITE_OK) {
 		cerr << "Error finalizing create table: " << sqlite3_errmsg(m_db);
 	}
+	return item;
 }
 
-CCollectionItem* CStateDB::getItemFromStmt(sqlite3_stmt *pStmt) {
+CCollectionItem* CStateDB::getCollectionItemFromStmt(sqlite3_stmt *pStmt) {
 	CCollectionItem* item = new CCollectionItem;
 	// (song_id INTEGER, file TEXT, hash INTEGER, artist TEXT, album TEXT, title TEXT, duration INTEGER, num_played INTEGER, num_skipped INTEGER, num_repeated INTEGER, rating INTEGER)";
 	int numCol = sqlite3_column_count(pStmt);
@@ -348,6 +355,50 @@ void CStateDB::createTable(std::string name, std::string schema) {
 	}
 }
 
+int CStateDB::rowIDofColRevEntry(int colPos, int colHash, int colRev) {
+	int retval = sqlite3_bind_int(m_selectColRevStmt, 1, colPos);
+	if(retval != SQLITE_OK) {
+		cerr << "Error binding value 'colPos' to selectColRev statement: " << sqlite3_errmsg(m_db) << endl;
+	}
+	retval = sqlite3_bind_int(m_selectColRevStmt, 2, colHash);
+	if(retval != SQLITE_OK) {
+		cerr << "Error binding value 'colHash' to selectColRev statement: " << sqlite3_errmsg(m_db) << endl;
+	}
+	retval = sqlite3_bind_int(m_selectColRevStmt, 3, colRev);
+	if(retval != SQLITE_OK) {
+		cerr << "Error binding value 'colRev' to selectColRev statement: " << sqlite3_errmsg(m_db) << endl;
+	}
+
+	int rowid = 0;
+	int num_found = 0;
+	do {
+		retval = sqlite3_step( m_selectColRevStmt );
+		switch(retval) {
+		case SQLITE_ROW:
+			rowid =	sqlite3_column_int(m_selectColRevStmt, 0);
+			num_found++;
+ 			break;
+
+		case SQLITE_DONE:
+			// no more rows match search
+			break;
+
+		default:
+			cerr << "Error during step command: " << sqlite3_errmsg(m_db) << endl;
+			break;
+		}
+
+	}while (retval == SQLITE_ROW);
+
+	if(retval != SQLITE_DONE) {
+		cerr << "Error stepping table columnRevs: " << sqlite3_errmsg(m_db);
+	}
+	retval = sqlite3_reset(m_selectColRevStmt);
+	if(retval != SQLITE_OK) {
+		cerr << "Error resetting statement: " << sqlite3_errmsg(m_db);
+	}
+	return rowid;
+}
 
 void CStateDB::updatePlaylistsTable(CSession const * const session) {
 
@@ -367,4 +418,30 @@ void CStateDB::restorePlaylists(CSession const * session) {
 
 void CStateDB::restoreNextlists(CSession const * session) {
 
+}
+
+
+void CStateDB::prepareSelectColRevStmt() {
+	const char *pzTail;      /* OUT: Pointer to unused portion of zSql */
+	stringstream ss;
+
+	ss << "SELECT rowid FROM collectionRevs WHERE colPos=? AND colHash=? AND colRev=?";
+	string sql_stmt = ss.str();
+
+	int retval = sqlite3_prepare_v2(m_db, sql_stmt.c_str(), sql_stmt.size(), &m_selectColRevStmt, &pzTail);
+
+	if(retval != SQLITE_OK ) {
+		cerr << "Error preparing SQL statement: " << sqlite3_errmsg(m_db) << endl;
+	}
+}
+
+void CStateDB::finalizeSelectColRevStmt() {
+	int retval;
+	if( m_selectColRevStmt ) {
+		retval = sqlite3_finalize( m_selectColRevStmt );
+		if(retval != SQLITE_OK) {
+			cerr << "Error finalizing create table: " << sqlite3_errmsg(m_db) << endl;
+		}
+		m_selectColRevStmt = 0;
+	}
 }
