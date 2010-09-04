@@ -60,7 +60,7 @@ void CDataBaseTest::testDB()
 
 	m_stateDB->updateCollectionDB(&session);
 
-	m_stateDB->getSongIdByHash( 90039379 );
+	m_stateDB->getCollectionItemByHash( 90039379 );
 
 	m_stateDB->setValue("CollectionRevMin", colMinRevVal);
 	m_stateDB->setValue("CollectionRevMax", colMaxRevVal);
@@ -70,6 +70,11 @@ void CDataBaseTest::testDB()
 
 	m_stateDB->setValue("NextlistRevMin", nlMinRevVal);
 	m_stateDB->setValue("NextlistRevMax", nlMaxRevVal);
+
+
+	CCollectionItem* writtenItem = collection->getItem(1);
+	CCollectionItem* readItem = m_stateDB->getCollectionItemByPos(1, 0);
+	if(writtenItem->getHash() != readItem->getHash() ) rc = 1;
 
 	m_stateDB->close();
 

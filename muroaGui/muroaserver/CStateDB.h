@@ -34,7 +34,8 @@ public:
 
     void updateCollectionRevItem( int pos, int hash, int rev );
 
-    unsigned getSongIdByHash(unsigned hash);
+    CCollectionItem* getCollectionItemByHash(unsigned hash);
+    CCollectionItem* getCollectionItemByPos(int colPos, int colRev);
 
     int rowIDofColRevEntry(int colPos, int colHash, int colRev);
 
@@ -68,7 +69,12 @@ private:
 	void prepareSelectColRevStmt();
 	void finalizeSelectColRevStmt();
 
+	sqlite3_stmt *m_getColItemByPosStmt;
+	void prepareGetColItemByPosStmt();
+	void finalizeGetColItemByPosStmt();
 
+	void prepareStmt(sqlite3_stmt** stmt, std::string sqlStmt);
+	void finalizeStmt(sqlite3_stmt** stmt);
 };
 
 #endif /* CSTATEDB_H_ */

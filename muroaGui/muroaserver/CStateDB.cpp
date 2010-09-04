@@ -16,7 +16,11 @@
 
 using namespace std;
 
-CStateDB::CStateDB(std::string dbFileName) : m_dbFileName( dbFileName ), m_db(0), m_selectColRevStmt(0) {
+CStateDB::CStateDB(std::string dbFileName) : m_dbFileName( dbFileName ),
+		                                     m_db(0),
+		                                     m_selectColRevStmt(0),
+		                                     m_getColItemByPosStmt(0)
+{
 }
 
 CStateDB::~CStateDB() {
@@ -35,15 +39,18 @@ int CStateDB::open() {
 		createGeneralTable();
 		createCollectionTable();
 		createCollectionRevisionsTable();
-		prepareSelectColRevStmt();
 
 		createPlaylistsTable();
 		createNextlistsTable();
+
+		prepareSelectColRevStmt();
+		prepareGetColItemByPosStmt();
 	}
 }
 
 int CStateDB::close() {
     finalizeSelectColRevStmt();
+	finalizeGetColItemByPosStmt();
 	if(m_db != 0) {
 		sqlite3_close(m_db);
 	}
@@ -293,26 +300,68 @@ CCollectionItem* CStateDB::getCollectionItemByHash(unsigned hash) {
 	return item;
 }
 
+CCollectionItem* CStateDB::getCollectionItemByPos(int colPos, int colRev) {
+	CCollectionItem* item;
+
+	assert(m_getColItemByPosStmt != 0);
+
+	int retval = sqlite3_bind_int(m_getColItemByPosStmt, 1, colPos);
+	if(retval != SQLITE_OK) {
+		cerr << "Error binding value 'colPos' to getColItemByPos statement: " << sqlite3_errmsg(m_db) << endl;
+	}
+	retval = sqlite3_bind_int(m_getColItemByPosStmt, 2, colRev);
+	if(retval != SQLITE_OK) {
+		cerr << "Error binding value 'colRev' to getColItemByPos statement: " << sqlite3_errmsg(m_db) << endl;
+	}
+
+	int rowid = 0;
+	int num_found = 0;
+	do {
+		retval = sqlite3_step( m_getColItemByPosStmt );
+		switch(retval) {
+		case SQLITE_ROW:
+			item = getCollectionItemFromStmt(m_getColItemByPosStmt);
+			num_found++;
+ 			break;
+
+		case SQLITE_DONE:
+			// no more rows match search
+			break;
+
+		default:
+			cerr << "Error during step command: " << sqlite3_errmsg(m_db) << endl;
+			break;
+		}
+	}while (retval == SQLITE_ROW);
+
+	if(retval != SQLITE_DONE) {
+		cerr << "Error stepping getColItemByPos: " << sqlite3_errmsg(m_db);
+	}
+	retval = sqlite3_reset(m_getColItemByPosStmt);
+	if(retval != SQLITE_OK) {
+		cerr << "Error resetting getColItemByPos statement: " << sqlite3_errmsg(m_db);
+	}
+	return item;
+}
+
 CCollectionItem* CStateDB::getCollectionItemFromStmt(sqlite3_stmt *pStmt) {
 	CCollectionItem* item = new CCollectionItem;
-	// (song_id INTEGER, file TEXT, hash INTEGER, artist TEXT, album TEXT, title TEXT, duration INTEGER, num_played INTEGER, num_skipped INTEGER, num_repeated INTEGER, rating INTEGER)";
+	// (hash INTEGER, file TEXT, artist TEXT, album TEXT, title TEXT, duration INTEGER, num_played INTEGER, num_skipped INTEGER, num_repeated INTEGER, rating INTEGER)";
 	int numCol = sqlite3_column_count(pStmt);
 	cerr << "result has " << numCol << " columns" << endl;
 
-	int song_id = sqlite3_column_int(pStmt, 0);
+	int hash = sqlite3_column_int(pStmt, 0);
 
 	const unsigned char *filename = sqlite3_column_text(pStmt, 1);
 	int filenameSize = sqlite3_column_bytes(pStmt, 1);
 
-	int hash = sqlite3_column_int(pStmt, 2);
-
-	const unsigned char *artist = sqlite3_column_text(pStmt, 3);
+	const unsigned char *artist = sqlite3_column_text(pStmt, 2);
 	int artistSize = sqlite3_column_bytes(pStmt, 3);
 
-	const unsigned char *album = sqlite3_column_text(pStmt, 4);
+	const unsigned char *album = sqlite3_column_text(pStmt, 3);
 	int albumSize = sqlite3_column_bytes(pStmt, 4);
 
-	const unsigned char *title = sqlite3_column_text(pStmt, 5);
+	const unsigned char *title = sqlite3_column_text(pStmt, 4);
 	int titleSize = sqlite3_column_bytes(pStmt, 5);
 
 	cerr << "SELECT: " << filename << " " << artist << " " << album << " " << title << endl;
@@ -422,26 +471,40 @@ void CStateDB::restoreNextlists(CSession const * session) {
 
 
 void CStateDB::prepareSelectColRevStmt() {
+	prepareStmt(&m_selectColRevStmt, "SELECT rowid FROM collectionRevs WHERE colPos=? AND colHash=? AND colRev=?");
+}
+
+void CStateDB::finalizeSelectColRevStmt() {
+	finalizeStmt( &m_selectColRevStmt );
+}
+
+
+void CStateDB::prepareGetColItemByPosStmt() {
+	prepareStmt(&m_getColItemByPosStmt, "SELECT * FROM collection INNER JOIN collectionRevs ON collection.hash=collectionRevs.colHash WHERE collectionRevs.colPos=? AND collectionRevs.colRev=?");
+}
+
+void CStateDB::finalizeGetColItemByPosStmt() {
+	finalizeStmt( &m_getColItemByPosStmt );
+}
+
+void CStateDB::prepareStmt(sqlite3_stmt** stmt, std::string sqlStmt) {
 	const char *pzTail;      /* OUT: Pointer to unused portion of zSql */
-	stringstream ss;
 
-	ss << "SELECT rowid FROM collectionRevs WHERE colPos=? AND colHash=? AND colRev=?";
-	string sql_stmt = ss.str();
-
-	int retval = sqlite3_prepare_v2(m_db, sql_stmt.c_str(), sql_stmt.size(), &m_selectColRevStmt, &pzTail);
+	int retval = sqlite3_prepare_v2(m_db, sqlStmt.c_str(), sqlStmt.size(), stmt, &pzTail);
 
 	if(retval != SQLITE_OK ) {
 		cerr << "Error preparing SQL statement: " << sqlite3_errmsg(m_db) << endl;
 	}
 }
 
-void CStateDB::finalizeSelectColRevStmt() {
+void CStateDB::finalizeStmt(sqlite3_stmt** stmt) {
 	int retval;
-	if( m_selectColRevStmt ) {
-		retval = sqlite3_finalize( m_selectColRevStmt );
+	if( *stmt ) {
+		retval = sqlite3_finalize( *stmt );
 		if(retval != SQLITE_OK) {
-			cerr << "Error finalizing create table: " << sqlite3_errmsg(m_db) << endl;
+			cerr << "Error finalizing prepared statement: " << sqlite3_errmsg(m_db) << endl;
 		}
-		m_selectColRevStmt = 0;
+		*stmt = 0;
 	}
 }
+
