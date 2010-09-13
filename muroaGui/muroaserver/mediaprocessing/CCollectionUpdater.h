@@ -15,6 +15,7 @@
 #include <vector>
 
 #include "../CCollection.h"
+#include "CDecoder.h"
 
 namespace fs = boost::filesystem;
 
@@ -33,6 +34,7 @@ public:
 private:
 	bool knownType( fs::path path );
 	CCollectionItem* readTag( fs::path path );
+	CDecoder m_decoder;
 
 	std::vector<std::string> m_types;
 

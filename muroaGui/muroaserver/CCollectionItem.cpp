@@ -6,18 +6,12 @@
  */
 
 #include "CCollectionItem.h"
-#include <QHash>
-
-unsigned CCollectionItem::lastUsedHash = 0;
 
 CCollectionItem::CCollectionItem() {
 }
 
 
 CCollectionItem::CCollectionItem(QString text) {
-	CCollectionItem::lastUsedHash++;
-//	m_hash = lastUsedHash;
-
 	bool ok;
 
 	m_filename = text.section(',', 0, 0);
@@ -25,29 +19,14 @@ CCollectionItem::CCollectionItem(QString text) {
 	m_album = text.section(',', 2, 2);
 	m_year = text.section(',', 3, 3).toInt(&ok);
 	m_title = text.section(',', 4, 4);
-	m_length_in_s = text.section(',', 5, 5).toInt(&ok);
+	m_duration_in_s = text.section(',', 5, 5).toInt(&ok);
 
 	assembleText();
-	// use textual representation of all fields as has hash -> no dublicate hashes in collection DB.
-	m_hash = qHash(m_text);
 }
 
 CCollectionItem::~CCollectionItem() {
 	// TODO Auto-generated destructor stub
 }
-
-//void CCollectionItem::setText(QString text)
-//{
-//	bool ok;
-//	m_text = text;
-//
-//	m_filename = text.section(',', 0, 0);
-//	m_artist = text.section(',', 1, 1);
-//	m_album = text.section(',', 2, 2);
-//	m_year = text.section(',', 3, 3).toInt(&ok);
-//	m_title = text.section(',', 4, 4);
-//	m_length_in_s = text.section(',', 5, 5).toInt(&ok);
-//}
 
 void CCollectionItem::setAlbum(QString album)
 {
@@ -74,7 +53,6 @@ void CCollectionItem::setArtist(std::string artist) {
 void CCollectionItem::setFilename(QString filename)
 {
 	m_filename = filename;
-	m_hash = qHash(m_filename);
 	assembleText();
 }
 
@@ -83,9 +61,9 @@ void CCollectionItem::setFilename(std::string filename)
 	setFilename(QString::fromUtf8(filename.c_str(), filename.size()));
 }
 
-void CCollectionItem::setLengthInSec(int lengthInSec)
+void CCollectionItem::setDuration(int duration)
 {
-	m_length_in_s = lengthInSec;
+	m_duration_in_s = duration;
 	assembleText();
 }
 
@@ -109,6 +87,9 @@ void CCollectionItem::setYear(int year)
 
 void CCollectionItem::assembleText()
 {
-	m_text = QString("%1,%2,%3,%4,%5,%6,%7").arg(m_filename).arg(m_artist).arg(m_album).arg(m_year).arg(m_title).arg(m_length_in_s).arg(m_hash);
+	m_text = QString("%1,%2,%3,%4,%5,%6").arg(m_filename).arg(m_artist).arg(m_album).arg(m_year).arg(m_title).arg(m_duration_in_s);
+    m_hash = qHash(m_text);
+    m_text.append(QChar(','));
+    m_text.append(QString::number(m_hash, 10));
 }
 

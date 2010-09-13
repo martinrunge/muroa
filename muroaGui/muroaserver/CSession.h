@@ -17,6 +17,8 @@
 #include "CCollection.h"
 #include "CStateDB.h"
 
+#include "CMisuseException.h"
+
 #include "mediaprocessing/CStream.h"
 
 class CConnection;
@@ -50,7 +52,9 @@ public:
 
 	void addCollectionRev(CCollection<CCollectionItem>* collection);
 	void addCollectionRev(QString collection);
+	void addPlaylistRev(CCollection<CPlaylistItem>* playlist);
 	void addPlaylistRev(QString playlist);
+	void addNextlistRev(CCollection<CPlaylistItem>* nextlist);
 	void addNextlistRev(QString playlist);
 
 	int addCollectionRevFromDiff(QString* collectionDiff, int diffFromRev);
@@ -59,6 +63,10 @@ public:
 
 	int addNextlistRevFromNextCmd();
 	int addNextlistRevFromPrevCmd();
+
+	void setMinCollectionRevision(int rev) throw();
+	void setMinPlaylistRevision(int rev) throw();
+	void setMinNextlistRevision(int rev) throw();
 
 	void addConnection(CConnection* connection);
 

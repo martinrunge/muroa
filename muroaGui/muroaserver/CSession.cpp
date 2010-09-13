@@ -154,6 +154,15 @@ void CSession::addCollectionRev(QString collection)
 	addCollectionRev(newCollection);
 }
 
+void CSession::addPlaylistRev(CCollection<CPlaylistItem>* playlist) {
+	m_playlistRevisions[m_latestPlaylistRevision] = playlist;
+
+	for(int i=0; i < m_connections.size(); i++)
+	{
+		m_connections.at(i)->sendPlaylist(m_latestPlaylistRevision);
+	}
+	m_latestPlaylistRevision++;
+}
 
 
 void CSession::addPlaylistRev(QString playlist)
@@ -170,6 +179,16 @@ void CSession::addPlaylistRev(QString playlist)
 		m_connections.at(i)->sendPlaylist(m_latestPlaylistRevision);
 	}
 	m_latestPlaylistRevision++;
+}
+
+void CSession::addNextlistRev(CCollection<CPlaylistItem>* nextlist) {
+	m_nextlistRevisions[m_latestNextlistRevision] = nextlist;
+
+	for(int i=0; i < m_connections.size(); i++)
+	{
+		m_connections.at(i)->sendPlaylist(m_latestNextlistRevision);
+	}
+	m_latestNextlistRevision++;
 }
 
 void CSession::addNextlistRev(QString nextlist)
@@ -275,7 +294,23 @@ int CSession::addNextlistRevFromPrevCmd() {
 
 }
 
+void CSession::setMinCollectionRevision(int rev) throw() {
+	if(m_collectionRevisions.size() > 0) {
+		throw(CMisuseException("Trying to set m_minCollectionRevision with non-empty collection revisions."));
+	}
+	m_minCollectionRevision = rev;
+	m_latestCollectionRevision = rev;
+}
 
+void CSession::setMinPlaylistRevision(int rev) throw() {
+	m_minPlaylistRevision = rev;
+	m_latestPlaylistRevision = rev;
+}
+
+void CSession::setMinNextlistRevision(int rev) throw() {
+	m_minNextlistRevision = rev;
+	m_latestNextlistRevision = rev;
+}
 
 void CSession::addConnection(CConnection* connection)
 {

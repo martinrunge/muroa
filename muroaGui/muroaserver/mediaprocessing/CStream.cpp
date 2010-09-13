@@ -37,7 +37,7 @@ void CStream::setProgress(  int playedSecs, int totalSecs ) const {
 void CStream::setSong( CCollectionItem* item )
 {
 	m_fileName = item->getFilename();
-	m_total = item->getLengthInSec();
+	m_total = item->getDuration();
 
 	qDebug() << QString("CStream::setSong %1").arg(m_fileName);
 	start();

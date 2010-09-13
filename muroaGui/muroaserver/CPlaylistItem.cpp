@@ -13,6 +13,11 @@ CPlaylistItem::CPlaylistItem(QString text) {
 	assembleText();
 }
 
+CPlaylistItem::CPlaylistItem(unsigned  hash) {
+	m_collectionHash = hash;
+	assembleText();
+}
+
 CPlaylistItem::~CPlaylistItem() {
 	// TODO Auto-generated destructor stub
 }

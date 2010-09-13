@@ -11,7 +11,12 @@
 
 #include "CStream.h"
 
-CDecoder::CDecoder(const CStream* streamPtr) : m_streamPtr(streamPtr), m_pFormatCtx(0), m_pCodecCtx(0), m_pCodec(0), m_thread(0), m_open(false) {
+CDecoder::CDecoder(const CStream* streamPtr) : m_streamPtr(streamPtr),
+                                               m_pFormatCtx(0),
+                                               m_pCodecCtx(0),
+                                               m_pCodec(0),
+                                               m_thread(0),
+                                               m_open(false) {
 
 	// This registers all available file formats and codecs with the library so
     // they will be used automatically when a file with the corresponding format/codec
@@ -20,7 +25,7 @@ CDecoder::CDecoder(const CStream* streamPtr) : m_streamPtr(streamPtr), m_pFormat
     // possible to register only certain individual file formats and codecs, but
     // there's usually no reason why you would have to do that.
 	av_register_all();
-
+	av_init_packet(&m_packet);
 }
 
 CDecoder::~CDecoder() {
@@ -48,7 +53,7 @@ void CDecoder::open(const char* filename)
 	if(av_find_stream_info(m_pFormatCtx) < 0 )
 		cerr << "Couldn't find stream information in file " << filename << endl;
 
-	dump_format(m_pFormatCtx, 0, filename, false);
+	// dump_format(m_pFormatCtx, 0, filename, false);
 
 
 	m_audioStreamID = -1;
@@ -77,10 +82,47 @@ void CDecoder::open(const char* filename)
 	// duration in m_timBase
 	int64_t tmp = m_pFormatCtx->streams[m_audioStreamID]->duration * m_timeBase.num;
 	m_durationInSecs = tmp / m_timeBase.den;
-	m_posInSecs = 0;
-	// set pos to 0 to ensure gui client see 0 seconds progress so they can set title, artist, etc of new song in the gui.
-	m_streamPtr->setProgress( m_posInSecs, m_durationInSecs );
 
+	m_open = true;
+}
+
+void CDecoder::close()
+{
+	// cerr << "CDecoder::close" << endl;
+
+	m_stop = true;
+	if(m_thread != 0) {
+		m_thread->join();
+		delete m_thread;
+		m_thread = 0;
+	}
+
+    // Free old packet
+    if(m_packet.data != NULL) {
+        av_free_packet(&m_packet);
+        m_packet.data = NULL;
+    }
+    // close the Codec
+    if(m_pCodecCtx->codec != 0) {
+    	avcodec_close(m_pCodecCtx);
+    	m_pCodecCtx->codec = 0;
+    	m_pCodecCtx=0;
+    }
+
+    // Close the video file
+    if(m_pFormatCtx != 0 ) {
+    	av_close_input_file(m_pFormatCtx);
+    	m_pFormatCtx = 0;
+    }
+    m_open = false;
+}
+
+int CDecoder::decode() {
+	m_posInSecs = 0;
+	if(m_streamPtr != 0) {
+		// set pos to 0 to ensure gui client see 0 seconds progress so they can set title, artist, etc of new song in the gui.
+		m_streamPtr->setProgress( m_posInSecs, m_durationInSecs );
+	}
 
 	m_pCodec=avcodec_find_decoder(m_pCodecCtx->codec_id);
 	if(m_pCodec==NULL)
@@ -95,36 +137,9 @@ void CDecoder::open(const char* filename)
 
 	m_thread = new thread( &CDecoder::decodingLoop, this);
 
+	return 0;
 }
 
-void CDecoder::close()
-{
-	cerr << "CDecoder::close" << endl;
-
-	m_stop = true;
-	if(m_thread != 0) {
-		m_thread->join();
-		delete m_thread;
-		m_thread = 0;
-	}
-
-    // Free old packet
-    if(m_packet.data != NULL)
-        av_free_packet(&m_packet);
-
-    // close the Codec
-    if(m_pCodecCtx != 0) {
-    	avcodec_close(m_pCodecCtx);
-    	m_pCodecCtx = 0;
-    }
-
-    // Close the video file
-    if(m_pFormatCtx != 0 ) {
-    	av_close_input_file(m_pFormatCtx);
-    	m_pFormatCtx = 0;
-    }
-    m_open = false;
-}
 
 void CDecoder::decodingLoop()
 {
@@ -138,8 +153,10 @@ void CDecoder::decodingLoop()
         // right stream ID (audioStreamID defined above) is found.
  		do {
  	   		// Free old packet
-       		if(m_packet.data != NULL)
+       		if(m_packet.data != NULL) {
     	   		av_free_packet(&m_packet);
+    	   		m_packet.data = NULL;
+       		}
 
        		// Read new frame
        		if(av_read_frame(m_pFormatCtx, &m_packet) < 0) {
@@ -183,5 +200,10 @@ void CDecoder::decodingLoop()
 	if(! m_stop ) {
 		m_streamPtr->next();
 	}
+}
+
+
+int CDecoder::getDuration() {
+	return m_durationInSecs;
 }
 

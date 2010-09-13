@@ -112,14 +112,14 @@ bool CCollectionUpdater::knownType( fs::path path ) {
 }
 
 CCollectionItem* CCollectionUpdater::readTag( fs::path path ) {
-	cout << "add: " << path;
+	// cout << "add: " << path;
 
 	TagLib::FileRef f( path.string().c_str() );
 	TagLib::String artist = f.tag()->artist();
 	TagLib::String album  = f.tag()->album();
 	TagLib::String title = f.tag()->title();
 
-	cout << " Artist: " << artist.to8Bit(true) << " Album: " << album.to8Bit(true) << " Title; " << title.to8Bit(true) << endl;
+	// cout << " Artist: " << artist.to8Bit(true) << " Album: " << album.to8Bit(true) << " Title; " << title.to8Bit(true) << endl;
 
 	CCollectionItem* item = new CCollectionItem();
 	item->setFilename( path.string() );
@@ -128,5 +128,9 @@ CCollectionItem* CCollectionUpdater::readTag( fs::path path ) {
 	item->setTitle( title.to8Bit(true) );
 	item->setYear( f.tag()->year() );
 
+	m_decoder.open(path.string().c_str());
+	int duration = m_decoder.getDuration();
+	m_decoder.close();
+	item->setDuration(duration);
 	return item;
 }

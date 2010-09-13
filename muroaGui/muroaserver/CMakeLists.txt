@@ -33,22 +33,18 @@ set( SRC          CCollectionItem.cpp
                   CPlaylistItem.cpp
                   CStateMachine.cpp
                   CStateDB.cpp
+                  CMisuseException.cpp
                   main.cpp )
                   
-set( MEDPROC_SRC    mediaprocessing/CAudioIOAlsa.cpp
+set( MEDPROC_SRC    mediaprocessing/IAudioIO.cpp
+                    mediaprocessing/CAudioIOAlsa.cpp
                     mediaprocessing/CAudioIOlibao.cpp
                     mediaprocessing/CDecoder.cpp
                     mediaprocessing/CStream.cpp
-                    mediaprocessing/IAudioIO.cpp 
                     mediaprocessing/CCollectionUpdater.cpp ) 
                   
 
-set( MEDPROC_MOC_H  mediaprocessing/CAudioIOAlsa.h
-                    mediaprocessing/CAudioIOlibao.h
-                    mediaprocessing/CDecoder.h
-                    mediaprocessing/CStream.h
-                    mediaprocessing/IAudioIO.h
-                    mediaprocessing/CCollectionUpdater.h
+set( MEDPROC_MOC_H  mediaprocessing/CStream.h
                     mediaprocessing/CStream.h )
                     
 set( MOC_H          CConnection.h
@@ -65,7 +61,13 @@ set(HEADERS         CCollection.h
                     CPlaylistItem.h
                     CContentHandler.h
                     IDnsSd.h 
-                    CDnsSdAvahi.h )
+                    CDnsSdAvahi.h
+                    CMisuseException.h
+                    mediaprocessing/IAudioIO.h
+                    mediaprocessing/CAudioIOAlsa.h
+                    mediaprocessing/CAudioIOlibao.h
+                    mediaprocessing/CDecoder.h
+                    mediaprocessing/CCollectionUpdater.h )
  
 SET(UIS             MuroaServer.ui )
 

@@ -16,6 +16,10 @@ CPPUNIT_TEST_SUITE_REGISTRATION( CDataBaseTest );
 
 using namespace std;
 
+CSession* CDataBaseTest::m_session = 0;
+unsigned CDataBaseTest::m_testHash = 0;
+int CDataBaseTest::m_testHashPos = 0;
+
 CDataBaseTest::CDataBaseTest() : colMinRevVal("1"),
                                  colMaxRevVal("101"),
                                  plMinRevVal("2"),
@@ -54,11 +58,18 @@ void CDataBaseTest::testDB()
 
 	m_colUpdater->setFileTypes(types);
 	collection = m_colUpdater->walkTree("/home/martin");
-	CSession session;
-	session.addCollectionRev(collection);
-	session.addCollectionRev(collection);
+	m_testHashPos = collection->size() / 2;
+	m_testHash = collection->getItem(m_testHashPos)->getHash();
 
-	m_stateDB->updateCollectionDB(&session);
+	m_session = new CSession;
+	m_session->addCollectionRev(collection);
+	m_session->addCollectionRev(collection);
+
+	preparePlaylist();
+	prepareNextlist();
+
+	m_stateDB->updateCollectionTable(m_session);
+	m_stateDB->updatePlaylistRevsTable(m_session);
 
 	m_stateDB->getCollectionItemByHash( 90039379 );
 
@@ -74,6 +85,12 @@ void CDataBaseTest::testDB()
 
 	CCollectionItem* writtenItem = collection->getItem(1);
 	CCollectionItem* readItem = m_stateDB->getCollectionItemByPos(1, 0);
+	cout << "Artist written/read  : " << (const char*)writtenItem->getArtist().toUtf8() << " <-> " << (const char*)readItem->getArtist().toUtf8() << endl;
+	cout << "Album  written/read  : " << (const char*)writtenItem->getAlbum().toUtf8() << " <-> " << (const char*)readItem->getAlbum().toUtf8() << endl;
+	cout << "Title written/read   : " << (const char*)writtenItem->getTitle().toUtf8() << " <-> " << (const char*)readItem->getTitle().toUtf8() << endl;
+	cout << "Year  written/read   : " << writtenItem->getYear() << " <-> " << readItem->getYear() << endl;
+	cout << "Duration written/read: " << writtenItem->getDuration() << " <-> " << readItem->getDuration() << endl;
+	cout << "Hash written/read    : " << writtenItem->getHash() << " <-> " << readItem->getHash() << endl;
 	if(writtenItem->getHash() != readItem->getHash() ) rc = 1;
 
 	m_stateDB->close();
@@ -94,9 +111,9 @@ void CDataBaseTest::readGeneral() {
 	std::string nlMinRev = m_stateDB->getValue("NextlistRevMin");
 	std::string nlMaxRev = m_stateDB->getValue("NextlistRevMax");
 
-	cerr << "Collection revs: [" << colMinRev << ".." << colMaxRev << "]" << endl;
-	cerr << "Playlist revs:   [" << plMinRev << ".." << plMaxRev << "]" << endl;
-	cerr << "Nextlist revs:   [" << nlMinRev << ".." << nlMaxRev << "]" << endl;
+	cout << "Collection revs: [" << colMinRev << ".." << colMaxRev << "]" << endl;
+	cout << "Playlist revs:   [" << plMinRev << ".." << plMaxRev << "]" << endl;
+	cout << "Nextlist revs:   [" << nlMinRev << ".." << nlMaxRev << "]" << endl;
 
 	m_stateDB->close();
 	CPPUNIT_ASSERT( colMinRev.compare(colMinRevVal) == 0 &&
@@ -111,11 +128,167 @@ void CDataBaseTest::readGeneral() {
 void CDataBaseTest::selectColRevs() {
 	m_stateDB->open();
 
-	int rowID = m_stateDB->rowIDofColRevEntry(1, 20722355, 0);
+	int rowID = m_stateDB->rowIDofColRevEntry(m_testHashPos, m_testHash, 0);
 
-	cerr << "RowID of (1, 20722355, 0): "<< rowID << endl;
+	cout << "RowID of (" << m_testHashPos << ", " << m_testHash << ", 0): "<< rowID << endl;
 
 	m_stateDB->close();
 	CPPUNIT_ASSERT( rowID != 0 );
 
+}
+
+
+void CDataBaseTest::preparePlaylist() {
+	CCollection<CPlaylistItem>* playlist = 0;
+	playlist = new CCollection<CPlaylistItem>();
+
+	CCollection<CCollectionItem>* collection = m_session->getCollection(0);
+	for(int i=0; i < collection->size(); i += 2) {
+		CPlaylistItem* item = new CPlaylistItem(collection->getItem(i)->getHash());
+		playlist->insert( item, -1);
+	}
+	m_session->addPlaylistRev(playlist);
+
+	playlist = new CCollection<CPlaylistItem>();
+
+	for(int i=0; i < collection->size(); i++) {
+		CPlaylistItem* item = new CPlaylistItem(collection->getItem(i)->getHash());
+		playlist->insert( item, -1);
+	}
+	m_session->addPlaylistRev(playlist);
+
+	playlist = new CCollection<CPlaylistItem>();
+
+	for( int i=1; i < collection->size(); i += 2 ) {
+		CPlaylistItem* item = new CPlaylistItem(collection->getItem(i)->getHash());
+		playlist->insert( item, -1);
+	}
+	m_session->addPlaylistRev(playlist);
+}
+
+void CDataBaseTest::prepareNextlist() {
+	CCollection<CPlaylistItem>* nextlist = 0;
+	nextlist = new CCollection<CPlaylistItem>();
+	// nextlist->addSomeEntries();
+	// m_session->addNextlistRev(nextlist);
+}
+
+void CDataBaseTest::saveSession() {
+	bool ok = true;
+	m_stateDB->open();
+	try {
+		m_stateDB->saveSession(m_session);
+	}
+	catch(...) {
+		ok = false;
+	}
+	CPPUNIT_ASSERT( ok == true );
+}
+
+void CDataBaseTest::restoreSession() {
+	bool ok = true;
+	CSession* restoredSession;
+	m_stateDB->open();
+	try {
+		restoredSession = new CSession();
+		m_stateDB->restoreSession(restoredSession);
+	}
+	catch(...) {
+		ok = false;
+	}
+
+	int reMinColRev = restoredSession->getMinCollectionRevision();
+	int minColRev = m_session->getMinCollectionRevision();
+	if(reMinColRev != minColRev) {
+		ok = false;
+		cout << "restored min Collection Revision does not match original one." << endl;
+	}
+
+	int reMaxColRev = restoredSession->getCollectionRevision();
+	int maxColRev = m_session->getCollectionRevision();
+	if(reMaxColRev != maxColRev) {
+		ok = false;
+		cout << "restored max Collection Revision does not match original one." << endl;
+	}
+
+	int reMinPlRev = restoredSession->getMinPlaylistRevision();
+	int minPlRev = m_session->getMinPlaylistRevision();
+	if(reMinPlRev != minPlRev) {
+		ok = false;
+		cout << "restored min Playlist Revision does not match original one." << endl;
+	}
+
+	int reMaxPlRev = restoredSession->getPlaylistRevision();
+	int maxPlRev = m_session->getPlaylistRevision();
+	if(reMaxPlRev != maxPlRev) {
+		ok = false;
+		cout << "restored max Playlist Revision does not match original one." << endl;
+	}
+
+	int reMinNlRev = restoredSession->getMinNextlistRevision();
+	int minNlRev = m_session->getMinNextlistRevision();
+	if(reMinNlRev != minNlRev) {
+		ok = false;
+		cout << "restored min Nextlist Revision does not match original one." << endl;
+	}
+
+	int reMaxNlRev = restoredSession->getNextlistRevision();
+	int maxNlRev = m_session->getNextlistRevision();
+	if(reMaxNlRev != maxNlRev) {
+		ok = false;
+		cout << "restored max Nextlist Revision does not match original one." << endl;
+	}
+
+	for(int colRev = minColRev; colRev < maxColRev; colRev++ ) {
+		CCollection<CCollectionItem>* col = m_session->getCollection(colRev);
+		CCollection<CCollectionItem>* reCol = restoredSession->getCollection(colRev);
+
+		if(col->size() != reCol->size() ) ok = false;
+
+		for(int i=0; i < col->size(); i++) {
+			CCollectionItem* item = col->getItem(i);
+			CCollectionItem* reItem = reCol->getItem(i);
+			if(item->getAlbum().compare(reItem->getAlbum()) != 0 ) {
+				ok = false;
+				cout << "restored collection[" << i << "] Album does not match original one." << endl;
+			}
+			if(item->getArtist().compare(reItem->getArtist()) != 0 ) {
+				ok = false;
+				cout << "restored collection[" << i << "] Artist does not match original one." << endl;
+			}
+			if(item->getTitle().compare(reItem->getTitle()) != 0 ) {
+				ok = false;
+				cout << "restored collection[" << i << "] Title does not match original one." << endl;
+			}
+			if(item->getFilename().compare(reItem->getFilename()) != 0 ) {
+				ok = false;
+				cout << "restored collection[" << i << "] filename does not match original one." << endl;
+			}
+			if(item->getDuration() != reItem->getDuration() ) {
+				ok = false;
+				cout << "restored collection[" << i << "] Duration does not match original one." << endl;
+			}
+			if(item->getYear() != reItem->getYear() ) {
+				ok = false;
+				cout << "restored collection[" << i << "] Year does not match original one." << endl;
+			}
+		}
+	}
+
+	for(int plRev = minPlRev; plRev < maxPlRev; plRev++ ) {
+		CCollection<CPlaylistItem>* pl = m_session->getPlaylist(plRev);
+		CCollection<CPlaylistItem>* rePl = restoredSession->getPlaylist(plRev);
+
+		if(pl->size() != rePl->size() ) ok = false;
+
+		for(int i=0; i < pl->size(); i++) {
+			CPlaylistItem* item = pl->getItem(i);
+			CPlaylistItem* reItem = rePl->getItem(i);
+			if(item->getCollectionHash() != reItem->getCollectionHash() ) {
+				ok = false;
+				cout << "restored playlist[" << i << "] collectionHash does not match original one." << endl;
+			}
+		}
+	}
+	CPPUNIT_ASSERT( ok == true );
 }

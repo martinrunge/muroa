@@ -13,11 +13,13 @@
 class CPlaylistItem : public CItemBase{
 public:
 	CPlaylistItem(QString text);
+	CPlaylistItem(unsigned  hash);
 	virtual ~CPlaylistItem();
 
 	unsigned getCollectionHash() const { return m_collectionHash; };
 
 //    void setText(QString text);
+	inline void rehash() {  };
 
 private:
     void assembleText();

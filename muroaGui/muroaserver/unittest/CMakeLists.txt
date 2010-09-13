@@ -31,7 +31,8 @@ set(unittests_SRCS  MediaprocessingTestApp.cpp
                     ../mediaprocessing/CStream.cpp
                     ../mediaprocessing/CAudioIOAlsa.cpp
                     ../mediaprocessing/IAudioIO.cpp
-                    ../CStateDB.cpp )
+                    ../CStateDB.cpp
+                    ../CMisuseException.cpp )
                     
 set( MOC_H          ../CSession.h 
                     ../CConnection.h 

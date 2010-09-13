@@ -13,6 +13,7 @@
 
 #include "CCollection.h"
 class CCollectionItem;
+class CPlaylistItem;
 class CSession;
 
 class CStateDB {
@@ -25,26 +26,30 @@ public:
 
 	std::string getValue(std::string key);
 	void setValue(std::string key, std::string value);
+	void setValue(std::string key, int value);
 
 	void saveSession(CSession const * const session);
-	void restoreSession(CSession const * session);
+	void restoreSession(CSession * const session);
 
-    void updateCollectionDB( CSession const * const session, int minrev = -1, int maxrev = -1 );
-    void updateCollectionTable( CCollection<CCollectionItem>* collection );
+    void updateCollectionTable( CSession const * const session, int minrev = -1, int maxrev = -1 );
 
     void updateCollectionRevItem( int pos, int hash, int rev );
 
     CCollectionItem* getCollectionItemByHash(unsigned hash);
     CCollectionItem* getCollectionItemByPos(int colPos, int colRev);
 
+    CPlaylistItem* getPlaylistItemByPos(int pos, int rev);
+    CPlaylistItem* getNextlistItemByPos(int pos, int rev);
+
     int rowIDofColRevEntry(int colPos, int colHash, int colRev);
+    int rowIDofPlRevEntry(int plPos, int colHash, int plRev, int ColRev);
 
-    void updatePlaylistsTable(CSession const * const session);
-    void updateNextlistsTable(CSession const * const session);
+    void updatePlaylistRevsTable(CSession const * const session, int minrev = -1, int maxrev = -1 );
+    void updateNextlistRevsTable(CSession const * const session, int minrev = -1, int maxrev = -1 );
 
-    void restoreCollection(CSession const * session);
-    void restorePlaylists(CSession const * session);
-    void restoreNextlists(CSession const * session);
+    void restoreCollection(CSession * const session);
+    void restorePlaylists(CSession * const session);
+    void restoreNextlists(CSession * const session);
 
 private:
 	std::string m_dbFileName;
@@ -56,14 +61,30 @@ private:
     void createGeneralTable();
     void createCollectionTable();
     void createCollectionRevisionsTable();
-    void createPlaylistsTable();
-    void createNextlistsTable();
+    void createPlaylistRevisionsTable();
+    void createNextlistRevisionsTable();
 
     void createTable(std::string name, std::string schema);
 
     void updateCollectionItem( CCollectionItem* item );
+    void updatePlaylistItem( int plPos, CPlaylistItem* item, int plRev, int colRev );
+    void updateNextlistItem( int nlPos, CPlaylistItem* item, int nlRev, int plRev );
 
     CCollectionItem* getCollectionItemFromStmt(sqlite3_stmt *pStmt);
+	CPlaylistItem* getPlaylistItemFromStmt(sqlite3_stmt *pStmt);
+
+
+	sqlite3_stmt *m_updateColItemStmt;
+	void prepareUpdateColItemStmt();
+	void finalizeUpdateColItemStmt();
+
+	sqlite3_stmt *m_updateColRevStmt;
+	void prepareUpdateColRevStmt();
+	void finalizeUpdateColRevStmt();
+
+	sqlite3_stmt *m_selectColItemStmt;
+	void prepareSelectColItemStmt();
+	void finalizeSelectColItemStmt();
 
 	sqlite3_stmt *m_selectColRevStmt;
 	void prepareSelectColRevStmt();
@@ -72,6 +93,18 @@ private:
 	sqlite3_stmt *m_getColItemByPosStmt;
 	void prepareGetColItemByPosStmt();
 	void finalizeGetColItemByPosStmt();
+
+	sqlite3_stmt *m_updatePlaylistItemStmt;
+	void prepareUpdatePlaylistItemStmt();
+	void finalizeUpdatePlaylistItemStmt();
+
+	sqlite3_stmt *m_selectPlaylistItemStmt;
+	void prepareSelectPlaylistItemStmt();
+	void finalizeSelectPlaylistItemStmt();
+
+	sqlite3_stmt *m_selectPlRevStmt;
+	void prepareSelectPlRevStmt();
+	void finalizeSelectPlRevStmt();
 
 	void prepareStmt(sqlite3_stmt** stmt, std::string sqlStmt);
 	void finalizeStmt(sqlite3_stmt** stmt);

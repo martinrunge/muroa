@@ -12,12 +12,15 @@
 
 class CStateDB;
 class CCollectionUpdater;
+class CSession;
 
 class CDataBaseTest : public CppUnit::TestFixture {
 	  CPPUNIT_TEST_SUITE( CDataBaseTest );
 	  CPPUNIT_TEST( testDB );
 	  CPPUNIT_TEST( readGeneral );
 	  CPPUNIT_TEST( selectColRevs );
+	  CPPUNIT_TEST( saveSession );
+	  CPPUNIT_TEST( restoreSession );
 	  CPPUNIT_TEST_SUITE_END();
 
 public:
@@ -30,6 +33,9 @@ public:
 	void testDB();
 	void readGeneral();
 	void selectColRevs();
+
+	void saveSession();
+	void restoreSession();
 
 	CStateDB* m_stateDB;
     CCollectionUpdater* m_colUpdater;
@@ -44,7 +50,12 @@ private:
 	const std::string nlMinRevVal;
 	const std::string nlMaxRevVal;
 
+	void preparePlaylist();
+	void prepareNextlist();
 
+	static CSession* m_session;
+	static unsigned m_testHash;
+	static int m_testHashPos;
 };
 
 #endif /* CDATABASETEST_H_ */

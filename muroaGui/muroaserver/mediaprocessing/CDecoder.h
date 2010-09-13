@@ -25,13 +25,16 @@ class CStream;
 
 class CDecoder {
 public:
-	CDecoder(const CStream *streamPtr);
+	CDecoder(const CStream *streamPtr = 0);
 	virtual ~CDecoder();
 
 	void open(const char* filename);
 	void close();
 	inline bool isOpen() const { return m_open;};
 
+	int decode();
+
+	int getDuration();
 	void decodingLoop();
 
 
