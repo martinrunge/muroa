@@ -33,7 +33,7 @@ set( SRC          CCollectionItem.cpp
                   CPlaylistItem.cpp
                   CStateMachine.cpp
                   CStateDB.cpp
-                  CMisuseException.cpp
+                  Exceptions.cpp
                   main.cpp )
                   
 set( MEDPROC_SRC    mediaprocessing/IAudioIO.cpp
@@ -56,13 +56,14 @@ set( MOC_H          CConnection.h
  
 set(HEADERS         CCollection.h   
                     CDiff.h
+                    CTime.h
                     CItemBase.h
                     CCollectionItem.h
                     CPlaylistItem.h
                     CContentHandler.h
                     IDnsSd.h 
                     CDnsSdAvahi.h
-                    CMisuseException.h
+                    Exceptions.h
                     mediaprocessing/IAudioIO.h
                     mediaprocessing/CAudioIOAlsa.h
                     mediaprocessing/CAudioIOlibao.h

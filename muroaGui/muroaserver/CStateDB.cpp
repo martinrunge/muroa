@@ -42,6 +42,9 @@ int CStateDB::open() {
 	    m_db = 0;
     }
 	else {
+		prepareStmt(&m_beginTransactionStmt, "BEGIN TRANSACTION");
+		prepareStmt(&m_endTransactionStmt, "COMMIT");
+
 		createGeneralTable();
 		createCollectionTable();
 		createCollectionRevisionsTable();
@@ -71,6 +74,10 @@ int CStateDB::close() {
 	finalizeSelectColItemStmt();
     finalizeSelectColRevStmt();
 	finalizeGetColItemByPosStmt();
+
+	finalizeStmt(&m_beginTransactionStmt);
+	finalizeStmt(&m_endTransactionStmt);
+
 	if(m_db != 0) {
 		sqlite3_close(m_db);
 	}
@@ -206,6 +213,9 @@ void CStateDB::createNextlistRevisionsTable() {
 }
 
 void CStateDB::updateCollectionTable( CSession const * const session, int minrev, int maxrev ) {
+
+	beginTansaction();
+
 	if(minrev == -1) minrev = session->getMinCollectionRevision();
 	if(maxrev == -1) maxrev = session->getCollectionRevision();
 
@@ -218,6 +228,8 @@ void CStateDB::updateCollectionTable( CSession const * const session, int minrev
 			updateCollectionRevItem(i, item->getHash(), rev );
 		}
 	}
+
+	endTransaction();
 }
 
 void CStateDB::updateCollectionItem( CCollectionItem* item ) {
@@ -668,7 +680,7 @@ void CStateDB::updateNextlistRevsTable(CSession const * const session, int minre
 }
 
 void CStateDB::restoreCollection(CSession * const session) {
-	if(m_db == 0) throw(CMisuseException("Calling restoreCollection(), but DB not opened."));
+	if(m_db == 0) throw(CApiMisuseException("Calling restoreCollection(), but DB not opened."));
 
 	std::string colMinRev = getValue("CollectionRevMin");
 	std::string colMaxRev = getValue("CollectionRevMax");
@@ -700,7 +712,7 @@ void CStateDB::restoreCollection(CSession * const session) {
 }
 
 void CStateDB::restorePlaylists(CSession * const session) {
-	if(m_db == 0) throw(CMisuseException("Calling restorePlaylists(), but DB not opened."));
+	if(m_db == 0) throw(CApiMisuseException("Calling restorePlaylists(), but DB not opened."));
 
 	std::string plMinRev = getValue("PlaylistRevMin");
 	std::string plMaxRev = getValue("PlaylistRevMax");
@@ -732,7 +744,7 @@ void CStateDB::restorePlaylists(CSession * const session) {
 }
 
 void CStateDB::restoreNextlists(CSession * const session) {
-	if(m_db == 0) throw(CMisuseException("Calling restoreNextlists(), but DB not opened."));
+	if(m_db == 0) throw(CApiMisuseException("Calling restoreNextlists(), but DB not opened."));
 
 	std::string nlMinRev = getValue("NextlistRevMin");
 	std::string nlMaxRev = getValue("NextlistRevMax");
@@ -762,6 +774,25 @@ void CStateDB::restoreNextlists(CSession * const session) {
 		session->addNextlistRev(nextlist);
 	}
 }
+
+void CStateDB::beginTansaction() throw(CApiMisuseException) {
+	int retval = sqlite3_step( m_beginTransactionStmt );
+	if(retval != SQLITE_DONE) {
+		stringstream ss;
+		ss << "Error stepping begin transaction statement: " << sqlite3_errmsg(m_db);
+		throw CApiMisuseException(ss.str());
+	}
+}
+
+void CStateDB::endTransaction() throw(CApiMisuseException) {
+	int retval = sqlite3_step( m_endTransactionStmt );
+	if(retval != SQLITE_DONE) {
+		stringstream ss;
+		ss << "Error stepping end transaction statement: " << sqlite3_errmsg(m_db);
+		throw CApiMisuseException(ss.str());
+	}
+}
+
 
 void CStateDB::prepareUpdateColItemStmt() {
 	prepareStmt(&m_updateColItemStmt, "INSERT OR REPLACE INTO collection " \

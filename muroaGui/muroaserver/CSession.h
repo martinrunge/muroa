@@ -17,7 +17,7 @@
 #include "CCollection.h"
 #include "CStateDB.h"
 
-#include "CMisuseException.h"
+#include "Exceptions.h"
 
 #include "mediaprocessing/CStream.h"
 

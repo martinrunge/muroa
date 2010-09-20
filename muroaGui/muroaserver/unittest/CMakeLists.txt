@@ -17,6 +17,7 @@ set(unittests_SRCS  MediaprocessingTestApp.cpp
                     CDecoderTest.cpp 
                     CMediaFileTest.cpp 
                     CDataBaseTest.cpp
+                    CTimeTest.cpp
                     ../mediaprocessing/CCollectionUpdater.cpp 
                     ../mediaprocessing/CStream.cpp
                     ../mediaprocessing/CDecoder.cpp
@@ -32,7 +33,7 @@ set(unittests_SRCS  MediaprocessingTestApp.cpp
                     ../mediaprocessing/CAudioIOAlsa.cpp
                     ../mediaprocessing/IAudioIO.cpp
                     ../CStateDB.cpp
-                    ../CMisuseException.cpp )
+                    ../Exceptions.cpp )
                     
 set( MOC_H          ../CSession.h 
                     ../CConnection.h 

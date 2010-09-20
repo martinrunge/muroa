@@ -12,6 +12,8 @@
 #include <sqlite3.h>
 
 #include "CCollection.h"
+#include "Exceptions.h"
+
 class CCollectionItem;
 class CPlaylistItem;
 class CSession;
@@ -55,6 +57,9 @@ private:
 	std::string m_dbFileName;
     sqlite3 *m_db;
 
+    void beginTansaction() throw(CApiMisuseException);
+    void endTransaction() throw(CApiMisuseException);
+
     /** Revision table is very simple: rev_id , rev_nr
      *  There is a revision table for the collection, playlist and nextlist.
      */
@@ -73,6 +78,8 @@ private:
     CCollectionItem* getCollectionItemFromStmt(sqlite3_stmt *pStmt);
 	CPlaylistItem* getPlaylistItemFromStmt(sqlite3_stmt *pStmt);
 
+	sqlite3_stmt *m_beginTransactionStmt;
+	sqlite3_stmt *m_endTransactionStmt;
 
 	sqlite3_stmt *m_updateColItemStmt;
 	void prepareUpdateColItemStmt();
