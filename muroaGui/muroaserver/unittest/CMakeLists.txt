@@ -2,7 +2,7 @@ cmake_minimum_required (VERSION 2.6)
 
 set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../cmake" ${CMAKE_MODULE_PATH})
 
-find_package ( Qt4 REQUIRED COMPONENTS QtCore QtNetwork QtXml QtDbus )
+find_package ( Qt4 REQUIRED COMPONENTS QtCore QtGui QtNetwork QtXml QtDbus )
 find_package ( ALSA REQUIRED )
 
 set(Boost_USE_STATIC_LIBS   ON )
@@ -46,7 +46,7 @@ qt4_wrap_cpp( MOC_SOURCES ${MOC_H} ${MOC_MEDPROC_H} )
 
 include_directories(${SOURCE_DIR} ../mediaprocessing ${Boost_INCLUDE_DIRS} ${Taglib_CFLAGS} ${SQLITE_INCLUDE_DIR}) 
 
-link_directories(${BINARY_DIR}  ${QT_LIB_DIR} ${SQLITE_LIBRARY_DIRS})
+link_directories(${BINARY_DIR}  ${QT_LIB_DIR} ${SQLITE_LIBRARY_DIRS}  )
 
 ADD_EXECUTABLE(mediatest ${unittests_SRCS} ${MOC_SOURCES})
 
@@ -60,4 +60,7 @@ TARGET_LINK_LIBRARIES(mediatest cppunit
                                 xdiff
                                 ${ALSA_LIBRARY}
                                 avformat
-                                avcodec )
+                                avcodec 
+                                qxcppunitd 
+                                qxrunnerd
+                                )
