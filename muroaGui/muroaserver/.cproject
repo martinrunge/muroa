@@ -100,7 +100,6 @@
 				<buildTargets>
 					<target name="Qt Release Build" path="" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
 						<buildCommand>make</buildCommand>
-						<buildArguments/>
 						<buildTarget>release</buildTarget>
 						<stopOnError>false</stopOnError>
 						<useDefaultCommand>false</useDefaultCommand>
@@ -108,15 +107,15 @@
 					</target>
 					<target name="Qt Debug Build" path="" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
 						<buildCommand>make</buildCommand>
-						<buildArguments/>
 						<buildTarget>debug</buildTarget>
 						<stopOnError>false</stopOnError>
 						<useDefaultCommand>false</useDefaultCommand>
 						<runAllBuilders>true</runAllBuilders>
 					</target>
 					<target name="Run cmake" path="" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
-						<buildCommand>cmake</buildCommand>
+						<buildCommand>/usr/bin/cmake</buildCommand>
 						<buildArguments>-E chdir build cmake -DCMAKE_BUILD_TYPE=Debug ..</buildArguments>
+						<buildTarget/>
 						<stopOnError>false</stopOnError>
 						<useDefaultCommand>false</useDefaultCommand>
 						<runAllBuilders>true</runAllBuilders>
@@ -139,6 +138,10 @@
 				</buildTargets>
 			</storageModule>
 			<storageModule moduleId="org.eclipse.cdt.core.pathentry">
+				<pathentry excluding="mediaprocessing/|unittest/" kind="src" path=""/>
+				<pathentry kind="out" path=""/>
+				<pathentry kind="src" path="mediaprocessing"/>
+				<pathentry kind="src" path="unittest"/>
 				<pathentry base-path="/usr/include/qt4" include="" kind="inc" path="" system="true"/>
 				<pathentry base-path="/usr/include/qt4" include="QtMultimedia" kind="inc" path="" system="true"/>
 				<pathentry base-path="/usr/include/qt4" include="Qt3Support" kind="inc" path="" system="true"/>
@@ -162,10 +165,6 @@
 				<pathentry base-path="/usr/include/qt4" include="QtAssistant" kind="inc" path="" system="true"/>
 				<pathentry include="/usr/include" kind="inc" path="" system="true"/>
 				<pathentry include="/usr/include/c++/4.4" kind="inc" path="" system="true"/>
-				<pathentry excluding="mediaprocessing/|unittest/" kind="src" path=""/>
-				<pathentry kind="out" path=""/>
-				<pathentry kind="src" path="mediaprocessing"/>
-				<pathentry kind="src" path="unittest"/>
 			</storageModule>
 		</cconfiguration>
 	</storageModule>
