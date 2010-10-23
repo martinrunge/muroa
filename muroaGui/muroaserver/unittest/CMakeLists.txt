@@ -11,7 +11,7 @@ find_package( Boost 1.36.0 COMPONENTS filesystem REQUIRED )
 find_package( TagLib REQUIRED )
 find_package( Sqlite REQUIRED )
 
-add_definitions( ${QT4_DEFINITIONS} ${SQLITE_DEFINITIONS})
+add_definitions( ${QT4_DEFINITIONS} ${SQLITE_DEFINITIONS} -D__STDC_CONSTANT_MACROS)
 
 set(unittests_SRCS  MediaprocessingTestApp.cpp 
                     CDecoderTest.cpp 

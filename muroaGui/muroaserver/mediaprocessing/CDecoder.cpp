@@ -179,7 +179,7 @@ void CDecoder::decodingLoop()
         // provided with a self contained packet, it should be used completely.
         int sb = sampleBufSize;
         int bytesUsed;
-        bytesUsed = avcodec_decode_audio2(m_pCodecCtx, sampleBuffer, &sb, m_packet.data, m_packet.size);
+        bytesUsed = avcodec_decode_audio3(m_pCodecCtx, sampleBuffer, &sb, &m_packet);
 
         // only call m_streamPtr->setProgress every second
         int64_t tmp = m_packet.pts * m_timeBase.num;
