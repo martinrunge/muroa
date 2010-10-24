@@ -96,47 +96,6 @@
 					</scannerInfoProvider>
 				</profile>
 			</storageModule>
-			<storageModule moduleId="org.eclipse.cdt.make.core.buildtargets">
-				<buildTargets>
-					<target name="Qt Release Build" path="" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
-						<buildCommand>make</buildCommand>
-						<buildTarget>release</buildTarget>
-						<stopOnError>false</stopOnError>
-						<useDefaultCommand>false</useDefaultCommand>
-						<runAllBuilders>true</runAllBuilders>
-					</target>
-					<target name="Qt Debug Build" path="" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
-						<buildCommand>make</buildCommand>
-						<buildTarget>debug</buildTarget>
-						<stopOnError>false</stopOnError>
-						<useDefaultCommand>false</useDefaultCommand>
-						<runAllBuilders>true</runAllBuilders>
-					</target>
-					<target name="Run cmake" path="" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
-						<buildCommand>/usr/bin/cmake</buildCommand>
-						<buildArguments>-E chdir build cmake -DCMAKE_BUILD_TYPE=Debug ..</buildArguments>
-						<buildTarget/>
-						<stopOnError>false</stopOnError>
-						<useDefaultCommand>false</useDefaultCommand>
-						<runAllBuilders>true</runAllBuilders>
-					</target>
-					<target name="Clean" path="" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
-						<buildCommand>rm</buildCommand>
-						<buildArguments>-Rf build/</buildArguments>
-						<stopOnError>false</stopOnError>
-						<useDefaultCommand>false</useDefaultCommand>
-						<runAllBuilders>true</runAllBuilders>
-					</target>
-					<target name="CMake Release" path="" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
-						<buildCommand>cmake</buildCommand>
-						<buildArguments>-E chdir release cmake _DCMAKE_BUILD_TYPE=Release ..</buildArguments>
-						<buildTarget>CMake Release</buildTarget>
-						<stopOnError>false</stopOnError>
-						<useDefaultCommand>false</useDefaultCommand>
-						<runAllBuilders>true</runAllBuilders>
-					</target>
-				</buildTargets>
-			</storageModule>
 			<storageModule moduleId="org.eclipse.cdt.core.pathentry">
 				<pathentry excluding="mediaprocessing/|unittest/" kind="src" path=""/>
 				<pathentry kind="out" path=""/>
@@ -165,6 +124,49 @@
 				<pathentry base-path="/usr/include/qt4" include="QtAssistant" kind="inc" path="" system="true"/>
 				<pathentry include="/usr/include" kind="inc" path="" system="true"/>
 				<pathentry include="/usr/include/c++/4.4" kind="inc" path="" system="true"/>
+			</storageModule>
+			<storageModule moduleId="org.eclipse.cdt.make.core.buildtargets">
+				<buildTargets>
+					<target name="Qt Release Build" path="" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
+						<buildCommand>make</buildCommand>
+						<buildArguments/>
+						<buildTarget>release</buildTarget>
+						<stopOnError>false</stopOnError>
+						<useDefaultCommand>false</useDefaultCommand>
+						<runAllBuilders>true</runAllBuilders>
+					</target>
+					<target name="Qt Debug Build" path="" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
+						<buildCommand>make</buildCommand>
+						<buildArguments/>
+						<buildTarget>debug</buildTarget>
+						<stopOnError>false</stopOnError>
+						<useDefaultCommand>false</useDefaultCommand>
+						<runAllBuilders>true</runAllBuilders>
+					</target>
+					<target name="Run cmake" path="" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
+						<buildCommand>cmake</buildCommand>
+						<buildArguments>-E chdir build cmake -DCMAKE_BUILD_TYPE=Debug ..</buildArguments>
+						<buildTarget/>
+						<stopOnError>false</stopOnError>
+						<useDefaultCommand>false</useDefaultCommand>
+						<runAllBuilders>false</runAllBuilders>
+					</target>
+					<target name="Clean" path="" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
+						<buildCommand>rm</buildCommand>
+						<buildArguments>-Rf build/</buildArguments>
+						<stopOnError>false</stopOnError>
+						<useDefaultCommand>false</useDefaultCommand>
+						<runAllBuilders>true</runAllBuilders>
+					</target>
+					<target name="CMake Release" path="" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
+						<buildCommand>cmake</buildCommand>
+						<buildArguments>-E chdir release cmake _DCMAKE_BUILD_TYPE=Release ..</buildArguments>
+						<buildTarget>CMake Release</buildTarget>
+						<stopOnError>false</stopOnError>
+						<useDefaultCommand>false</useDefaultCommand>
+						<runAllBuilders>true</runAllBuilders>
+					</target>
+				</buildTargets>
 			</storageModule>
 		</cconfiguration>
 	</storageModule>

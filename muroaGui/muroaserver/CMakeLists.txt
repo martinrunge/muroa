@@ -15,6 +15,8 @@ find_package( TagLib REQUIRED)
 find_package( Sqlite REQUIRED )
 
 add_subdirectory(unittest)
+add_subdirectory(mediascanner)
+
 
 add_definitions( ${QT4_DEFINITIONS} ${SQLITE_DEFINITIONS} -D__STDC_CONSTANT_MACROS)
 
@@ -33,6 +35,8 @@ set( SRC          CCollectionItem.cpp
                   CPlaylistItem.cpp
                   CStateMachine.cpp
                   CStateDB.cpp
+                  CSubProcess.cpp
+                  CMediaScannerCtrl.cpp
                   Exceptions.cpp
                   main.cpp )
                   
@@ -64,6 +68,9 @@ set(HEADERS         CCollection.h
                     IDnsSd.h 
                     CDnsSdAvahi.h
                     Exceptions.h
+                    CSubProcess.h
+                    CMediaScannerCtrl.h
+                    
                     mediaprocessing/IAudioIO.h
                     mediaprocessing/CAudioIOAlsa.h
                     mediaprocessing/CAudioIOlibao.h
