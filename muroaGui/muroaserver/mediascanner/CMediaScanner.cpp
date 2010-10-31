@@ -26,6 +26,7 @@ CMediaScanner::~CMediaScanner() {
 int CMediaScanner::run() {
 	int rc = 0;
 	m_run=true;
+	int runs = 0;
 
 	char buffer[257];
 
@@ -33,6 +34,12 @@ int CMediaScanner::run() {
 		ssize_t numBytes = recv(m_socket, buffer, 256, 0);
 		buffer[numBytes] = '\0';
 		m_dbg_file << buffer << endl;
+		send(m_socket, buffer, numBytes, 0);
+		runs ++;
+		if(runs == 3) {
+			m_dbg_file << "exiting ..." << endl;
+			exit(1);
+		}
 	}
 	return rc;
 }
