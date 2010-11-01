@@ -10,10 +10,24 @@ find_package( Sqlite REQUIRED )
 
 add_definitions( ${SQLITE_DEFINITIONS} )
 
-set(SRCS  mediascanner.cpp
-          CMediaScanner.cpp 
-          ../CSubProcess.cpp )
-                    
+set(SRCS     mediascanner.cpp
+             CMediaScanner.cpp 
+             ../CSubProcess.cpp
+             ../Exceptions.cpp 
+             CMsgBase.cpp
+             CMsgQuit.cpp
+             CMsgResponse.cpp
+             CMsgScanDir.cpp
+             )
+
+set( HEADER  CMediaScanner.h 
+             ../CSubProcess.h
+             ../Exceptions.h 
+             CMsgBase.h
+             CMsgQuit.h
+             CMsgResponse.h
+             CMsgScanDir.h
+             )
 
 
 include_directories(${SOURCE_DIR} ${Boost_INCLUDE_DIRS} ${Taglib_CFLAGS} ${SQLITE_INCLUDE_DIR}) 

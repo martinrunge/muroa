@@ -17,6 +17,10 @@ class CSubProcessTest : public CppUnit::TestFixture {
 	  CPPUNIT_TEST_SUITE( CSubProcessTest );
 	  CPPUNIT_TEST( start );
 	  CPPUNIT_TEST( kill );
+	  CPPUNIT_TEST( serializeMsgQuit );
+	  CPPUNIT_TEST( serializeMsgResponse );
+	  CPPUNIT_TEST( serializeMsgScanDir );
+	  CPPUNIT_TEST( serializeMsgProgress );
 	  CPPUNIT_TEST_SUITE_END();
 public:
 	CSubProcessTest();
@@ -27,6 +31,11 @@ public:
 
 	void start();
 	void kill();
+
+	void serializeMsgQuit();
+	void serializeMsgResponse();
+	void serializeMsgScanDir();
+	void serializeMsgProgress();
 
 private:
 	CMediaScannerCtrl* m_mediaScanCtrl;

@@ -41,6 +41,19 @@ set(unittests_SRCS  MediaprocessingTestApp.cpp
 set( MOC_H          ../CSession.h 
                     ../CConnection.h 
                     ../CStateMachine.h )
+                    
+                     
+ set( MSG_SRC       ../mediascanner/CMsgBase.cpp
+                    ../mediascanner/CMsgQuit.cpp
+                    ../mediascanner/CMsgResponse.cpp
+                    ../mediascanner/CMsgScanDir.cpp )
+                    
+ set( MSG_HDR       ../mediascanner/CMsgBase.h
+                    ../mediascanner/CMsgQuit.h
+                    ../mediascanner/CMsgResponse.h
+                    ../mediascanner/CMsgScanDir.h )
+ 
+                    
 
 set( MOC_MEDPROC_H  ../mediaprocessing/CStream.h )
 
@@ -51,7 +64,7 @@ include_directories(${SOURCE_DIR} ../mediaprocessing ${Boost_INCLUDE_DIRS} ${Tag
 
 link_directories(${BINARY_DIR}  ${QT_LIB_DIR} ${SQLITE_LIBRARY_DIRS}  )
 
-ADD_EXECUTABLE(mediatest ${unittests_SRCS} ${MOC_SOURCES})
+ADD_EXECUTABLE(mediatest ${unittests_SRCS} ${MOC_SOURCES} ${MSG_SRC} ${MSG_HDR})
 
 set_target_properties( mediatest PROPERTIES  COMPILE_FLAGS "-std=gnu++0x" ) 
 

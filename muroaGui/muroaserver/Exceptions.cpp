@@ -41,3 +41,21 @@ const char* CApiMisuseException::what() const throw() {
 const std::string CApiMisuseException::reason() const throw() {
 	return m_reason;
 }
+
+
+InvalidMsgException::InvalidMsgException(std::string reason) throw() {
+	m_reason = reason;
+}
+
+InvalidMsgException::~InvalidMsgException() throw() {
+	// TODO Auto-generated destructor stub
+}
+
+const char* InvalidMsgException::what() const throw() {
+	return m_reason.c_str();
+}
+
+const std::string InvalidMsgException::reason() const throw() {
+	return m_reason;
+}
+

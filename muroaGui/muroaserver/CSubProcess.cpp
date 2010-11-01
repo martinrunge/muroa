@@ -15,15 +15,13 @@
 using namespace std;
 
 CSubProcess::CSubProcess() {
-
 }
 
 CSubProcess::~CSubProcess() {
-	// TODO Auto-generated destructor stub
 }
 
 
-int CSubProcess::start(std::string executable, std::vector<std::string> args, int cpu_prio, int io_prio) {
+pid_t CSubProcess::start(std::string executable, std::vector<std::string> args, int cpu_prio, int io_prio) {
 
 	pid_t child_pid = fork();
 	if(child_pid == 0) {
@@ -54,22 +52,18 @@ int CSubProcess::start(std::string executable, std::vector<std::string> args, in
 }
 
 int CSubProcess::waitForExit(int timeout_in_ms) {
-
 	return 0;
 }
 
 int CSubProcess::sendSignal(int sig_no) {
-
 	return 0;
 }
 
 int CSubProcess::read(char* buffer, int length) {
-
 	return 0;
 }
 
 int CSubProcess::write(char* buffer, int length) {
-
 	return 0;
 }
 

@@ -9,9 +9,14 @@
 #define CMEDIASCANNERCTRL_H_
 
 #include "CSubProcess.h"
+#include "mediascanner/CMsgQuit.h"
+#include "mediascanner/CMsgResponse.h"
 
 #include <signal.h>
 #include <thread>
+#include <mutex>
+#include <condition_variable>
+
 
 class CMediaScannerCtrl {
 public:
@@ -20,18 +25,26 @@ public:
 
 	void start();
 	void stop();
+	void terminate();
 
+
+private:
 	void loop();
 	void waitPid();
 
-private:
+	int handleMsg(CMsgBase* msg);
+
 	CSubProcess m_subProcess;
 	int m_socket;
 	pid_t m_pid;
 
 	std::thread *m_thread;
 	std::thread *m_waitthread;
-	bool m_running;
+	bool m_run_message_loop;
+	bool m_child_running;
+
+    std::mutex m_mutex;
+    std::condition_variable m_cond_var;
 
 	struct sigaction m_old_action;
 };

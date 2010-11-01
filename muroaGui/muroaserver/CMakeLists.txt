@@ -77,6 +77,15 @@ set(HEADERS         CCollection.h
                     mediaprocessing/CDecoder.h
                     mediaprocessing/CCollectionUpdater.h )
  
+ set( MSG_SRC       mediascanner/CMsgBase.cpp
+                    mediascanner/CMsgQuit.cpp
+                    mediascanner/CMsgResponse.cpp )
+                    
+ set( MSG_HDR       mediascanner/CMsgBase.h
+                    mediascanner/CMsgQuit.h
+                    mediascanner/CMsgResponse.h )
+ 
+ 
 SET(UIS             MuroaServer.ui )
 
 
@@ -97,7 +106,7 @@ include_directories(${CMAKE_CURRENT_BINARY_DIR} ${Boost_INCLUDE_DIRS} ${Taglib_C
 
 link_directories( ${QT_LIB_DIR} )
 
-add_executable( muroaserver ${SRC} ${MEDPROC_SRC} ${HEADERS} ${MOC_SOURCES} ${UIS_H})
+add_executable( muroaserver ${SRC} ${MEDPROC_SRC} ${HEADERS} ${MOC_SOURCES} ${UIS_H} ${MSG_SRC} ${MSG_HDR})
 target_link_libraries( muroaserver xdiff 
                                    avahi-client
                                    avahi-qt4

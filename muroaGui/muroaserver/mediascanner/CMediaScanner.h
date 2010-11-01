@@ -11,6 +11,8 @@
 #include <iostream>
 #include <fstream>
 
+class CMsgBase;
+
 class CMediaScanner {
 public:
 	CMediaScanner(int sock_fd);
@@ -19,6 +21,8 @@ public:
 	int run();
 
 private:
+	int handleMsg(CMsgBase* msg);
+
 	int m_socket;
 	bool m_run;
 
