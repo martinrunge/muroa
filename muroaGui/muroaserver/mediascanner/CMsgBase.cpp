@@ -74,12 +74,14 @@ uint32_t CMsgBase::checkHeader(char* buffer, int size, enum msg_types type) {
 	uint32_t* u32Ptr = reinterpret_cast<uint32_t*>(buffer);
 	uint32_t typeInHeader = u32Ptr[0];
 	uint32_t msgID = u32Ptr[1];
+	m_payloadSize = u32Ptr[2];
 
 	if(type != typeInHeader) {
 		stringstream ss;
 		ss << "CMsgQuit::CMsgQuit ( id=" << msgID << ")type is " << typeInHeader << " but expected " << type;
 		throw InvalidMsgException(ss.str());
 	}
+	// reallocSerialisationBuffer(m_payloadSize);
 	return msgID;
 }
 

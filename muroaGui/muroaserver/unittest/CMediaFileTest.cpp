@@ -7,7 +7,7 @@
 
 #include "CMediaFileTest.h"
 
-#include "CCollectionUpdater.h"
+#include "../mediascanner/CFsScanner.h"
 
 #include <iostream>
 using namespace std;
@@ -25,11 +25,11 @@ CMediaFileTest::~CMediaFileTest() {
 
 
 void CMediaFileTest::setUp() {
-    m_colUpdater = new CCollectionUpdater();
+	m_fsScanner = new CFsScanner();
 }
 
 void CMediaFileTest::tearDown() {
-	delete m_colUpdater;
+	delete m_fsScanner;
 }
 
 void CMediaFileTest::recurseDir() {
@@ -38,10 +38,10 @@ void CMediaFileTest::recurseDir() {
 	types.push_back(".mp3");
 	types.push_back(".ogg");
 
-	CCollection<CCollectionItem>* collection = 0;
+	vector<CMediaItem*>* collection = 0;
 
-	m_colUpdater->setFileTypes(types);
-	collection = m_colUpdater->walkTree("/home/martin");
+	m_fsScanner->setFileTypes(types);
+	collection = m_fsScanner->walkTree("/home/martin");
 
 	CPPUNIT_ASSERT( collection != 0 );
 	CPPUNIT_ASSERT( collection->size() > 0 );

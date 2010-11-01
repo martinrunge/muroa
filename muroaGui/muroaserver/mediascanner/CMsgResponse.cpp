@@ -19,6 +19,11 @@ CMsgResponse::CMsgResponse(int requestID, int retCode) {
 CMsgResponse::CMsgResponse(char *buffer, int size) {
 	m_msgType = E_MSG_RESP;
 	m_msgID = checkHeader(buffer, size, E_MSG_RESP);
+
+	uint32_t* u32PayloadPtr = reinterpret_cast<uint32_t*>(buffer + getHeaderSize());
+
+	m_requestID = u32PayloadPtr[0];
+	m_retCode = u32PayloadPtr[1];
 }
 
 

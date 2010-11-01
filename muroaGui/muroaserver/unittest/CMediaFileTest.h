@@ -10,7 +10,7 @@
 
 #include <cppunit/extensions/HelperMacros.h>
 
-class CCollectionUpdater;
+class CFsScanner;
 
 class CMediaFileTest : public CppUnit::TestFixture {
 	  CPPUNIT_TEST_SUITE( CMediaFileTest );
@@ -26,7 +26,7 @@ public:
     void recurseDir();
 
 private:
-    CCollectionUpdater* m_colUpdater;
+    CFsScanner* m_fsScanner;
 };
 
 #endif /* CMEDIAFILETEST_H_ */

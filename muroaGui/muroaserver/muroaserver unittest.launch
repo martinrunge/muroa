@@ -4,7 +4,7 @@
 <booleanAttribute key="org.eclipse.cdt.dsf.gdb.AUTO_SOLIB" value="true"/>
 <listAttribute key="org.eclipse.cdt.dsf.gdb.AUTO_SOLIB_LIST"/>
 <stringAttribute key="org.eclipse.cdt.dsf.gdb.DEBUG_NAME" value="gdb"/>
-<stringAttribute key="org.eclipse.cdt.dsf.gdb.GDB_INIT" value="/usr/share/kde4/apps/kdevgdb/printers/gdbinit"/>
+<stringAttribute key="org.eclipse.cdt.dsf.gdb.GDB_INIT" value="/home/martin/devel/muroa/muroaserver/gdbinit"/>
 <booleanAttribute key="org.eclipse.cdt.dsf.gdb.NON_STOP" value="false"/>
 <booleanAttribute key="org.eclipse.cdt.dsf.gdb.REVERSE" value="false"/>
 <listAttribute key="org.eclipse.cdt.dsf.gdb.SOLIB_PATH"/>
@@ -30,5 +30,5 @@
 <listEntry value="org.eclipse.debug.ui.launchGroup.debug"/>
 <listEntry value="org.eclipse.debug.ui.launchGroup.run"/>
 </listAttribute>
-<stringAttribute key="org.eclipse.dsf.launch.MEMORY_BLOCKS" value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot; standalone=&quot;no&quot;?&gt;&#10;&lt;memoryBlockExpressionList context=&quot;reserved-for-future-use&quot;/&gt;&#10;"/>
+<stringAttribute key="org.eclipse.dsf.launch.MEMORY_BLOCKS" value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot; standalone=&quot;no&quot;?&gt;&#10;&lt;memoryBlockExpressionList context=&quot;reserved-for-future-use&quot;&gt;&#10;&lt;gdbmemoryBlockExpression address=&quot;2&quot; label=&quot;*buffer&quot;/&gt;&#10;&lt;/memoryBlockExpressionList&gt;&#10;"/>
 </launchConfiguration>

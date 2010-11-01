@@ -19,9 +19,14 @@ set(unittests_SRCS  MediaprocessingTestApp.cpp
                     CDataBaseTest.cpp
                     CTimeTest.cpp
                     CSubProcessTest.cpp
-                    ../mediaprocessing/CCollectionUpdater.cpp 
+
+                    ../mediaprocessing/CCollectionUpdater.cpp
                     ../mediaprocessing/CStream.cpp
                     ../mediaprocessing/CDecoder.cpp
+                    ../mediaprocessing/CStream.cpp
+                    ../mediaprocessing/CAudioIOAlsa.cpp
+                    ../mediaprocessing/IAudioIO.cpp
+
                     ../CCollectionItem.cpp
                     ../CPlaylistItem.cpp  
                     ../CItemBase.cpp 
@@ -30,25 +35,27 @@ set(unittests_SRCS  MediaprocessingTestApp.cpp
                     ../CConnection.cpp
                     ../CStateMachine.cpp
                     ../CContentHandler.cpp
-                    ../mediaprocessing/CStream.cpp
-                    ../mediaprocessing/CAudioIOAlsa.cpp
-                    ../mediaprocessing/IAudioIO.cpp
                     ../CStateDB.cpp
                     ../Exceptions.cpp 
                     ../CSubProcess.cpp
-                    ../CMediaScannerCtrl.cpp )
+                    ../CMediaScannerCtrl.cpp 
+                     )
                     
 set( MOC_H          ../CSession.h 
                     ../CConnection.h 
                     ../CStateMachine.h )
                     
                      
- set( MSG_SRC       ../mediascanner/CMsgBase.cpp
+ set( MSG_SRC       ../mediascanner/CFsScanner.cpp
+                    ../mediascanner/CMediaItem.cpp       
+                    ../mediascanner/CMsgBase.cpp
                     ../mediascanner/CMsgQuit.cpp
                     ../mediascanner/CMsgResponse.cpp
                     ../mediascanner/CMsgScanDir.cpp )
                     
- set( MSG_HDR       ../mediascanner/CMsgBase.h
+ set( MSG_HDR       ../mediascanner/CFsScanner.h
+                    ../mediascanner/CMediaItem.h
+                    ../mediascanner/CMsgBase.h
                     ../mediascanner/CMsgQuit.h
                     ../mediascanner/CMsgResponse.h
                     ../mediascanner/CMsgScanDir.h )

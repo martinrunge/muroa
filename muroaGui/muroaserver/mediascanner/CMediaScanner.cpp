@@ -11,6 +11,7 @@
 #include <sys/socket.h>
 
 #include "CMsgBase.h"
+#include "CMsgScanDir.h"
 
 using namespace std;
 

@@ -1,12 +1,12 @@
 /*
- * CCollectionUpdater.h
+ * CFsScanner.h
  *
  *  Created on: 16 Jul 2010
  *      Author: martin
  */
 
-#ifndef CCOLLECTIONUPDATER_H_
-#define CCOLLECTIONUPDATER_H_
+#ifndef CFSSCANNER_H_
+#define CFSSCANNER_H_
 
 #include "boost/filesystem/operations.hpp"
 #include "boost/filesystem/path.hpp"
@@ -14,27 +14,23 @@
 #include <string>
 #include <vector>
 
-#include "../CCollection.h"
-#include "CDecoder.h"
-
 namespace fs = boost::filesystem;
 
-class CColelctionItem;
+class CMediaItem;
 
-class CCollectionUpdater {
+class CFsScanner {
 public:
-	CCollectionUpdater();
-	virtual ~CCollectionUpdater();
+	CFsScanner();
+	virtual ~CFsScanner();
 
 	inline void setFileTypes(std::vector<std::string> types) { m_types = types; };
 	inline std::vector<std::string> getFileTypes() { return m_types; };
 
-	CCollection<CCollectionItem>* walkTree(std::string dir);
+	std::vector<CMediaItem*>* walkTree(std::string dir);
 
 private:
 	bool knownType( fs::path path );
-	CCollectionItem* readTag( fs::path path );
-	CDecoder m_decoder;
+	CMediaItem* readTag( fs::path path );
 
 	std::vector<std::string> m_types;
 
@@ -44,4 +40,4 @@ private:
 	};
 };
 
-#endif /* CCOLLECTIONUPDATER_H_ */
+#endif /* CFSSCANNER_H_ */

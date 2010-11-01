@@ -11,7 +11,9 @@ find_package( Sqlite REQUIRED )
 add_definitions( ${SQLITE_DEFINITIONS} )
 
 set(SRCS     mediascanner.cpp
-             CMediaScanner.cpp 
+             CMediaScanner.cpp
+             CFsScanner.cpp
+             CMediaItem.cpp 
              ../CSubProcess.cpp
              ../Exceptions.cpp 
              CMsgBase.cpp
@@ -20,7 +22,9 @@ set(SRCS     mediascanner.cpp
              CMsgScanDir.cpp
              )
 
-set( HEADER  CMediaScanner.h 
+set( HEADER  CMediaScanner.h
+             CFsScanner.h
+             CMediaItem.h 
              ../CSubProcess.h
              ../Exceptions.h 
              CMsgBase.h

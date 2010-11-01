@@ -7,7 +7,7 @@
 
 #include "CDataBaseTest.h"
 #include "../CStateDB.h"
-#include "CCollectionUpdater.h"
+#include "../mediascanner/CCollectionUpdater.h"
 #include "../CSession.h"
 
 #include <vector>

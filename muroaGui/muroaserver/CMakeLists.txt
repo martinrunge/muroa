@@ -40,16 +40,15 @@ set( SRC          CCollectionItem.cpp
                   Exceptions.cpp
                   main.cpp )
                   
-set( MEDPROC_SRC    mediaprocessing/IAudioIO.cpp
+set( MEDPROC_SRC    mediaprocessing/CCollectionUpdater.cpp
+                    mediaprocessing/IAudioIO.cpp
                     mediaprocessing/CAudioIOAlsa.cpp
                     mediaprocessing/CAudioIOlibao.cpp
                     mediaprocessing/CDecoder.cpp
-                    mediaprocessing/CStream.cpp
-                    mediaprocessing/CCollectionUpdater.cpp ) 
+                    mediaprocessing/CStream.cpp  ) 
                   
 
-set( MEDPROC_MOC_H  mediaprocessing/CStream.h
-                    mediaprocessing/CStream.h )
+set( MEDPROC_MOC_H  mediaprocessing/CStream.h )
                     
 set( MOC_H          CConnection.h
                     CDnsSdAvahiViaQtDBus.h
@@ -71,11 +70,11 @@ set(HEADERS         CCollection.h
                     CSubProcess.h
                     CMediaScannerCtrl.h
                     
+                    mediaprocessing/CCollectionUpdater.h
                     mediaprocessing/IAudioIO.h
                     mediaprocessing/CAudioIOAlsa.h
                     mediaprocessing/CAudioIOlibao.h
-                    mediaprocessing/CDecoder.h
-                    mediaprocessing/CCollectionUpdater.h )
+                    mediaprocessing/CDecoder.h )
  
  set( MSG_SRC       mediascanner/CMsgBase.cpp
                     mediascanner/CMsgQuit.cpp
