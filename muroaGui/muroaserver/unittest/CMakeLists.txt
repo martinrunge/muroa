@@ -35,6 +35,7 @@ set(unittests_SRCS  MediaprocessingTestApp.cpp
                     ../CConnection.cpp
                     ../CStateMachine.cpp
                     ../CContentHandler.cpp
+                    ../CStateDbBase.cpp
                     ../CStateDB.cpp
                     ../Exceptions.cpp 
                     ../CSubProcess.cpp

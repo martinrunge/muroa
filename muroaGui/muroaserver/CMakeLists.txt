@@ -34,6 +34,7 @@ set( SRC          CCollectionItem.cpp
                   CMuroaServer.cpp
                   CPlaylistItem.cpp
                   CStateMachine.cpp
+                  CStateDbBase.cpp
                   CStateDB.cpp
                   CSubProcess.cpp
                   CMediaScannerCtrl.cpp
@@ -60,6 +61,8 @@ set( MOC_H          CConnection.h
 set(HEADERS         CCollection.h   
                     CDiff.h
                     CTime.h
+                    CStateDB.h
+                    CStateDbBase.h
                     CItemBase.h
                     CCollectionItem.h
                     CPlaylistItem.h
