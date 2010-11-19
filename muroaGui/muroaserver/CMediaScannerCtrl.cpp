@@ -160,7 +160,7 @@ int CMediaScannerCtrl::handleMsg(CMsgBase* msg) {
 			rc = 0;
 			break;
 
-		case E_MSG_SCAN_PROGESS:
+		case E_MSG_PROGRESS:
 			rc = 0;
 			break;
 	}

@@ -81,11 +81,13 @@ set(HEADERS         CCollection.h
  
  set( MSG_SRC       mediascanner/CMsgBase.cpp
                     mediascanner/CMsgQuit.cpp
-                    mediascanner/CMsgResponse.cpp )
+                    mediascanner/CMsgResponse.cpp
+                    mediascanner/CMediaItem.cpp )
                     
  set( MSG_HDR       mediascanner/CMsgBase.h
                     mediascanner/CMsgQuit.h
-                    mediascanner/CMsgResponse.h )
+                    mediascanner/CMsgResponse.h
+                    mediascanner/CMediaItem.h )
  
  
 SET(UIS             MuroaServer.ui )

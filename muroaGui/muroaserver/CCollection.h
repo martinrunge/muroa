@@ -12,6 +12,7 @@
 #include <QString>
 #include <QRegExp>
 #include "CCollectionItem.h"
+#include "CPlaylistItem.h"
 #include <QDebug>
 
 template <class T>

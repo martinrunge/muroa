@@ -14,7 +14,7 @@
 #include "CCollection.h"
 #include "Exceptions.h"
 
-class CCollectionItem;
+class CMediaItem;
 class CPlaylistItem;
 class CSession;
 
@@ -23,42 +23,33 @@ public:
 	CStateDbBase(std::string dbFileName);
 	virtual ~CStateDbBase();
 
-	int open();
-	int close();
+	virtual int open();
+	virtual int close();
 
 	std::string getValue(std::string key);
 	void setValue(std::string key, std::string value);
 	void setValue(std::string key, int value);
 
-	void saveSession(CSession const * const session);
-	void restoreSession(CSession * const session);
-
-    void updateCollectionTable( CSession const * const session, int minrev = -1, int maxrev = -1 );
-
     void updateCollectionRevItem( int pos, int hash, int rev );
 
-    CCollectionItem* getCollectionItemByHash(unsigned hash);
-    CCollectionItem* getCollectionItemByPos(int colPos, int colRev);
-
-    CPlaylistItem* getPlaylistItemByPos(int pos, int rev);
-    CPlaylistItem* getNextlistItemByPos(int pos, int rev);
+    CMediaItem* getMediaItemByHash(unsigned hash);
+    CMediaItem* getMediaItemByPos(int colPos, int colRev);
 
     int rowIDofColRevEntry(int colPos, int colHash, int colRev);
-    int rowIDofPlRevEntry(int plPos, int colHash, int plRev, int ColRev);
 
-    void updatePlaylistRevsTable(CSession const * const session, int minrev = -1, int maxrev = -1 );
-    void updateNextlistRevsTable(CSession const * const session, int minrev = -1, int maxrev = -1 );
-
-    void restoreCollection(CSession * const session);
-    void restorePlaylists(CSession * const session);
-    void restoreNextlists(CSession * const session);
-
-private:
-	std::string m_dbFileName;
+protected:
     sqlite3 *m_db;
+
+    void updateMediaItem( CMediaItem* item );
 
     void beginTansaction() throw(CApiMisuseException);
     void endTransaction() throw(CApiMisuseException);
+
+	void prepareStmt(sqlite3_stmt** stmt, std::string sqlStmt);
+	void finalizeStmt(sqlite3_stmt** stmt);
+
+private:
+	std::string m_dbFileName;
 
     /** Revision table is very simple: rev_id , rev_nr
      *  There is a revision table for the collection, playlist and nextlist.
@@ -71,50 +62,31 @@ private:
 
     void createTable(std::string name, std::string schema);
 
-    void updateCollectionItem( CCollectionItem* item );
-    void updatePlaylistItem( int plPos, CPlaylistItem* item, int plRev, int colRev );
-    void updateNextlistItem( int nlPos, CPlaylistItem* item, int nlRev, int plRev );
+    CMediaItem* getMediaItemFromStmt(sqlite3_stmt *pStmt);
 
-    CCollectionItem* getCollectionItemFromStmt(sqlite3_stmt *pStmt);
-	CPlaylistItem* getPlaylistItemFromStmt(sqlite3_stmt *pStmt);
 
 	sqlite3_stmt *m_beginTransactionStmt;
 	sqlite3_stmt *m_endTransactionStmt;
 
-	sqlite3_stmt *m_updateColItemStmt;
-	void prepareUpdateColItemStmt();
-	void finalizeUpdateColItemStmt();
+	sqlite3_stmt *m_updateMediaItemStmt;
+	void prepareUpdateMediaItemStmt();
+	void finalizeUpdateMediaItemStmt();
 
 	sqlite3_stmt *m_updateColRevStmt;
 	void prepareUpdateColRevStmt();
 	void finalizeUpdateColRevStmt();
 
-	sqlite3_stmt *m_selectColItemStmt;
-	void prepareSelectColItemStmt();
-	void finalizeSelectColItemStmt();
+	sqlite3_stmt *m_selectMediaItemStmt;
+	void prepareSelectMediaItemStmt();
+	void finalizeSelectMediaItemStmt();
+
 
 	sqlite3_stmt *m_selectColRevStmt;
 	void prepareSelectColRevStmt();
 	void finalizeSelectColRevStmt();
 
-	sqlite3_stmt *m_getColItemByPosStmt;
-	void prepareGetColItemByPosStmt();
-	void finalizeGetColItemByPosStmt();
 
-	sqlite3_stmt *m_updatePlaylistItemStmt;
-	void prepareUpdatePlaylistItemStmt();
-	void finalizeUpdatePlaylistItemStmt();
 
-	sqlite3_stmt *m_selectPlaylistItemStmt;
-	void prepareSelectPlaylistItemStmt();
-	void finalizeSelectPlaylistItemStmt();
-
-	sqlite3_stmt *m_selectPlRevStmt;
-	void prepareSelectPlRevStmt();
-	void finalizeSelectPlRevStmt();
-
-	void prepareStmt(sqlite3_stmt** stmt, std::string sqlStmt);
-	void finalizeStmt(sqlite3_stmt** stmt);
 };
 
 #endif /* CSTATEDBBASE_H_ */

@@ -10,6 +10,7 @@
 
 #include <cppunit/extensions/HelperMacros.h>
 
+class CMediaScanner;
 class CFsScanner;
 
 class CMediaFileTest : public CppUnit::TestFixture {
@@ -27,6 +28,7 @@ public:
 
 private:
     CFsScanner* m_fsScanner;
+    CMediaScanner* m_mediaScanner;
 };
 
 #endif /* CMEDIAFILETEST_H_ */

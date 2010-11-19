@@ -11,23 +11,24 @@
 #include <iostream>
 #include <fstream>
 
+#include <queue>
+#include <mutex>
+
+#include <pthread.h>
+
+#include "CEventLoop.h"
+
 class CMsgBase;
 
-class CMediaScanner {
+class CMediaScanner : public CEventLoop {
 public:
-	CMediaScanner(int sock_fd);
+	CMediaScanner( int sock_fd = 0 );
 	virtual ~CMediaScanner();
-
-	int run();
 
 private:
 	int handleMsg(CMsgBase* msg);
 
-	int m_socket;
-	bool m_run;
-
-    std::ofstream m_dbg_file;
-
+	std::ofstream m_dbg_file;
 };
 
 #endif /* CMEDIASCANNER_H_ */

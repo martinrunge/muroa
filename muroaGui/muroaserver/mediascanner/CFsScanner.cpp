@@ -10,20 +10,47 @@
 #include <stack>
 #include <vector>
 
+
 #include <taglib/fileref.h>
 #include <taglib/tag.h>
 
 #include "CMediaItem.h"
 
+#include "CMediaScanner.h"
+#include "CMsgFinished.h"
+
 using namespace std;
 
-CFsScanner::CFsScanner() {
+CFsScanner::CFsScanner(CMediaScanner* parent) : m_scanResult(0), m_scanning(false), m_parent( parent ) {
 }
 
 CFsScanner::~CFsScanner() {
 }
 
-vector<CMediaItem*>* CFsScanner::walkTree(string dir) {
+void CFsScanner::scanDir(std::string dir) {
+	if(m_scanning == false) {
+		m_scanning = true;
+		m_thread = thread(&CFsScanner::walkTree, this, dir );
+
+	}
+}
+
+
+std::vector<CMediaItem*>* CFsScanner::finishScan() {
+	if(m_scanning == false) {
+		return 0;
+	}
+	else {
+
+		m_thread.join();
+		m_scanning = false;
+	}
+	std::vector<CMediaItem*>* retval = m_scanResult;
+	m_scanResult = 0;
+	return retval;
+}
+
+int CFsScanner::walkTree(string dir) {
 
 	fs::path full_path( dir );
 
@@ -32,12 +59,21 @@ vector<CMediaItem*>* CFsScanner::walkTree(string dir) {
 	unsigned long other_count = 0;
 	unsigned long err_count = 0;
 
-	vector<CMediaItem*> *collection = new vector<CMediaItem*>;
+	if(m_scanResult != 0) {
+		for(std::vector<CMediaItem*>::iterator it = m_scanResult->begin(); it != m_scanResult->end(); it++ ) {
+			CMediaItem* item = *it;
+			delete item;
+		}
+		delete m_scanResult;
+		m_scanResult = 0;
+	}
+
+	m_scanResult = new vector<CMediaItem*>;
 
 	if ( !fs::exists( full_path ) || !fs::is_directory( full_path ) )
 	{
 		std::cout << "\nNot found: " << full_path.file_string() << std::endl;
-		return collection;
+		return -1;
 	}
 	// use a stack of struct iterstate instead of resursion;
 	stack<struct iterstate> itstack;
@@ -75,7 +111,7 @@ vector<CMediaItem*>* CFsScanner::walkTree(string dir) {
 					if( knownType( state.dirIter->path() ) ) {
 						CMediaItem* item = readTag(state.dirIter->path());
 						if(item != 0) {
-							collection->push_back(item);
+							m_scanResult->push_back(item);
 						}
 					}
 				}
@@ -93,11 +129,15 @@ vector<CMediaItem*>* CFsScanner::walkTree(string dir) {
 		}
 	}
 
+	CMsgFinished* finiMsg = new CMsgFinished();
+	m_parent->postEvent(finiMsg);
+
 	std::cout << "\n" << file_count << " files\n"
 			<< dir_count << " directories\n"
 			<< other_count << " others\n"
 			<< err_count << " errors\n";
-	return collection;
+
+	return 0;
 }
 
 

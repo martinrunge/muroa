@@ -7,7 +7,9 @@
 
 #include "CMediaFileTest.h"
 
+#include "../mediascanner/CMediaScanner.h"
 #include "../mediascanner/CFsScanner.h"
+#include "../mediascanner/CMediaItem.h"
 
 #include <iostream>
 using namespace std;
@@ -25,11 +27,13 @@ CMediaFileTest::~CMediaFileTest() {
 
 
 void CMediaFileTest::setUp() {
-	m_fsScanner = new CFsScanner();
+	m_mediaScanner = new CMediaScanner(0);
+	m_fsScanner = new CFsScanner(m_mediaScanner);
 }
 
 void CMediaFileTest::tearDown() {
 	delete m_fsScanner;
+	delete m_mediaScanner;
 }
 
 void CMediaFileTest::recurseDir() {
@@ -41,9 +45,17 @@ void CMediaFileTest::recurseDir() {
 	vector<CMediaItem*>* collection = 0;
 
 	m_fsScanner->setFileTypes(types);
-	collection = m_fsScanner->walkTree("/home/martin");
+	m_fsScanner->scanDir("/home/martin");
+	// wait here until scan finished
+	std::vector<CMediaItem*> *scanres = m_fsScanner->finishScan();
 
-	CPPUNIT_ASSERT( collection != 0 );
-	CPPUNIT_ASSERT( collection->size() > 0 );
+	CPPUNIT_ASSERT( scanres != 0 );
+	CPPUNIT_ASSERT( scanres->size() > 0 );
 
+	for(std::vector<CMediaItem*>::iterator it = scanres->begin(); it != scanres->end(); it++ ) {
+		CMediaItem* item = *it;
+		delete item;
+	}
+
+	delete scanres;
 }
