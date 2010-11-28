@@ -19,8 +19,7 @@ set(unittests_SRCS  MediaprocessingTestApp.cpp
                     CDataBaseTest.cpp
                     CTimeTest.cpp
                     CSubProcessTest.cpp
-                    CMediaScannerTjust4fun!
-                    est.cpp
+                    CMediaScannerTest.cpp
 
                     ../mediaprocessing/CCollectionUpdater.cpp
                     ../mediaprocessing/CStream.cpp
@@ -52,10 +51,12 @@ set( MOC_H          ../CSession.h
  set( MSG_SRC       ../mediascanner/CEventLoop.cpp
                     ../mediascanner/CMediaScanner.cpp
                     ../mediascanner/CFsScanner.cpp
+                    ../mediascanner/CStateDbUpdater.cpp
                     ../mediascanner/CMediaItem.cpp       
                     ../mediascanner/CMsgBase.cpp
                     ../mediascanner/CMsgQuit.cpp
                     ../mediascanner/CMsgResponse.cpp
+                    ../mediascanner/CMsgOpenDb.cpp
                     ../mediascanner/CMsgScanDir.cpp 
                     ../mediascanner/CMsgFinished.cpp 
                     ../mediascanner/CMsgProgress.cpp 
@@ -64,10 +65,12 @@ set( MOC_H          ../CSession.h
  set( MSG_HDR       ../mediascanner/CEventLoop.h
                     ../mediascanner/CMediaScanner.h
                     ../mediascanner/CFsScanner.h
+                    ../mediascanner/CStateDbUpdater.h
                     ../mediascanner/CMediaItem.h
                     ../mediascanner/CMsgBase.h
                     ../mediascanner/CMsgQuit.h
                     ../mediascanner/CMsgResponse.h
+                    ../mediascanner/CMsgOpenDb.h
                     ../mediascanner/CMsgScanDir.h 
                     ../mediascanner/CMsgFinished.h 
                     ../mediascanner/CMsgProgress.h 

@@ -13,8 +13,6 @@
 
 #include <assert.h>
 
-#include <QDebug>
-
 using namespace std;
 
 CStateDbBase::CStateDbBase(std::string dbFileName) : m_dbFileName( dbFileName ),
@@ -85,8 +83,6 @@ std::string CStateDbBase::getValue(std::string key) {
 	}
 
 	do {
-		CCollectionItem* item;
-
 		retval = sqlite3_step( pStmt );
 		switch(retval) {
 		case SQLITE_ROW:

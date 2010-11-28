@@ -7,26 +7,35 @@
 
 #include "CMediaScanner.h"
 
+#include "CFsScanner.h"
+#include "CStateDbUpdater.h"
 #include <signal.h>
 
 #include <sys/types.h>
 #include <sys/socket.h>
 
 #include "CMsgBase.h"
+#include "CMsgOpenDb.h"
 #include "CMsgScanDir.h"
 #include "CMsgProgress.h"
 #include "CMsgFinished.h"
 
 using namespace std;
 
-CMediaScanner::CMediaScanner(int sock_fd) : CEventLoop(sock_fd)
+CMediaScanner::CMediaScanner(int sock_fd) : CEventLoop(sock_fd), m_fs_scanner(0), m_stateDbUpdater(0)
 {
 	  m_dbg_file.open("mediascanner.log");
 	  m_dbg_file << "CMediaScanner::CMediaScanner(" << sock_fd << ")" << endl;
 
+	  m_fs_scanner = new CFsScanner(this);
 }
 
 CMediaScanner::~CMediaScanner() {
+	if(m_stateDbUpdater != 0) {
+		delete m_stateDbUpdater;
+		m_stateDbUpdater = 0;
+	}
+	delete m_fs_scanner;
 	m_dbg_file.close();
 }
 
@@ -47,17 +56,30 @@ int CMediaScanner::handleMsg(CMsgBase* msg) {
 			// exit(1);
 			break;
 
+		case E_MSG_OPEN_DB:
+		{
+			rc = 0;
+			CMsgOpenDb* openDbMsg = reinterpret_cast<CMsgOpenDb*>(msg);
+			m_dbg_file << "open db: " << openDbMsg->getDbPath() << endl;
+            m_stateDbUpdater = new CStateDbUpdater( openDbMsg->getDbPath() );
+			break;
+		}
 		case E_MSG_SCAN_DIR:
 		{
 			rc = 0;
 			CMsgScanDir* scanDirMsg = reinterpret_cast<CMsgScanDir*>(msg);
+			m_fs_scanner->scanDir( scanDirMsg->getPath() );
 			m_dbg_file << "requested to scan dir: " << scanDirMsg->getPath() << endl;
+
+			// delete scanDirMsg;
 			break;
 		}
 		case E_MSG_FINISHED:
 		{
 			CMsgFinished* finishedMsg = reinterpret_cast<CMsgFinished*>(msg);
 			m_dbg_file << "A job finished." << endl;
+			std::vector<CMediaItem*>* collection = m_fs_scanner->finishScan();
+			m_stateDbUpdater->appendCollectionRev(collection);
 			break;
 		}
 		case E_MSG_PROGRESS:
@@ -67,6 +89,7 @@ int CMediaScanner::handleMsg(CMsgBase* msg) {
 			break;
 		}
 	}
+	delete msg;
 	return rc;
 }
 

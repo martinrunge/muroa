@@ -11,7 +11,6 @@
 #include <string>
 #include <sqlite3.h>
 
-#include "CCollection.h"
 #include "Exceptions.h"
 
 class CMediaItem;

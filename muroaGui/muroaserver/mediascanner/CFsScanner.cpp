@@ -25,6 +25,9 @@ CFsScanner::CFsScanner(CMediaScanner* parent) : m_scanResult(0), m_scanning(fals
 }
 
 CFsScanner::~CFsScanner() {
+	if(m_thread.joinable()) {
+		m_thread.join();
+	}
 }
 
 void CFsScanner::scanDir(std::string dir) {

@@ -19,6 +19,8 @@
 #include "CEventLoop.h"
 
 class CMsgBase;
+class CFsScanner;
+class CStateDbUpdater;
 
 class CMediaScanner : public CEventLoop {
 public:
@@ -28,6 +30,8 @@ public:
 private:
 	int handleMsg(CMsgBase* msg);
 
+	CFsScanner* m_fs_scanner;
+	CStateDbUpdater* m_stateDbUpdater;
 	std::ofstream m_dbg_file;
 };
 

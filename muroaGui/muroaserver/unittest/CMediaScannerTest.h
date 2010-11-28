@@ -10,12 +10,15 @@
 
 #include <cppunit/extensions/HelperMacros.h>
 
+#include <thread>
+
 class CMediaScanner;
 class CFsScanner;
 
 class CMediaScannerTest : public CppUnit::TestFixture {
 	  CPPUNIT_TEST_SUITE( CMediaScannerTest );
 	  CPPUNIT_TEST( testEventLoop );
+	  CPPUNIT_TEST( testScanDirEvent );
 	  CPPUNIT_TEST_SUITE_END();
 public:
 	CMediaScannerTest();
@@ -25,10 +28,16 @@ public:
     void tearDown();
 
 	void testEventLoop();
+	void testScanDirEvent();
 
 private:
+	void quitIn(int sec);
+	void quitThread(int sec);
+
 	CMediaScanner* m_media_scanner;
 	CFsScanner* m_fs_scanner;
+
+	std::thread m_thread;
 };
 
 #endif /* CMEDIASCANNERTEST_H_ */

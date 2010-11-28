@@ -14,12 +14,15 @@ set(SRCS     mediascanner.cpp
              CEventLoop.cpp
              CMediaScanner.cpp
              CFsScanner.cpp
+             CStateDbUpdater.cpp
+             ../CStateDbBase.cpp
              CMediaItem.cpp 
              ../CSubProcess.cpp
              ../Exceptions.cpp 
              CMsgBase.cpp
              CMsgQuit.cpp
              CMsgResponse.cpp
+             CMsgOpenDb.cpp
              CMsgScanDir.cpp
              CMsgFinished.cpp
              CMsgProgress.cpp
@@ -28,12 +31,15 @@ set(SRCS     mediascanner.cpp
 set( HEADER  CMediaScanner.h
              CEventLoop.h
              CFsScanner.h
+             CStateDbUpdater.h
+             ../CStateDbBase.h
              CMediaItem.h 
              ../CSubProcess.h
              ../Exceptions.h 
              CMsgBase.h
              CMsgQuit.h
              CMsgResponse.h
+             CMsgOpenDb.h
              CMsgScanDir.h
              CMsgFinished.h
              CMsgProgress.h

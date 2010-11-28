@@ -82,11 +82,15 @@ set(HEADERS         CCollection.h
  set( MSG_SRC       mediascanner/CMsgBase.cpp
                     mediascanner/CMsgQuit.cpp
                     mediascanner/CMsgResponse.cpp
+                    mediascanner/CMsgOpenDb.cpp
+                    mediascanner/CMsgScanDir.cpp
                     mediascanner/CMediaItem.cpp )
                     
  set( MSG_HDR       mediascanner/CMsgBase.h
                     mediascanner/CMsgQuit.h
                     mediascanner/CMsgResponse.h
+                    mediascanner/CMsgOpenDb.h
+                    mediascanner/CMsgScanDir.h
                     mediascanner/CMediaItem.h )
  
  

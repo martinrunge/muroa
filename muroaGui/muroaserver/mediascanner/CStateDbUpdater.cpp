@@ -7,11 +7,16 @@
 
 #include "CStateDbUpdater.h"
 
-CStateDbUpdater::CStateDbUpdater(std::string dbFileName) : public CStateDbBase(dbFileName) {
+CStateDbUpdater::CStateDbUpdater(std::string dbFileName) : CStateDbBase(dbFileName) {
 	// TODO Auto-generated constructor stub
 
 }
 
 CStateDbUpdater::~CStateDbUpdater() {
 	// TODO Auto-generated destructor stub
+}
+
+
+void CStateDbUpdater::appendCollectionRev(std::vector<CMediaItem*> *collection) {
+
 }
