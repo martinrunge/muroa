@@ -45,10 +45,12 @@ void CMediaScannerTest::tearDown() {
 
 void CMediaScannerTest::testEventLoop() {
 
-	quitIn(30);
 	m_fs_scanner->scanDir("/home/martin");
-	m_media_scanner->run();
-
+	run();
+	sleep(30);
+	CMsgQuit* quitMsg = new CMsgQuit();
+	m_media_scanner->postEvent(quitMsg);
+	join();
 	CPPUNIT_ASSERT( 1 );
 }
 
@@ -56,19 +58,22 @@ void CMediaScannerTest::testEventLoop() {
 void CMediaScannerTest::testScanDirEvent() {
 	CMsgScanDir* msg = new CMsgScanDir("/home/martin");
 
-	quitIn(30);
+	run();
+
 	m_media_scanner->postEvent(msg);
-	m_media_scanner->run();
-
-
-}
-
-void CMediaScannerTest::quitIn(int sec) {
-	m_thread = std::thread(&CMediaScannerTest::quitThread, this, sec );
-}
-
-void CMediaScannerTest::quitThread(int sec) {
-	sleep(sec);
+	sleep(30);
 	CMsgQuit* quitMsg = new CMsgQuit();
 	m_media_scanner->postEvent(quitMsg);
+	join();
+
+}
+
+void CMediaScannerTest::run() {
+	m_thread = std::thread(&CMediaScanner::run, m_media_scanner);
+}
+
+void CMediaScannerTest::join() {
+	if(m_thread.joinable()) {
+		m_thread.join();
+	}
 }

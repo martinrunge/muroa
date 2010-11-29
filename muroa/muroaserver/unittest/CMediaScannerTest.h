@@ -31,8 +31,8 @@ public:
 	void testScanDirEvent();
 
 private:
-	void quitIn(int sec);
-	void quitThread(int sec);
+	void run();
+	void join();
 
 	CMediaScanner* m_media_scanner;
 	CFsScanner* m_fs_scanner;
