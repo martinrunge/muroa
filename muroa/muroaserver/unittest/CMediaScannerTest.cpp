@@ -32,6 +32,12 @@ CMediaScannerTest::~CMediaScannerTest() {
 void CMediaScannerTest::setUp() {
 	m_media_scanner = new CMediaScanner();
 	m_fs_scanner = new CFsScanner(m_media_scanner);
+
+	vector<string> types;
+	types.push_back(".mp3");
+	types.push_back(".ogg");
+
+	m_fs_scanner->setFileTypes( types );
 }
 
 void CMediaScannerTest::tearDown() {

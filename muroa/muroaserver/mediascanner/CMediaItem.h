@@ -15,7 +15,6 @@ public:
 	CMediaItem();
 	virtual ~CMediaItem();
 
-
     inline std::string getAlbum() const { return m_album; }
     inline std::string getArtist() const { return m_artist; }
     inline std::string getFilename() const { return m_filename; }
@@ -31,6 +30,8 @@ public:
     void setTitle(std::string title);
     void setYear(int year);
 
+	inline int getHash() { return m_hash; };
+
 private:
 
     std::string m_filename;
@@ -39,6 +40,11 @@ private:
     std::string m_title;
 	int m_year;
 	int m_duration_in_s;
+
+	unsigned m_hash;
+
+    std::string m_asString;
+	void rehash();
 };
 
 #endif /* CCOLLECTIONITEM_H_ */

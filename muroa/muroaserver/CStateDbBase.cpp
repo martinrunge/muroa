@@ -170,6 +170,67 @@ void CStateDbBase::createNextlistRevisionsTable() {
 }
 
 
+void CStateDbBase::updateMediaItem( CMediaItem* item ) {
+	assert(m_updateMediaItemStmt != 0);
+
+	int retval = sqlite3_bind_int(m_updateMediaItemStmt, 1, item->getHash());
+	if(retval != SQLITE_OK) {
+		cerr << "Error binding value 'hash' to getMediaItemByPos statement: " << sqlite3_errmsg(m_db) << endl;
+	}
+	retval = sqlite3_bind_text(m_updateMediaItemStmt, 2, item->getFilename().c_str(), -1, SQLITE_TRANSIENT);
+	if(retval != SQLITE_OK) {
+		cerr << "Error binding value 'filename' to getMediaItemByPos statement: " << sqlite3_errmsg(m_db) << endl;
+	}
+	retval = sqlite3_bind_text(m_updateMediaItemStmt, 3, item->getArtist().c_str(), -1, SQLITE_TRANSIENT);
+	if(retval != SQLITE_OK) {
+		cerr << "Error binding value 'Artist' to getMediaItemByPos statement: " << sqlite3_errmsg(m_db) << endl;
+	}
+	retval = sqlite3_bind_text(m_updateMediaItemStmt, 4, item->getAlbum().c_str(), -1, SQLITE_TRANSIENT);
+	if(retval != SQLITE_OK) {
+		cerr << "Error binding value 'album' to getMediaItemByPos statement: " << sqlite3_errmsg(m_db) << endl;
+	}
+	retval = sqlite3_bind_text(m_updateMediaItemStmt, 5, item->getTitle().c_str(), -1, SQLITE_TRANSIENT);
+	if(retval != SQLITE_OK) {
+		cerr << "Error binding value 'title' to getMediaItemByPos statement: " << sqlite3_errmsg(m_db) << endl;
+	}
+	retval = sqlite3_bind_int(m_updateMediaItemStmt, 6, item->getYear());
+	if(retval != SQLITE_OK) {
+		cerr << "Error binding value 'year' to getMediaItemByPos statement: " << sqlite3_errmsg(m_db) << endl;
+	}
+	retval = sqlite3_bind_int(m_updateMediaItemStmt, 7, item->getDuration());
+	if(retval != SQLITE_OK) {
+		cerr << "Error binding value 'duration' to getMediaItemByPos statement: " << sqlite3_errmsg(m_db) << endl;
+	}
+	retval = sqlite3_bind_int(m_updateMediaItemStmt, 8, 0);
+	if(retval != SQLITE_OK) {
+		cerr << "Error binding value 'num_played' to getMediaItemByPos statement: " << sqlite3_errmsg(m_db) << endl;
+	}
+	retval = sqlite3_bind_int(m_updateMediaItemStmt, 9, 0);
+	if(retval != SQLITE_OK) {
+		cerr << "Error binding value 'num_skipped' to getMediaItemByPos statement: " << sqlite3_errmsg(m_db) << endl;
+	}
+	retval = sqlite3_bind_int(m_updateMediaItemStmt, 10, 0);
+	if(retval != SQLITE_OK) {
+		cerr << "Error binding value 'num_repeated' to getMediaItemByPos statement: " << sqlite3_errmsg(m_db) << endl;
+	}
+	retval = sqlite3_bind_int(m_updateMediaItemStmt, 11, 0);
+	if(retval != SQLITE_OK) {
+		cerr << "Error binding value 'rating' to getMediaItemByPos statement: " << sqlite3_errmsg(m_db) << endl;
+	}
+
+	retval = sqlite3_step( m_updateMediaItemStmt );
+
+	if(retval != SQLITE_DONE) {
+		cerr << "Error stepping m_updateMediaItemStmt: " << sqlite3_errmsg(m_db);
+	}
+
+	retval = sqlite3_reset(m_updateMediaItemStmt);
+	if(retval != SQLITE_OK) {
+		cerr << "Error resetting m_updateMediaItemStmt statement: " << sqlite3_errmsg(m_db);
+	}
+}
+
+
 
 void CStateDbBase::updateCollectionRevItem( int pos, int hash, int rev ) {
 
