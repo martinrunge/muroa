@@ -28,6 +28,11 @@ CMediaScanner::CMediaScanner(int sock_fd) : CEventLoop(sock_fd), m_fs_scanner(0)
 	  m_dbg_file << "CMediaScanner::CMediaScanner(" << sock_fd << ")" << endl;
 
 	  m_fs_scanner = new CFsScanner(this);
+
+	  vector<string> types;
+	  types.push_back(".mp3");
+	  //types.push_back(".ogg");
+	  m_fs_scanner->setFileTypes(types);
 }
 
 CMediaScanner::~CMediaScanner() {
