@@ -54,6 +54,9 @@ private:
     void updatePlaylistItem( int plPos, CPlaylistItem* item, int plRev, int colRev );
     void updateNextlistItem( int nlPos, CPlaylistItem* item, int nlRev, int plRev );
 
+    void createPlaylistRevisionsTable();
+    void createNextlistRevisionsTable();
+
     int rowIDofPlRevEntry(int plPos, int colHash, int plRev, int ColRev);
 
 	sqlite3_stmt *m_updateColItemStmt;

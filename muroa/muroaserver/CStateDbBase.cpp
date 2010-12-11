@@ -42,9 +42,7 @@ int CStateDbBase::open() {
 		createCollectionTable();
 		createCollectionRevisionsTable();
 
-		createPlaylistRevisionsTable();
-		createNextlistRevisionsTable();
-
+		prepareUpdateMediaItemStmt();
 		prepareUpdateColRevStmt();
 		prepareSelectColRevStmt();
 
@@ -56,6 +54,7 @@ int CStateDbBase::close() {
 
 	finalizeUpdateColRevStmt();
     finalizeSelectColRevStmt();
+    finalizeUpdateMediaItemStmt();
 
 	finalizeStmt(&m_beginTransactionStmt);
 	finalizeStmt(&m_endTransactionStmt);
@@ -147,8 +146,6 @@ void CStateDbBase::setValue(std::string key, int value) {
 	setValue(key, ss.str());
 }
 
-
-
 void CStateDbBase::createGeneralTable() {
 	createTable("general", "(key TEXT UNIQUE, value TEXT)");
 }
@@ -160,15 +157,6 @@ void CStateDbBase::createCollectionTable( ) {
 void CStateDbBase::createCollectionRevisionsTable() {
 	createTable("collectionRevs" , "(colPos INTEGER, colHash INTEGER REFERENCES collection (hash),  ColRev INTEGER)");
 }
-
-void CStateDbBase::createPlaylistRevisionsTable() {
-	createTable("playlistRevs","(entry_id INTEGER PRIMARY KEY AUTOINCREMENT, plPos INTEGER, colHash INTEGER, plRev INTEGER, ColRev INTEGER, FOREIGN KEY(colHash) REFERENCES collection(hash))");
-}
-
-void CStateDbBase::createNextlistRevisionsTable() {
-	createTable("nextlistRevs","(entry_id INTEGER PRIMARY KEY AUTOINCREMENT, nlPos INTEGER, plPos INTEGER, nlRev INTEGER, plRev INTEGER)");
-}
-
 
 void CStateDbBase::updateMediaItem( CMediaItem* item ) {
 	assert(m_updateMediaItemStmt != 0);
@@ -413,8 +401,6 @@ void CStateDbBase::prepareUpdateMediaItemStmt() {
 void CStateDbBase::finalizeUpdateMediaItemStmt() {
 	finalizeStmt( &m_updateMediaItemStmt );
 }
-
-
 
 void CStateDbBase::prepareUpdateColRevStmt() {
 	prepareStmt(&m_updateColRevStmt, "INSERT OR REPLACE INTO collectionRevs " \

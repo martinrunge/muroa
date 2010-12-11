@@ -20,6 +20,9 @@ public:
 	CStateDbUpdater(std::string dbFileName);
 	virtual ~CStateDbUpdater();
 
+	int open();
+	int close();
+
 	void appendCollectionRev(std::vector<CMediaItem*> *collection);
 };
 

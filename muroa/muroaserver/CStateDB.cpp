@@ -30,6 +30,9 @@ int CStateDB::open() {
 
 		prepareUpdateColItemStmt();
 
+		createPlaylistRevisionsTable();
+		createNextlistRevisionsTable();
+
 		prepareSelectColItemStmt();
 		prepareGetColItemByPosStmt();
 
@@ -537,6 +540,17 @@ CPlaylistItem* CStateDB::getPlaylistItemByPos(int pos, int rev) {
 CPlaylistItem* CStateDB::getNextlistItemByPos(int pos, int rev) {
 
 }
+
+
+void CStateDB::createPlaylistRevisionsTable() {
+	createTable("playlistRevs","(entry_id INTEGER PRIMARY KEY AUTOINCREMENT, plPos INTEGER, colHash INTEGER, plRev INTEGER, ColRev INTEGER, FOREIGN KEY(colHash) REFERENCES collection(hash))");
+}
+
+void CStateDB::createNextlistRevisionsTable() {
+	createTable("nextlistRevs","(entry_id INTEGER PRIMARY KEY AUTOINCREMENT, nlPos INTEGER, plPos INTEGER, nlRev INTEGER, plRev INTEGER)");
+}
+
+
 
 void CStateDB::prepareUpdatePlaylistItemStmt() {
 	prepareStmt(&m_updatePlaylistItemStmt, "INSERT OR REPLACE INTO playlistRevs " \

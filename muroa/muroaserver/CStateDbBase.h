@@ -40,12 +40,15 @@ protected:
     sqlite3 *m_db;
 
     void updateMediaItem( CMediaItem* item );
+    CMediaItem* getMediaItemFromStmt(sqlite3_stmt *pStmt);
 
     void beginTansaction() throw(CApiMisuseException);
     void endTransaction() throw(CApiMisuseException);
 
 	void prepareStmt(sqlite3_stmt** stmt, std::string sqlStmt);
 	void finalizeStmt(sqlite3_stmt** stmt);
+
+    void createTable(std::string name, std::string schema);
 
 private:
 	std::string m_dbFileName;
@@ -56,12 +59,6 @@ private:
     void createGeneralTable();
     void createCollectionTable();
     void createCollectionRevisionsTable();
-    void createPlaylistRevisionsTable();
-    void createNextlistRevisionsTable();
-
-    void createTable(std::string name, std::string schema);
-
-    CMediaItem* getMediaItemFromStmt(sqlite3_stmt *pStmt);
 
 
 	sqlite3_stmt *m_beginTransactionStmt;
@@ -79,12 +76,9 @@ private:
 	void prepareSelectMediaItemStmt();
 	void finalizeSelectMediaItemStmt();
 
-
 	sqlite3_stmt *m_selectColRevStmt;
 	void prepareSelectColRevStmt();
 	void finalizeSelectColRevStmt();
-
-
 
 };
 

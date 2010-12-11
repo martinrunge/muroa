@@ -10,6 +10,7 @@
 #include "../mediascanner/CMediaScanner.h"
 #include "../mediascanner/CFsScanner.h"
 
+#include "../mediascanner/CMsgOpenDb.h"
 #include "../mediascanner/CMsgScanDir.h"
 #include "../mediascanner/CMsgQuit.h"
 
@@ -62,10 +63,12 @@ void CMediaScannerTest::testEventLoop() {
 
 
 void CMediaScannerTest::testScanDirEvent() {
+	CMsgOpenDb* openDbMsg = new CMsgOpenDb("testDB.mysql");
 	CMsgScanDir* msg = new CMsgScanDir("/home/martin");
 
 	run();
 
+	m_media_scanner->postEvent(openDbMsg);
 	m_media_scanner->postEvent(msg);
 	sleep(30);
 	CMsgQuit* quitMsg = new CMsgQuit();

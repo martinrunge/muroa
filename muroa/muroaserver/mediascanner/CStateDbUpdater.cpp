@@ -6,17 +6,46 @@
  */
 
 #include "CStateDbUpdater.h"
+#include "CMediaItem.h"
+
+#include <assert.h>
+using namespace std;
 
 CStateDbUpdater::CStateDbUpdater(std::string dbFileName) : CStateDbBase(dbFileName) {
-	// TODO Auto-generated constructor stub
 
 }
 
 CStateDbUpdater::~CStateDbUpdater() {
-	// TODO Auto-generated destructor stub
+
 }
 
+int CStateDbUpdater::open() {
+	int rc = CStateDbBase::open();
+	if( rc == 0 ){
+
+	}
+}
+
+int CStateDbUpdater::close() {
+	int rc = CStateDbBase::close();
+	return rc;
+}
 
 void CStateDbUpdater::appendCollectionRev(std::vector<CMediaItem*> *collection) {
+	beginTansaction();
 
+	string colMaxRev = getValue("CollectionRevMax");
+	errno = 0;
+	int maxRev = strtol(colMaxRev.c_str(), NULL, 10);
+	assert (errno  == 0);
+
+	for(int i = 0; i < collection->size(); i++) {
+		CMediaItem* item = collection->at(i);
+		updateMediaItem(item);
+		updateCollectionRevItem(i, item->getHash(), maxRev );
+	}
+
+	setValue("CollectionRevMax", maxRev + 1);
+
+	endTransaction();
 }

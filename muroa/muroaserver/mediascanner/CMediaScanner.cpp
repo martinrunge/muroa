@@ -52,6 +52,7 @@ int CMediaScanner::handleMsg(CMsgBase* msg) {
 		case E_MSG_QUIT:
 			rc = 1;
 			m_dbg_file << "got quit msg." << endl;
+			m_stateDbUpdater->close();
 			// exit(1);
 			break;
 
@@ -67,6 +68,7 @@ int CMediaScanner::handleMsg(CMsgBase* msg) {
 			CMsgOpenDb* openDbMsg = reinterpret_cast<CMsgOpenDb*>(msg);
 			m_dbg_file << "open db: " << openDbMsg->getDbPath() << endl;
             m_stateDbUpdater = new CStateDbUpdater( openDbMsg->getDbPath() );
+            m_stateDbUpdater->open();
 			break;
 		}
 		case E_MSG_SCAN_DIR:

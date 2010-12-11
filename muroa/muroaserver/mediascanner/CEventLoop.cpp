@@ -56,7 +56,7 @@ int CEventLoop::run() {
 			// see, if there is an event in eventQueue, continue waiting in recv() otherwise.
 			std::lock_guard<std::mutex> lk(m_eventQueueMutex);
 			if(m_eventQueue.size() > 0) {
-				msg = m_eventQueue.back();
+				msg = m_eventQueue.front();
 				m_eventQueue.pop();
 			}
 		}
