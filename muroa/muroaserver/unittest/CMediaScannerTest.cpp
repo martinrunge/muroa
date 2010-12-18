@@ -52,7 +52,7 @@ void CMediaScannerTest::tearDown() {
 
 void CMediaScannerTest::testEventLoop() {
 
-	m_fs_scanner->scanDir("/home/martin");
+	// m_fs_scanner->scanDir("/home/martin");
 	run();
 	sleep(30);
 	CMsgQuit* quitMsg = new CMsgQuit();
@@ -76,6 +76,23 @@ void CMediaScannerTest::testScanDirEvent() {
 	join();
 
 }
+
+void CMediaScannerTest::testDbUpdater() {
+	CMsgOpenDb* openDbMsg = new CMsgOpenDb("testDB.mysql");
+	CMsgScanDir* scanDirMsg = new CMsgScanDir("/home/martin");
+
+	run();
+
+	m_media_scanner->postEvent(openDbMsg);
+	m_media_scanner->postEvent(scanDirMsg);
+	sleep(30);
+	CMsgQuit* quitMsg = new CMsgQuit();
+	m_media_scanner->postEvent(quitMsg);
+	join();
+
+
+}
+
 
 void CMediaScannerTest::run() {
 	m_thread = std::thread(&CMediaScanner::run, m_media_scanner);

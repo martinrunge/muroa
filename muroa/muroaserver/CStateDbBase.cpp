@@ -61,6 +61,7 @@ int CStateDbBase::close() {
 
 	if(m_db != 0) {
 		sqlite3_close(m_db);
+		m_db = 0;
 	}
 
 	return 0;

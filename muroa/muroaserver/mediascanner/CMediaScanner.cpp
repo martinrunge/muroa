@@ -52,7 +52,9 @@ int CMediaScanner::handleMsg(CMsgBase* msg) {
 		case E_MSG_QUIT:
 			rc = 1;
 			m_dbg_file << "got quit msg." << endl;
-			m_stateDbUpdater->close();
+			if(m_stateDbUpdater != 0) {
+				m_stateDbUpdater->close();
+			}
 			// exit(1);
 			break;
 

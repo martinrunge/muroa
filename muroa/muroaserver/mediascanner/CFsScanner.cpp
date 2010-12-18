@@ -155,20 +155,22 @@ bool CFsScanner::knownType( fs::path path ) {
 CMediaItem* CFsScanner::readTag( fs::path path ) {
 	// cout << "add: " << path;
 
-	TagLib::FileRef f( path.string().c_str() );
-	TagLib::String artist = f.tag()->artist();
-	TagLib::String album  = f.tag()->album();
-	TagLib::String title = f.tag()->title();
-
-	// cout << " Artist: " << artist.to8Bit(true) << " Album: " << album.to8Bit(true) << " Title; " << title.to8Bit(true) << endl;
-
 	CMediaItem* item = new CMediaItem();
-	item->setFilename( path.string() );
-	item->setAlbum( album.to8Bit(true) );
-	item->setArtist( artist.to8Bit(true) );
-	item->setTitle( title.to8Bit(true) );
-	item->setYear( f.tag()->year() );
 
+	TagLib::FileRef f( path.string().c_str() );
+	if( !f.isNull()) {
+		TagLib::String artist = f.tag()->artist();
+		TagLib::String album  = f.tag()->album();
+		TagLib::String title = f.tag()->title();
+
+		// cout << " Artist: " << artist.to8Bit(true) << " Album: " << album.to8Bit(true) << " Title; " << title.to8Bit(true) << endl;
+
+		item->setFilename( path.string() );
+		item->setAlbum( album.to8Bit(true) );
+		item->setArtist( artist.to8Bit(true) );
+		item->setTitle( title.to8Bit(true) );
+		item->setYear( f.tag()->year() );
+	}
 	// m_decoder.open(path.string().c_str());
 	// int duration = m_decoder.getDuration();
 	// m_decoder.close();

@@ -59,7 +59,9 @@ void CMediaItem::rehash() {
 	stringstream ss;
 
 	ss << m_filename << "," << m_artist << "," << m_album << "," << m_title << "," << m_year << "," << m_duration_in_s;
-	m_asString = ss.str();
 
-	m_hash = hash<string>()( m_asString );
+	m_hash = hash<string>()( ss.str() );
+	ss << "," << m_hash;
+
+	m_asString = ss.str();
 }

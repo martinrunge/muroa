@@ -19,6 +19,7 @@ class CMediaScannerTest : public CppUnit::TestFixture {
 	  CPPUNIT_TEST_SUITE( CMediaScannerTest );
 	  CPPUNIT_TEST( testEventLoop );
 	  CPPUNIT_TEST( testScanDirEvent );
+	  CPPUNIT_TEST( testDbUpdater );
 	  CPPUNIT_TEST_SUITE_END();
 public:
 	CMediaScannerTest();
@@ -29,6 +30,7 @@ public:
 
 	void testEventLoop();
 	void testScanDirEvent();
+	void testDbUpdater();
 
 private:
 	void run();

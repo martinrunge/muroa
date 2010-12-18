@@ -7,6 +7,11 @@
 
 #include "CCollectionItem.h"
 
+#include <sstream>
+#include <functional>
+
+using namespace std;
+
 CCollectionItem::CCollectionItem() {
 }
 
@@ -87,9 +92,24 @@ void CCollectionItem::setYear(int year)
 
 void CCollectionItem::assembleText()
 {
-	m_text = QString("%1,%2,%3,%4,%5,%6").arg(m_filename).arg(m_artist).arg(m_album).arg(m_year).arg(m_title).arg(m_duration_in_s);
-    m_hash = qHash(m_text);
-    m_text.append(QChar(','));
-    m_text.append(QString::number(m_hash, 10));
+//	  m_text = QString("%1,%2,%3,%4,%5,%6").arg(m_filename).arg(m_artist).arg(m_album).arg(m_year).arg(m_title).arg(m_duration_in_s);
+//    m_hash = qHash(m_text);
+//    m_text.append(QChar(','));
+//    m_text.append(QString::number(m_hash, 10));
+
+	stringstream ss;
+
+	ss << m_filename.toUtf8().constData() << ","
+	   << m_artist.toUtf8().constData() << ","
+	   << m_album.toUtf8().constData() << ","
+	   << m_title.toUtf8().constData() << ","
+	   << m_year << ","
+	   << m_duration_in_s;
+
+	m_hash = hash<string>()( ss.str() );
+	ss << "," << m_hash;
+
+	m_text = QString::fromUtf8( ss.str().c_str(), ss.str().size() );
+
 }
 
