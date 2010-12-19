@@ -12,7 +12,7 @@
 
 class CMsgProgress: public CMsgBase {
 public:
-	CMsgProgress();
+	CMsgProgress(uint32_t progress = 0);
 	CMsgProgress(char* buffer, int size);
 	virtual ~CMsgProgress();
 

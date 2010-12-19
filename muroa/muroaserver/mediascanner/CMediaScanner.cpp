@@ -22,7 +22,7 @@
 
 using namespace std;
 
-CMediaScanner::CMediaScanner(int sock_fd) : CEventLoop(sock_fd), m_fs_scanner(0), m_stateDbUpdater(0)
+CMediaScanner::CMediaScanner(int sock_fd) : CEventLoop(sock_fd), m_fs_scanner(0), m_stateDbUpdater(0), m_progress(-1)
 {
 	  m_dbg_file.open("mediascanner.log");
 	  m_dbg_file << "CMediaScanner::CMediaScanner(" << sock_fd << ")" << endl;
@@ -78,6 +78,7 @@ int CMediaScanner::handleMsg(CMsgBase* msg) {
 			rc = 0;
 			CMsgScanDir* scanDirMsg = reinterpret_cast<CMsgScanDir*>(msg);
 			m_fs_scanner->scanDir( scanDirMsg->getPath() );
+			m_progress = 0;
 			m_dbg_file << "requested to scan dir: " << scanDirMsg->getPath() << endl;
 
 			// delete scanDirMsg;
@@ -95,6 +96,7 @@ int CMediaScanner::handleMsg(CMsgBase* msg) {
 		{
 			CMsgProgress* progressMsg = reinterpret_cast<CMsgProgress*>(msg);
 			m_dbg_file << "Progress report:" << progressMsg->getProgress() << endl;
+			m_progress = progressMsg->getProgress();
 			break;
 		}
 	}

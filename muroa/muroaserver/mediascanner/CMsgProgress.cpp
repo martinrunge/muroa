@@ -7,7 +7,7 @@
 
 #include "CMsgProgress.h"
 
-CMsgProgress::CMsgProgress() {
+CMsgProgress::CMsgProgress(uint32_t progress) : m_progress(progress) {
 	m_msgType = E_MSG_PROGRESS;
 	m_payloadSize = 4;
 	m_msgID = ++CMsgBase::m_last_id;

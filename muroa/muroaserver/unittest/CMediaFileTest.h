@@ -15,7 +15,9 @@ class CFsScanner;
 
 class CMediaFileTest : public CppUnit::TestFixture {
 	  CPPUNIT_TEST_SUITE( CMediaFileTest );
+	  CPPUNIT_TEST( iterDir );
 	  CPPUNIT_TEST( recurseDir );
+	  CPPUNIT_TEST( recurseDirBFS );
 	  CPPUNIT_TEST_SUITE_END();
 public:
 	CMediaFileTest();
@@ -24,7 +26,9 @@ public:
     void setUp();
     void tearDown();
 
+    void iterDir();
     void recurseDir();
+    void recurseDirBFS();
 
 private:
     CFsScanner* m_fsScanner;

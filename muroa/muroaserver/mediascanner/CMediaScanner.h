@@ -27,12 +27,16 @@ public:
 	CMediaScanner( int sock_fd = 0 );
 	virtual ~CMediaScanner();
 
+	int getProgress() { return m_progress; };
+
 private:
 	int handleMsg(CMsgBase* msg);
 
 	CFsScanner* m_fs_scanner;
 	CStateDbUpdater* m_stateDbUpdater;
 	std::ofstream m_dbg_file;
+
+	int m_progress;
 };
 
 #endif /* CMEDIASCANNER_H_ */

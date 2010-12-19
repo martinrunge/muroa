@@ -85,11 +85,16 @@ void CMediaScannerTest::testDbUpdater() {
 
 	m_media_scanner->postEvent(openDbMsg);
 	m_media_scanner->postEvent(scanDirMsg);
-	sleep(30);
+
+	while(m_media_scanner->getProgress() < 100 ) {
+		sleep(1);
+	}
+
+	sleep(10);
+
 	CMsgQuit* quitMsg = new CMsgQuit();
 	m_media_scanner->postEvent(quitMsg);
 	join();
-
 
 }
 

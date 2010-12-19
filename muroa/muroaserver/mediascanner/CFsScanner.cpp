@@ -9,6 +9,7 @@
 #include <iostream>
 #include <stack>
 #include <vector>
+#include <queue>
 
 
 #include <taglib/fileref.h>
@@ -18,6 +19,7 @@
 
 #include "CMediaScanner.h"
 #include "CMsgFinished.h"
+#include "CMsgProgress.h"
 
 using namespace std;
 
@@ -25,6 +27,7 @@ CFsScanner::CFsScanner(CMediaScanner* parent) : m_scanResult(0), m_scanning(fals
 }
 
 CFsScanner::~CFsScanner() {
+	m_progressDirs.clear();
 	if(m_thread.joinable()) {
 		m_thread.join();
 	}
@@ -34,7 +37,13 @@ void CFsScanner::scanDir(std::string dir) {
 	if(m_scanning == false) {
 		m_scanning = true;
 		m_thread = thread(&CFsScanner::walkTree, this, dir );
+	}
+}
 
+void CFsScanner::scanDirBFS(std::string dir) {
+	if(m_scanning == false) {
+		m_scanning = true;
+		m_thread = thread(&CFsScanner::walkTreeBFS, this, dir );
 	}
 }
 
@@ -54,6 +63,7 @@ std::vector<CMediaItem*>* CFsScanner::finishScan() {
 }
 
 int CFsScanner::walkTree(string dir) {
+	walkTreeBFS( dir );
 
 	fs::path full_path( dir );
 
@@ -62,14 +72,9 @@ int CFsScanner::walkTree(string dir) {
 	unsigned long other_count = 0;
 	unsigned long err_count = 0;
 
-	if(m_scanResult != 0) {
-		for(std::vector<CMediaItem*>::iterator it = m_scanResult->begin(); it != m_scanResult->end(); it++ ) {
-			CMediaItem* item = *it;
-			delete item;
-		}
-		delete m_scanResult;
-		m_scanResult = 0;
-	}
+	unsigned long dir_depth_count = 0;
+
+	cleanupScanResult();
 
 	m_scanResult = new vector<CMediaItem*>;
 
@@ -85,18 +90,29 @@ int CFsScanner::walkTree(string dir) {
 
 	initState.path = full_path;
 	initState.dirIter = fs::directory_iterator( full_path );
+	initState.depth = 0;
 	itstack.push(initState);
 	while(itstack.size() > 0) {
 		struct iterstate state = itstack.top();
 		itstack.pop();
-
-		// std::cerr << "\nIn directory: " << state.path.directory_string() << "\n";
 
 		fs::directory_iterator end_iter;
 		while( state.dirIter != end_iter)  {
 			try {
 				if ( fs::is_directory( state.dirIter->status() ) ) {
 					++dir_count;
+
+					if( itstack.size() <= m_progress_depth ) {
+						int old_progress = m_progress;
+						dir_depth_count++;
+						m_progress = 100.0 * (float)dir_depth_count / m_progress_num_dirs;
+						// cerr << "progress: " << m_progress << " " << state.path << "itstack.size(): " << itstack.size()  << endl;
+						if(m_progress != old_progress) {
+							CMsgProgress *progressMsg = new CMsgProgress(m_progress);
+							m_parent->postEvent(progressMsg);
+						}
+					}
+
 					// std::cerr << state.dirIter->path() << " [directory]\n";
 					struct iterstate newState;
 					newState.path = state.dirIter->path();
@@ -141,6 +157,104 @@ int CFsScanner::walkTree(string dir) {
 			<< err_count << " errors\n";
 
 	return 0;
+}
+
+int CFsScanner::walkTreeBFS(std::string dir) {
+	fs::path full_path( fs::system_complete(dir) );
+
+	unsigned long file_count = 0;
+	unsigned long dir_count = 0;
+	unsigned long other_count = 0;
+	unsigned long err_count = 0;
+	unsigned long depth = 0;
+
+	cleanupScanResult();
+	m_progressDirs.clear();
+
+	m_scanResult = new vector<CMediaItem*>;
+
+	if ( !fs::exists( full_path ) || !fs::is_directory( full_path ) )
+	{
+		std::cout << "\nNot found: " << full_path.file_string() << std::endl;
+		return -1;
+	}
+	// use a stack of struct iterstate instead of resursion;
+	queue<struct iterstate> itqueue;
+
+	struct iterstate initState;
+
+	initState.path = full_path;
+	initState.depth = 0;
+	depth = initState.depth;
+	//initState.dirIter = fs::directory_iterator( full_path );
+	itqueue.push(initState);
+	while(itqueue.size() > 0) {
+
+		struct iterstate state = itqueue.front();
+		itqueue.pop();
+
+		if( state.depth > depth ) {
+			if( dir_count > 100) {
+				m_progress_depth = depth;
+				m_progress_num_dirs = dir_count;
+				break;
+			}
+			else {
+				depth = state.depth;
+			}
+		}
+
+		state.dirIter = fs::directory_iterator( state.path );
+		// std::cerr << "\nIn directory: " << state.path.directory_string() << "\n";
+
+		fs::directory_iterator end_iter;
+		while( state.dirIter != end_iter)  {
+			try {
+				// cerr << state.dirIter->path() << endl;
+
+				if ( fs::is_directory( state.dirIter->status() ) ) {
+					++dir_count;
+					std::cerr << state.dirIter->path() << " [directory]\n";
+					struct iterstate newState;
+					newState.path = state.dirIter->path();
+					newState.depth = state.depth + 1;
+
+					m_progressDirs.push_back( state.dirIter->path().string() );
+
+					itqueue.push(newState);
+//					cerr << newState.path << endl;
+				}
+			}
+			catch ( const std::exception & ex ) {
+				++err_count;
+				std::cout << state.dirIter->path().filename() << " " << ex.what() << std::endl;
+			}
+			state.dirIter++;
+		}
+	}
+	m_progress_dirs_size = m_progressDirs.size();
+	m_progress_num_dirs = m_progressDirs.size();
+
+
+	std::cout << "\n" << file_count << " files\n"
+			<< dir_count << " directories\n"
+			<< other_count << " others\n"
+			<< err_count << " errors\n"
+			<< depth << " max depth\n";
+
+	return 0;
+}
+
+
+void CFsScanner::cleanupScanResult() {
+	if(m_scanResult != 0) {
+		for(std::vector<CMediaItem*>::iterator it = m_scanResult->begin(); it != m_scanResult->end(); it++ ) {
+			CMediaItem* item = *it;
+			delete item;
+		}
+		delete m_scanResult;
+		m_scanResult = 0;
+	}
 }
 
 
