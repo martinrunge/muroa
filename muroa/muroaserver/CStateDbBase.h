@@ -26,6 +26,7 @@ public:
 	virtual int close();
 
 	std::string getValue(std::string key);
+	int getIntValue(std::string key);
 	void setValue(std::string key, std::string value);
 	void setValue(std::string key, int value);
 
@@ -71,6 +72,10 @@ private:
 	sqlite3_stmt *m_updateColRevStmt;
 	void prepareUpdateColRevStmt();
 	void finalizeUpdateColRevStmt();
+
+	sqlite3_stmt *m_getMediaItemByPosStmt;
+	void prepareGetMediaItemByPosStmt();
+	void finalizeGetMediaItemByPosStmt();
 
 	sqlite3_stmt *m_selectMediaItemStmt;
 	void prepareSelectMediaItemStmt();

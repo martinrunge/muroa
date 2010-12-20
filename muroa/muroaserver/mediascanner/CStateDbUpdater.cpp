@@ -49,3 +49,21 @@ void CStateDbUpdater::appendCollectionRev(std::vector<CMediaItem*> *collection) 
 
 	endTransaction();
 }
+
+
+std::vector<CMediaItem*> *CStateDbUpdater::getCollectionRev(int rev) {
+	beginTansaction();
+	std::vector<CMediaItem*> *collection;
+
+	CMediaItem* item;
+	int pos = 0;
+	do {
+		item = getMediaItemByPos(pos, rev);
+		pos++;
+		if(item) {
+			collection->push_back(item);
+		}
+	} while(item != 0);
+
+	endTransaction();
+}

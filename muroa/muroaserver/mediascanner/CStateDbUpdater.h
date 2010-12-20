@@ -23,7 +23,9 @@ public:
 	int open();
 	int close();
 
+
 	void appendCollectionRev(std::vector<CMediaItem*> *collection);
+	std::vector<CMediaItem*> *getCollectionRev(int rev);
 };
 
 #endif /* CSTATEDBUPDATER_H_ */

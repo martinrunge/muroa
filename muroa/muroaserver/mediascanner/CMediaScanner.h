@@ -23,6 +23,7 @@ class CFsScanner;
 class CStateDbUpdater;
 
 class CMediaScanner : public CEventLoop {
+	friend class CMediaScannerTest;
 public:
 	CMediaScanner( int sock_fd = 0 );
 	virtual ~CMediaScanner();

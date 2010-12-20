@@ -7,6 +7,7 @@
 
 #include "CDataBaseTest.h"
 #include "../CStateDB.h"
+#include "../mediascanner/CStateDbUpdater.h"
 #include "../mediaprocessing/CCollectionUpdater.h"
 #include "../CSession.h"
 
@@ -34,7 +35,10 @@ CDataBaseTest::~CDataBaseTest() {
 
 void CDataBaseTest::setUp()
 {
-	m_stateDB = new CStateDB( "TestDB.sqlite" );
+	const std::string dbname("TestDB.sqlite");
+
+	m_stateDB = new CStateDB( dbname );
+	m_stateDbUpdater = new CStateDbUpdater( dbname );
     m_colUpdater = new CCollectionUpdater();
 
 }
@@ -42,6 +46,7 @@ void CDataBaseTest::setUp()
 void CDataBaseTest::tearDown()
 {
 	delete m_colUpdater;
+	delete m_stateDbUpdater;
 	delete m_stateDB;
 }
 
@@ -172,6 +177,31 @@ void CDataBaseTest::prepareNextlist() {
 	// nextlist->addSomeEntries();
 	// m_session->addNextlistRev(nextlist);
 }
+
+
+
+void CDataBaseTest::StateDbUpdater() {
+	vector<CMediaIten*>* col_pre;
+	vector<CMediaIten*>* col_post;
+
+	int maxrev_pre = m_stateDbUpdater->getIntValue("CollectionRevMax");
+	m_stateDbUpdater->appendCollectionRev( col_pre );
+
+	int maxrev_post = m_stateDbUpdater->getIntValue("CollectionRevMax");
+	CPPUNIT_ASSERT_MESSAGE("CStateDbUpdater::appendCollectionRev(..) did not increase CollectionRevMax by 1.", maxrev_pre + 1 == maxrev_post );
+
+	col_post = m_stateDbUpdater->getCollectionRev( maxrev_post );
+
+	vector<CMediaIten*>::iterator it_pre;
+	vector<CMediaIten*>::iterator it_post;
+
+	for( it_pre = col_pre->begin(), it_post = col_post->begin(); it_pre != col_pre->end() && it_post != col_post->end() ; it_pre++, it_post++ ) {
+		CPPUNIT_ASSERT_MESSAGE("CMediaItem differ after rereading them from StateDB!", *it_pre == *it_post);
+	}
+
+}
+
+
 
 void CDataBaseTest::saveSession() {
 	bool ok = true;

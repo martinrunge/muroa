@@ -32,6 +32,8 @@ public:
 
 	inline int getHash() { return m_hash; };
 
+	bool operator==(const CMediaItem& other);
+
 private:
 
     std::string m_filename;

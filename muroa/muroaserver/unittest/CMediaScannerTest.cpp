@@ -9,6 +9,7 @@
 
 #include "../mediascanner/CMediaScanner.h"
 #include "../mediascanner/CFsScanner.h"
+#include "../mediascanner/CStateDbUpdater.h"
 
 #include "../mediascanner/CMsgOpenDb.h"
 #include "../mediascanner/CMsgScanDir.h"
@@ -86,15 +87,28 @@ void CMediaScannerTest::testDbUpdater() {
 	m_media_scanner->postEvent(openDbMsg);
 	m_media_scanner->postEvent(scanDirMsg);
 
+	int old_max_rev = m_media_scanner->m_stateDbUpdater->getIntValue("CollectionRevMax");
+
 	while(m_media_scanner->getProgress() < 100 ) {
 		sleep(1);
 	}
 
-	sleep(10);
+	int max_rev, i = 0;
+	do
+	{
+		max_rev = m_media_scanner->m_stateDbUpdater->getIntValue("CollectionRevMax");
+		sleep(1);
+		i++;
+	}while( max_rev == old_max_rev && i < 20 );
+
+	CPPUNIT_ASSERT_MESSAGE("Faild to append exactly one revision to collection.", max_rev == old_max_rev + 1 );
+	CPPUNIT_ASSERT_MESSAGE("Appending exactly one revision to collection took longer than 20 s.", i < 20 );
+
 
 	CMsgQuit* quitMsg = new CMsgQuit();
 	m_media_scanner->postEvent(quitMsg);
 	join();
+
 
 }
 

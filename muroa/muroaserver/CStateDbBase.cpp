@@ -114,6 +114,15 @@ std::string CStateDbBase::getValue(std::string key) {
 	return value;
 }
 
+int CStateDbBase::getIntValue(std::string key) {
+	std::string asString = getValue(key);
+	int retval;
+
+	std::istringstream stream(asString);
+    stream >> retval;
+	return retval;
+}
+
 void CStateDbBase::setValue(std::string key, std::string value) {
 	sqlite3_stmt *pStmt;
 	const char *pzTail;
@@ -164,47 +173,47 @@ void CStateDbBase::updateMediaItem( CMediaItem* item ) {
 
 	int retval = sqlite3_bind_int(m_updateMediaItemStmt, 1, item->getHash());
 	if(retval != SQLITE_OK) {
-		cerr << "Error binding value 'hash' to getMediaItemByPos statement: " << sqlite3_errmsg(m_db) << endl;
+		cerr << "Error binding value 'hash' to updateMediaItemStmt statement: " << sqlite3_errmsg(m_db) << endl;
 	}
 	retval = sqlite3_bind_text(m_updateMediaItemStmt, 2, item->getFilename().c_str(), -1, SQLITE_TRANSIENT);
 	if(retval != SQLITE_OK) {
-		cerr << "Error binding value 'filename' to getMediaItemByPos statement: " << sqlite3_errmsg(m_db) << endl;
+		cerr << "Error binding value 'filename' to updateMediaItemStmt statement: " << sqlite3_errmsg(m_db) << endl;
 	}
 	retval = sqlite3_bind_text(m_updateMediaItemStmt, 3, item->getArtist().c_str(), -1, SQLITE_TRANSIENT);
 	if(retval != SQLITE_OK) {
-		cerr << "Error binding value 'Artist' to getMediaItemByPos statement: " << sqlite3_errmsg(m_db) << endl;
+		cerr << "Error binding value 'Artist' to updateMediaItemStmt statement: " << sqlite3_errmsg(m_db) << endl;
 	}
 	retval = sqlite3_bind_text(m_updateMediaItemStmt, 4, item->getAlbum().c_str(), -1, SQLITE_TRANSIENT);
 	if(retval != SQLITE_OK) {
-		cerr << "Error binding value 'album' to getMediaItemByPos statement: " << sqlite3_errmsg(m_db) << endl;
+		cerr << "Error binding value 'album' to updateMediaItemStmt statement: " << sqlite3_errmsg(m_db) << endl;
 	}
 	retval = sqlite3_bind_text(m_updateMediaItemStmt, 5, item->getTitle().c_str(), -1, SQLITE_TRANSIENT);
 	if(retval != SQLITE_OK) {
-		cerr << "Error binding value 'title' to getMediaItemByPos statement: " << sqlite3_errmsg(m_db) << endl;
+		cerr << "Error binding value 'title' to updateMediaItemStmt statement: " << sqlite3_errmsg(m_db) << endl;
 	}
 	retval = sqlite3_bind_int(m_updateMediaItemStmt, 6, item->getYear());
 	if(retval != SQLITE_OK) {
-		cerr << "Error binding value 'year' to getMediaItemByPos statement: " << sqlite3_errmsg(m_db) << endl;
+		cerr << "Error binding value 'year' to updateMediaItemStmt statement: " << sqlite3_errmsg(m_db) << endl;
 	}
 	retval = sqlite3_bind_int(m_updateMediaItemStmt, 7, item->getDuration());
 	if(retval != SQLITE_OK) {
-		cerr << "Error binding value 'duration' to getMediaItemByPos statement: " << sqlite3_errmsg(m_db) << endl;
+		cerr << "Error binding value 'duration' to updateMediaItemStmt statement: " << sqlite3_errmsg(m_db) << endl;
 	}
 	retval = sqlite3_bind_int(m_updateMediaItemStmt, 8, 0);
 	if(retval != SQLITE_OK) {
-		cerr << "Error binding value 'num_played' to getMediaItemByPos statement: " << sqlite3_errmsg(m_db) << endl;
+		cerr << "Error binding value 'num_played' to updateMediaItemStmt statement: " << sqlite3_errmsg(m_db) << endl;
 	}
 	retval = sqlite3_bind_int(m_updateMediaItemStmt, 9, 0);
 	if(retval != SQLITE_OK) {
-		cerr << "Error binding value 'num_skipped' to getMediaItemByPos statement: " << sqlite3_errmsg(m_db) << endl;
+		cerr << "Error binding value 'num_skipped' to updateMediaItemStmt statement: " << sqlite3_errmsg(m_db) << endl;
 	}
 	retval = sqlite3_bind_int(m_updateMediaItemStmt, 10, 0);
 	if(retval != SQLITE_OK) {
-		cerr << "Error binding value 'num_repeated' to getMediaItemByPos statement: " << sqlite3_errmsg(m_db) << endl;
+		cerr << "Error binding value 'num_repeated' to updateMediaItemStmt statement: " << sqlite3_errmsg(m_db) << endl;
 	}
 	retval = sqlite3_bind_int(m_updateMediaItemStmt, 11, 0);
 	if(retval != SQLITE_OK) {
-		cerr << "Error binding value 'rating' to getMediaItemByPos statement: " << sqlite3_errmsg(m_db) << endl;
+		cerr << "Error binding value 'rating' to updateMediaItemStmt statement: " << sqlite3_errmsg(m_db) << endl;
 	}
 
 	retval = sqlite3_step( m_updateMediaItemStmt );
@@ -217,6 +226,50 @@ void CStateDbBase::updateMediaItem( CMediaItem* item ) {
 	if(retval != SQLITE_OK) {
 		cerr << "Error resetting m_updateMediaItemStmt statement: " << sqlite3_errmsg(m_db);
 	}
+}
+
+CMediaItem* CStateDbBase::getMediaItemByPos(int colPos, int colRev) {
+	CMediaItem* item = 0;
+
+	assert(m_getMediaItemByPosStmt != 0);
+
+	int retval = sqlite3_bind_int(m_getMediaItemByPosStmt, 1, colPos);
+	if(retval != SQLITE_OK) {
+		cerr << "Error binding value 'colPos' to getMediaItemByPosStmt statement: " << sqlite3_errmsg(m_db) << endl;
+	}
+	retval = sqlite3_bind_int(m_getMediaItemByPosStmt, 2, colRev);
+	if(retval != SQLITE_OK) {
+		cerr << "Error binding value 'colRev' to getMediaItemByPosStmt statement: " << sqlite3_errmsg(m_db) << endl;
+	}
+
+	int rowid = 0;
+	int num_found = 0;
+	do {
+		retval = sqlite3_step( m_getMediaItemByPosStmt );
+		switch(retval) {
+		case SQLITE_ROW:
+			item = getMediaItemFromStmt(m_getMediaItemByPosStmt);
+			num_found++;
+ 			break;
+
+		case SQLITE_DONE:
+			// no more rows match search
+			break;
+
+		default:
+			cerr << "Error during step command: " << sqlite3_errmsg(m_db) << endl;
+			break;
+		}
+	}while (retval == SQLITE_ROW);
+
+	if(retval != SQLITE_DONE) {
+		cerr << "Error stepping getMediaItemByPos: " << sqlite3_errmsg(m_db);
+	}
+	retval = sqlite3_reset(m_getMediaItemByPosStmt);
+	if(retval != SQLITE_OK) {
+		cerr << "Error resetting getMediaItemByPos statement: " << sqlite3_errmsg(m_db);
+	}
+	return item;
 }
 
 
@@ -413,6 +466,15 @@ void CStateDbBase::prepareUpdateColRevStmt() {
 void CStateDbBase::finalizeUpdateColRevStmt() {
 	finalizeStmt( &m_updateColRevStmt );
 }
+
+void CStateDbBase::prepareGetMediaItemByPosStmt() {
+	prepareStmt(&m_getMediaItemByPosStmt, "SELECT * FROM collection INNER JOIN collectionRevs ON collection.hash=collectionRevs.colHash WHERE collectionRevs.colPos=? AND collectionRevs.colRev=?");
+}
+
+void CStateDbBase::finalizeGetMediaItemByPosStmt() {
+	finalizeStmt( &m_getMediaItemByPosStmt );
+}
+
 
 void CStateDbBase::prepareSelectMediaItemStmt() {
 	prepareStmt(&m_selectMediaItemStmt, "SELECT * FROM collection WHERE hash=?");

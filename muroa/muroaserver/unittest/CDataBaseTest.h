@@ -11,6 +11,7 @@
 #include <cppunit/extensions/HelperMacros.h>
 
 class CStateDB;
+class CStateDbUpdater;
 class CCollectionUpdater;
 class CSession;
 
@@ -19,6 +20,7 @@ class CDataBaseTest : public CppUnit::TestFixture {
 	  CPPUNIT_TEST( testDB );
 	  CPPUNIT_TEST( readGeneral );
 	  CPPUNIT_TEST( selectColRevs );
+	  CPPUNIT_TEST( StateDbUpdater );
 	  CPPUNIT_TEST( saveSession );
 	  CPPUNIT_TEST( restoreSession );
 	  CPPUNIT_TEST_SUITE_END();
@@ -34,11 +36,14 @@ public:
 	void readGeneral();
 	void selectColRevs();
 
+	void StateDbUpdater();
+
 	void saveSession();
 	void restoreSession();
 
 	CStateDB* m_stateDB;
-    CCollectionUpdater* m_colUpdater;
+	CStateDbUpdater* m_stateDbUpdater;
+	CCollectionUpdater* m_colUpdater;
 
 private:
 	const std::string colMinRevVal;

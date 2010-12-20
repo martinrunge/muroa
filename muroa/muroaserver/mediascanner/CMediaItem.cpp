@@ -65,3 +65,43 @@ void CMediaItem::rehash() {
 
 	m_asString = ss.str();
 }
+
+bool CMediaItem::operator==(const CMediaItem& other) {
+	bool rc = true;
+
+	if( m_filename.compare( other.m_filename ) != 0 ) {
+		rc = false;
+	}
+
+	if( m_artist.compare( other.m_artist ) != 0 ) {
+		rc = false;
+	}
+
+	if( m_album.compare( other.m_album ) != 0 ) {
+		rc = false;
+	}
+
+	if( m_title.compare( other.m_title ) != 0 ) {
+		rc = false;
+	}
+
+	if( m_year != other.m_year ) {
+		rc = false;
+	}
+
+	if( m_duration_in_s != other.m_duration_in_s ) {
+		rc = false;
+	}
+
+	if( m_hash != other.m_hash ) {
+		rc = false;
+	}
+
+	if( m_asString.compare( other.m_asString ) != 0 ) {
+		rc = false;
+	}
+
+	return rc;
+}
+
+
