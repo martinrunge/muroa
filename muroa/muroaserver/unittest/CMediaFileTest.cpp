@@ -92,7 +92,6 @@ void CMediaFileTest::recurseDirBFS() {
 
 	CPPUNIT_ASSERT( m_fsScanner->m_progress_num_dirs >= 100 );
 	CPPUNIT_ASSERT( m_fsScanner->m_progress = 100 );
-	CPPUNIT_ASSERT( m_fsScanner->m_progress_depth > 0 );
 
 	for(std::vector<CMediaItem*>::iterator it = scanres->begin(); it != scanres->end(); it++ ) {
 		CMediaItem* item = *it;

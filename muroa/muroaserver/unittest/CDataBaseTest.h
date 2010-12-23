@@ -14,6 +14,7 @@ class CStateDB;
 class CStateDbUpdater;
 class CCollectionUpdater;
 class CSession;
+class CFakeMediaCollection;
 
 class CDataBaseTest : public CppUnit::TestFixture {
 	  CPPUNIT_TEST_SUITE( CDataBaseTest );
@@ -44,6 +45,7 @@ public:
 	CStateDB* m_stateDB;
 	CStateDbUpdater* m_stateDbUpdater;
 	CCollectionUpdater* m_colUpdater;
+	CFakeMediaCollection* m_fakeCollection;
 
 private:
 	const std::string colMinRevVal;

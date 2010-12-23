@@ -13,7 +13,8 @@ find_package( Sqlite REQUIRED )
 
 add_definitions( ${QT4_DEFINITIONS} ${SQLITE_DEFINITIONS} -D__STDC_CONSTANT_MACROS)
 
-set(unittests_SRCS  MediaprocessingTestApp.cpp 
+set(unittests_SRCS  MediaprocessingTestApp.cpp
+                    CFakeMediaCollection.cpp 
                     CDecoderTest.cpp 
                     CMediaFileTest.cpp 
                     CDataBaseTest.cpp

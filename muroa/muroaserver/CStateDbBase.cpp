@@ -17,8 +17,13 @@ using namespace std;
 
 CStateDbBase::CStateDbBase(std::string dbFileName) : m_dbFileName( dbFileName ),
 		                                     m_db(0),
+		                                     m_beginTransactionStmt(0),
+		                                     m_endTransactionStmt(0),
 		                                     m_updateColRevStmt(0),
-		                                     m_selectColRevStmt(0)
+		                                     m_selectColRevStmt(0),
+		                                     m_selectMediaItemStmt(0),
+		                                     m_updateMediaItemStmt(0),
+		                                     m_getMediaItemByPosStmt(0)
 {
 }
 
@@ -42,6 +47,7 @@ int CStateDbBase::open() {
 		createCollectionTable();
 		createCollectionRevisionsTable();
 
+		prepareGetMediaItemByPosStmt();
 		prepareUpdateMediaItemStmt();
 		prepareUpdateColRevStmt();
 		prepareSelectColRevStmt();
@@ -55,6 +61,7 @@ int CStateDbBase::close() {
 	finalizeUpdateColRevStmt();
     finalizeSelectColRevStmt();
     finalizeUpdateMediaItemStmt();
+	prepareGetMediaItemByPosStmt();
 
 	finalizeStmt(&m_beginTransactionStmt);
 	finalizeStmt(&m_endTransactionStmt);

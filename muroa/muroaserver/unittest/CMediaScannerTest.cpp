@@ -87,6 +87,8 @@ void CMediaScannerTest::testDbUpdater() {
 	m_media_scanner->postEvent(openDbMsg);
 	m_media_scanner->postEvent(scanDirMsg);
 
+	sleep(1);
+
 	int old_max_rev = m_media_scanner->m_stateDbUpdater->getIntValue("CollectionRevMax");
 
 	while(m_media_scanner->getProgress() < 100 ) {

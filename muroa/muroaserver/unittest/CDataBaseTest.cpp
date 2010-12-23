@@ -6,8 +6,10 @@
  */
 
 #include "CDataBaseTest.h"
+#include "CFakeMediaCollection.h"
 #include "../CStateDB.h"
 #include "../mediascanner/CStateDbUpdater.h"
+#include "../mediascanner/CMediaItem.h"
 #include "../mediaprocessing/CCollectionUpdater.h"
 #include "../CSession.h"
 
@@ -39,12 +41,14 @@ void CDataBaseTest::setUp()
 
 	m_stateDB = new CStateDB( dbname );
 	m_stateDbUpdater = new CStateDbUpdater( dbname );
-    m_colUpdater = new CCollectionUpdater();
+    m_colUpdater = new CCollectionUpdater( );
+    m_fakeCollection = new CFakeMediaCollection(".");
 
 }
 
 void CDataBaseTest::tearDown()
 {
+	delete m_fakeCollection;
 	delete m_colUpdater;
 	delete m_stateDbUpdater;
 	delete m_stateDB;
@@ -181,8 +185,12 @@ void CDataBaseTest::prepareNextlist() {
 
 
 void CDataBaseTest::StateDbUpdater() {
-	vector<CMediaIten*>* col_pre;
-	vector<CMediaIten*>* col_post;
+	vector<CMediaItem*>* col_pre;
+	vector<CMediaItem*>* col_post;
+
+	m_stateDbUpdater->open();
+
+	col_pre = m_fakeCollection->collectionWithoutFiles(1000);
 
 	int maxrev_pre = m_stateDbUpdater->getIntValue("CollectionRevMax");
 	m_stateDbUpdater->appendCollectionRev( col_pre );
@@ -190,13 +198,16 @@ void CDataBaseTest::StateDbUpdater() {
 	int maxrev_post = m_stateDbUpdater->getIntValue("CollectionRevMax");
 	CPPUNIT_ASSERT_MESSAGE("CStateDbUpdater::appendCollectionRev(..) did not increase CollectionRevMax by 1.", maxrev_pre + 1 == maxrev_post );
 
-	col_post = m_stateDbUpdater->getCollectionRev( maxrev_post );
+	col_post = m_stateDbUpdater->getCollectionRev( maxrev_pre );
 
-	vector<CMediaIten*>::iterator it_pre;
-	vector<CMediaIten*>::iterator it_post;
+	vector<CMediaItem*>::iterator it_pre;
+	vector<CMediaItem*>::iterator it_post;
 
 	for( it_pre = col_pre->begin(), it_post = col_post->begin(); it_pre != col_pre->end() && it_post != col_post->end() ; it_pre++, it_post++ ) {
-		CPPUNIT_ASSERT_MESSAGE("CMediaItem differ after rereading them from StateDB!", *it_pre == *it_post);
+		CMediaItem* preItem = *it_pre;
+		CMediaItem* postItem = *it_post;
+
+		CPPUNIT_ASSERT_MESSAGE("CMediaItem differ after rereading them from StateDB!", *preItem == *postItem );
 	}
 
 }
