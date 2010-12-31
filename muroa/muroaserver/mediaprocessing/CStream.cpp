@@ -49,6 +49,9 @@ void CStream::start()
 
     if(m_decoder.isOpen()) m_decoder.close();
 	m_decoder.open(m_fileName.toUtf8());
+	if(m_state == e_playing) {
+		m_decoder.decode();
+	}
 }
 
 
@@ -58,7 +61,7 @@ void CStream::play()
 	switch(m_state)
 	{
 	case e_stopped:
-
+		m_decoder.decode();
 		m_state = e_playing;
 		break;
 

@@ -84,6 +84,8 @@ void CDecoder::open(const char* filename)
 	m_durationInSecs = tmp / m_timeBase.den;
 
 	m_open = true;
+
+
 }
 
 void CDecoder::close()
