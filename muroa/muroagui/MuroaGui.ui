@@ -55,12 +55,20 @@
       <property name="text">
        <string/>
       </property>
+      <property name="icon">
+       <iconset resource="MuroaGui.qrc">
+        <normaloff>:/icons/icons/media-skip-backward.png</normaloff>:/icons/icons/media-skip-backward.png</iconset>
+      </property>
      </widget>
     </item>
     <item row="0" column="4">
      <widget class="QToolButton" name="nextBtn">
       <property name="text">
        <string/>
+      </property>
+      <property name="icon">
+       <iconset resource="MuroaGui.qrc">
+        <normaloff>:/icons/icons/media-skip-forward.png</normaloff>:/icons/icons/media-skip-forward.png</iconset>
       </property>
      </widget>
     </item>
