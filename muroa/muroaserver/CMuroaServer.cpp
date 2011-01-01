@@ -10,7 +10,7 @@
 
 
 CMuroaServer::CMuroaServer(QWidget *parent)
-    : QMainWindow(parent)
+    : QMainWindow(parent), m_stateDB(0)
 {
 	ui.setupUi(this);
 	connect(ui.actionExit, SIGNAL(triggered()), qApp, SLOT(quit()));
@@ -34,29 +34,20 @@ CMuroaServer::CMuroaServer(QWidget *parent)
 	statusBar()->addWidget(&m_connection_status_label);
 
 	readSettings();
-	CCollection<CCollectionItem>* collection = m_collectionUpdater.walkTree( m_mediadir.toStdString() );
+	m_stateDB = new CStateDB(m_db_filename);
 
-	addCollectionRev(collection);
+	m_stateDB->restoreCollection(m_session);
 
+	// CCollection<CCollectionItem>* collection = m_collectionUpdater.walkTree( m_mediadir.toStdString() );
+	// addCollectionRev(collection);
 
-	m_testfiles << "test/collection1.txt"
-			    << "test/collection2.txt"
-				<< "test/collection3.txt"
-				<< "test/collection4.txt"
-				<< "test/collection5.txt"
-				<< "test/collection6.txt"
-				<< "test/collection7.txt";
-
-
-
-	// readCollectionFile(m_testfiles[0]);
-	// m_connection.setSessionPtr(m_session);
-	//m_connection.setCollection(&m_collection);
 	m_dnssd.registerService("muroa", m_portNr);
 }
 
 CMuroaServer::~CMuroaServer()
 {
+	m_stateDB->saveSession(m_session);
+	delete m_stateDB;
 	delete m_session;
 	delete m_net;
 }
@@ -165,6 +156,15 @@ void CMuroaServer::readSettings() {
 		types.push_back( mtypes.at(i).toStdString());
 	}
 	m_collectionUpdater.setFileTypes( types );
+
+	if(settings.contains("statedb") ) {
+			m_db_filename = settings.value("statedb").toString();
+	}
+	else {
+		// mediadir was not mentioned in config file, make a dummy entry for it so the user can change that.
+		m_db_filename = "./statedb.sqlite";
+		settings.setValue("statedb", m_db_filename);
+	}
 }
 
 void writeSettings() {

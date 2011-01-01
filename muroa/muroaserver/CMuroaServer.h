@@ -36,6 +36,10 @@ public slots:
 private:
 	CSession *m_session;
 	CNetwork* m_net;
+	CStateDB* m_stateDB;
+
+	QString m_db_filename;
+
 
 	void readSettings();
 	void writeSettings();
@@ -48,7 +52,6 @@ private:
 
     // CConnection m_connection;
     CCollection<CCollectionItem> m_collection;
-    QStringList m_testfiles;
 
     //CDnsSdAvahiViaQtDBus m_dnssd;
     CDnsSdAvahi m_dnssd;
