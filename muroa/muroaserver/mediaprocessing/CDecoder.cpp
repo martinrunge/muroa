@@ -105,7 +105,7 @@ void CDecoder::close()
         m_packet.data = NULL;
     }
     // close the Codec
-    if(m_pCodecCtx->codec != 0) {
+    if( m_pCodecCtx != 0 && m_pCodecCtx->codec != 0) {
     	avcodec_close(m_pCodecCtx);
     	m_pCodecCtx->codec = 0;
     	m_pCodecCtx=0;

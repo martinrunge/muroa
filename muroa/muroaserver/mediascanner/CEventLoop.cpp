@@ -68,7 +68,7 @@ int CEventLoop::run() {
 					buffer[numBytes] = '\0';
 					uint32_t *u32Ptr = reinterpret_cast<uint32_t*>(buffer);
 
-					CMsgBase* msg = CMsgBase::msgFactory( buffer, numBytes );
+					msg = CMsgBase::msgFactory( buffer, numBytes );
 				}
 			}
 		}
@@ -120,7 +120,7 @@ void CEventLoop::preparePollFDs() {
 bool CEventLoop::readable(int fd) {
 	bool readable = false;
 	for(int i = 0; i < m_num_poll_fds; i++) {
-		if( m_poll_fds[i].revents &= POLLIN ) {
+		if( m_poll_fds[i].revents & POLLIN && m_poll_fds[i].fd == fd) {
 			readable = true;
 		}
 	}

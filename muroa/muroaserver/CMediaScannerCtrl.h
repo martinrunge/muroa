@@ -23,6 +23,8 @@ public:
 	CMediaScannerCtrl();
 	virtual ~CMediaScannerCtrl();
 
+	void postEvent(CMsgBase *msg);
+
 	void start();
 	void stop();
 	void terminate();

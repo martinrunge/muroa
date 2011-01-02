@@ -3,7 +3,7 @@
 #include "CSession.h"
 #include "CNetwork.h"
 
-
+#include "mediascanner/CMsgScanDir.h"
 
 #include <QMessageBox>
 #include <QFile>
@@ -15,6 +15,7 @@ CMuroaServer::CMuroaServer(QWidget *parent)
 	ui.setupUi(this);
 	connect(ui.actionExit, SIGNAL(triggered()), qApp, SLOT(quit()));
 	connect(ui.action_next_Revision, SIGNAL(triggered()), this, SLOT(nextRevision()));
+	connect(ui.actionScan_collection, SIGNAL(triggered()), this, SLOT(scanCollection()));
 
 	int portnr = 16320 - 1;
 	int retval;
@@ -34,7 +35,8 @@ CMuroaServer::CMuroaServer(QWidget *parent)
 	statusBar()->addWidget(&m_connection_status_label);
 
 	readSettings();
-	m_stateDB = new CStateDB(m_db_filename);
+	m_stateDB = new CStateDB(m_db_filename.toUtf8().constData());
+	m_stateDB->open();
 
 	m_stateDB->restoreCollection(m_session);
 
@@ -125,7 +127,14 @@ void CMuroaServer::readCollectionFile(QString filename)
 
 void CMuroaServer::nextRevision()
 {
-	readCollectionFile(m_testfiles[m_session->getCollectionRevision()]);
+	// readCollectionFile(m_testfiles[m_session->getCollectionRevision()]);
+}
+
+void CMuroaServer::scanCollection() {
+	CMsgScanDir scanDirMsg(m_mediadir.toStdString());
+	m_mediaScannerCtrl.start();
+	m_mediaScannerCtrl.postEvent(&scanDirMsg);
+
 }
 
 

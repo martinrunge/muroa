@@ -47,6 +47,18 @@ CMediaScannerCtrl::~CMediaScannerCtrl() {
     sigaction (SIGUSR1, &m_old_action, NULL);
 }
 
+void CMediaScannerCtrl::postEvent(CMsgBase *msg) {
+	ssize_t written;
+	int size;
+	const char * buffer = msg->serialize(size);
+
+	written = write(m_socket, buffer, size);
+	if(written != size) {
+		cerr << "CMediaScannerCtrl::postEvent: sending of buffer incomplete!" << endl;
+	}
+
+}
+
 
 void CMediaScannerCtrl::start() {
 

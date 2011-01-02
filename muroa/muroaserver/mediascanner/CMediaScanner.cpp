@@ -47,7 +47,7 @@ CMediaScanner::~CMediaScanner() {
 
 int CMediaScanner::handleMsg(CMsgBase* msg) {
 	int rc = 0;
-	int type = msg->getType();
+	uint32_t type = msg->getType();
 	switch(type) {
 		case E_MSG_QUIT:
 			rc = 1;

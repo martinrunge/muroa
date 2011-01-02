@@ -300,7 +300,7 @@ int CSession::addNextlistRevFromPrevCmd() {
 }
 
 void CSession::setMinCollectionRevision(int rev) throw() {
-	if(m_collectionRevisions.size() > 0) {
+	if(m_collectionRevisions.size() > 1) {
 		throw(CApiMisuseException("Trying to set m_minCollectionRevision with non-empty collection revisions."));
 	}
 	m_minCollectionRevision = rev;

@@ -11,6 +11,10 @@
 
 #include "CMsgResponse.h"
 #include "CMsgQuit.h"
+#include "CMsgOpenDb.h"
+#include "CMsgScanDir.h"
+#include "CMsgFinished.h"
+#include "CMsgProgress.h"
 
 #include <assert.h>
 
@@ -55,6 +59,22 @@ CMsgBase* CMsgBase::msgFactory(char* buffer, int size) {
 
 		case E_MSG_QUIT:
 			basePtr = new CMsgQuit( buffer, size );
+			break;
+
+		case E_MSG_OPEN_DB:
+			basePtr = new CMsgOpenDb( buffer, size );
+			break;
+
+		case E_MSG_SCAN_DIR:
+			basePtr = new CMsgScanDir( buffer, size );
+			break;
+
+		case E_MSG_FINISHED:
+			basePtr = new CMsgFinished( buffer, size );
+			break;
+
+		case E_MSG_PROGRESS:
+			basePtr = new CMsgProgress( buffer, size );
 			break;
 
 		default:

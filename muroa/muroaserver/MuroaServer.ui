@@ -1,7 +1,8 @@
-<ui version="4.0" >
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
  <class>muroaserverClass</class>
- <widget class="QMainWindow" name="muroaserverClass" >
-  <property name="geometry" >
+ <widget class="QMainWindow" name="muroaserverClass">
+  <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
@@ -9,24 +10,24 @@
     <height>600</height>
    </rect>
   </property>
-  <property name="windowTitle" >
+  <property name="windowTitle">
    <string>Muroa Server</string>
   </property>
-  <widget class="QWidget" name="centralwidget" >
-   <layout class="QGridLayout" name="gridLayout" >
-    <item row="0" column="0" >
-     <widget class="QLabel" name="label_2" >
-      <property name="text" >
+  <widget class="QWidget" name="centralwidget">
+   <layout class="QGridLayout" name="gridLayout">
+    <item row="0" column="0">
+     <widget class="QLabel" name="label_2">
+      <property name="text">
        <string>Playlist:</string>
       </property>
      </widget>
     </item>
-    <item row="0" column="1" colspan="2" >
-     <spacer name="horizontalSpacer_2" >
-      <property name="orientation" >
+    <item row="0" column="1" colspan="2">
+     <spacer name="horizontalSpacer_2">
+      <property name="orientation">
        <enum>Qt::Horizontal</enum>
       </property>
-      <property name="sizeHint" stdset="0" >
+      <property name="sizeHint" stdset="0">
        <size>
         <width>595</width>
         <height>20</height>
@@ -34,22 +35,22 @@
       </property>
      </spacer>
     </item>
-    <item row="1" column="0" colspan="3" >
-     <widget class="QTableView" name="tableView" />
+    <item row="1" column="0" colspan="3">
+     <widget class="QTableView" name="tableView"/>
     </item>
-    <item row="2" column="0" colspan="2" >
-     <widget class="QLabel" name="label" >
-      <property name="text" >
+    <item row="2" column="0" colspan="2">
+     <widget class="QLabel" name="label">
+      <property name="text">
        <string>Log:</string>
       </property>
      </widget>
     </item>
-    <item row="2" column="2" >
-     <spacer name="horizontalSpacer" >
-      <property name="orientation" >
+    <item row="2" column="2">
+     <spacer name="horizontalSpacer">
+      <property name="orientation">
        <enum>Qt::Horizontal</enum>
       </property>
-      <property name="sizeHint" stdset="0" >
+      <property name="sizeHint" stdset="0">
        <size>
         <width>589</width>
         <height>20</height>
@@ -57,53 +58,59 @@
       </property>
      </spacer>
     </item>
-    <item row="3" column="0" colspan="3" >
-     <widget class="QPlainTextEdit" name="plainTextEdit" />
+    <item row="3" column="0" colspan="3">
+     <widget class="QPlainTextEdit" name="plainTextEdit"/>
     </item>
    </layout>
   </widget>
-  <widget class="QMenuBar" name="menubar" >
-   <property name="geometry" >
+  <widget class="QMenuBar" name="menubar">
+   <property name="geometry">
     <rect>
      <x>0</x>
      <y>0</y>
      <width>667</width>
-     <height>22</height>
+     <height>23</height>
     </rect>
    </property>
-   <widget class="QMenu" name="menu_File" >
-    <property name="title" >
+   <widget class="QMenu" name="menu_File">
+    <property name="title">
      <string>&amp;File</string>
     </property>
-    <addaction name="actionExit" />
-    <addaction name="action_Open" />
+    <addaction name="actionExit"/>
+    <addaction name="action_Open"/>
    </widget>
-   <widget class="QMenu" name="menu_Test" >
-    <property name="title" >
+   <widget class="QMenu" name="menu_Test">
+    <property name="title">
      <string>&amp;Test</string>
     </property>
-    <addaction name="action_next_Revision" />
+    <addaction name="action_next_Revision"/>
+    <addaction name="actionScan_collection"/>
    </widget>
-   <addaction name="menu_File" />
-   <addaction name="menu_Test" />
+   <addaction name="menu_File"/>
+   <addaction name="menu_Test"/>
   </widget>
-  <widget class="QStatusBar" name="statusbar" />
-  <action name="actionExit" >
-   <property name="text" >
+  <widget class="QStatusBar" name="statusbar"/>
+  <action name="actionExit">
+   <property name="text">
     <string>E&amp;xit</string>
    </property>
-   <property name="shortcut" >
+   <property name="shortcut">
     <string>Alt+X</string>
    </property>
   </action>
-  <action name="action_Open" >
-   <property name="text" >
+  <action name="action_Open">
+   <property name="text">
     <string>&amp;Open ...</string>
    </property>
   </action>
-  <action name="action_next_Revision" >
-   <property name="text" >
+  <action name="action_next_Revision">
+   <property name="text">
     <string>&amp;next Revision</string>
+   </property>
+  </action>
+  <action name="actionScan_collection">
+   <property name="text">
+    <string>scan collection</string>
    </property>
   </action>
  </widget>

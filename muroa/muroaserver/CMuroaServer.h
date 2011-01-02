@@ -9,6 +9,8 @@
 #include "CDnsSdAvahiViaQtDBus.h"
 #include "CDnsSdAvahi.h"
 
+#include "CMediaScannerCtrl.h"
+
 #include "mediaprocessing/CCollectionUpdater.h"
 
 
@@ -32,6 +34,7 @@ public slots:
 	void newConnection(QTcpSocket* socket);
 	void connectionStatusChanged(QString status);
 	void nextRevision();
+	void scanCollection();
 
 private:
 	CSession *m_session;
@@ -40,6 +43,7 @@ private:
 
 	QString m_db_filename;
 
+	CMediaScannerCtrl m_mediaScannerCtrl;
 
 	void readSettings();
 	void writeSettings();
