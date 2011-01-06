@@ -79,6 +79,8 @@ public slots:
 	void connectionClosed(CConnection* conn);
 	void progress(int done, int total);
 
+	void scanProgress(int donw, int total);
+
 	void saveState();
 	void restoreState();
 

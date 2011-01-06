@@ -30,7 +30,7 @@ CSubProcessTest::~CSubProcessTest() {
 }
 
 void CSubProcessTest::setUp() {
-	m_mediaScanCtrl = new CMediaScannerCtrl();
+	m_mediaScanCtrl = new CMediaScannerCtrl(0);
 }
 
 void CSubProcessTest::tearDown() {
@@ -61,7 +61,7 @@ void CSubProcessTest::serializeMsgQuit() {
 }
 
 void CSubProcessTest::serializeMsgResponse() {
-	CMsgResponse respmsg(217, 5);
+	CMsgResponse respmsg(217, 5, "what went wrong?");
 
 	int buffersize;
 	char* buffer = respmsg.serialize(buffersize);

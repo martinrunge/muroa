@@ -378,6 +378,12 @@ void CSession::progress(int done, int total)
 	}
 }
 
+void CSession::scanProgress(int donw, int total) {
+	// send only to admin clients
+
+}
+
+
 
 void CSession::saveState() {
 

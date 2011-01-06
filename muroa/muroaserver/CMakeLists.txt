@@ -86,6 +86,7 @@ set(HEADERS         CCollection.h
                     mediascanner/CMsgProgress.cpp
                     mediascanner/CMsgOpenDb.cpp
                     mediascanner/CMsgScanDir.cpp
+                    mediascanner/CMsgCollectionChanged.cpp
                     mediascanner/CMediaItem.cpp )
                     
  set( MSG_HDR       mediascanner/CMsgBase.h
@@ -95,6 +96,7 @@ set(HEADERS         CCollection.h
                     mediascanner/CMsgProgress.h
                     mediascanner/CMsgOpenDb.h
                     mediascanner/CMsgScanDir.h
+                    mediascanner/CMsgCollectionChanged.h
                     mediascanner/CMediaItem.h )
  
  

@@ -18,7 +18,10 @@ public:
 	CEventLoop(int sock_fd = 0);
 	virtual ~CEventLoop();
 
+	/** postEvent: put msg in internal event queue */
 	void postEvent(CMsgBase *msg);
+	/** sendEvent: send msg to external process */
+	void sendEvent(CMsgBase *msg);
 	int run();
 
 protected:

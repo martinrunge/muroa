@@ -12,10 +12,11 @@
 
 class CMsgProgress: public CMsgBase {
 public:
-	CMsgProgress(uint32_t progress = 0);
+	CMsgProgress(uint32_t jobID, uint32_t progress = 0);
 	CMsgProgress(char* buffer, int size);
 	virtual ~CMsgProgress();
 
+	uint32_t getJobID() { return m_jobID; };
 	uint32_t getProgress() { return m_progress; };
 
 	char* serialize(int& size );
@@ -24,6 +25,9 @@ public:
 
 private:
 	uint32_t m_progress;
+
+	uint32_t m_jobID;
+
 
 };
 

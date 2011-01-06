@@ -3,6 +3,7 @@
 #include "CSession.h"
 #include "CNetwork.h"
 
+#include "mediascanner/CMsgOpenDb.h"
 #include "mediascanner/CMsgScanDir.h"
 
 #include <QMessageBox>
@@ -10,7 +11,7 @@
 
 
 CMuroaServer::CMuroaServer(QWidget *parent)
-    : QMainWindow(parent), m_stateDB(0)
+    : QMainWindow(parent), m_mediaScannerCtrl(this), m_stateDB(0)
 {
 	ui.setupUi(this);
 	connect(ui.actionExit, SIGNAL(triggered()), qApp, SLOT(quit()));
@@ -67,6 +68,16 @@ void CMuroaServer::connectionStatusChanged(QString status)
 {
 	m_connection_status_label.setText(status);
 }
+
+
+void CMuroaServer::scanProgress(int progress) {
+	ui.progressBar->setValue( progress );
+}
+
+void CMuroaServer::response(int id, int code, string message) {
+	ui.response_label->setText( message.c_str() );
+}
+
 
 void CMuroaServer::addCollectionRev(CCollection<CCollectionItem>* collection)
 {
@@ -131,9 +142,11 @@ void CMuroaServer::nextRevision()
 }
 
 void CMuroaServer::scanCollection() {
-	CMsgScanDir scanDirMsg(m_mediadir.toStdString());
+	CMsgOpenDb openDbMsg( m_db_filename.toUtf8().constData() );
+	CMsgScanDir scanDirMsg( m_mediadir.toStdString() );
 	m_mediaScannerCtrl.start();
-	m_mediaScannerCtrl.postEvent(&scanDirMsg);
+	m_mediaScannerCtrl.sendEvent(&openDbMsg);
+	m_mediaScannerCtrl.sendEvent(&scanDirMsg);
 
 }
 

@@ -41,12 +41,19 @@ set(unittests_SRCS  MediaprocessingTestApp.cpp
                     ../CStateDB.cpp
                     ../Exceptions.cpp 
                     ../CSubProcess.cpp
-                    ../CMediaScannerCtrl.cpp 
+                    ../CMediaScannerCtrl.cpp
+                    ../CMuroaServer.cpp 
+                    ../CDnsSdAvahi.cpp
+                    ../CNetwork.cpp
+                    ../IDnsSd.cpp
                      )
                     
 set( MOC_H          ../CSession.h 
                     ../CConnection.h 
-                    ../CStateMachine.h )
+                    ../CStateMachine.h
+                    ../CMuroaServer.h
+                    ../CDnsSdAvahi.h
+                    ../CNetwork.h )
                     
                      
  set( MSG_SRC       ../mediascanner/CEventLoop.cpp
@@ -61,6 +68,7 @@ set( MOC_H          ../CSession.h
                     ../mediascanner/CMsgScanDir.cpp 
                     ../mediascanner/CMsgFinished.cpp 
                     ../mediascanner/CMsgProgress.cpp 
+                    ../mediascanner/CMsgCollectionChanged.cpp
                     )
                     
  set( MSG_HDR       ../mediascanner/CEventLoop.h
@@ -74,7 +82,8 @@ set( MOC_H          ../CSession.h
                     ../mediascanner/CMsgOpenDb.h
                     ../mediascanner/CMsgScanDir.h 
                     ../mediascanner/CMsgFinished.h 
-                    ../mediascanner/CMsgProgress.h 
+                    ../mediascanner/CMsgProgress.h
+                    ../mediascanner/CMsgCollectionChanged.h
                     )
  
                     
@@ -84,7 +93,7 @@ set( MOC_MEDPROC_H  ../mediaprocessing/CStream.h )
 include ( ${QT_USE_FILE} )
 qt4_wrap_cpp( MOC_SOURCES ${MOC_H} ${MOC_MEDPROC_H} )
 
-include_directories(${SOURCE_DIR} ../mediaprocessing ${Boost_INCLUDE_DIRS} ${Taglib_CFLAGS} ${SQLITE_INCLUDE_DIR}) 
+include_directories(${SOURCE_DIR} ../mediaprocessing ${Boost_INCLUDE_DIRS} ${Taglib_CFLAGS} ${SQLITE_INCLUDE_DIR} ${CMAKE_CURRENT_BINARY_DIR}/..) 
 
 link_directories(${BINARY_DIR}  ${QT_LIB_DIR} ${SQLITE_LIBRARY_DIRS}  )
 
@@ -99,6 +108,8 @@ TARGET_LINK_LIBRARIES(mediatest cppunit
                                 ${SQLITE_LIBRARIES} 
                                 xdiff
                                 ${ALSA_LIBRARY}
+                                avahi-client
+                                avahi-qt4
                                 avformat
                                 avcodec 
                                 qxcppunitd 

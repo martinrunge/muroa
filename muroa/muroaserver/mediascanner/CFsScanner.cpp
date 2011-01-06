@@ -23,7 +23,7 @@
 
 using namespace std;
 
-CFsScanner::CFsScanner(CMediaScanner* parent) : m_scanResult(0), m_scanning(false), m_parent( parent ) {
+CFsScanner::CFsScanner(CMediaScanner* parent) : m_scanResult(0), m_scanning(false), m_parent( parent ), m_jobID(0) {
 }
 
 CFsScanner::~CFsScanner() {
@@ -33,9 +33,10 @@ CFsScanner::~CFsScanner() {
 	}
 }
 
-void CFsScanner::scanDir(std::string dir) {
+void CFsScanner::scanDir(std::string dir, uint32_t jobID ) {
 	if(m_scanning == false) {
 		m_scanning = true;
+		m_jobID = jobID;
 		m_thread = thread(&CFsScanner::walkTree, this, dir );
 	}
 }
@@ -56,6 +57,7 @@ std::vector<CMediaItem*>* CFsScanner::finishScan() {
 
 		m_thread.join();
 		m_scanning = false;
+		m_jobID = 0;
 	}
 	std::vector<CMediaItem*>* retval = m_scanResult;
 	m_scanResult = 0;
@@ -108,7 +110,7 @@ int CFsScanner::walkTree(string dir) {
 						m_progress = 100.0 * (float)dir_depth_count / m_progress_num_dirs;
 						// cerr << "progress: " << m_progress << " " << state.path << "itstack.size(): " << itstack.size()  << endl;
 						if(m_progress != old_progress) {
-							CMsgProgress *progressMsg = new CMsgProgress(m_progress);
+							CMsgProgress *progressMsg = new CMsgProgress(m_jobID, m_progress);
 							m_parent->postEvent(progressMsg);
 						}
 					}
@@ -148,7 +150,7 @@ int CFsScanner::walkTree(string dir) {
 		}
 	}
 
-	CMsgFinished* finiMsg = new CMsgFinished();
+	CMsgFinished* finiMsg = new CMsgFinished(m_jobID);
 	m_parent->postEvent(finiMsg);
 
 	std::cout << "\n" << file_count << " files\n"

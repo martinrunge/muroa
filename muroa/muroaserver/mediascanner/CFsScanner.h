@@ -33,7 +33,8 @@ public:
 	inline void setFileTypes(std::vector<std::string> types) { m_types = types; };
 	inline std::vector<std::string> getFileTypes() { return m_types; };
 
-	void scanDir(std::string dir);
+	inline uint32_t getJobID() { return m_jobID; };
+	void scanDir(std::string dir, uint32_t jobID );
 	void scanDirBFS(std::string dir);
 	std::vector<CMediaItem*>* finishScan();
 
@@ -63,6 +64,7 @@ private:
 	};
 
 	bool m_scanning;
+	uint32_t m_jobID;
 	std::thread m_thread;
 
 	CMediaScanner* m_parent;

@@ -7,6 +7,8 @@
 
 #include "CMediaScannerCtrl.h"
 
+#include "CMuroaServer.h"
+
 #include <signal.h>
 
 #include <iostream>
@@ -27,9 +29,10 @@ void sigusr1_handler(int signum) {
 
 using namespace std;
 
-CMediaScannerCtrl::CMediaScannerCtrl() : m_thread(0),
-		                                 m_run_message_loop(false),
-		                                 m_child_running(false) {
+CMediaScannerCtrl::CMediaScannerCtrl(CMuroaServer *parent) : m_thread(0),
+		                                                     m_run_message_loop(false),
+		                                                     m_child_running(false),
+		                                                     m_parent(parent) {
 
 	struct sigaction new_action;
 
@@ -47,7 +50,7 @@ CMediaScannerCtrl::~CMediaScannerCtrl() {
     sigaction (SIGUSR1, &m_old_action, NULL);
 }
 
-void CMediaScannerCtrl::postEvent(CMsgBase *msg) {
+void CMediaScannerCtrl::sendEvent(CMsgBase *msg) {
 	ssize_t written;
 	int size;
 	const char * buffer = msg->serialize(size);
@@ -165,16 +168,24 @@ int CMediaScannerCtrl::handleMsg(CMsgBase* msg) {
 	int type = msg->getType();
 	switch(type) {
 		case E_MSG_RESP:
+		{
+			CMsgResponse* reponse = reinterpret_cast<CMsgResponse*>(msg);
+			m_parent->response(reponse->getRequestID(), reponse->getReturnCode(), reponse->getMessage());
 			rc = 0;
 			break;
-
+		}
 		case E_MSG_COLLECTION_CHANGED:
+		{
 			rc = 0;
 			break;
-
+		}
 		case E_MSG_PROGRESS:
+		{
+			CMsgProgress* progMsg = reinterpret_cast<CMsgProgress*>(msg);
+			m_parent->scanProgress(progMsg->getProgress());
 			rc = 0;
 			break;
+		}
 	}
 	return rc;
 }

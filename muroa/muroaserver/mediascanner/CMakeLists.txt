@@ -26,6 +26,7 @@ set(SRCS     mediascanner.cpp
              CMsgScanDir.cpp
              CMsgFinished.cpp
              CMsgProgress.cpp
+             CMsgCollectionChanged.cpp
              )
 
 set( HEADER  CMediaScanner.h
@@ -43,6 +44,7 @@ set( HEADER  CMediaScanner.h
              CMsgScanDir.h
              CMsgFinished.h
              CMsgProgress.h
+             CMsgCollectionChanged.h
              )
 
 

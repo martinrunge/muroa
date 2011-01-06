@@ -36,6 +36,16 @@ void CEventLoop::postEvent(CMsgBase *msg) {
 	// pthread_kill(m_mainThreadID, SIGUSR1);
 }
 
+void CEventLoop::sendEvent(CMsgBase *msg) {
+	ssize_t written;
+	int size;
+	const char * buffer = msg->serialize(size);
+
+	written = write(m_socket, buffer, size);
+
+}
+
+
 int CEventLoop::run() {
 	CMsgBase* msg;
 	int rc = 0;

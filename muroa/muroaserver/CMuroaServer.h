@@ -29,6 +29,8 @@ public:
 
     void readCollectionFile(QString filename);
 
+	void scanProgress(int progress);
+	void response(int id, int code, std::string message);
 
 public slots:
 	void newConnection(QTcpSocket* socket);

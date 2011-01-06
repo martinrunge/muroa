@@ -62,7 +62,7 @@ void CMediaFileTest::recurseDir() {
 	vector<CMediaItem*>* collection = 0;
 
 	m_fsScanner->setFileTypes(types);
-	m_fsScanner->scanDir("/home/martin");
+	m_fsScanner->scanDir("/home/martin", 1234);
 	// wait here until scan finished
 	std::vector<CMediaItem*> *scanres = m_fsScanner->finishScan();
 
