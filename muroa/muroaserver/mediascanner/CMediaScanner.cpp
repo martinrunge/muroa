@@ -48,6 +48,7 @@ CMediaScanner::~CMediaScanner() {
 
 
 int CMediaScanner::handleMsg(CMsgBase* msg) {
+	m_dbg_file << "CMediaScanner::handleMsg" << endl;
 	int rc = 0;
 	uint32_t type = msg->getType();
 	try {
@@ -71,7 +72,8 @@ int CMediaScanner::handleMsg(CMsgBase* msg) {
 			{
 				rc = 0;
 				CMsgOpenDb* openDbMsg = reinterpret_cast<CMsgOpenDb*>(msg);
-				m_dbg_file << "open db: " << openDbMsg->getDbPath() << endl << endl;
+				std::string path = openDbMsg->getDbPath();
+				m_dbg_file << "open db: " << path << endl;
 				m_stateDbUpdater = new CStateDbUpdater( openDbMsg->getDbPath() );
 				m_stateDbUpdater->open();
 				break;

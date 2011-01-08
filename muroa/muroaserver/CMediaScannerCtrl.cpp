@@ -10,6 +10,7 @@
 #include "CMuroaServer.h"
 
 #include <signal.h>
+#include <stdint.h>
 
 #include <iostream>
 #include <vector>
@@ -56,6 +57,7 @@ void CMediaScannerCtrl::sendEvent(CMsgBase *msg) {
 	const char * buffer = msg->serialize(size);
 
 	written = write(m_socket, buffer, size);
+	fsync(m_socket);
 	if(written != size) {
 		cerr << "CMediaScannerCtrl::postEvent: sending of buffer incomplete!" << endl;
 	}
@@ -145,19 +147,20 @@ void CMediaScannerCtrl::terminate() {
 
 void CMediaScannerCtrl::loop() {
 	int bytesRecv;
-	char buffer[257];
+	char buffer[2 * 257];
+	char *bufPtr = buffer;
 
 	while(m_run_message_loop) {
 		errno = 0;
-		bytesRecv = recv(m_socket, buffer, 256, 0);
+		bytesRecv = recv(m_socket, bufPtr, 256, 0);
 		if(bytesRecv == -1 && errno == EINTR ) {
 			// recv was interrupted by a signal, restart it if m_run_message_loop was not set to false, too.
 			continue;
 		}
-		buffer[bytesRecv] = 0;
-		cout << "recv: " << buffer << endl;
+		bufPtr[bytesRecv] = 0;
+		cout << "recv: " << bufPtr << endl;
 
-		CMsgBase* msg = CMsgBase::msgFactory( buffer, bytesRecv );
+		CMsgBase* msg = CMsgBase::msgFactory( bufPtr, bytesRecv );
 		handleMsg(msg);
 	}
 }

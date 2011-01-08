@@ -39,8 +39,9 @@ bool CMsgBase::equalTo(const CMsgBase &other) {
 }
 
 
-CMsgBase* CMsgBase::msgFactory(char* buffer, int size) {
+CMsgBase* CMsgBase::msgFactory(char*& buffer, int size) {
 	CMsgBase* basePtr = 0;
+	int msgSize = 0;
 
 	if( size < 3 * sizeof(uint32_t)) {
 		stringstream ss;
@@ -84,6 +85,9 @@ CMsgBase* CMsgBase::msgFactory(char* buffer, int size) {
 			throw(InvalidMsgException(ss.str()));
 		}
 	}
+	msgSize = basePtr->getSize();
+	size -= msgSize;
+	buffer += msgSize;
 
 	return basePtr;
 }

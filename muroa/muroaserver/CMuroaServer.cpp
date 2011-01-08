@@ -146,6 +146,7 @@ void CMuroaServer::scanCollection() {
 	CMsgScanDir scanDirMsg( m_mediadir.toStdString() );
 	m_mediaScannerCtrl.start();
 	m_mediaScannerCtrl.sendEvent(&openDbMsg);
+	// sleep(1);
 	m_mediaScannerCtrl.sendEvent(&scanDirMsg);
 
 }

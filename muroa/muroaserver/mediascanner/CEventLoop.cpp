@@ -52,7 +52,10 @@ int CEventLoop::run() {
 	m_run=true;
 	int runs = 0;
 
-	char buffer[257];
+	const int totalBufferSize = 2 * 256 + 1;
+	int bufferSize = totalBufferSize;     // remaining part, beginning at bufPtr.
+	char buffer[totalBufferSize];
+	char* bufPtr = buffer;
 
 	while(m_run) {
 		// wait for a CMsg object to arrive on socket or for one that has been posted to eventQueue via postEvent()
@@ -72,13 +75,13 @@ int CEventLoop::run() {
 		}
 		else {
 			if(readable(m_socket)) {
-				ssize_t numBytes = recv(m_socket, buffer, 256, 0);
+				ssize_t numBytes = recv(m_socket, bufPtr, bufferSize, 0);
 				if( numBytes > 0 ) {
 					// recv() delivered data -> Deserialize it to a CMsg object.
-					buffer[numBytes] = '\0';
-					uint32_t *u32Ptr = reinterpret_cast<uint32_t*>(buffer);
+					// buffer[numBytes] = '\0';
+					// uint32_t *u32Ptr = reinterpret_cast<uint32_t*>(bufPtr);
 
-					msg = CMsgBase::msgFactory( buffer, numBytes );
+					msg = CMsgBase::msgFactory( bufPtr, numBytes );
 				}
 			}
 		}
