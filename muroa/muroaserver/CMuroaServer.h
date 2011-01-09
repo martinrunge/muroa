@@ -31,6 +31,7 @@ public:
 
 	void scanProgress(int progress);
 	void response(int id, int code, std::string message);
+	void jobFinished(int jobID);
 
 signals:
     void progressSig(int);

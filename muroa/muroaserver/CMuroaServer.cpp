@@ -83,6 +83,10 @@ void CMuroaServer::response(int id, int code, string message) {
 	emit responseSig(msg);
 }
 
+void CMuroaServer::jobFinished(int jobID) {
+
+}
+
 
 void CMuroaServer::addCollectionRev(CCollection<CCollectionItem>* collection)
 {
