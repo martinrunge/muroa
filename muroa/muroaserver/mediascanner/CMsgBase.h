@@ -27,7 +27,7 @@ public:
 
 	virtual ~CMsgBase();
 
-	static CMsgBase* msgFactory(char*& buffer, int size);
+	static CMsgBase* msgFactory(char*& buffer, int& size);
 
 	uint32_t getType() {return m_msgType; };
 	uint32_t getID() {return m_msgID; };

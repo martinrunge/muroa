@@ -32,6 +32,10 @@ public:
 	void scanProgress(int progress);
 	void response(int id, int code, std::string message);
 
+signals:
+    void progressSig(int);
+    void responseSig(QString message);
+
 public slots:
 	void newConnection(QTcpSocket* socket);
 	void connectionStatusChanged(QString status);

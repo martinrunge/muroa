@@ -31,11 +31,11 @@ public:
 	int getProgress() { return m_progress; };
 
 private:
-	int handleMsg(CMsgBase* msg);
+	bool handleMsg(CMsgBase* msg);
 
 	CFsScanner* m_fs_scanner;
 	CStateDbUpdater* m_stateDbUpdater;
-	std::ofstream m_dbg_file;
+//	std::ofstream m_dbg_file;
 
 	int m_progress;
 };

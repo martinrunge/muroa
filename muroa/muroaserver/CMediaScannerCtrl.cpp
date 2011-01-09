@@ -31,7 +31,6 @@ void sigusr1_handler(int signum) {
 using namespace std;
 
 CMediaScannerCtrl::CMediaScannerCtrl(CMuroaServer *parent) : m_thread(0),
-		                                                     m_run_message_loop(false),
 		                                                     m_child_running(false),
 		                                                     m_parent(parent) {
 
@@ -51,23 +50,10 @@ CMediaScannerCtrl::~CMediaScannerCtrl() {
     sigaction (SIGUSR1, &m_old_action, NULL);
 }
 
-void CMediaScannerCtrl::sendEvent(CMsgBase *msg) {
-	ssize_t written;
-	int size;
-	const char * buffer = msg->serialize(size);
-
-	written = write(m_socket, buffer, size);
-	fsync(m_socket);
-	if(written != size) {
-		cerr << "CMediaScannerCtrl::postEvent: sending of buffer incomplete!" << endl;
-	}
-
-}
-
 
 void CMediaScannerCtrl::start() {
 
-	if(m_run_message_loop) return;
+	if(running()) return;
 
 	vector<string> args;
 
@@ -77,7 +63,7 @@ void CMediaScannerCtrl::start() {
 		perror("CMediaScannerCtrl::start:");
 	}
 
-	m_socket = sv[0];
+	setSocket( sv[0] );
 
 	stringstream ss;
 	ss << sv[1];
@@ -86,23 +72,20 @@ void CMediaScannerCtrl::start() {
 	m_pid = m_subProcess.start("./build/mediascanner/mediascanner" , args ,0 ,0);
 	m_child_running = true;
 	m_waitthread = new thread( &CMediaScannerCtrl::waitPid, this);
-
-
-	m_run_message_loop = true;
-	m_thread = new thread( &CMediaScannerCtrl::loop, this);
+	m_thread = new thread( &CEventLoop::run, this);
 
 }
 
 void CMediaScannerCtrl::stop() {
 	CMsgQuit quitmsg;
-	int size;
-	char *buffer = quitmsg.serialize(size);
-	send(m_socket, buffer, size, 0);
+
+	sendEvent(&quitmsg);
 	terminate();
 }
 
 void CMediaScannerCtrl::terminate() {
-	m_run_message_loop = false;
+	CMsgQuit quitmsg;
+	postEvent(&quitmsg);
 
 	std::unique_lock<std::mutex> lk(m_mutex);
 	int tries = 0;
@@ -145,50 +128,39 @@ void CMediaScannerCtrl::terminate() {
 }
 
 
-void CMediaScannerCtrl::loop() {
-	int bytesRecv;
-	char buffer[2 * 257];
-	char *bufPtr = buffer;
-
-	while(m_run_message_loop) {
-		errno = 0;
-		bytesRecv = recv(m_socket, bufPtr, 256, 0);
-		if(bytesRecv == -1 && errno == EINTR ) {
-			// recv was interrupted by a signal, restart it if m_run_message_loop was not set to false, too.
-			continue;
-		}
-		bufPtr[bytesRecv] = 0;
-		cout << "recv: " << bufPtr << endl;
-
-		CMsgBase* msg = CMsgBase::msgFactory( bufPtr, bytesRecv );
-		handleMsg(msg);
-	}
-}
-
-
-int CMediaScannerCtrl::handleMsg(CMsgBase* msg) {
-	int rc = 0;
+bool CMediaScannerCtrl::handleMsg(CMsgBase* msg) {
+	bool rc = true;
 	int type = msg->getType();
 	switch(type) {
 		case E_MSG_RESP:
 		{
 			CMsgResponse* reponse = reinterpret_cast<CMsgResponse*>(msg);
 			m_parent->response(reponse->getRequestID(), reponse->getReturnCode(), reponse->getMessage());
-			rc = 0;
 			break;
 		}
 		case E_MSG_COLLECTION_CHANGED:
 		{
-			rc = 0;
 			break;
 		}
 		case E_MSG_PROGRESS:
 		{
 			CMsgProgress* progMsg = reinterpret_cast<CMsgProgress*>(msg);
 			m_parent->scanProgress(progMsg->getProgress());
-			rc = 0;
 			break;
 		}
+		case E_MSG_FINISHED:
+		{
+			CMsgFinished* finiMsg = reinterpret_cast<CMsgFinished*>(msg);
+			m_parent->jobFinished(finiMsg->getJobID());
+			break;
+		}
+		case E_MSG_QUIT:
+		{
+			CMsgQuit* quitMsg = reinterpret_cast<CMsgQuit*>(msg);
+			rc = false;
+			break;
+		}
+
 	}
 	return rc;
 }

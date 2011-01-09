@@ -79,7 +79,8 @@ set(HEADERS         CCollection.h
                     mediaprocessing/CAudioIOlibao.h
                     mediaprocessing/CDecoder.h )
  
- set( MSG_SRC       mediascanner/CMsgBase.cpp
+ set( MSG_SRC       mediascanner/CEventLoop.cpp
+                    mediascanner/CMsgBase.cpp
                     mediascanner/CMsgQuit.cpp
                     mediascanner/CMsgResponse.cpp
                     mediascanner/CMsgFinished.cpp
@@ -89,7 +90,8 @@ set(HEADERS         CCollection.h
                     mediascanner/CMsgCollectionChanged.cpp
                     mediascanner/CMediaItem.cpp )
                     
- set( MSG_HDR       mediascanner/CMsgBase.h
+ set( MSG_HDR       mediascanner/CEventLoop.h
+                    mediascanner/CMsgBase.h
                     mediascanner/CMsgQuit.h
                     mediascanner/CMsgResponse.h
                     mediascanner/CMsgFinished.h

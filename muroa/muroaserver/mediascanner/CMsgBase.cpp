@@ -15,6 +15,7 @@
 #include "CMsgScanDir.h"
 #include "CMsgFinished.h"
 #include "CMsgProgress.h"
+#include "CMsgCollectionChanged.h"
 
 #include <assert.h>
 
@@ -39,19 +40,29 @@ bool CMsgBase::equalTo(const CMsgBase &other) {
 }
 
 
-CMsgBase* CMsgBase::msgFactory(char*& buffer, int size) {
+CMsgBase* CMsgBase::msgFactory(char*& buffer, int& size) {
 	CMsgBase* basePtr = 0;
 	int msgSize = 0;
 
-	if( size < 3 * sizeof(uint32_t)) {
+	const int headerSize = 3 * sizeof(uint32_t);
+
+	if( size < headerSize) {
 		stringstream ss;
-		ss << "invalid message: too small to decode.";
-		throw(InvalidMsgException(ss.str()));
+		ss << "Need more data: message too small to decode header.";
+		throw(NeedMoreDataException(ss.str(), 1));
 	}
 
-
 	uint32_t* u32Ptr = reinterpret_cast<uint32_t*>(buffer);
-	uint32_t type = u32Ptr[0];
+	uint32_t type        = u32Ptr[0];
+	uint32_t payloadSize = u32Ptr[2];
+
+
+	if( size < headerSize + payloadSize ) {
+		stringstream ss;
+		ss << "Need more data: message payload indicated by header is larger than buffer.";
+		throw(NeedMoreDataException(ss.str(), 2));
+	}
+
 
 	switch( type ) {
 		case E_MSG_RESP:
@@ -78,6 +89,10 @@ CMsgBase* CMsgBase::msgFactory(char*& buffer, int size) {
 			basePtr = new CMsgProgress( buffer, size );
 			break;
 
+		case E_MSG_COLLECTION_CHANGED:
+			basePtr = new CMsgCollectionChanged( buffer, size );
+			break;
+
 		default:
 		{
 			stringstream ss;
@@ -102,7 +117,7 @@ uint32_t CMsgBase::checkHeader(char* buffer, int size, enum msg_types type) {
 
 	if(type != typeInHeader) {
 		stringstream ss;
-		ss << "CMsgQuit::CMsgQuit ( id=" << msgID << ")type is " << typeInHeader << " but expected " << type;
+		ss << "CMsgBase::checkHeader ( id=" << msgID << ")type is " << typeInHeader << " but expected " << type;
 		throw InvalidMsgException(ss.str());
 	}
 	// reallocSerialisationBuffer(m_payloadSize);

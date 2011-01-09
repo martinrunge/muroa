@@ -9,7 +9,7 @@
 
 CMsgProgress::CMsgProgress(uint32_t jobID, uint32_t progress) : m_jobID(jobID), m_progress(progress) {
 	m_msgType = E_MSG_PROGRESS;
-	m_payloadSize = 4;
+	m_payloadSize = sizeof(m_jobID) + sizeof(m_progress);
 	m_msgID = ++CMsgBase::m_last_id;
 
 }
@@ -29,7 +29,7 @@ CMsgProgress::~CMsgProgress() {
 }
 
 char* CMsgProgress::serialize(int& size) {
-	int payloadSize = sizeof( m_progress );
+	int payloadSize = sizeof(m_jobID) + sizeof( m_progress );
 
 	size = reallocSerialisationBuffer(payloadSize);
 

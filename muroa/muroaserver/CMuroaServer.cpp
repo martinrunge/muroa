@@ -44,6 +44,9 @@ CMuroaServer::CMuroaServer(QWidget *parent)
 	// CCollection<CCollectionItem>* collection = m_collectionUpdater.walkTree( m_mediadir.toStdString() );
 	// addCollectionRev(collection);
 
+	connect(this, SIGNAL(progressSig(int)), ui.progressBar, SLOT(setValue(int)));
+	connect(this, SIGNAL(responseSig(QString)), ui.response_label, SLOT(setText(QString)));
+
 	m_dnssd.registerService("muroa", m_portNr);
 }
 
@@ -62,6 +65,7 @@ void CMuroaServer::newConnection(QTcpSocket* socket)
 	connect(conn, SIGNAL(connectionStatusChanged(QString)), this, SLOT(connectionStatusChanged(QString)));
 	connect(conn, SIGNAL(connectionClosed(CConnection*)), m_session, SLOT(connectionClosed(CConnection*)));
 
+
 }
 
 void CMuroaServer::connectionStatusChanged(QString status)
@@ -71,11 +75,12 @@ void CMuroaServer::connectionStatusChanged(QString status)
 
 
 void CMuroaServer::scanProgress(int progress) {
-	ui.progressBar->setValue( progress );
+	emit progressSig(progress);
 }
 
 void CMuroaServer::response(int id, int code, string message) {
-	ui.response_label->setText( message.c_str() );
+	QString msg = QString("%1 %2 %3").arg(id).arg(code).arg(QString::fromUtf8(message.c_str()));
+	emit responseSig(msg);
 }
 
 

@@ -48,7 +48,6 @@ InvalidMsgException::InvalidMsgException(std::string reason) throw() {
 }
 
 InvalidMsgException::~InvalidMsgException() throw() {
-	// TODO Auto-generated destructor stub
 }
 
 const char* InvalidMsgException::what() const throw() {
@@ -57,5 +56,25 @@ const char* InvalidMsgException::what() const throw() {
 
 const std::string InvalidMsgException::reason() const throw() {
 	return m_reason;
+}
+
+NeedMoreDataException::NeedMoreDataException(std::string reason, int code) throw() {
+	m_reason = reason;
+	m_code = code;
+}
+
+NeedMoreDataException::~NeedMoreDataException() throw() {
+}
+
+const char* NeedMoreDataException::what() const throw() {
+	return m_reason.c_str();
+}
+
+const std::string NeedMoreDataException::reason() const throw() {
+	return m_reason;
+}
+
+const int NeedMoreDataException::code() const throw() {
+	return m_code;
 }
 

@@ -11,6 +11,9 @@
 #include <thread>
 #include <queue>
 
+#include <iostream>
+#include <fstream>
+
 class CMsgBase;
 
 class CEventLoop {
@@ -25,8 +28,12 @@ public:
 	int run();
 
 protected:
-	virtual int handleMsg(CMsgBase* msg) = 0;
+	virtual bool handleMsg(CMsgBase* msg) = 0;
 	void wakeUp();
+	inline bool running() { return m_run; };
+	void setSocket(int sockfd);
+
+	std::ofstream m_dbg_file;
 
 private:
 	void preparePollFDs();

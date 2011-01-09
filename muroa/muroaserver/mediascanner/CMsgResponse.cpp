@@ -12,13 +12,13 @@ using namespace std;
 
 CMsgResponse::CMsgResponse(int requestID, int retCode, string message) {
 	m_msgType = E_MSG_RESP;
-	m_payloadSize = 0;
 	m_msgID = ++CMsgBase::m_last_id;
 
 	m_requestID = requestID;
 	m_retCode = retCode;
-
 	m_message = message;
+
+	m_payloadSize = sizeof(m_requestID) + sizeof(m_retCode) + m_message.size();
 }
 
 CMsgResponse::CMsgResponse(char *buffer, int size) {
@@ -30,9 +30,9 @@ CMsgResponse::CMsgResponse(char *buffer, int size) {
 	m_requestID = u32PayloadPtr[0];
 	m_retCode = u32PayloadPtr[1];
 
-	int messageoffset = getHeaderSize() + sizeof(m_requestID) + sizeof(m_retCode);
+	int messageoffset = sizeof(m_requestID) + sizeof(m_retCode);
 
-	m_message = string(buffer + messageoffset, size - messageoffset);
+	m_message = string(buffer + getHeaderSize() + messageoffset, m_payloadSize - messageoffset);
 }
 
 

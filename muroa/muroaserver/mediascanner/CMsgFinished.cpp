@@ -27,7 +27,9 @@ CMsgFinished::~CMsgFinished() {
 }
 
 char* CMsgFinished::serialize(int& size ) {
-	size = reallocSerialisationBuffer(0);
+	int payloadSize = sizeof(m_jobID);
+
+	size = reallocSerialisationBuffer( payloadSize );
 	serializeHeader();
 
 	uint32_t* u32PayloadPtr = reinterpret_cast<uint32_t*>(getPayloadBufferPtr());

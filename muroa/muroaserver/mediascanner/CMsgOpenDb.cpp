@@ -8,6 +8,7 @@
 #include "CMsgOpenDb.h"
 
 #include <string.h>
+#include <assert.h>
 
 using namespace std;
 
@@ -23,7 +24,9 @@ CMsgOpenDb::CMsgOpenDb(char* buffer, int size) {
 	m_msgType = E_MSG_OPEN_DB;
 	m_msgID = checkHeader(buffer, size, E_MSG_OPEN_DB);
 
-	m_db_path = string(buffer + getHeaderSize(), size - getHeaderSize());
+	assert(m_payloadSize + getHeaderSize() <= size );
+
+	m_db_path = string(buffer + getHeaderSize(), m_payloadSize);
 }
 
 CMsgOpenDb::~CMsgOpenDb() {

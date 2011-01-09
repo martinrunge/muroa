@@ -46,6 +46,21 @@ private:
 	std::string m_reason;
 };
 
+class NeedMoreDataException: public std::exception {
+public:
+	NeedMoreDataException(std::string reason, int code = 0) throw();
+	virtual ~NeedMoreDataException() throw();
+
+	const char* what() const throw();
+	const std::string reason() const throw();
+	const int code() const throw();
+
+private:
+	std::string m_reason;
+	int m_code;
+};
+
+
 
 
 #endif /* EXCEPTIONS_H_ */

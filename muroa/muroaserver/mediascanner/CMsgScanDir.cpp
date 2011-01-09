@@ -21,7 +21,7 @@ CMsgScanDir::CMsgScanDir(char* buffer, int size) {
 	m_msgType = E_MSG_SCAN_DIR;
 	m_msgID = checkHeader(buffer, size, E_MSG_SCAN_DIR);
 
-	m_path = string(buffer + getHeaderSize(), size - getHeaderSize());
+	m_path = string(buffer + getHeaderSize(), m_payloadSize);
 }
 
 CMsgScanDir::~CMsgScanDir() {

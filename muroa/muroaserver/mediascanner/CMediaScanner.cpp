@@ -47,14 +47,14 @@ CMediaScanner::~CMediaScanner() {
 }
 
 
-int CMediaScanner::handleMsg(CMsgBase* msg) {
+bool CMediaScanner::handleMsg(CMsgBase* msg) {
 	m_dbg_file << "CMediaScanner::handleMsg" << endl;
-	int rc = 0;
+	bool rc = true;
 	uint32_t type = msg->getType();
 	try {
 		switch(type) {
 			case E_MSG_QUIT:
-				rc = 1;
+				rc = false;
 				m_dbg_file << "got quit msg." << endl;
 				if(m_stateDbUpdater != 0) {
 					m_stateDbUpdater->close();
@@ -63,14 +63,12 @@ int CMediaScanner::handleMsg(CMsgBase* msg) {
 				break;
 
 			case E_MSG_RESP:
-				rc = 0;
 				m_dbg_file << "other message." << endl;
 				// exit(1);
 				break;
 
 			case E_MSG_OPEN_DB:
 			{
-				rc = 0;
 				CMsgOpenDb* openDbMsg = reinterpret_cast<CMsgOpenDb*>(msg);
 				std::string path = openDbMsg->getDbPath();
 				m_dbg_file << "open db: " << path << endl;
@@ -84,7 +82,6 @@ int CMediaScanner::handleMsg(CMsgBase* msg) {
 					// no MsgOpenDB received yet -> scan not possible
 					throw CApiMisuseException("State DB not opened yet.");
 				}
-				rc = 0;
 				CMsgScanDir* scanDirMsg = reinterpret_cast<CMsgScanDir*>(msg);
 				m_fs_scanner->scanDir( scanDirMsg->getPath(), scanDirMsg->getID() );
 				m_progress = 0;

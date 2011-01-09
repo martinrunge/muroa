@@ -9,9 +9,11 @@
 #define CMEDIASCANNERCTRL_H_
 
 #include "CSubProcess.h"
+#include "mediascanner/CEventLoop.h"
 #include "mediascanner/CMsgQuit.h"
 #include "mediascanner/CMsgResponse.h"
 #include "mediascanner/CMsgProgress.h"
+#include "mediascanner/CMsgFinished.h"
 
 
 #include <signal.h>
@@ -21,12 +23,10 @@
 
 class CMuroaServer;
 
-class CMediaScannerCtrl {
+class CMediaScannerCtrl: public CEventLoop {
 public:
 	CMediaScannerCtrl(CMuroaServer *parent);
 	virtual ~CMediaScannerCtrl();
-
-	void sendEvent(CMsgBase *msg);
 
 	void start();
 	void stop();
@@ -34,18 +34,15 @@ public:
 
 
 private:
-	void loop();
 	void waitPid();
 
-	int handleMsg(CMsgBase* msg);
+	bool handleMsg(CMsgBase* msg);
 
 	CSubProcess m_subProcess;
-	int m_socket;
 	pid_t m_pid;
 
 	std::thread *m_thread;
 	std::thread *m_waitthread;
-	bool m_run_message_loop;
 	bool m_child_running;
 
     std::mutex m_mutex;
