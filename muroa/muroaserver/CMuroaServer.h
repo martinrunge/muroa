@@ -32,6 +32,7 @@ public:
 	void scanProgress(int progress);
 	void response(int id, int code, std::string message);
 	void jobFinished(int jobID);
+	void collectionChanged(int newRev, int minRev, int maxRev);
 
 signals:
     void progressSig(int);

@@ -14,6 +14,7 @@
 #include "mediascanner/CMsgResponse.h"
 #include "mediascanner/CMsgProgress.h"
 #include "mediascanner/CMsgFinished.h"
+#include "mediascanner/CMsgCollectionChanged.h"
 
 
 #include <signal.h>

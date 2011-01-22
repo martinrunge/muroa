@@ -87,6 +87,12 @@ void CMuroaServer::jobFinished(int jobID) {
 
 }
 
+void CMuroaServer::collectionChanged(int newRev, int minRev, int maxRev) {
+	int sessionMaxRev = m_session->getCollectionRevision();
+	for( int rev=sessionMaxRev; rev <= maxRev; rev++ ) {
+		CCollection<CCollectionItem>* col = m_stateDB->getCollectionRev(rev);
+	}
+}
 
 void CMuroaServer::addCollectionRev(CCollection<CCollectionItem>* collection)
 {

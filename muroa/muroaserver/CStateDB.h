@@ -10,6 +10,8 @@
 
 #include "CStateDbBase.h"
 
+#include "CCollection.h"
+
 class CCollectionItem;
 class CPlaylistItem;
 class CSession;
@@ -26,6 +28,8 @@ public:
 
 	void saveSession(CSession const * const session);
 	void restoreSession(CSession * const session);
+
+	CCollection<CCollectionItem>* getCollectionRev(int rev);
 
     CCollectionItem* getCollectionItemByHash(unsigned hash);
     CCollectionItem* getCollectionItemByPos(int colPos, int colRev);

@@ -140,6 +140,8 @@ bool CMediaScannerCtrl::handleMsg(CMsgBase* msg) {
 		}
 		case E_MSG_COLLECTION_CHANGED:
 		{
+			CMsgCollectionChanged* colChMsg = reinterpret_cast<CMsgCollectionChanged*>(msg);
+			m_parent->collectionChanged(colChMsg->getNewRev(), colChMsg->getMinRev(), colChMsg->getMaxRev());
 			break;
 		}
 		case E_MSG_PROGRESS:

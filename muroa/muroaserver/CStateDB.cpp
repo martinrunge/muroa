@@ -136,6 +136,23 @@ void CStateDB::restoreCollection(CSession * const session) {
 	}
 }
 
+CCollection<CCollectionItem>* CStateDB::getCollectionRev(int rev) {
+	CCollection<CCollectionItem>* collection = new CCollection<CCollectionItem>();
+
+	CCollectionItem* item;
+	int pos = 0;
+	do {
+		item = getCollectionItemByPos(pos, rev);
+		pos++;
+		if(item) {
+			collection->insert(item);
+		}
+	} while(item != 0);
+
+	return collection;
+}
+
+
 void CStateDB::updateCollectionTable( CSession const * const session, int minrev, int maxrev ) {
 
 	beginTansaction();
