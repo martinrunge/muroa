@@ -32,7 +32,10 @@ public:
 
     void updateCollectionRevItem( int pos, int hash, int rev );
 
+    int getNumMediaItemsByHash(unsigned hash);
     CMediaItem* getMediaItemByHash(unsigned hash);
+    unsigned getHashByFilename(const std::string& filename, bool& found) const;
+    bool hashPresent();
     CMediaItem* getMediaItemByPos(int colPos, int colRev);
 
     int rowIDofColRevEntry(int colPos, int colHash, int colRev);
@@ -40,7 +43,7 @@ public:
 protected:
     sqlite3 *m_db;
 
-    void updateMediaItem( CMediaItem* item );
+    int updateMediaItem( CMediaItem* item );
     CMediaItem* getMediaItemFromStmt(sqlite3_stmt *pStmt);
 
     void beginTansaction() throw(CApiMisuseException);
@@ -72,6 +75,10 @@ private:
 	sqlite3_stmt *m_updateColRevStmt;
 	void prepareUpdateColRevStmt();
 	void finalizeUpdateColRevStmt();
+
+	sqlite3_stmt *m_hashByFilenameStmt;
+	void prepareHashByFilenameStmt();
+	void finalizeHashByFilenameStmt();
 
 	sqlite3_stmt *m_getMediaItemByPosStmt;
 	void prepareGetMediaItemByPosStmt();

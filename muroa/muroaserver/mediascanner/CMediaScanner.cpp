@@ -98,18 +98,17 @@ bool CMediaScanner::handleMsg(CMsgBase* msg) {
 				if( jobID == m_fs_scanner->getJobID()) {     // make sure scandir job finished
 
 					std::vector<CMediaItem*>* collection = m_fs_scanner->finishScan();
-					m_stateDbUpdater->appendCollectionRev(collection);
+					int nrChanges = m_stateDbUpdater->appendCollectionRev(collection);
 					CMsgFinished *finiNotification = new CMsgFinished(jobID);
 					sendEvent(finiNotification);
 					m_dbg_file << "sent finished notification to parent: [jobID " <<  finiNotification->getJobID() << "]" << endl;
 
-					if( /*collection changed */ true  ) {
+					if( nrChanges > 0 ) {
 						int minRev = m_stateDbUpdater->getIntValue("CollectionRevMin");
 						int maxRev = m_stateDbUpdater->getIntValue("CollectionRevMax");
 						CMsgCollectionChanged* colChanged = new CMsgCollectionChanged( maxRev, minRev, maxRev );
 						sendEvent(colChanged);
 						m_dbg_file << "sent collectionChanged notification to parent." << endl;
-
 					}
 				}
 				break;

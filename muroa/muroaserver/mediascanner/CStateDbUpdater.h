@@ -24,7 +24,7 @@ public:
 	int close();
 
 
-	void appendCollectionRev(std::vector<CMediaItem*> *collection);
+	int appendCollectionRev(std::vector<CMediaItem*> *collection);
 	std::vector<CMediaItem*> *getCollectionRev(int rev);
 };
 

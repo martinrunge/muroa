@@ -31,7 +31,9 @@ int CStateDbUpdater::close() {
 	return rc;
 }
 
-void CStateDbUpdater::appendCollectionRev(std::vector<CMediaItem*> *collection) {
+int CStateDbUpdater::appendCollectionRev(std::vector<CMediaItem*> *collection) {
+	int nrChanges = 0;
+
 	beginTansaction();
 
 	string colMaxRev = getValue("CollectionRevMax");
@@ -41,13 +43,17 @@ void CStateDbUpdater::appendCollectionRev(std::vector<CMediaItem*> *collection) 
 
 	for(int i = 0; i < collection->size(); i++) {
 		CMediaItem* item = collection->at(i);
-		updateMediaItem(item);
+		nrChanges += updateMediaItem(item);
 		updateCollectionRevItem(i, item->getHash(), maxRev );
 	}
 
-	setValue("CollectionRevMax", maxRev + 1);
+	if(nrChanges > 0) {
+		setValue("CollectionRevMax", maxRev + 1);
+	}
 
 	endTransaction();
+
+	return nrChanges;
 }
 
 

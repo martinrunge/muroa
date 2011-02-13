@@ -13,11 +13,14 @@
 #include "../mediaprocessing/CCollectionUpdater.h"
 #include "../CSession.h"
 
+#include <boost/filesystem.hpp>
+
 #include <vector>
 
 CPPUNIT_TEST_SUITE_REGISTRATION( CDataBaseTest );
 
 using namespace std;
+using namespace	boost::filesystem;
 
 CSession* CDataBaseTest::m_session = 0;
 unsigned CDataBaseTest::m_testHash = 0;
@@ -39,6 +42,11 @@ void CDataBaseTest::setUp()
 {
 	const std::string dbname("TestDB.sqlite");
 
+	path dbpath(dbname);
+	if(exists(dbpath)) {
+		remove(dbpath);
+	}
+
 	m_stateDB = new CStateDB( dbname );
 	m_stateDbUpdater = new CStateDbUpdater( dbname );
     m_colUpdater = new CCollectionUpdater( );
@@ -59,23 +67,25 @@ void CDataBaseTest::testDB()
 	int rc = 0;
 	m_stateDB->open();
 
-	vector<string> types;
-	types.push_back(".mp3");
-	types.push_back(".ogg");
+//	vector<string> types;
+//	types.push_back(".mp3");
+//	types.push_back(".ogg");
+//
+//	CCollection<CCollectionItem>* collection = 0;
+//
+//	m_colUpdater->setFileTypes(types);
+//	collection = m_colUpdater->walkTree("/home/martin");
+//	m_testHashPos = collection->size() / 2;
+//	m_testHash = collection->getItem(m_testHashPos)->getHash();
+//
+//	m_session = new CSession;
+//	m_session->addCollectionRev(collection);
+//	m_session->addCollectionRev(collection);
+//
+//	preparePlaylist();
+//	prepareNextlist();
 
-	CCollection<CCollectionItem>* collection = 0;
-
-	m_colUpdater->setFileTypes(types);
-	collection = m_colUpdater->walkTree("/home/martin");
-	m_testHashPos = collection->size() / 2;
-	m_testHash = collection->getItem(m_testHashPos)->getHash();
-
-	m_session = new CSession;
-	m_session->addCollectionRev(collection);
-	m_session->addCollectionRev(collection);
-
-	preparePlaylist();
-	prepareNextlist();
+	prepareSession();
 
 	m_stateDB->updateCollectionTable(m_session);
 	m_stateDB->updatePlaylistRevsTable(m_session);
@@ -92,8 +102,8 @@ void CDataBaseTest::testDB()
 	m_stateDB->setValue("NextlistRevMax", nlMaxRevVal);
 
 
-	CCollectionItem* writtenItem = collection->getItem(1);
-	CCollectionItem* readItem = m_stateDB->getCollectionItemByPos(1, 0);
+	CCollectionItem* writtenItem = m_session->getCollection(1)->getItem(1);
+	CCollectionItem* readItem = m_stateDB->getCollectionItemByPos(1, 1);
 	cout << "Artist written/read  : " << (const char*)writtenItem->getArtist().toUtf8() << " <-> " << (const char*)readItem->getArtist().toUtf8() << endl;
 	cout << "Album  written/read  : " << (const char*)writtenItem->getAlbum().toUtf8() << " <-> " << (const char*)readItem->getAlbum().toUtf8() << endl;
 	cout << "Title written/read   : " << (const char*)writtenItem->getTitle().toUtf8() << " <-> " << (const char*)readItem->getTitle().toUtf8() << endl;
@@ -110,6 +120,17 @@ void CDataBaseTest::testDB()
 
 void CDataBaseTest::readGeneral() {
 	m_stateDB->open();
+
+	m_stateDB->setValue("CollectionRevMin", colMinRevVal);
+	m_stateDB->setValue("CollectionRevMax", colMaxRevVal);
+
+	m_stateDB->setValue("PlaylistRevMin", plMinRevVal);
+	m_stateDB->setValue("PlaylistRevMax", plMaxRevVal);
+
+	m_stateDB->setValue("NextlistRevMin", nlMinRevVal);
+	m_stateDB->setValue("NextlistRevMax", nlMaxRevVal);
+
+
 
 	std::string colMinRev = m_stateDB->getValue("CollectionRevMin");
 	std::string colMaxRev = m_stateDB->getValue("CollectionRevMax");
@@ -137,6 +158,9 @@ void CDataBaseTest::readGeneral() {
 void CDataBaseTest::selectColRevs() {
 	m_stateDB->open();
 
+	prepareSession();
+
+
 	int rowID = m_stateDB->rowIDofColRevEntry(m_testHashPos, m_testHash, 0);
 
 	cout << "RowID of (" << m_testHashPos << ", " << m_testHash << ", 0): "<< rowID << endl;
@@ -145,6 +169,28 @@ void CDataBaseTest::selectColRevs() {
 	CPPUNIT_ASSERT( rowID != 0 );
 
 }
+
+void CDataBaseTest::prepareSession() {
+
+	vector<string> types;
+	types.push_back(".mp3");
+	types.push_back(".ogg");
+
+	CCollection<CCollectionItem>* collection = 0;
+
+	m_colUpdater->setFileTypes(types);
+	collection = m_colUpdater->walkTree("/home/martin");
+	m_testHashPos = collection->size() / 2;
+	m_testHash = collection->getItem(m_testHashPos)->getHash();
+
+	m_session = new CSession;
+	m_session->addCollectionRev(collection);
+	m_session->addCollectionRev(collection);
+
+	preparePlaylist();
+	prepareNextlist();
+}
+
 
 
 void CDataBaseTest::preparePlaylist() {
@@ -213,6 +259,23 @@ void CDataBaseTest::StateDbUpdater() {
 }
 
 
+void CDataBaseTest::noDBChange() {
+	vector<CMediaItem*>* col;
+
+	m_stateDbUpdater->open();
+
+	col = m_fakeCollection->collectionWithoutFiles(1000);
+
+	int nrChanges;
+	nrChanges = m_stateDbUpdater->appendCollectionRev( col );
+
+	// add the same collection a second time to DB, expect nrChanges to be 0
+	nrChanges = m_stateDbUpdater->appendCollectionRev( col );
+	CPPUNIT_ASSERT_MESSAGE("Adding the same collection  to the database did not return zero changes! ", nrChanges == 0 );
+
+}
+
+
 
 void CDataBaseTest::saveSession() {
 	bool ok = true;
@@ -227,6 +290,9 @@ void CDataBaseTest::saveSession() {
 }
 
 void CDataBaseTest::restoreSession() {
+
+	saveSession();
+
 	bool ok = true;
 	CSession* restoredSession;
 	m_stateDB->open();
@@ -284,7 +350,11 @@ void CDataBaseTest::restoreSession() {
 		CCollection<CCollectionItem>* col = m_session->getCollection(colRev);
 		CCollection<CCollectionItem>* reCol = restoredSession->getCollection(colRev);
 
+		CPPUNIT_ASSERT( reCol != 0 );
+
 		if(col->size() != reCol->size() ) ok = false;
+
+		CPPUNIT_ASSERT( reCol->size() > 0 );
 
 		for(int i=0; i < col->size(); i++) {
 			CCollectionItem* item = col->getItem(i);

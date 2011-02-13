@@ -23,7 +23,8 @@ CStateDbBase::CStateDbBase(std::string dbFileName) : m_dbFileName( dbFileName ),
 		                                     m_selectColRevStmt(0),
 		                                     m_selectMediaItemStmt(0),
 		                                     m_updateMediaItemStmt(0),
-		                                     m_getMediaItemByPosStmt(0)
+		                                     m_getMediaItemByPosStmt(0),
+		                                     m_hashByFilenameStmt(0)
 {
 }
 
@@ -51,6 +52,8 @@ int CStateDbBase::open() {
 		prepareUpdateMediaItemStmt();
 		prepareUpdateColRevStmt();
 		prepareSelectColRevStmt();
+		prepareSelectMediaItemStmt();
+		prepareHashByFilenameStmt();
 
 	}
 	return rc;
@@ -58,6 +61,8 @@ int CStateDbBase::open() {
 
 int CStateDbBase::close() {
 
+	finalizeHashByFilenameStmt();
+	finalizeSelectMediaItemStmt();
 	finalizeUpdateColRevStmt();
     finalizeSelectColRevStmt();
     finalizeUpdateMediaItemStmt();
@@ -175,8 +180,15 @@ void CStateDbBase::createCollectionRevisionsTable() {
 	createTable("collectionRevs" , "(colPos INTEGER, colHash INTEGER REFERENCES collection (hash),  ColRev INTEGER)");
 }
 
-void CStateDbBase::updateMediaItem( CMediaItem* item ) {
+int CStateDbBase::updateMediaItem( CMediaItem* item ) {
 	assert(m_updateMediaItemStmt != 0);
+
+	bool found = false;
+	int num = getNumMediaItemsByHash( item->getHash() );
+	if(num == 1) {
+		// already in DB -> return 0 as num changes.
+		return 0;
+	}
 
 	int retval = sqlite3_bind_int(m_updateMediaItemStmt, 1, item->getHash());
 	if(retval != SQLITE_OK) {
@@ -229,11 +241,67 @@ void CStateDbBase::updateMediaItem( CMediaItem* item ) {
 		cerr << "Error stepping m_updateMediaItemStmt: " << sqlite3_errmsg(m_db);
 	}
 
+	int nrChanges = sqlite3_changes( m_db );
+
 	retval = sqlite3_reset(m_updateMediaItemStmt);
 	if(retval != SQLITE_OK) {
 		cerr << "Error resetting m_updateMediaItemStmt statement: " << sqlite3_errmsg(m_db);
 	}
+
+	return nrChanges;
 }
+
+unsigned CStateDbBase::getHashByFilename(const string& filename, bool& found) const {
+	unsigned hash;
+	int retval;
+
+	retval = sqlite3_bind_text(m_hashByFilenameStmt, 1, filename.c_str(), -1, SQLITE_TRANSIENT);
+	if(retval != SQLITE_OK) {
+		cerr << "Error binding value 'file' to hashByFilenameStmt statement: " << sqlite3_errmsg(m_db) << endl;
+	}
+
+	int rowid = 0;
+	int num_found = 0;
+	do {
+		retval = sqlite3_step( m_hashByFilenameStmt );
+		switch(retval) {
+		case SQLITE_ROW:
+			hash = sqlite3_column_int(m_hashByFilenameStmt, 1);
+			num_found++;
+ 			break;
+
+		case SQLITE_DONE:
+			// no more rows match search
+			break;
+
+		default:
+			cerr << "Error during step command: " << sqlite3_errmsg(m_db) << endl;
+			break;
+		}
+	}while (retval == SQLITE_ROW);
+
+	if(retval != SQLITE_DONE) {
+		cerr << "Error stepping : getHashByFilename" << sqlite3_errmsg(m_db);
+		found = false;
+		hash = 0;
+	}
+
+	retval = sqlite3_reset(m_hashByFilenameStmt);
+	if(retval != SQLITE_OK) {
+		cerr << "Error resetting getMediaItemByPosStmt: " << sqlite3_errmsg(m_db);
+	}
+	if (num_found > 0) {
+		found = true;
+		if(num_found > 1) {
+			cerr << "CStateDbBase::getHashByFilename ( filename = " << filename
+				 << ") found more than once (" << num_found
+				 << ") in state DB." << endl;
+		}
+	}
+
+	return hash;
+}
+
 
 CMediaItem* CStateDbBase::getMediaItemByPos(int colPos, int colRev) {
 	CMediaItem* item = 0;
@@ -313,8 +381,79 @@ void CStateDbBase::updateCollectionRevItem( int pos, int hash, int rev ) {
 	}
 }
 
+CMediaItem* CStateDbBase::getMediaItemByHash(unsigned hash) {
+	int retval = sqlite3_bind_int(m_selectMediaItemStmt, 1, hash);
+	if(retval != SQLITE_OK) {
+		cerr << "Error binding value 'hash' to selectMediaItemStmt statement: " << sqlite3_errmsg(m_db) << endl;
+	}
 
+	CMediaItem *item;
+	int rowid = 0;
+	int num_found = 0;
+	do {
+		retval = sqlite3_step( m_selectMediaItemStmt );
+		switch(retval) {
+		case SQLITE_ROW:
+			item = getMediaItemFromStmt(m_selectMediaItemStmt);
+			num_found++;
+ 			break;
 
+		case SQLITE_DONE:
+			// no more rows match search
+			break;
+
+		default:
+			cerr << "Error during step command: " << sqlite3_errmsg(m_db) << endl;
+			break;
+		}
+
+	}while (retval == SQLITE_ROW);
+
+	if(retval != SQLITE_DONE) {
+		cerr << "Error stepping selectMediaItemStmt: " << sqlite3_errmsg(m_db);
+	}
+	retval = sqlite3_reset(m_selectMediaItemStmt);
+	if(retval != SQLITE_OK) {
+		cerr << "Error resetting statement: " << sqlite3_errmsg(m_db);
+	}
+	return item;
+}
+
+int CStateDbBase::getNumMediaItemsByHash(unsigned hash) {
+	int retval = sqlite3_bind_int(m_selectMediaItemStmt, 1, hash);
+	if(retval != SQLITE_OK) {
+		cerr << "Error binding value 'hash' to selectMediaItemStmt statement: " << sqlite3_errmsg(m_db) << endl;
+	}
+
+	int rowid = 0;
+	int num_found = 0;
+	do {
+		retval = sqlite3_step( m_selectMediaItemStmt );
+		switch(retval) {
+		case SQLITE_ROW:
+			num_found++;
+ 			break;
+
+		case SQLITE_DONE:
+			// no more rows match search
+			break;
+
+		default:
+			cerr << "Error during step command: " << sqlite3_errmsg(m_db) << endl;
+			break;
+		}
+
+	}while (retval == SQLITE_ROW);
+
+	if(retval != SQLITE_DONE) {
+		cerr << "Error stepping selectMediaItemStmt: " << sqlite3_errmsg(m_db);
+	}
+	retval = sqlite3_reset(m_selectMediaItemStmt);
+	if(retval != SQLITE_OK) {
+		cerr << "Error resetting statement: " << sqlite3_errmsg(m_db);
+	}
+	return num_found;
+}
 
 CMediaItem* CStateDbBase::getMediaItemFromStmt(sqlite3_stmt *pStmt) {
 	CMediaItem* item = new CMediaItem;
@@ -473,6 +612,16 @@ void CStateDbBase::prepareUpdateColRevStmt() {
 void CStateDbBase::finalizeUpdateColRevStmt() {
 	finalizeStmt( &m_updateColRevStmt );
 }
+
+
+void CStateDbBase::prepareHashByFilenameStmt() {
+	prepareStmt(&m_hashByFilenameStmt, "SELECT * FROM collection WHERE collection.file=?");
+}
+
+void CStateDbBase::finalizeHashByFilenameStmt() {
+	finalizeStmt( &m_hashByFilenameStmt );
+}
+
 
 void CStateDbBase::prepareGetMediaItemByPosStmt() {
 	prepareStmt(&m_getMediaItemByPosStmt, "SELECT * FROM collection INNER JOIN collectionRevs ON collection.hash=collectionRevs.colHash WHERE collectionRevs.colPos=? AND collectionRevs.colRev=?");

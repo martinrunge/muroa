@@ -22,6 +22,7 @@ class CDataBaseTest : public CppUnit::TestFixture {
 	  CPPUNIT_TEST( readGeneral );
 	  CPPUNIT_TEST( selectColRevs );
 	  CPPUNIT_TEST( StateDbUpdater );
+	  CPPUNIT_TEST( noDBChange );
 	  CPPUNIT_TEST( saveSession );
 	  CPPUNIT_TEST( restoreSession );
 	  CPPUNIT_TEST_SUITE_END();
@@ -38,6 +39,7 @@ public:
 	void selectColRevs();
 
 	void StateDbUpdater();
+	void noDBChange();
 
 	void saveSession();
 	void restoreSession();
@@ -57,6 +59,7 @@ private:
 	const std::string nlMinRevVal;
 	const std::string nlMaxRevVal;
 
+	void prepareSession();
 	void preparePlaylist();
 	void prepareNextlist();
 
