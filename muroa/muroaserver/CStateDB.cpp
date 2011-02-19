@@ -88,7 +88,7 @@ void CStateDB::updatePlaylistRevsTable(CSession const * const session, int minre
 	if(minrev == -1) minrev = session->getMinPlaylistRevision();
 	if(maxrev == -1) maxrev = session->getPlaylistRevision();
 
-	for(int rev = minrev; rev < maxrev; rev++) {
+	for(int rev = minrev; rev <= maxrev; rev++) {
 		CCollection<CPlaylistItem>* playlist = session->getPlaylist(rev);
 
 		for(int i = 0; i < playlist->size(); i++) {
@@ -106,21 +106,16 @@ void CStateDB::updateNextlistRevsTable(CSession const * const session, int minre
 
 void CStateDB::restoreCollection(CSession * const session) {
 	if(m_db == 0) throw(CApiMisuseException("Calling restoreCollection(), but DB not opened."));
+	bool found;
 
-	std::string colMinRev = getValue("CollectionRevMin");
-	std::string colMaxRev = getValue("CollectionRevMax");
-
-	errno = 0;
-	int minRev = strtol(colMinRev.c_str(), NULL, 10);
-	assert (errno  == 0);
-
-	errno = 0;
-	int maxRev = strtol(colMaxRev.c_str(), NULL, 10);
-	assert (errno  == 0);
+	int minRev =  getIntValue("CollectionRevMin", found);
+	assert(found);
+	int maxRev = getIntValue("CollectionRevMax", found);
+	assert(found);
 
 	session->setMinCollectionRevision( minRev );
 
-	for(int rev = minRev; rev < maxRev; rev++) {
+	for(int rev = minRev; rev <= maxRev; rev++) {
 		CCollection<CCollectionItem>* collection = new CCollection<CCollectionItem>();
 
 		CCollectionItem* item;
@@ -160,7 +155,7 @@ void CStateDB::updateCollectionTable( CSession const * const session, int minrev
 	if(minrev == -1) minrev = session->getMinCollectionRevision();
 	if(maxrev == -1) maxrev = session->getCollectionRevision();
 
-	for(int rev = minrev; rev < maxrev; rev++) {
+	for(int rev = minrev; rev <= maxrev; rev++) {
 		CCollection<CCollectionItem>* collection = session->getCollection(rev);
 
 		for(int i = 0; i < collection->size(); i++) {
@@ -175,9 +170,12 @@ void CStateDB::updateCollectionTable( CSession const * const session, int minrev
 
 void CStateDB::restorePlaylists(CSession * const session) {
 	if(m_db == 0) throw(CApiMisuseException("Calling restorePlaylists(), but DB not opened."));
+	bool found;
 
-	std::string plMinRev = getValue("PlaylistRevMin");
-	std::string plMaxRev = getValue("PlaylistRevMax");
+	std::string plMinRev = getValue("PlaylistRevMin", found);
+	assert(found);
+	std::string plMaxRev = getValue("PlaylistRevMax", found);
+	assert(found);
 
 	errno = 0;
 	int minRev = strtol(plMinRev.c_str(), NULL, 10);
@@ -189,7 +187,7 @@ void CStateDB::restorePlaylists(CSession * const session) {
 
 	session->setMinPlaylistRevision( minRev );
 
-	for(int rev = minRev; rev < maxRev; rev++) {
+	for(int rev = minRev; rev <= maxRev; rev++) {
 		CCollection<CPlaylistItem>* playlist = new CCollection<CPlaylistItem>();
 
 		CPlaylistItem* item;
@@ -207,9 +205,10 @@ void CStateDB::restorePlaylists(CSession * const session) {
 
 void CStateDB::restoreNextlists(CSession * const session) {
 	if(m_db == 0) throw(CApiMisuseException("Calling restoreNextlists(), but DB not opened."));
+	bool found;
 
-	std::string nlMinRev = getValue("NextlistRevMin");
-	std::string nlMaxRev = getValue("NextlistRevMax");
+	std::string nlMinRev = getValue("NextlistRevMin", found);
+	std::string nlMaxRev = getValue("NextlistRevMax", found);
 
 	errno = 0;
 	int minRev = strtol(nlMinRev.c_str(), NULL, 10);

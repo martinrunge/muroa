@@ -79,18 +79,21 @@ void CMediaScannerTest::testScanDirEvent() {
 }
 
 void CMediaScannerTest::testDbUpdater() {
-	CMsgOpenDb* openDbMsg = new CMsgOpenDb("testDB.mysql");
+	CMsgOpenDb* openDbMsg = new CMsgOpenDb("TestDB.sqlite");
 	CMsgScanDir* scanDirMsg = new CMsgScanDir("/home/martin");
 
 	run();
-
 	m_media_scanner->postEvent(openDbMsg);
-	m_media_scanner->postEvent(scanDirMsg);
 
 	sleep(1);
 
-	int old_max_rev = m_media_scanner->m_stateDbUpdater->getIntValue("CollectionRevMax");
+	bool found;
+	int old_max_rev = m_media_scanner->m_stateDbUpdater->getIntValue("CollectionRevMax", found);
+	CPPUNIT_ASSERT_MESSAGE("'CollectionRevMax' not found in general table.", found );
 
+	m_media_scanner->postEvent(scanDirMsg);
+
+	sleep(1);
 	while(m_media_scanner->getProgress() < 100 ) {
 		sleep(1);
 	}
@@ -98,20 +101,18 @@ void CMediaScannerTest::testDbUpdater() {
 	int max_rev, i = 0;
 	do
 	{
-		max_rev = m_media_scanner->m_stateDbUpdater->getIntValue("CollectionRevMax");
+		max_rev = m_media_scanner->m_stateDbUpdater->getIntValue("CollectionRevMax", found);
+		CPPUNIT_ASSERT(found );
 		sleep(1);
 		i++;
 	}while( max_rev == old_max_rev && i < 20 );
-
-	CPPUNIT_ASSERT_MESSAGE("Faild to append exactly one revision to collection.", max_rev == old_max_rev + 1 );
-	CPPUNIT_ASSERT_MESSAGE("Appending exactly one revision to collection took longer than 20 s.", i < 20 );
-
 
 	CMsgQuit* quitMsg = new CMsgQuit();
 	m_media_scanner->postEvent(quitMsg);
 	join();
 
-
+	CPPUNIT_ASSERT_MESSAGE("Faild to append exactly one revision to collection.", max_rev == old_max_rev + 1 );
+	CPPUNIT_ASSERT_MESSAGE("Appending exactly one revision to collection took longer than 20 s.", i < 20 );
 }
 
 

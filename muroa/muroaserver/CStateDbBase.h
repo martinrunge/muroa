@@ -25,8 +25,8 @@ public:
 	virtual int open();
 	virtual int close();
 
-	std::string getValue(std::string key);
-	int getIntValue(std::string key);
+	std::string getValue(std::string key, bool &found);
+	int getIntValue(std::string key, bool &found);
 	void setValue(std::string key, std::string value);
 	void setValue(std::string key, int value);
 

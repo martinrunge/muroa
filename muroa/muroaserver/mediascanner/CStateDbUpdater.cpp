@@ -33,11 +33,13 @@ int CStateDbUpdater::close() {
 
 int CStateDbUpdater::appendCollectionRev(std::vector<CMediaItem*> *collection) {
 	int nrChanges = 0;
+	bool found;
 
 	beginTansaction();
 
-	string colMaxRev = getValue("CollectionRevMax");
+	string colMaxRev = getValue("CollectionRevMax", found);
 	errno = 0;
+	assert(found == true);
 	int maxRev = strtol(colMaxRev.c_str(), NULL, 10);
 	assert (errno  == 0);
 

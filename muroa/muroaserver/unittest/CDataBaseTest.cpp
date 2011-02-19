@@ -104,6 +104,8 @@ void CDataBaseTest::testDB()
 
 	CCollectionItem* writtenItem = m_session->getCollection(1)->getItem(1);
 	CCollectionItem* readItem = m_stateDB->getCollectionItemByPos(1, 1);
+	CPPUNIT_ASSERT_MESSAGE( "Requested Collection Item (pos 1, rev 1) does not exist.", readItem != 0 );
+
 	cout << "Artist written/read  : " << (const char*)writtenItem->getArtist().toUtf8() << " <-> " << (const char*)readItem->getArtist().toUtf8() << endl;
 	cout << "Album  written/read  : " << (const char*)writtenItem->getAlbum().toUtf8() << " <-> " << (const char*)readItem->getAlbum().toUtf8() << endl;
 	cout << "Title written/read   : " << (const char*)writtenItem->getTitle().toUtf8() << " <-> " << (const char*)readItem->getTitle().toUtf8() << endl;
@@ -130,16 +132,22 @@ void CDataBaseTest::readGeneral() {
 	m_stateDB->setValue("NextlistRevMin", nlMinRevVal);
 	m_stateDB->setValue("NextlistRevMax", nlMaxRevVal);
 
+	bool found;
 
+	std::string colMinRev = m_stateDB->getValue("CollectionRevMin", found);
+	CPPUNIT_ASSERT(found);
+	std::string colMaxRev = m_stateDB->getValue("CollectionRevMax", found);
+	CPPUNIT_ASSERT(found);
 
-	std::string colMinRev = m_stateDB->getValue("CollectionRevMin");
-	std::string colMaxRev = m_stateDB->getValue("CollectionRevMax");
+	std::string plMinRev = m_stateDB->getValue("PlaylistRevMin", found);
+	CPPUNIT_ASSERT(found);
+	std::string plMaxRev = m_stateDB->getValue("PlaylistRevMax", found);
+	CPPUNIT_ASSERT(found);
 
-	std::string plMinRev = m_stateDB->getValue("PlaylistRevMin");
-	std::string plMaxRev = m_stateDB->getValue("PlaylistRevMax");
-
-	std::string nlMinRev = m_stateDB->getValue("NextlistRevMin");
-	std::string nlMaxRev = m_stateDB->getValue("NextlistRevMax");
+	std::string nlMinRev = m_stateDB->getValue("NextlistRevMin", found);
+	CPPUNIT_ASSERT(found);
+	std::string nlMaxRev = m_stateDB->getValue("NextlistRevMax", found);
+	CPPUNIT_ASSERT(found);
 
 	cout << "Collection revs: [" << colMinRev << ".." << colMaxRev << "]" << endl;
 	cout << "Playlist revs:   [" << plMinRev << ".." << plMaxRev << "]" << endl;
@@ -159,9 +167,9 @@ void CDataBaseTest::selectColRevs() {
 	m_stateDB->open();
 
 	prepareSession();
+	m_stateDB->updateCollectionTable(m_session);
 
-
-	int rowID = m_stateDB->rowIDofColRevEntry(m_testHashPos, m_testHash, 0);
+	int rowID = m_stateDB->rowIDofColRevEntry(m_testHashPos, m_testHash, 1);
 
 	cout << "RowID of (" << m_testHashPos << ", " << m_testHash << ", 0): "<< rowID << endl;
 
@@ -238,10 +246,13 @@ void CDataBaseTest::StateDbUpdater() {
 
 	col_pre = m_fakeCollection->collectionWithoutFiles(1000);
 
-	int maxrev_pre = m_stateDbUpdater->getIntValue("CollectionRevMax");
+	bool found;
+	int maxrev_pre = m_stateDbUpdater->getIntValue("CollectionRevMax", found);
+	CPPUNIT_ASSERT(found);
 	m_stateDbUpdater->appendCollectionRev( col_pre );
 
-	int maxrev_post = m_stateDbUpdater->getIntValue("CollectionRevMax");
+	int maxrev_post = m_stateDbUpdater->getIntValue("CollectionRevMax", found);
+	CPPUNIT_ASSERT(found);
 	CPPUNIT_ASSERT_MESSAGE("CStateDbUpdater::appendCollectionRev(..) did not increase CollectionRevMax by 1.", maxrev_pre + 1 == maxrev_post );
 
 	col_post = m_stateDbUpdater->getCollectionRev( maxrev_pre );
@@ -271,6 +282,9 @@ void CDataBaseTest::noDBChange() {
 
 	// add the same collection a second time to DB, expect nrChanges to be 0
 	nrChanges = m_stateDbUpdater->appendCollectionRev( col );
+
+	m_stateDbUpdater->close();
+
 	CPPUNIT_ASSERT_MESSAGE("Adding the same collection  to the database did not return zero changes! ", nrChanges == 0 );
 
 }
@@ -279,6 +293,7 @@ void CDataBaseTest::noDBChange() {
 
 void CDataBaseTest::saveSession() {
 	bool ok = true;
+	prepareSession();
 	m_stateDB->open();
 	try {
 		m_stateDB->saveSession(m_session);
@@ -286,11 +301,12 @@ void CDataBaseTest::saveSession() {
 	catch(...) {
 		ok = false;
 	}
+	m_stateDB->close();
+
 	CPPUNIT_ASSERT( ok == true );
 }
 
 void CDataBaseTest::restoreSession() {
-
 	saveSession();
 
 	bool ok = true;
@@ -346,7 +362,7 @@ void CDataBaseTest::restoreSession() {
 		cout << "restored max Nextlist Revision does not match original one." << endl;
 	}
 
-	for(int colRev = minColRev; colRev < maxColRev; colRev++ ) {
+	for(int colRev = minColRev; colRev <= maxColRev; colRev++ ) {
 		CCollection<CCollectionItem>* col = m_session->getCollection(colRev);
 		CCollection<CCollectionItem>* reCol = restoredSession->getCollection(colRev);
 
@@ -354,7 +370,7 @@ void CDataBaseTest::restoreSession() {
 
 		if(col->size() != reCol->size() ) ok = false;
 
-		CPPUNIT_ASSERT( reCol->size() > 0 );
+		// CPPUNIT_ASSERT( reCol->size() > 0 );
 
 		for(int i=0; i < col->size(); i++) {
 			CCollectionItem* item = col->getItem(i);
@@ -401,5 +417,7 @@ void CDataBaseTest::restoreSession() {
 			}
 		}
 	}
+	m_stateDB->close();
+
 	CPPUNIT_ASSERT( ok == true );
 }

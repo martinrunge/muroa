@@ -79,11 +79,12 @@ int CStateDbBase::close() {
 	return 0;
 }
 
-std::string CStateDbBase::getValue(std::string key) {
+std::string CStateDbBase::getValue(std::string key, bool &found) {
 	sqlite3_stmt *pStmt;
 	const char *pzTail;
 	string value;
 
+	found = false;
 	stringstream ss;
 	ss << "SELECT value FROM general WHERE key='" << key << "'";
 	string sql_stmt = ss.str();
@@ -102,6 +103,7 @@ std::string CStateDbBase::getValue(std::string key) {
 			const unsigned char *val = sqlite3_column_text(pStmt, 0);
 			int valSize = sqlite3_column_bytes(pStmt, 0);
 			value = reinterpret_cast<const char*>(val);
+			found = true;
 			break;
 		}
 		case SQLITE_DONE:
@@ -126,12 +128,17 @@ std::string CStateDbBase::getValue(std::string key) {
 	return value;
 }
 
-int CStateDbBase::getIntValue(std::string key) {
-	std::string asString = getValue(key);
+int CStateDbBase::getIntValue(std::string key, bool &found) {
+	std::string asString = getValue(key, found);
 	int retval;
 
-	std::istringstream stream(asString);
-    stream >> retval;
+	if(found) {
+		std::istringstream stream(asString);
+		stream >> retval;
+	}
+	else {
+		retval = 0;
+	}
 	return retval;
 }
 
@@ -169,7 +176,38 @@ void CStateDbBase::setValue(std::string key, int value) {
 }
 
 void CStateDbBase::createGeneralTable() {
+	bool found;
 	createTable("general", "(key TEXT UNIQUE, value TEXT)");
+
+	int colRevMinVal = getIntValue("CollectionRevMin", found);
+	if(!found) {
+		setValue("CollectionRevMin", 1);
+	}
+
+	int colRevMaxVal = getIntValue("CollectionRevMax", found);
+	if(!found) {
+		setValue("CollectionRevMax", 1);
+	}
+
+	int plRevMinVal = getIntValue("PlaylistRevMin", found);
+	if(!found) {
+		setValue("PlaylistRevMin", 1);
+	}
+
+	int plRevMaxVal = getIntValue("PlaylistRevMax", found);
+	if(!found) {
+		setValue("PlaylistRevMax", 1);
+	}
+
+	int nlRevMinVal = getIntValue("NextlistRevMin", found);
+	if(!found) {
+		setValue("NextlistRevMin", 1);
+	}
+
+	int nlRevMaxVal = getIntValue("NextlistRevMax", found);
+	if(!found) {
+		setValue("NextlistRevMax", 1);
+	}
 }
 
 void CStateDbBase::createCollectionTable( ) {

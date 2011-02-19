@@ -104,8 +104,11 @@ bool CMediaScanner::handleMsg(CMsgBase* msg) {
 					m_dbg_file << "sent finished notification to parent: [jobID " <<  finiNotification->getJobID() << "]" << endl;
 
 					if( nrChanges > 0 ) {
-						int minRev = m_stateDbUpdater->getIntValue("CollectionRevMin");
-						int maxRev = m_stateDbUpdater->getIntValue("CollectionRevMax");
+						bool found;
+						int minRev = m_stateDbUpdater->getIntValue("CollectionRevMin", found);
+						assert(found);
+						int maxRev = m_stateDbUpdater->getIntValue("CollectionRevMax", found);
+						assert(found);
 						CMsgCollectionChanged* colChanged = new CMsgCollectionChanged( maxRev, minRev, maxRev );
 						sendEvent(colChanged);
 						m_dbg_file << "sent collectionChanged notification to parent." << endl;
