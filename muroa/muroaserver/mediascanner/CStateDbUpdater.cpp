@@ -37,11 +37,9 @@ int CStateDbUpdater::appendCollectionRev(std::vector<CMediaItem*> *collection) {
 
 	beginTansaction();
 
-	string colMaxRev = getValue("CollectionRevMax", found);
-	errno = 0;
+	int maxRev = getIntValue("CollectionRevMax", found);
 	assert(found == true);
-	int maxRev = strtol(colMaxRev.c_str(), NULL, 10);
-	assert (errno  == 0);
+	maxRev++;
 
 	for(int i = 0; i < collection->size(); i++) {
 		CMediaItem* item = collection->at(i);
@@ -50,7 +48,7 @@ int CStateDbUpdater::appendCollectionRev(std::vector<CMediaItem*> *collection) {
 	}
 
 	if(nrChanges > 0) {
-		setValue("CollectionRevMax", maxRev + 1);
+		setValue("CollectionRevMax", maxRev);
 	}
 
 	endTransaction();

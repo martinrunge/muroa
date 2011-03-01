@@ -10,9 +10,9 @@
 #include "CConnection.h"
 
 
-CSession::CSession() : m_latestCollectionRevision(-1),
-                       m_latestPlaylistRevision(-1),
-                       m_latestNextlistRevision(-1),
+CSession::CSession() : m_latestCollectionRevision(0),
+                       m_latestPlaylistRevision(0),
+                       m_latestNextlistRevision(0),
                        m_minCollectionRevision(0),
                        m_minPlaylistRevision(0),
                        m_minNextlistRevision(0),
@@ -20,9 +20,9 @@ CSession::CSession() : m_latestCollectionRevision(-1),
                        m_stateDB("state.db")
 {
 	// all thee collection have an empty revision 0!
-	// m_collectionRevisions[m_latestCollectionRevision] = new CCollection<CCollectionItem>();
-	// m_playlistRevisions[m_latestPlaylistRevision] = new CCollection<CPlaylistItem>();
-	// m_nextlistRevisions[m_latestNextlistRevision] = new CCollection<CPlaylistItem>();
+	m_collectionRevisions[m_latestCollectionRevision] = new CCollection<CCollectionItem>();
+	m_playlistRevisions[m_latestPlaylistRevision] = new CCollection<CPlaylistItem>();
+	m_nextlistRevisions[m_latestNextlistRevision] = new CCollection<CPlaylistItem>();
 
 	connect(&m_stream, SIGNAL(finished()), this, SLOT(next()));
 	connect(&m_stream, SIGNAL(progress(int, int)), this, SLOT(progress(int, int)));

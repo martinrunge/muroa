@@ -181,32 +181,32 @@ void CStateDbBase::createGeneralTable() {
 
 	int colRevMinVal = getIntValue("CollectionRevMin", found);
 	if(!found) {
-		setValue("CollectionRevMin", 1);
+		setValue("CollectionRevMin", 0);
 	}
 
 	int colRevMaxVal = getIntValue("CollectionRevMax", found);
 	if(!found) {
-		setValue("CollectionRevMax", 1);
+		setValue("CollectionRevMax", 0);
 	}
 
 	int plRevMinVal = getIntValue("PlaylistRevMin", found);
 	if(!found) {
-		setValue("PlaylistRevMin", 1);
+		setValue("PlaylistRevMin", 0);
 	}
 
 	int plRevMaxVal = getIntValue("PlaylistRevMax", found);
 	if(!found) {
-		setValue("PlaylistRevMax", 1);
+		setValue("PlaylistRevMax", 0);
 	}
 
 	int nlRevMinVal = getIntValue("NextlistRevMin", found);
 	if(!found) {
-		setValue("NextlistRevMin", 1);
+		setValue("NextlistRevMin", 0);
 	}
 
 	int nlRevMaxVal = getIntValue("NextlistRevMax", found);
 	if(!found) {
-		setValue("NextlistRevMax", 1);
+		setValue("NextlistRevMax", 0);
 	}
 }
 

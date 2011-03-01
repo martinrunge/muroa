@@ -39,7 +39,7 @@ CMuroaServer::CMuroaServer(QWidget *parent)
 	m_stateDB = new CStateDB(m_db_filename.toUtf8().constData());
 	m_stateDB->open();
 
-	m_stateDB->restoreCollection(m_session);
+	m_stateDB->restoreSession(m_session);
 
 	// CCollection<CCollectionItem>* collection = m_collectionUpdater.walkTree( m_mediadir.toStdString() );
 	// addCollectionRev(collection);
@@ -89,8 +89,9 @@ void CMuroaServer::jobFinished(int jobID) {
 
 void CMuroaServer::collectionChanged(int newRev, int minRev, int maxRev) {
 	int sessionMaxRev = m_session->getCollectionRevision();
-	for( int rev=sessionMaxRev; rev <= maxRev; rev++ ) {
+	for( int rev=sessionMaxRev + 1; rev <= maxRev; rev++ ) {
 		CCollection<CCollectionItem>* col = m_stateDB->getCollectionRev(rev);
+		addCollectionRev(col);
 	}
 }
 
