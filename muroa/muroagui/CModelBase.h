@@ -31,6 +31,7 @@ public:
 
 	virtual bool insertItem(T item, int pos) = 0;
 	virtual bool removeItem(int pos) = 0;
+	virtual bool removeItems(int pos, int count) = 0;
 
 	virtual QVariant data(const QModelIndex &index, int role) const = 0;
 	virtual QVariant headerData(int section, Qt::Orientation orientation, int role) const = 0;

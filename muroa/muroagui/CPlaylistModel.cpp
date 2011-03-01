@@ -64,6 +64,14 @@ bool CPlaylistModel::removeItem(int pos)
 }
 
 
+bool CPlaylistModel::removeItems(int row, int count)
+{
+    beginRemoveRows(QModelIndex(), row, row + count);
+    m_playlistPtr->removeItems(row, count);
+    endRemoveRows();
+}
+
+
 bool CPlaylistModel::insertRows(int row, int count, const QModelIndex & parent)
 {
 

@@ -306,6 +306,8 @@ template <typename T> void CStateMachine::parseCollection(QStringRef text, CMode
 	    T* newItem = new T(line);
 	    items.append(newItem);
 	} while (!line.isNull());
+	int count = model->rowCount(QModelIndex());
+	model->removeItems(0, count);
 
 	model->append(items);
 }

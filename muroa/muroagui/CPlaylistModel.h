@@ -41,6 +41,7 @@ public:
 
 	bool insertItem(CPlaylistItem* item, int pos);
 	bool removeItem(int pos);
+	bool removeItems(int row, int count);
 
 	bool insertRows(int row, int count, const QModelIndex & parent = QModelIndex());
 	bool removeRows(int row, int count, const QModelIndex & parent = QModelIndex());

@@ -209,8 +209,8 @@ template <class T> void CCollection<T>::removeItems(int pos, int num)
 {
 	for(int i = 0; i < num; i++)
 	{
-		m_hashMap.remove(m_items.at(pos + i)->getHash());
-		m_items.removeAt(pos + i);
+		m_hashMap.remove(m_items.at(pos)->getHash());
+		m_items.removeAt(pos);
 	}
 }
 

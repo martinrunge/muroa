@@ -94,6 +94,11 @@ void CMuroaGui::connectionStatusChanged(enum connectionState status) {
 		ui.actionStop->setEnabled( true );
 		ui.actionClose->setEnabled(true);
 		ui.actionOpen->setEnabled( false );
+
+		ui.collectionView->setEnabled( true );
+		ui.playlistView->setEnabled( true );
+		ui.nextToPlayView->setEnabled( true );
+
 	}
 	else {
 		statusMsg = QString("Not Connected.");
@@ -101,6 +106,11 @@ void CMuroaGui::connectionStatusChanged(enum connectionState status) {
 		ui.actionStop->setEnabled( false );
 		ui.actionClose->setEnabled(false);
 		ui.actionOpen->setEnabled( true );
+
+		ui.collectionView->setEnabled( false );
+		ui.playlistView->setEnabled( false );
+		ui.nextToPlayView->setEnabled( false );
+
 	}
 	m_connection_status_label.setText(statusMsg);
 }

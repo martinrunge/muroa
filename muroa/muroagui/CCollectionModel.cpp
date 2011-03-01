@@ -65,6 +65,13 @@ bool CCollectionModel::removeItem(int pos)
 	endRemoveRows();
 }
 
+bool CCollectionModel::removeItems(int row, int count)
+{
+    beginRemoveRows(QModelIndex(), row, row + count);
+    m_collectionPtr->removeItems(row, count);
+    endRemoveRows();
+}
+
 
 bool CCollectionModel::insertRows(int row, int count, const QModelIndex & parent)
 {
@@ -77,12 +84,13 @@ bool CCollectionModel::insertRows(int row, int count, const QModelIndex & parent
 
     endInsertRows();
     return true;
-
 }
 
 bool CCollectionModel::removeRows(int row, int count, const QModelIndex & parent)
 {
-
+    beginRemoveRows(QModelIndex(), row, row + count);
+    m_collectionPtr->removeItems(row, count);
+    endRemoveRows();
 }
 
 
