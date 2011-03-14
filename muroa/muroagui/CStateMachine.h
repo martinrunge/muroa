@@ -11,6 +11,7 @@
 class QTcpSocket;
 class QXmlStreamReader;
 class QXmlStreamWriter;
+class CConnection;
 class CPlaylistModel;
 class CCollectionModel;
 
@@ -37,15 +38,19 @@ class CStateMachine : public QObject
 {
     Q_OBJECT;
 public:
-    CStateMachine();
+    CStateMachine(CConnection* conn);
     ~CStateMachine();
 
     inline void setXmlWriter(QXmlStreamWriter* const xml_writer) { m_xml_writer = xml_writer; };
-    inline void setNextlistModelPtr(CPlaylistModel* const nextlistModelPtr ) { m_nextlistModelPtr = nextlistModelPtr; };
-    inline void setPlaylistModelPtr(CPlaylistModel* const playlistModelPtr ) { m_playlistModelPtr = playlistModelPtr; };
-    inline void setCollectionModelPtr(CCollectionModel* const collectionModelPtr ) { m_collectionModelPtr = collectionModelPtr; };
 
-    inline int getRevision() { return m_revision; };
+    inline CPlaylistModel* getNextlistModelPtr() { return m_nextlistModelPtr; };
+    inline void setNextlistModelPtr(CPlaylistModel* const nextlistModelPtr ) { m_nextlistModelPtr = nextlistModelPtr; };
+
+    inline CPlaylistModel* getPlaylistModelPtr() { return m_playlistModelPtr; }
+    inline void setPlaylistModelPtr(CPlaylistModel* const playlistModelPtr ) { m_playlistModelPtr = playlistModelPtr; };
+
+    inline CCollectionModel* getCollectionModelPtr() { return m_collectionModelPtr; }
+    inline void setCollectionModelPtr(CCollectionModel* const collectionModelPtr ) { m_collectionModelPtr = collectionModelPtr; };
 
 signals:
     void progress( int done, int total );
@@ -68,10 +73,14 @@ private:
     int m_sessionState;
     int m_xml_depth;
 
+    CConnection* m_connectionPtr;
+
     CPlaylistModel* m_playlistModelPtr;
     CPlaylistModel* m_nextlistModelPtr;
     CCollectionModel* m_collectionModelPtr;
 
+    // these two are for internal use only, to store revision number
+    // received in open tag until clos tag is received.
     int m_revision;
     int m_diffFromRev;
 

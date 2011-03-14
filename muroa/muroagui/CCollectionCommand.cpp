@@ -7,13 +7,13 @@
 
 #include "CCollectionCommand.h"
 
-CCollectionCommand::CCollectionCommand( QObject * parent ) : CCommandBase(parent)
+CCollectionCommand::CCollectionCommand( int knownRev, QObject * parent ) : CCommandBase(knownRev, parent)
 {
 	m_cmdName = "modCollection";
 }
 
 
-CCollectionCommand::CCollectionCommand( const QString& diff, QObject * parent ) : CCommandBase(parent)
+CCollectionCommand::CCollectionCommand( int knownRev, const QString& diff, QObject * parent ) : CCommandBase(knownRev, parent)
 {
 	m_cmdName = "modCollection";
 	m_cmdData = diff;

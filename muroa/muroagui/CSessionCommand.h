@@ -12,7 +12,7 @@
 
 class CSessionCommand: public CCommandBase {
 public:
-	CSessionCommand( QString name = QString(), QObject * parent = 0 );
+	CSessionCommand(  int knownRev, QString name = QString(), QObject * parent = 0 );
 	virtual ~CSessionCommand();
 
 	void timeout();

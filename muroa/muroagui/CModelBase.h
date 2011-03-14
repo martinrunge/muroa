@@ -21,7 +21,7 @@ public:
 	CModelBase(QObject* parent = 0) : QAbstractTableModel(parent) {};
 	virtual ~CModelBase() {};
 
-	inline void setCollection(CCollection<T>* collectionPtr) { m_collectionPtr = collectionPtr; };
+//	inline void setCollection(CCollection<T>* collectionPtr) { m_collectionPtr = collectionPtr; };
 
 	virtual int rowCount(const QModelIndex &parent) const = 0;
 	virtual int columnCount(const QModelIndex &parent) const = 0;
@@ -33,13 +33,18 @@ public:
 	virtual bool removeItem(int pos) = 0;
 	virtual bool removeItems(int pos, int count) = 0;
 
+	virtual int getRevision() = 0;
+	virtual void setRevision(int revision) = 0;
+
+
 	virtual QVariant data(const QModelIndex &index, int role) const = 0;
 	virtual QVariant headerData(int section, Qt::Orientation orientation, int role) const = 0;
 
 	virtual T itemAt(int pos) const = 0;
 	virtual QString getItemAsString(int pos) = 0;
-private:
-	CCollection<T>* m_collectionPtr;
+
+//protected:
+//	CCollection<T>* m_collectionPtr;
 
 };
 

@@ -136,7 +136,7 @@ QStringList CCollectionModel::mimeTypes() const
 {
 	QStringList sl;
 
-	sl << "application/x-muroa-playliust-diff";
+	sl << "application/x-muroa-playlist-diff";
 
 	return sl;
 }

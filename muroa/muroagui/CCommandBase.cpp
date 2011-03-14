@@ -12,7 +12,7 @@
 int CCommandBase::m_timeout_in_ms = 100;
 int CCommandBase::m_first_free_id = 0;
 
-CCommandBase::CCommandBase(QObject * parent) : QObject(parent) {
+CCommandBase::CCommandBase(int knownRev, QObject * parent) : m_known_rev(knownRev), QObject(parent) {
 
 	m_timer.setSingleShot(true);
 	m_timer.setInterval(m_timeout_in_ms);

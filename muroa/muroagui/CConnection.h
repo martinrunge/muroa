@@ -46,14 +46,10 @@ public slots:
     void prev();
 
     void addSong(QString artist, QString album, QString title);
-    void getCollection();
-    void getCollection(int knownRevision);
 
-    void getPlaylist();
-    void getPlaylist(int knownRevision);
-
-    void getNextlist();
-    void getNextlist(int knownRevision);
+    void getCollection(int knownRevision = -1);
+    void getPlaylist(int knownRevision = -1);
+    void getNextlist(int knownRevision = -1);
 
     void sendCommand(CCommandBase* cmd);
 

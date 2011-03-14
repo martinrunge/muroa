@@ -6,9 +6,13 @@
 #include "CSessionCommand.h"
 #include <QDebug>
 
-CConnection::CConnection() : m_xml_reader(0)
+#include "CCollectionModel.h"
+#include "CPlaylistModel.h"
+
+CConnection::CConnection() : m_sm(this), m_xml_reader(0)
 {
-    connect(&m_socket, SIGNAL(connected()), this, SLOT(connected()));
+
+	connect(&m_socket, SIGNAL(connected()), this, SLOT(connected()));
     connect(&m_socket, SIGNAL(disconnected()), this, SLOT(disconnected()));
     connect(&m_socket, SIGNAL(readyRead()), this, SLOT(readyRead()));
 
@@ -17,7 +21,9 @@ CConnection::CConnection() : m_xml_reader(0)
 
 CConnection::~CConnection()
 {
-
+    disconnect(&m_socket, SIGNAL(connected()), this, SLOT(connected()));
+    disconnect(&m_socket, SIGNAL(disconnected()), this, SLOT(disconnected()));
+    disconnect(&m_socket, SIGNAL(readyRead()), this, SLOT(readyRead()));
 }
 
 void CConnection::open(QString host, int port)
@@ -50,49 +56,55 @@ void CConnection::addSong(QString artist, QString album, QString title)
     m_xml_writer->writeEndElement();
 }
 
-void CConnection::getCollection()
-{
-    qDebug() << QString("getCollection");
-    m_xml_writer->writeStartElement("getCollection");
-    m_xml_writer->writeEndElement();
-}
+//void CConnection::getCollection()
+//{
+//    qDebug() << QString("getCollection");
+//    m_xml_writer->writeStartElement("getCollection");
+//    m_xml_writer->writeEndElement();
+//}
 
 void CConnection::getCollection(int knownRevision)
 {
     qDebug() << QString("getCollection");
     m_xml_writer->writeStartElement("getCollection");
-    m_xml_writer->writeAttribute("knownRev", QString().setNum(knownRevision));
+    if( knownRevision != -1) {
+    	m_xml_writer->writeAttribute("knownRev", QString().setNum(knownRevision));
+    }
     m_xml_writer->writeEndElement();
 }
 
-
-void CConnection::getPlaylist()
-{
-    qDebug() << QString("getPlaylist");
-    m_xml_writer->writeStartElement("getPlaylist");
-    m_xml_writer->writeEndElement();
-}
+//
+//void CConnection::getPlaylist()
+//{
+//    qDebug() << QString("getPlaylist");
+//    m_xml_writer->writeStartElement("getPlaylist");
+//    m_xml_writer->writeEndElement();
+//}
 
 void CConnection::getPlaylist(int knownRevision)
 {
     qDebug() << QString("getPlaylist");
     m_xml_writer->writeStartElement("getPlaylist");
-    m_xml_writer->writeAttribute("knownRev", QString().setNum(knownRevision));
+    if( knownRevision != -1) {
+    	m_xml_writer->writeAttribute("knownRev", QString().setNum(knownRevision));
+    }
     m_xml_writer->writeEndElement();
 }
 
-void CConnection::getNextlist()
-{
-    qDebug() << QString("getNextlist");
-    m_xml_writer->writeStartElement("getNextlist");
-    m_xml_writer->writeEndElement();
-}
+//void CConnection::getNextlist()
+//{
+//    qDebug() << QString("getNextlist");
+//    m_xml_writer->writeStartElement("getNextlist");
+//    m_xml_writer->writeEndElement();
+//}
 
 void CConnection::getNextlist(int knownRevision)
 {
     qDebug() << QString("getNextlist");
     m_xml_writer->writeStartElement("getNextlist");
-    m_xml_writer->writeAttribute("knownRev", QString().setNum(knownRevision));
+    if( knownRevision != -1) {
+    	m_xml_writer->writeAttribute("knownRev", QString().setNum(knownRevision));
+    }
     m_xml_writer->writeEndElement();
 }
 
@@ -109,9 +121,10 @@ void CConnection::connected()
     m_xml_writer->writeStartDocument(QString("1.0"), true);
     m_xml_writer->writeStartElement("session");
 
-    getCollection();
-    getPlaylist();
-    getNextlist();
+
+    getCollection(m_sm.getCollectionModelPtr()->getRevision());
+    getPlaylist(m_sm.getPlaylistModelPtr()->getRevision());
+    getNextlist(m_sm.getNextlistModelPtr()->getRevision());
 
     emit connectionStatusChanged( e_connected );
 }
@@ -203,7 +216,7 @@ void CConnection::sendCommand(CCommandBase* cmd)
 {
     qDebug() << QString("sendCommand %1").arg(cmd->commandName());
     m_xml_writer->writeStartElement(cmd->commandName());
-    m_xml_writer->writeAttribute("fromRev", QString().setNum(m_sm.getRevision()));
+    m_xml_writer->writeAttribute("fromRev", QString().setNum(cmd->knownRev()));
     m_xml_writer->writeCharacters(cmd->commandData());
     m_xml_writer->writeEndElement();
 
@@ -213,23 +226,23 @@ void CConnection::sendCommand(CCommandBase* cmd)
 
 void CConnection::play()
 {
-	CSessionCommand *cmd = new CSessionCommand("play");
+	CSessionCommand *cmd = new CSessionCommand(0, "play");
 	sendCommand(cmd);
 }
 
 void CConnection::stop()
 {
-	CSessionCommand *cmd = new CSessionCommand("stop");
+	CSessionCommand *cmd = new CSessionCommand(0, "stop");
 	sendCommand(cmd);
 }
 
 void CConnection::next() {
-	CSessionCommand *cmd = new CSessionCommand("next");
+	CSessionCommand *cmd = new CSessionCommand(0, "next");
 	sendCommand(cmd);
 }
 
 void CConnection::prev() {
-	CSessionCommand *cmd = new CSessionCommand("prev");
+	CSessionCommand *cmd = new CSessionCommand(0, "prev");
 	sendCommand(cmd);
 }
 

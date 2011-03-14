@@ -7,74 +7,70 @@
 
 #include "Exceptions.h"
 
-
-CException::CException(std::string reason) throw() {
+CException::CException(std::string reason) throw () {
 	m_reason = reason;
 }
 
-CException::~CException() throw() {
+CException::~CException() throw () {
 	// TODO Auto-generated destructor stub
 }
 
-const char* CException::what() const throw() {
+const char* CException::what() const throw () {
 	return m_reason.c_str();
 }
 
-const std::string CException::reason() const throw() {
+const std::string CException::reason() const throw () {
 	return m_reason;
 }
 
-
-
-CApiMisuseException::CApiMisuseException(std::string reason) throw() {
+CApiMisuseException::CApiMisuseException(std::string reason) throw () {
 	m_reason = reason;
 }
 
-CApiMisuseException::~CApiMisuseException() throw() {
+CApiMisuseException::~CApiMisuseException() throw () {
 	// TODO Auto-generated destructor stub
 }
 
-const char* CApiMisuseException::what() const throw() {
+const char* CApiMisuseException::what() const throw () {
 	return m_reason.c_str();
 }
 
-const std::string CApiMisuseException::reason() const throw() {
+const std::string CApiMisuseException::reason() const throw () {
 	return m_reason;
 }
 
-
-InvalidMsgException::InvalidMsgException(std::string reason) throw() {
+InvalidMsgException::InvalidMsgException(std::string reason) throw () {
 	m_reason = reason;
 }
 
-InvalidMsgException::~InvalidMsgException() throw() {
+InvalidMsgException::~InvalidMsgException() throw () {
 }
 
-const char* InvalidMsgException::what() const throw() {
+const char* InvalidMsgException::what() const throw () {
 	return m_reason.c_str();
 }
 
-const std::string InvalidMsgException::reason() const throw() {
+const std::string InvalidMsgException::reason() const throw () {
 	return m_reason;
 }
 
-NeedMoreDataException::NeedMoreDataException(std::string reason, int code) throw() {
+NeedMoreDataException::NeedMoreDataException(std::string reason, int code) throw () {
 	m_reason = reason;
 	m_code = code;
 }
 
-NeedMoreDataException::~NeedMoreDataException() throw() {
+NeedMoreDataException::~NeedMoreDataException() throw () {
 }
 
-const char* NeedMoreDataException::what() const throw() {
+const char* NeedMoreDataException::what() const throw () {
 	return m_reason.c_str();
 }
 
-const std::string NeedMoreDataException::reason() const throw() {
+const std::string NeedMoreDataException::reason() const throw () {
 	return m_reason;
 }
 
-const int NeedMoreDataException::code() const throw() {
+const int NeedMoreDataException::code() const throw () {
 	return m_code;
 }
 

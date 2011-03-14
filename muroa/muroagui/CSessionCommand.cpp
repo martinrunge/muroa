@@ -7,7 +7,7 @@
 
 #include "CSessionCommand.h"
 
-CSessionCommand::CSessionCommand( QString name , QObject * parent ) {
+CSessionCommand::CSessionCommand( int knownRev, QString name , QObject * parent ) : CCommandBase(knownRev) {
 	m_cmdName = name;
 	m_cmdData = QString();
 }

@@ -12,8 +12,8 @@
 
 class CPlaylistCommand: public CCommandBase {
 public:
-	CPlaylistCommand(QObject * parent = 0 );
-	CPlaylistCommand(const QString& diff, QObject * parent = 0 );
+	CPlaylistCommand(int knownRev, QObject * parent = 0 );
+	CPlaylistCommand(int knownRev, const QString& diff, QObject * parent = 0 );
 	virtual ~CPlaylistCommand();
 
 	void setData(const QString& diff);

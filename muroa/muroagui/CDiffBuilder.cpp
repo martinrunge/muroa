@@ -225,15 +225,15 @@ QString CDiffBuilder::diff(CModelDiff md)
 	switch(commandType)
 	{
 	case E_COLLECTION:
-		cmd = new CCollectionCommand(text);
+		cmd = new CCollectionCommand(m_collectionPtr->getRevision(), text);
 		break;
 
 	case E_PLAYLIST:
-		cmd = new CPlaylistCommand(text);
+		cmd = new CPlaylistCommand(m_playlistPtr->getRevision(), text);
 		break;
 
 	case E_NEXTLIST:
-		cmd = new CNextlistCommand(text);
+		cmd = new CNextlistCommand(m_nextlistPtr->getRevision(), text);
 		break;
 
 	default:

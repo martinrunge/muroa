@@ -6,6 +6,8 @@
 #include <QXmlStreamReader>
 #include <QRegExp>
 
+#include "CConnection.h"
+
 #include "CCollection.h"
 #include "CCollectionItem.h"
 #include "CPlaylistItem.h"
@@ -13,7 +15,7 @@
 #include "CPlaylistModel.h"
 #include "CCollectionModel.h"
 
-CStateMachine::CStateMachine()
+CStateMachine::CStateMachine(CConnection* conn) : m_connectionPtr(conn)
 {
 	m_revision = 0;
 	m_state = e_no_session;
@@ -104,14 +106,17 @@ void CStateMachine::endElement(QXmlStreamReader* reader)
     }
     else if(name.toString().startsWith("nextlist"))
     {
+    	m_nextlistModelPtr->setRevision(m_revision);
 	    m_state = e_nextlist_received;
     }
     else if(name.toString().startsWith("playlist"))
     {
+    	m_playlistModelPtr->setRevision(m_revision);
 	    m_state = e_playlist_received;
     }
     else if(name.toString().startsWith("collection"))
     {
+    	m_collectionModelPtr->setRevision(m_revision);
 	    m_state = e_collection_received;
     }
     else if(name.toString().startsWith("addSong"))

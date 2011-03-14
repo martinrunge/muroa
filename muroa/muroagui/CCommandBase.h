@@ -16,13 +16,15 @@ class CCommandBase : public QObject
 {
 	Q_OBJECT;
 public:
-	CCommandBase(QObject * parent = 0 );
+	CCommandBase(int knownRev, QObject * parent = 0 );
 	virtual ~CCommandBase();
 
 	inline QString commandName() const { return m_cmdName; };
 	inline void setCommandName(QString name) { m_cmdName = name; };
 	inline QString commandData() const { return m_cmdData; };
 	inline void setCommandData(QString cmdData) { m_cmdData = cmdData; };
+
+	inline int knownRev() { return m_known_rev; };
 
 	void send();
 	void ack();
@@ -35,6 +37,8 @@ public slots:
 protected:
 	QString m_cmdName;
 	QString m_cmdData;
+
+	int m_known_rev;
 
 private:
 	QTimer m_timer;

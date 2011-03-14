@@ -12,8 +12,8 @@
 
 class CNextlistCommand: public CCommandBase {
 public:
-	CNextlistCommand(QObject * parent = 0 );
-	CNextlistCommand(const QString& diff, QObject * parent = 0);
+	CNextlistCommand(int knownRev, QObject * parent = 0 );
+	CNextlistCommand(int knownRev, const QString& diff, QObject * parent = 0);
 	virtual ~CNextlistCommand();
 
 	void setData(const QString& diff);

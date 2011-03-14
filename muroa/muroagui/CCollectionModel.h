@@ -35,6 +35,9 @@ public:
 	bool removeItem(int pos);
 	bool removeItems(int row, int count);
 
+	virtual int getRevision() { return m_collectionPtr->getRevision(); };
+	virtual void setRevision(int revision) { m_collectionPtr->setRevision(revision); };
+
 	bool insertRows(int row, int count, const QModelIndex & parent = QModelIndex());
 	bool removeRows(int row, int count, const QModelIndex & parent = QModelIndex());
 

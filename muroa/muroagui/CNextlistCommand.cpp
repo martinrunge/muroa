@@ -7,12 +7,12 @@
 
 #include "CNextlistCommand.h"
 
-CNextlistCommand::CNextlistCommand(QObject * parent) : CCommandBase(parent)
+CNextlistCommand::CNextlistCommand(int knownRev, QObject * parent) : CCommandBase(knownRev, parent)
 {
 	m_cmdName = "modNextlist";
 }
 
-CNextlistCommand::CNextlistCommand(const QString& diff, QObject * parent): CCommandBase(parent)
+CNextlistCommand::CNextlistCommand(int knownRev, const QString& diff, QObject * parent): CCommandBase(knownRev, parent)
 {
 	m_cmdName = "modNextlist";
 	m_cmdData = diff;

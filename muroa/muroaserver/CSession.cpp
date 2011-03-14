@@ -29,6 +29,7 @@ CSession::CSession() : m_latestCollectionRevision(0),
 }
 
 CSession::~CSession() {
+	disconnect(&m_stream, SIGNAL(progress(int, int)), this, SLOT(progress(int, int)));
 
 }
 
@@ -144,7 +145,7 @@ void CSession::addCollectionRev(CCollection<CCollectionItem>* collection) {
 
 	for(int i=0; i < m_connections.size(); i++)
 	{
-		m_connections.at(i)->sendCollection(m_latestCollectionRevision);
+		m_connections.at(i)->sendCollection(collection);
 	}
 
 }
@@ -165,7 +166,7 @@ void CSession::addPlaylistRev(CCollection<CPlaylistItem>* playlist) {
 
 	for(int i=0; i < m_connections.size(); i++)
 	{
-		m_connections.at(i)->sendPlaylist(m_latestPlaylistRevision);
+		m_connections.at(i)->sendPlaylist(playlist);
 	}
 }
 
@@ -182,7 +183,7 @@ void CSession::addPlaylistRev(QString playlist)
 
 	for(int i=0; i < m_connections.size(); i++)
 	{
-		m_connections.at(i)->sendPlaylist(m_latestPlaylistRevision);
+		m_connections.at(i)->sendPlaylist(newPlaylist);
 	}
 }
 
@@ -192,7 +193,7 @@ void CSession::addNextlistRev(CCollection<CPlaylistItem>* nextlist) {
 
 	for(int i=0; i < m_connections.size(); i++)
 	{
-		m_connections.at(i)->sendPlaylist(m_latestNextlistRevision);
+		m_connections.at(i)->sendPlaylist(nextlist);
 	}
 }
 
@@ -208,7 +209,7 @@ void CSession::addNextlistRev(QString nextlist)
 
 	for(int i=0; i < m_connections.size(); i++)
 	{
-		m_connections.at(i)->sendNextlist(m_latestNextlistRevision);
+		m_connections.at(i)->sendNextlist(newNextlist);
 	}
 }
 
@@ -224,7 +225,7 @@ int CSession::addCollectionRevFromDiff(QString* collectionDiff, int diffFromRev)
 
 	for(int i=0; i < m_connections.size(); i++)
 	{
-		m_connections.at(i)->sendCollection(diffFromRev);
+		m_connections.at(i)->sendCollectionDiff(m_latestCollectionRevision, diffFromRev, *collectionDiff);
 	}
 }
 
@@ -241,7 +242,7 @@ int CSession::addPlaylistRevFromDiff(QString* playlistDiff, int diffFromRev)
 
 	for(int i=0; i < m_connections.size(); i++)
 	{
-		m_connections.at(i)->sendPlaylist(diffFromRev);
+		m_connections.at(i)->sendPlaylistDiff(m_latestPlaylistRevision, diffFromRev, *playlistDiff);
 	}
 }
 
@@ -258,7 +259,7 @@ int CSession::addNextlistRevFromDiff(QString* nextlistDiff, int diffFromRev)
 
 	for(int i=0; i < m_connections.size(); i++)
 	{
-		m_connections.at(i)->sendNextlist(diffFromRev);
+		m_connections.at(i)->sendNextlistDiff(m_latestNextlistRevision, diffFromRev, *nextlistDiff);
 	}
 }
 
@@ -290,7 +291,7 @@ int CSession::addNextlistRevFromNextCmd() {
 
 	for(int i=0; i < m_connections.size(); i++)
 	{
-		m_connections.at(i)->sendNextlist(m_latestNextlistRevision - 1);
+		m_connections.at(i)->sendNextlist(newNextlist);
 	}
 
 }

@@ -7,6 +7,8 @@
 #include "CContentHandler.h"
 #include "CStateMachine.h"
 #include "CSession.h"
+#include "CCollection.h"
+#include "Exceptions.h"
 
 class QXmlInputSource;
 class QXmlSimpleReader;
@@ -27,11 +29,28 @@ public:
     void play();
     void stop();
 
-    void sendCollection(int knownRevision = -1);
-    void sendPlaylist(int knownRevision = -1);
-    void sendNextlist(int knownRevision = -1);
+    void sendCollection();
+    void sendCollection(CCollection<CCollectionItem>* collection);
+    void sendCollectionDiff(int diffFromRev);
+    void sendCollectionDiff(int revision, int diffFromRev, QString diff);
+
+    void sendPlaylist();
+    void sendPlaylist(CCollection<CPlaylistItem>* playlist);
+    void sendPlaylistDiff(int diffFromRev);
+    void sendPlaylistDiff(int revision, int diffFromRev, QString diff);
+
+    void sendNextlist();
+    void sendNextlist(CCollection<CPlaylistItem>* nextlist);
+    void sendNextlistDiff(int diffFromRev);
+    void sendNextlistDiff(int revision, int diffFromRev, QString diff);
+
+	int addCollectionRevFromDiff(QString* collectionDiff, int diffFromRev);
+	int addPlaylistRevFromDiff(QString* playlistDiff, int diffFromRev);
+	int addNextlistRevFromDiff(QString* nextlistDiff, int diffFromRev);
 
     void sendProgress(int done, int total);
+
+    void reportError(QString error);
 
 signals:
     void connectionStatusChanged(QString message);
@@ -53,7 +72,7 @@ public slots:
     inline void setSessionPtr(CSession * session)
     {
     	m_session = session;
-    	m_sm.setSessionPtr(m_session);
+    	// m_sm.setSessionPtr(m_session);
     };
 
 private:

@@ -110,11 +110,21 @@ QVariant CPlaylistModel::data(const QModelIndex &index, int role) const
 	//if(!item) return QVariant();
 	if(!item)
 	{
-		m_collectionPtr->dump();
+		cerr << "No CollectionItem with hash '" << hash << "' found." << endl;
+		// m_collectionPtr->dump();
 		return QVariant();
 	}
 
-	QString playlistentry = QString("%1  %2").arg(item->data(0).toString()).arg(item->data(3).toString());
+	QString playlistentry;
+	QString artist = item->data(0).toString();
+	QString title = item->data(2).toString();
+	if( artist.isEmpty() || title.isEmpty() ) {
+		// use filename
+		playlistentry = item->data(5).toString();
+	}
+	else {
+		playlistentry = QString("%1  %2").arg(artist).arg(title);
+	}
 
 	return playlistentry;
 }
@@ -160,7 +170,7 @@ QStringList CPlaylistModel::mimeTypes() const
 {
 	QStringList sl;
 
-	sl << "application/x-muroa-playliust-diff";
+	sl << "application/x-muroa-playlist-diff";
 
 	return sl;
 }

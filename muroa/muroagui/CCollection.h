@@ -20,7 +20,7 @@ using namespace std;
 template <class T>
 class CCollection {
 public:
-	CCollection() {};
+	CCollection() : m_revision(-1) {};
 	virtual ~CCollection() {};
 
 	inline int size() { return m_items.size(); };
@@ -75,11 +75,16 @@ public:
 
 	T at(int row) { return m_items.at(row); };
 
+	inline int getRevision() { return m_revision; };
+	inline void setRevision(int revision) { m_revision = revision; };
+
 	void dump();
 
 private:
 	QList<T> m_items;
 	QHash<unsigned, T> m_hashMap;
+
+	int m_revision;
 };
 
 

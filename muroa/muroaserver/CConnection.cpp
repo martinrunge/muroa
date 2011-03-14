@@ -101,68 +101,99 @@ void CConnection::stop()
     m_session->stop();
 }
 
-void CConnection::sendCollection(int knownRevision)
+void CConnection::sendCollection() {
+	CCollection<CCollectionItem>* collection = m_session->getCollection();
+	sendCollection(collection);
+}
+
+void CConnection::sendCollection(CCollection<CCollectionItem>* collection)
 {
-	QString collection;
-
     m_xml_writer->writeStartElement("collection");
-    m_xml_writer->writeAttribute("revision", QString().setNum(m_session->getCollectionRevision()));
-
-    collection = m_session->getCollectionDiff(knownRevision);
-    if(!collection.isNull())
-    {
-    	m_xml_writer->writeAttribute("diffFromRev", QString().setNum(knownRevision));
-    }
-    else
-    {
-    	collection = m_session->getCollection()->getText();
-    }
-    // qDebug() << collection;
-    m_xml_writer->writeCharacters(collection);
+    m_xml_writer->writeAttribute("revision", QString().setNum(collection->getRevision()));
+    m_xml_writer->writeCharacters(collection->getText());
     m_xml_writer->writeEndElement();
 }
 
-void CConnection::sendPlaylist(int knownRevision)
+void CConnection::sendCollectionDiff(int diffFromRev) {
+	QString collectionDiff = m_session->getCollectionDiff(diffFromRev);
+	sendCollectionDiff(diffFromRev, m_session->getCollectionRevision(), collectionDiff);
+}
+
+
+void CConnection::sendCollectionDiff(int revision, int diffFromRev, QString diff) {
+	m_xml_writer->writeStartElement("collection");
+	m_xml_writer->writeAttribute("revision", QString().setNum(revision));
+	m_xml_writer->writeAttribute("diffFromRev", QString().setNum(diffFromRev));
+    m_xml_writer->writeCharacters(diff);
+    m_xml_writer->writeEndElement();
+}
+
+void CConnection::sendPlaylist() {
+	CCollection<CPlaylistItem>* playlist = m_session->getPlaylist();
+	sendPlaylist(playlist);
+}
+
+void CConnection::sendPlaylist(CCollection<CPlaylistItem>* playlist)
 {
-	QString playlist;
+    m_xml_writer->writeStartElement("playlist");
+    m_xml_writer->writeAttribute("revision", QString().setNum(playlist->getRevision()));
+    m_xml_writer->writeCharacters(playlist->getText());
+    m_xml_writer->writeEndElement();
+}
+
+void CConnection::sendPlaylistDiff(int diffFromRev) {
+	QString playlistDiff = m_session->getPlaylistDiff(diffFromRev);
+	sendPlaylistDiff(diffFromRev, m_session->getPlaylistRevision(), playlistDiff);
+}
+
+void CConnection::sendPlaylistDiff(int revision, int diffFromRev, QString diff) {
 
     m_xml_writer->writeStartElement("playlist");
-    m_xml_writer->writeAttribute("revision", QString().setNum(m_session->getPlaylistRevision()));
-
-    playlist = m_session->getPlaylistDiff(knownRevision);
-    if(!playlist.isNull())
-    {
-    	m_xml_writer->writeAttribute("diffFromRev", QString().setNum(knownRevision));
-    }
-    else
-    {
-    	playlist = m_session->getPlaylist()->getText();
-    }
-    // qDebug() << collection;
-    m_xml_writer->writeCharacters(playlist);
+    m_xml_writer->writeAttribute("revision", QString().setNum(revision));
+   	m_xml_writer->writeAttribute("diffFromRev", QString().setNum(diffFromRev));
+    m_xml_writer->writeCharacters(diff);
     m_xml_writer->writeEndElement();
 }
 
-void CConnection::sendNextlist(int knownRevision)
+void CConnection::sendNextlist() {
+	CCollection<CPlaylistItem>* nextlist = m_session->getNextlist();
+	sendNextlist(nextlist);
+}
+
+void CConnection::sendNextlist(CCollection<CPlaylistItem>* nextlist)
 {
-	QString nextlist;
-
     m_xml_writer->writeStartElement("nextlist");
-    m_xml_writer->writeAttribute("revision", QString().setNum(m_session->getNextlistRevision()));
-
-    nextlist = m_session->getNextlistDiff(knownRevision);
-    if(!nextlist.isNull())
-    {
-    	m_xml_writer->writeAttribute("diffFromRev", QString().setNum(knownRevision));
-    }
-    else
-    {
-    	nextlist = m_session->getNextlist()->getText();
-    }
-
-    m_xml_writer->writeCharacters(nextlist);
+    m_xml_writer->writeAttribute("revision", QString().setNum(nextlist->getRevision()));
+    m_xml_writer->writeCharacters(nextlist->getText());
     m_xml_writer->writeEndElement();
 }
+
+void CConnection::sendNextlistDiff(int diffFromRev) {
+	QString nextlistDiff = m_session->getNextlistDiff(diffFromRev);
+	sendNextlistDiff(diffFromRev, m_session->getNextlistRevision(), nextlistDiff);
+}
+
+void CConnection::sendNextlistDiff(int revision, int diffFromRev, QString diff) {
+
+	m_xml_writer->writeStartElement("nextlist");
+    m_xml_writer->writeAttribute("revision", QString().setNum(revision));
+	m_xml_writer->writeAttribute("diffFromRev", QString().setNum(diffFromRev));
+    m_xml_writer->writeCharacters(diff);
+    m_xml_writer->writeEndElement();
+}
+
+int CConnection::addCollectionRevFromDiff(QString* collectionDiff, int diffFromRev) {
+	m_session->addCollectionRevFromDiff(collectionDiff, diffFromRev);
+}
+
+int CConnection::addPlaylistRevFromDiff(QString* playlistDiff, int diffFromRev) {
+	m_session->addPlaylistRevFromDiff(playlistDiff, diffFromRev);
+}
+
+int CConnection::addNextlistRevFromDiff(QString* nextlistDiff, int diffFromRev) {
+	m_session->addNextlistRevFromDiff(nextlistDiff, diffFromRev);
+}
+
 
 
 void CConnection::sendProgress(int done, int total)
@@ -170,5 +201,12 @@ void CConnection::sendProgress(int done, int total)
     m_xml_writer->writeStartElement("progress");
     m_xml_writer->writeAttribute("done", QString().setNum(done));
     m_xml_writer->writeAttribute("total", QString().setNum(total));
+    m_xml_writer->writeEndElement();
+}
+
+
+void CConnection::reportError(QString error) {
+    m_xml_writer->writeStartElement("error");
+    m_xml_writer->writeCharacters(error);
     m_xml_writer->writeEndElement();
 }

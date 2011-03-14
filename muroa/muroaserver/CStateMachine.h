@@ -10,6 +10,8 @@ class QXmlStreamWriter;
 class CConnection;
 class CSession;
 
+#include "Exceptions.h"
+
 enum states { e_not_connected,
 			  e_connected,
 			  e_next_requested,
@@ -48,7 +50,7 @@ public slots:
     void characters(QXmlStreamReader* reader);
 
     // inline void setCollection(CCollection* collection) { m_collection = collection; };
-    inline void setSessionPtr(CSession* session) { m_session = session; };
+    // inline void setSessionPtr(CSession* session) { m_session = session; };
 
     // void sendCollection();
 
@@ -67,7 +69,7 @@ private:
     QString m_collectionDiff;
 
     CConnection* m_connection;
-    CSession* m_session;
+    // CSession* m_session;
 
     QXmlStreamWriter* m_xml_writer;
 

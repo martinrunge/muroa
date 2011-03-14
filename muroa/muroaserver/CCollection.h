@@ -19,7 +19,7 @@ template <class T>
 class CCollection
 {
 public:
-	CCollection() {} ;
+	CCollection() : m_revision(-1) {} ;
 	CCollection(const CCollection<T>& other);
 	virtual ~CCollection();
 

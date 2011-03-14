@@ -159,72 +159,78 @@ void CStateMachine::startElement(QXmlStreamReader* reader)
 
 void CStateMachine::endElement(QXmlStreamReader* reader)
 {
-    QStringRef name = reader->name();
-    if(name.toString().startsWith("next") && m_state == e_next_requested)
-    {
-    	m_connection->next();
-    	m_state = e_connected;
-    }
-    else if(name.toString().startsWith("prev") && m_state == e_prev_requested)
-    {
-    	m_connection->prev();
-    	m_state = e_connected;
-    }
-    else if(name.toString().startsWith("play") && m_state == e_play_requested)
-    {
-    	m_connection->play();
-    	m_state = e_connected;
-    }
-    else if(name.toString().startsWith("stop") && m_state == e_stop_requested)
-    {
-    	m_connection->stop();
-    	m_state = e_connected;
-    }
-    else if(name.toString().startsWith("getNextlist") && m_state == e_nextlist_requested)
-    {
-    	m_connection->sendNextlist(m_knownRevision);
-    	m_state = e_connected;
-    }
-    else if(name.toString().startsWith("getNextlist") && m_state == e_nextlist_requested)
-    {
-    	m_connection->sendNextlist(m_knownRevision);
-    	m_state = e_connected;
-    }
-    else if(name.toString().startsWith("getPlaylist") && m_state == e_playlist_requested)
-    {
-    	m_connection->sendPlaylist(m_knownRevision);
-    	m_state = e_connected;
-    }
-    else if(name.toString().startsWith("getCollection") && m_state == e_collection_requested)
-    {
-    	m_connection->sendCollection(m_knownRevision);
-    	m_state = e_connected;
-    }
-    else if(name.toString().startsWith("modNextlist") && m_state == e_awaiting_nextlist_mod)
-    {
-    	m_session->addNextlistRevFromDiff(&m_nextlistDiff, m_diffFromRev);
-    	m_state = e_connected;
-    }
-    else if(name.toString().startsWith("modPlaylist") && m_state == e_awaiting_playlist_mod)
-    {
-    	m_session->addPlaylistRevFromDiff(&m_playlistDiff, m_diffFromRev);
-    	m_state = e_connected;
-    }
-    else if(name.toString().startsWith("modCollection") && m_state == e_awaiting_collection_mod)
-    {
-    	m_session->addCollectionRevFromDiff(&m_collectionDiff, m_diffFromRev);
-    	m_state = e_connected;
-    }
-    else if(name.toString().startsWith("session"))
-    {
-        qDebug() << QString("This client want's to leave");
-    }
-    else
-    {
-        qDebug() << QString("Unknown end tag received: %1").arg(reader->name().toString());
-    }
-    qDebug() << QString("endElement %1 (depth %2)").arg(reader->name().toString()).arg(m_xml_depth);
-    m_xml_depth--;
+	try {
+		QStringRef name = reader->name();
+		if(name.toString().startsWith("next") && m_state == e_next_requested)
+		{
+			m_connection->next();
+		}
+		else if(name.toString().startsWith("prev") && m_state == e_prev_requested)
+		{
+			m_connection->prev();
+		}
+		else if(name.toString().startsWith("play") && m_state == e_play_requested)
+		{
+			m_connection->play();
+		}
+		else if(name.toString().startsWith("stop") && m_state == e_stop_requested)
+		{
+			m_connection->stop();
+		}
+		else if(name.toString().startsWith("getNextlist") && m_state == e_nextlist_requested)
+		{
+			if(m_knownRevision == -1) {
+				m_connection->sendNextlist();
+			}
+			else {
+				m_connection->sendNextlistDiff(m_knownRevision);
+			}
+		}
+		else if(name.toString().startsWith("getPlaylist") && m_state == e_playlist_requested)
+		{
+			if(m_knownRevision == -1) {
+				m_connection->sendPlaylist();
+			}
+			else {
+				m_connection->sendPlaylistDiff(m_knownRevision);
+			}
+		}
+		else if(name.toString().startsWith("getCollection") && m_state == e_collection_requested)
+		{
+			if(m_knownRevision == -1) {
+				m_connection->sendCollection();
+			}
+			else {
+				m_connection->sendCollectionDiff(m_knownRevision);
+			}
+		}
+		else if(name.toString().startsWith("modNextlist") && m_state == e_awaiting_nextlist_mod)
+		{
+			m_connection->addNextlistRevFromDiff(&m_nextlistDiff, m_diffFromRev);
+		}
+		else if(name.toString().startsWith("modPlaylist") && m_state == e_awaiting_playlist_mod)
+		{
+			m_connection->addPlaylistRevFromDiff(&m_playlistDiff, m_diffFromRev);
+		}
+		else if(name.toString().startsWith("modCollection") && m_state == e_awaiting_collection_mod)
+		{
+			m_connection->addCollectionRevFromDiff(&m_collectionDiff, m_diffFromRev);
+		}
+		else if(name.toString().startsWith("session"))
+		{
+			qDebug() << QString("This client want's to leave");
+		}
+		else
+		{
+			qDebug() << QString("Unknown end tag received: %1").arg(reader->name().toString());
+		}
+		qDebug() << QString("endElement %1 (depth %2)").arg(reader->name().toString()).arg(m_xml_depth);
+	} catch(InvalidMsgException invEx) {
+		m_connection->reportError(invEx.what());
+	}
+	m_state = e_connected;
+
+	m_xml_depth--;
 }
 
 void CStateMachine::characters(QXmlStreamReader* reader)

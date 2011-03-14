@@ -15,8 +15,8 @@ CCollectionItem::CCollectionItem(QString itemStr) : CItemBase(itemStr)
 	setFilename( itemStr.section(',', 0, 0) );
 	setArtist( itemStr.section(',', 1, 1) );
 	setAlbum( itemStr.section(',', 2, 2) );
-	setYear( itemStr.section(',', 3, 3).toInt(&ok) );
-	setTitle( itemStr.section(',', 4, 4) );
+	setTitle( itemStr.section(',', 3, 3) );
+	setYear( itemStr.section(',', 4, 4).toInt(&ok) );
 	setLengthInSec( itemStr.section(',', 5, 5).toInt(&ok) );
 
 	m_hash = itemStr.section(',', 6, 6).toUInt(&ok);
@@ -40,11 +40,11 @@ QVariant CCollectionItem::data(int column) const
 			break;
 
 		case 2:
-			data = m_year;
+			data = m_title;
 			break;
 
 		case 3:
-			data = m_title;
+			data = m_year;
 			break;
 
 		case 4:
@@ -76,11 +76,11 @@ QString CCollectionItem::getTitle(int col)
 			break;
 
 		case 2:
-			title = "Year";
+			title = "Title";
 			break;
 
 		case 3:
-			title = "Title";
+			title = "Year";
 			break;
 
 		case 4:

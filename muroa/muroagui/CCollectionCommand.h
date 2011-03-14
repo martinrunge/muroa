@@ -12,8 +12,8 @@
 
 class CCollectionCommand: public CCommandBase {
 public:
-	CCollectionCommand( QObject * parent = 0 );
-	CCollectionCommand( const QString& diff, QObject * parent = 0 );
+	CCollectionCommand( int knownRev, QObject * parent = 0 );
+	CCollectionCommand( int knownRev, const QString& diff, QObject * parent = 0 );
 	virtual ~CCollectionCommand();
 
 	void setData(const QString& diff);
