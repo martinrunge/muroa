@@ -116,7 +116,7 @@ void CStateDB::restoreCollection(CSession * const session) {
 	session->setMinCollectionRevision( minRev );
 
 	for(int rev = minRev; rev <= maxRev; rev++) {
-		CCollection<CCollectionItem>* collection = new CCollection<CCollectionItem>();
+		CCollection<CCollectionItem>* collection = new CCollection<CCollectionItem>(rev);
 
 		CCollectionItem* item;
 		int pos = 0;
@@ -172,23 +172,15 @@ void CStateDB::restorePlaylists(CSession * const session) {
 	if(m_db == 0) throw(CApiMisuseException("Calling restorePlaylists(), but DB not opened."));
 	bool found;
 
-	std::string plMinRev = getValue("PlaylistRevMin", found);
+	int minRev = getIntValue("PlaylistRevMin", found);
 	assert(found);
-	std::string plMaxRev = getValue("PlaylistRevMax", found);
+	int maxRev = getIntValue("PlaylistRevMax", found);
 	assert(found);
-
-	errno = 0;
-	int minRev = strtol(plMinRev.c_str(), NULL, 10);
-	assert (errno  == 0);
-
-	errno = 0;
-	int maxRev = strtol(plMaxRev.c_str(), NULL, 10);
-	assert (errno  == 0);
 
 	session->setMinPlaylistRevision( minRev );
 
 	for(int rev = minRev; rev <= maxRev; rev++) {
-		CCollection<CPlaylistItem>* playlist = new CCollection<CPlaylistItem>();
+		CCollection<CPlaylistItem>* playlist = new CCollection<CPlaylistItem>(rev);
 
 		CPlaylistItem* item;
 		int pos = 0;
@@ -207,21 +199,15 @@ void CStateDB::restoreNextlists(CSession * const session) {
 	if(m_db == 0) throw(CApiMisuseException("Calling restoreNextlists(), but DB not opened."));
 	bool found;
 
-	std::string nlMinRev = getValue("NextlistRevMin", found);
-	std::string nlMaxRev = getValue("NextlistRevMax", found);
-
-	errno = 0;
-	int minRev = strtol(nlMinRev.c_str(), NULL, 10);
-	assert (errno  == 0);
-
-	errno = 0;
-	int maxRev = strtol(nlMaxRev.c_str(), NULL, 10);
-	assert (errno  == 0);
+	int minRev = getIntValue("NextlistRevMin", found);
+	assert(found);
+	int maxRev = getIntValue("NextlistRevMax", found);
+	assert(found);
 
 	session->setMinNextlistRevision( minRev );
 
 	for(int rev = minRev; rev < maxRev; rev++) {
-		CCollection<CPlaylistItem>* nextlist = new CCollection<CPlaylistItem>();
+		CCollection<CPlaylistItem>* nextlist = new CCollection<CPlaylistItem>(rev);
 
 		CPlaylistItem* item;
 		int pos = 0;

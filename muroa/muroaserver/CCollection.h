@@ -13,13 +13,14 @@
 #include <QRegExp>
 #include "CCollectionItem.h"
 #include "CPlaylistItem.h"
+#include "Exceptions.h"
 #include <QDebug>
 
 template <class T>
 class CCollection
 {
 public:
-	CCollection() : m_revision(-1) {} ;
+	CCollection(int revision = -1) : m_revision(revision) {} ;
 	CCollection(const CCollection<T>& other);
 	virtual ~CCollection();
 
@@ -30,7 +31,7 @@ public:
 		parse();
 	};
 
-	int patch(QString* diff, int revision);
+	int patch(QString* diff, int revision) throw(InvalidMsgException);
 	int insert(T*, int pos = -1);
 	T* takeAt(int pos);
 
@@ -118,7 +119,7 @@ template <class T> QString CCollection<T>::getText()
 	return collection;
 }
 
-template <class T> int CCollection<T>::patch(QString* diff, int revision)
+template <class T> int CCollection<T>::patch(QString* diff, int revision) throw(InvalidMsgException)
 {
 	qDebug() << QString("CCollection<T>::patch: %1").arg(*diff);
 	//template <typename T> void CStateMachine::parseCollectionDiff(QStringRef text, CModelBase<T*>* model)

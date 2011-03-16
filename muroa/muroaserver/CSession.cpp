@@ -213,14 +213,20 @@ void CSession::addNextlistRev(QString nextlist)
 	}
 }
 
-int CSession::addCollectionRevFromDiff(QString* collectionDiff, int diffFromRev)
+int CSession::addCollectionRevFromDiff(QString* collectionDiff, int diffFromRev) throw(InvalidMsgException)
 {
+	if( diffFromRev != m_latestCollectionRevision ) {
+		throw InvalidMsgException("Base revision of diff is not latest revision of collection.");
+	}
 	CCollection<CCollectionItem>* newCollection = new CCollection<CCollectionItem>( *(getCollection(m_latestCollectionRevision)) );
+
+	newCollection->patch(collectionDiff, m_latestCollectionRevision + 1);
+	// if patch fails, an exception will be thrown that will be caught by the caller of this method.
+	// Incrementing m_latestCollectionRevision after call to patch assures, that m_latestCollectionRevision
+	// will still have the correct old value in case of exception.
+
 	m_latestCollectionRevision++;
-	newCollection->patch(collectionDiff, m_latestCollectionRevision);
-
 	qDebug() << newCollection->getText();
-
 	m_collectionRevisions[m_latestCollectionRevision] = newCollection;
 
 	for(int i=0; i < m_connections.size(); i++)
@@ -229,13 +235,18 @@ int CSession::addCollectionRevFromDiff(QString* collectionDiff, int diffFromRev)
 	}
 }
 
-int CSession::addPlaylistRevFromDiff(QString* playlistDiff, int diffFromRev)
+int CSession::addPlaylistRevFromDiff(QString* playlistDiff, int diffFromRev) throw(InvalidMsgException)
 {
 	qDebug() << QString("CSession::addPlaylistRevFromDiff %1 %2").arg(*playlistDiff).arg(diffFromRev);
+	if( diffFromRev != m_latestPlaylistRevision ) {
+		throw InvalidMsgException("Base revision of diff is not latest revision of playlist.");
+	}
 	CCollection<CPlaylistItem>* newPlaylist = new CCollection<CPlaylistItem>( *(getPlaylist(m_latestPlaylistRevision)) );
-	m_latestPlaylistRevision++;
-	newPlaylist->patch(playlistDiff, m_latestPlaylistRevision);
+	newPlaylist->patch(playlistDiff, m_latestPlaylistRevision + 1);
 
+	// increase m_latestPlaylistRevision after call to patch because patch may throw an exception caught
+	// by the caller of this method. In that case m_latestPlaylistRevision must keept its old value.
+	m_latestPlaylistRevision++;
 	qDebug() << newPlaylist->getText();
 
 	m_playlistRevisions[m_latestPlaylistRevision] = newPlaylist;
@@ -246,13 +257,17 @@ int CSession::addPlaylistRevFromDiff(QString* playlistDiff, int diffFromRev)
 	}
 }
 
-int CSession::addNextlistRevFromDiff(QString* nextlistDiff, int diffFromRev)
+int CSession::addNextlistRevFromDiff(QString* nextlistDiff, int diffFromRev) throw(InvalidMsgException)
 {
 	qDebug() << QString("CSession::addNextlistRevFromDiff %1 %2").arg(*nextlistDiff).arg(diffFromRev);
+	if( diffFromRev != m_latestNextlistRevision ) {
+		throw InvalidMsgException("Base revision of diff is not latest revision of nextlist.");
+	}
 	CCollection<CPlaylistItem>* newNextlist = new CCollection<CPlaylistItem>( *(getNextlist(m_latestNextlistRevision)) );
+	newNextlist->patch(nextlistDiff, m_latestNextlistRevision + 1);
+	// increase m_latestPlaylistRevision after call to patch because patch may throw an exception caught
+	// by the caller of this method. In that case m_latestPlaylistRevision must keept its old value.
 	m_latestNextlistRevision++;
-	qDebug() << newNextlist->getText();
-	newNextlist->patch(nextlistDiff, m_latestNextlistRevision);
 	qDebug() << newNextlist->getText();
 
 	m_nextlistRevisions[m_latestNextlistRevision] = newNextlist;

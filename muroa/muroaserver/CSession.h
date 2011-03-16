@@ -57,9 +57,9 @@ public:
 	void addNextlistRev(CCollection<CPlaylistItem>* nextlist);
 	void addNextlistRev(QString playlist);
 
-	int addCollectionRevFromDiff(QString* collectionDiff, int diffFromRev);
-	int addPlaylistRevFromDiff(QString* playlistDiff, int diffFromRev);
-	int addNextlistRevFromDiff(QString* nextlistDiff, int diffFromRev);
+	int addCollectionRevFromDiff(QString* collectionDiff, int diffFromRev) throw(InvalidMsgException);
+	int addPlaylistRevFromDiff(QString* playlistDiff, int diffFromRev) throw(InvalidMsgException);
+	int addNextlistRevFromDiff(QString* nextlistDiff, int diffFromRev) throw(InvalidMsgException);
 
 	int addNextlistRevFromNextCmd();
 	int addNextlistRevFromPrevCmd();

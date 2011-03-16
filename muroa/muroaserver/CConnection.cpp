@@ -183,7 +183,12 @@ void CConnection::sendNextlistDiff(int revision, int diffFromRev, QString diff) 
 }
 
 int CConnection::addCollectionRevFromDiff(QString* collectionDiff, int diffFromRev) {
-	m_session->addCollectionRevFromDiff(collectionDiff, diffFromRev);
+	try {
+		m_session->addCollectionRevFromDiff(collectionDiff, diffFromRev);
+	}
+	catch(InvalidMsgException invalEx) {
+		reportError(invalEx.what());
+	}
 }
 
 int CConnection::addPlaylistRevFromDiff(QString* playlistDiff, int diffFromRev) {
