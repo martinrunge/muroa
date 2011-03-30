@@ -15,7 +15,7 @@ find_package( TagLib REQUIRED)
 find_package( Sqlite REQUIRED )
 
 add_subdirectory(unittest)
-add_subdirectory(mediascanner)
+# add_subdirectory(mediascanner)
 
 
 add_definitions( ${QT4_DEFINITIONS} ${SQLITE_DEFINITIONS} -D__STDC_CONSTANT_MACROS)

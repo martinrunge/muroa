@@ -19,8 +19,11 @@ public:
 	virtual ~CFakeMediaCollection();
 
 	std::vector<CMediaItem*>* collectionWithoutFiles( int size );
-
+	int mp3Ccollection(int numArtists, int numAlbumsPerArtist, int numTitlesPerAlbum);
 private:
+
+	void createMp3File(std::string filename);
+
 	std::string m_rootdir;
 };
 

@@ -11,6 +11,8 @@
 #include "../mediascanner/CFsScanner.h"
 #include "../mediascanner/CMediaItem.h"
 
+#include "CFakeMediaCollection.h"
+
 #include <stdlib.h>
 
 #include <iostream>
@@ -37,6 +39,13 @@ void CMediaFileTest::tearDown() {
 	delete m_fsScanner;
 	delete m_mediaScanner;
 }
+
+void CMediaFileTest::buildFakeCollection() {
+	CFakeMediaCollection fakeCol("./fakecol");
+	fakeCol.mp3Ccollection(10,10,10);
+
+}
+
 
 void CMediaFileTest::iterDir() {
 	fs::path full_path( fs::system_complete( getenv("HOME") ));
