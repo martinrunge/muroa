@@ -64,8 +64,6 @@ void CMuroaServer::newConnection(QTcpSocket* socket)
 	m_session->addConnection(conn);
 	connect(conn, SIGNAL(connectionStatusChanged(QString)), this, SLOT(connectionStatusChanged(QString)));
 	connect(conn, SIGNAL(connectionClosed(CConnection*)), m_session, SLOT(connectionClosed(CConnection*)));
-
-
 }
 
 void CMuroaServer::connectionStatusChanged(QString status)

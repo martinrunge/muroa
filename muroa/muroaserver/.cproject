@@ -130,6 +130,7 @@
 					<target name="Run cmake" path="" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
 						<buildCommand>cmake</buildCommand>
 						<buildArguments>-E chdir build cmake -DCMAKE_BUILD_TYPE=Debug ..</buildArguments>
+						<buildTarget/>
 						<stopOnError>false</stopOnError>
 						<useDefaultCommand>false</useDefaultCommand>
 						<runAllBuilders>false</runAllBuilders>
@@ -137,7 +138,6 @@
 					<target name="Clean" path="" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
 						<buildCommand>rm</buildCommand>
 						<buildArguments>-Rf build/</buildArguments>
-						<buildTarget/>
 						<stopOnError>false</stopOnError>
 						<useDefaultCommand>false</useDefaultCommand>
 						<runAllBuilders>true</runAllBuilders>

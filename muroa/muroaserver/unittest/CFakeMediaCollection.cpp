@@ -66,16 +66,30 @@ std::vector<CMediaItem*>* CFakeMediaCollection::collectionWithoutFiles( int size
 }
 
 int CFakeMediaCollection::mp3Ccollection(int numArtists, int numAlbumsPerArtist, int numTitlesPerAlbum) {
+	const string tmplname = "template.mp3";
+
 	path mp3_path( m_rootdir );
+	path tmp_file = mp3_path;
+	tmp_file /= tmplname;
+	createMp3File(tmp_file.string());
+
 	ostringstream oss_artist, oss_album, oss_title;
 
 	for(int artistNo = 0; artistNo < numArtists; artistNo++) {
 		oss_artist.str(string());
 		oss_artist << "Test Artist " << artistNo;
+		path artist_path = mp3_path;
+		artist_path /= oss_artist.str();
 
 		for(int albumNo = 0; albumNo < numAlbumsPerArtist; albumNo++) {
 			oss_album.str(string());
 			oss_album << "Test Album " << albumNo;
+			path album_path = artist_path;
+			album_path /= oss_album.str();
+			if ( !exists(album_path)) {
+				create_directories(album_path);
+				cerr << "mkpath: " << album_path <<endl;
+			}
 
 			for(int titleNo = 0; titleNo < numTitlesPerAlbum; titleNo++) {
 				oss_title.str(string());
@@ -84,18 +98,21 @@ int CFakeMediaCollection::mp3Ccollection(int numArtists, int numAlbumsPerArtist,
 				ostringstream oss_fn;
 				oss_fn.str(string());
 				oss_fn << titleNo << " " << oss_title.str() << ".mp3";
-				string filename = oss_fn.str();
 
-				createMp3File(filename);
+				path filename = album_path;
+				filename /= oss_fn.str();
+
+				copy_file(tmp_file, filename);
+				// createMp3File(filename.string());
 
 				char buffer[32];
 				memset(buffer, 0, 32);
 
-				FILE* fakefile = fopen(filename.c_str(), "wb");
+				FILE* fakefile = fopen(filename.string().c_str(), "wb");
 				fwrite(buffer, 32, 32, fakefile);
 				fclose(fakefile);
 
-				TagLib::FileRef f( filename.c_str(), false);
+				TagLib::FileRef f( filename.string().c_str(), false);
 
 				f.tag()->setArtist(oss_artist.str());
 				f.tag()->setAlbum(oss_album.str());
@@ -121,7 +138,7 @@ void CFakeMediaCollection::createMp3File(std::string filename) {
 	float t, tincr;
 	uint8_t *outbuf;
 
-	printf("Audio encoding\n");
+	cerr << "Audio encoding" << endl;
 
 	/* find the MP2 encoder */
 	codec = avcodec_find_encoder(CODEC_ID_MP3);
