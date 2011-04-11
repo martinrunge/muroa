@@ -30,19 +30,25 @@ public:
     void readCollectionFile(QString filename);
 
 	void scanProgress(int progress);
+	void reportError(int errorCode, std::string errorMsg);
 	void response(int id, int code, std::string message);
 	void jobFinished(int jobID);
 	void collectionChanged(int newRev, int minRev, int maxRev);
+	void stopMediaScannerAsync();
 
 signals:
     void progressSig(int);
     void responseSig(QString message);
+    void sigStopMediaScanner();
+
 
 public slots:
 	void newConnection(QTcpSocket* socket);
 	void connectionStatusChanged(QString status);
 	void nextRevision();
 	void scanCollection();
+
+	void stopMediaScanner();
 
 private:
 	CSession *m_session;

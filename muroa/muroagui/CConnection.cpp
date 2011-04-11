@@ -153,9 +153,9 @@ void CConnection::error()
 void CConnection::readyRead()
 {
     int avail = m_socket.bytesAvailable();
-    qDebug() << QString("readyRead(): %1 bytes available").arg(avail);
+    // qDebug() << QString("readyRead(): %1 bytes available").arg(avail);
     QByteArray data = m_socket.readAll();
-    qDebug() << QString("readyRead(): %1 bytes read").arg(data.size());
+    // qDebug() << QString("readyRead(): %1 bytes read").arg(data.size());
     m_xml_reader->addData(data);
     enum QXmlStreamReader::TokenType tokenType;
     do

@@ -20,6 +20,7 @@ set(SRCS     mediascanner.cpp
              ../CSubProcess.cpp
              ../Exceptions.cpp 
              CMsgBase.cpp
+             CMsgError.cpp
              CMsgQuit.cpp
              CMsgResponse.cpp
              CMsgOpenDb.cpp
@@ -38,6 +39,7 @@ set( HEADER  CMediaScanner.h
              ../CSubProcess.h
              ../Exceptions.h 
              CMsgBase.h
+             CMsgError.h
              CMsgQuit.h
              CMsgResponse.h
              CMsgOpenDb.h

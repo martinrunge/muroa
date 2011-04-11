@@ -63,6 +63,7 @@ set( MOC_H          ../CSession.h
                     ../mediascanner/CStateDbUpdater.cpp
                     ../mediascanner/CMediaItem.cpp       
                     ../mediascanner/CMsgBase.cpp
+                    ../mediascanner/CMsgError.cpp
                     ../mediascanner/CMsgQuit.cpp
                     ../mediascanner/CMsgResponse.cpp
                     ../mediascanner/CMsgOpenDb.cpp
@@ -78,6 +79,7 @@ set( MOC_H          ../CSession.h
                     ../mediascanner/CStateDbUpdater.h
                     ../mediascanner/CMediaItem.h
                     ../mediascanner/CMsgBase.h
+                    ../mediascanner/CMsgError.h
                     ../mediascanner/CMsgQuit.h
                     ../mediascanner/CMsgResponse.h
                     ../mediascanner/CMsgOpenDb.h

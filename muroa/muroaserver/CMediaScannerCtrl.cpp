@@ -22,6 +22,8 @@
 #include <signal.h>
 #include <string.h>
 
+#include "mediascanner/CMsgError.h"
+
 
 void sigusr1_handler(int signum) {
 	// fprintf(stderr, "sigusr1 handler!!!!!\n");
@@ -32,6 +34,7 @@ using namespace std;
 
 CMediaScannerCtrl::CMediaScannerCtrl(CMuroaServer *parent) : m_thread(0),
 		                                                     m_child_running(false),
+		                                                     m_pid(0),
 		                                                     m_parent(parent) {
 
 	struct sigaction new_action;
@@ -53,7 +56,7 @@ CMediaScannerCtrl::~CMediaScannerCtrl() {
 
 void CMediaScannerCtrl::start() {
 
-	if(running()) return;
+	if(running() || m_pid != 0 ) return;
 
 	vector<string> args;
 
@@ -70,10 +73,27 @@ void CMediaScannerCtrl::start() {
 	args.push_back(ss.str());
 
 	m_pid = m_subProcess.start("./build/mediascanner/mediascanner" , args ,0 ,0);
-	m_child_running = true;
-	m_waitthread = new thread( &CMediaScannerCtrl::waitPid, this);
-	m_thread = new thread( &CEventLoop::run, this);
 
+	if(m_pid == 0) {
+		// child pid is still 0, maybe execve did mot work,but we are in child process.
+		// send exit msg to parent process.
+
+		// following lines are equal to sendEvent(msg) but in reverse order (other socket)
+		CMsgError *msg = new CMsgError( 1, m_subProcess.getLastErrorMsg() );
+		ssize_t written;
+		int size;
+		const char * buffer = msg->serialize(size);
+		written = write(sv[1], buffer, size);
+		// end of reverse sendEvent(msg)
+
+		exit(1);
+	}
+	else {
+
+		m_child_running = true;
+		m_waitthread = new thread( &CMediaScannerCtrl::waitPid, this);
+		m_thread = new thread( &CEventLoop::run, this);
+	}
 }
 
 void CMediaScannerCtrl::stop() {
@@ -132,6 +152,13 @@ bool CMediaScannerCtrl::handleMsg(CMsgBase* msg) {
 	bool rc = true;
 	int type = msg->getType();
 	switch(type) {
+	    case E_MSG_ERR:
+	    {
+			CMsgError* error = reinterpret_cast<CMsgError*>(msg);
+			cerr << "CMediaScannerCtrl::handleMsg Error: " << error->getMessage() << endl;
+			m_parent->reportError(error->getErrorCode(), error->getMessage());
+			break;
+	    }
 		case E_MSG_RESP:
 		{
 			CMsgResponse* reponse = reinterpret_cast<CMsgResponse*>(msg);
@@ -175,6 +202,7 @@ void CMediaScannerCtrl::waitPid() {
 	pid_t retval = -1;
 	while(retval == -1) {
 		errno = 0;
+		cerr << "waitpid: waiting for pid:" << m_pid << endl;
 		retval = waitpid(m_pid, &status, 0);
 		if(retval == -1) {
 			cerr << "waitpid returned -1: " << endl;
@@ -185,7 +213,10 @@ void CMediaScannerCtrl::waitPid() {
 			cerr << "process " << retval << " changed state. Was waiting for " << m_pid << endl;
 			cerr << strerror(errno) << endl;
 			m_child_running = false;
+			m_pid = 0;
 		    m_cond_var.notify_one();
+		    m_parent->stopMediaScannerAsync();
+
 		}
 	}
 	cerr << "mediascanner exited. Status: " << status << endl;

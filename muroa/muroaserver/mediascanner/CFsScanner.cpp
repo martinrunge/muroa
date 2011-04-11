@@ -150,6 +150,9 @@ int CFsScanner::walkTree(string dir) {
 		}
 	}
 
+	CMsgProgress *progressMsg = new CMsgProgress(m_jobID, 100);
+	m_parent->postEvent(progressMsg);
+
 	CMsgFinished* finiMsg = new CMsgFinished(m_jobID);
 	m_parent->postEvent(finiMsg);
 

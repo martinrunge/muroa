@@ -11,6 +11,7 @@
 #include <stdint.h>
 
 enum msg_types {
+	E_MSG_ERR,
 	E_MSG_RESP,
 	E_MSG_QUIT,
 	E_MSG_OPEN_DB,

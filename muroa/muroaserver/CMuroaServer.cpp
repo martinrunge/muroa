@@ -46,6 +46,7 @@ CMuroaServer::CMuroaServer(QWidget *parent)
 
 	connect(this, SIGNAL(progressSig(int)), ui.progressBar, SLOT(setValue(int)));
 	connect(this, SIGNAL(responseSig(QString)), ui.response_label, SLOT(setText(QString)));
+	connect(this, SIGNAL(sigStopMediaScanner()), this, SLOT(stopMediaScanner()));
 
 	m_dnssd.registerService("muroa", m_portNr);
 }
@@ -64,6 +65,8 @@ void CMuroaServer::newConnection(QTcpSocket* socket)
 	m_session->addConnection(conn);
 	connect(conn, SIGNAL(connectionStatusChanged(QString)), this, SLOT(connectionStatusChanged(QString)));
 	connect(conn, SIGNAL(connectionClosed(CConnection*)), m_session, SLOT(connectionClosed(CConnection*)));
+
+
 }
 
 void CMuroaServer::connectionStatusChanged(QString status)
@@ -76,13 +79,21 @@ void CMuroaServer::scanProgress(int progress) {
 	emit progressSig(progress);
 }
 
+void CMuroaServer::reportError(int errorCode, std::string errorMsg) {
+	QString msg = QString("Error with mediascanner: Code: %2 Msg: %3").arg(errorCode).arg(QString::fromUtf8(errorMsg.c_str()));
+	emit responseSig(msg);
+
+}
+
+
 void CMuroaServer::response(int id, int code, string message) {
 	QString msg = QString("%1 %2 %3").arg(id).arg(code).arg(QString::fromUtf8(message.c_str()));
 	emit responseSig(msg);
 }
 
 void CMuroaServer::jobFinished(int jobID) {
-
+	QString msg = QString("Job Nr: %1 finished.").arg(jobID);
+	ui.command_label->setText(msg);
 }
 
 void CMuroaServer::collectionChanged(int newRev, int minRev, int maxRev) {
@@ -92,6 +103,15 @@ void CMuroaServer::collectionChanged(int newRev, int minRev, int maxRev) {
 		addCollectionRev(col);
 	}
 }
+
+void CMuroaServer::stopMediaScannerAsync() {
+	emit sigStopMediaScanner();
+}
+
+void CMuroaServer::stopMediaScanner() {
+	m_mediaScannerCtrl.stop();
+}
+
 
 void CMuroaServer::addCollectionRev(CCollection<CCollectionItem>* collection)
 {
@@ -159,8 +179,11 @@ void CMuroaServer::scanCollection() {
 	CMsgOpenDb openDbMsg( m_db_filename.toUtf8().constData() );
 	CMsgScanDir scanDirMsg( m_mediadir.toStdString() );
 	m_mediaScannerCtrl.start();
+
+	QString msg = QString("scanning '%1' [job %2]").arg(m_mediadir).arg( scanDirMsg.getID() );
+	ui.command_label->setText(msg);
+
 	m_mediaScannerCtrl.sendEvent(&openDbMsg);
-	// sleep(1);
 	m_mediaScannerCtrl.sendEvent(&scanDirMsg);
 
 }

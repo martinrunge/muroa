@@ -36,7 +36,8 @@ pid_t CSubProcess::start(std::string executable, std::vector<std::string> args, 
 		argv[ args.size() + 1] = NULL;
 
 		int retval = execve(executable.c_str(), (char* const*)argv, NULL);
-		perror("execve");
+		m_last_error_code = retval;
+		m_last_error_msg = strerror(errno);
 
 	}
 	else {

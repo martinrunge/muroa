@@ -39,14 +39,13 @@ void CStateMachine::open()
 void CStateMachine::startDocument(QXmlStreamReader* reader)
 {
     QStringRef name = reader->name();
-
-    qDebug() << QString("startDocument %1").arg(reader->name().toString());
+    //qDebug() << QString("startDocument %1").arg(reader->name().toString());
 }
 
 void CStateMachine::endDocument(QXmlStreamReader* reader)
 {
     QStringRef name = reader->name();
-    qDebug() << QString("endDocument %1").arg(reader->name().toString());
+//    qDebug() << QString("endDocument %1").arg(reader->name().toString());
 }
 
 
@@ -80,14 +79,14 @@ void CStateMachine::startElement(QXmlStreamReader* reader)
     }
     else if(name.toString().startsWith("session"))
     {
-        qDebug() << QString("Begin of Document");
+//        qDebug() << QString("Begin of Document");
         m_state = e_session_active;
     }
     else
     {
-        qDebug() << QString("Unknown tag received: %1").arg(reader->name().toString());
+        qDebug() << QString("Unknown start tag received: %1").arg(reader->name().toString());
     }
-    qDebug() << QString("startElement %1").arg(reader->name().toString());
+//    qDebug() << QString("startElement %1").arg(reader->name().toString());
 }
 
 void CStateMachine::endElement(QXmlStreamReader* reader)
@@ -125,14 +124,14 @@ void CStateMachine::endElement(QXmlStreamReader* reader)
     }
     else if(name.toString().startsWith("session"))
     {
-        qDebug() << QString("Begin of Document");
+        // qDebug() << QString("End of Document");
         m_state = e_no_session;
     }
     else
     {
-        qDebug() << QString("Unknown tag received: %1").arg(reader->name().toString());
+        qDebug() << QString("Unknown end tag received: %1").arg(reader->name().toString());
     }
-    qDebug() << QString("endElement %1").arg(reader->name().toString());
+    // qDebug() << QString("endElement %1").arg(reader->name().toString());
 }
 
 void CStateMachine::characters(QXmlStreamReader* reader)
@@ -177,7 +176,10 @@ void CStateMachine::characters(QXmlStreamReader* reader)
 		default:
 			if(text.size() > 0)
 			{
-				qDebug() << QString("Received unexpected characters: ").append(text);
+				if( ! text.toString().trimmed().isEmpty() ) {
+					// not interested in whitespaces from indentation here.
+					qDebug() << QString("Received unexpected characters: ").append(text);
+				}
 			}
 	}
 }

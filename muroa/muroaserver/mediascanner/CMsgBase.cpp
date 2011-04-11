@@ -9,6 +9,7 @@
 #include "../Exceptions.h"
 #include <sstream>
 
+#include "CMsgError.h"
 #include "CMsgResponse.h"
 #include "CMsgQuit.h"
 #include "CMsgOpenDb.h"
@@ -65,6 +66,10 @@ CMsgBase* CMsgBase::msgFactory(char*& buffer, int& size) {
 
 
 	switch( type ) {
+	    case E_MSG_ERR:
+	    	basePtr = new CMsgError( buffer, size );
+	    	break;
+
 		case E_MSG_RESP:
 			basePtr = new CMsgResponse( buffer, size );
 			break;

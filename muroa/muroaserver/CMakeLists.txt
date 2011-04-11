@@ -15,7 +15,7 @@ find_package( TagLib REQUIRED)
 find_package( Sqlite REQUIRED )
 
 add_subdirectory(unittest)
-# add_subdirectory(mediascanner)
+add_subdirectory(mediascanner)
 
 
 add_definitions( ${QT4_DEFINITIONS} ${SQLITE_DEFINITIONS} -D__STDC_CONSTANT_MACROS)
@@ -81,6 +81,7 @@ set(HEADERS         CCollection.h
  
  set( MSG_SRC       mediascanner/CEventLoop.cpp
                     mediascanner/CMsgBase.cpp
+                    mediascanner/CMsgError.cpp
                     mediascanner/CMsgQuit.cpp
                     mediascanner/CMsgResponse.cpp
                     mediascanner/CMsgFinished.cpp
@@ -92,6 +93,7 @@ set(HEADERS         CCollection.h
                     
  set( MSG_HDR       mediascanner/CEventLoop.h
                     mediascanner/CMsgBase.h
+                    mediascanner/CMsgError.h
                     mediascanner/CMsgQuit.h
                     mediascanner/CMsgResponse.h
                     mediascanner/CMsgFinished.h

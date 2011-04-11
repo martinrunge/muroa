@@ -24,9 +24,15 @@ public:
 	int read(char* buffer, int length);
 	int write(char* buffer, int length);
 
+	inline std::string getLastErrorMsg() { return m_last_error_msg; };
+	inline int getLastErrorCode() { return m_last_error_code; };
+
 private:
 	int m_socket;
 	int m_other_end;
+
+	int m_last_error_code;
+	std::string m_last_error_msg;
 };
 
 #endif /* CSUBPROCESS_H_ */
