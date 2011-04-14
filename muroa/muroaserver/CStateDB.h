@@ -62,6 +62,7 @@ private:
     void createNextlistRevisionsTable();
 
     int rowIDofPlRevEntry(int plPos, int colHash, int plRev, int ColRev);
+    void repairSession(CSession* session);
 
 	sqlite3_stmt *m_updateColItemStmt;
 	void prepareUpdateColItemStmt();

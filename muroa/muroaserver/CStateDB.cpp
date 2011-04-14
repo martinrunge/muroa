@@ -82,6 +82,7 @@ void CStateDB::restoreSession(CSession * const session) {
 	restoreCollection(session);
 	restorePlaylists(session);
 	//restoreNextlists(session);
+	repairSession(session);
 }
 
 void CStateDB::updatePlaylistRevsTable(CSession const * const session, int minrev, int maxrev ) {
@@ -220,6 +221,38 @@ void CStateDB::restoreNextlists(CSession * const session) {
 		} while(item != 0);
 		session->addNextlistRev(nextlist);
 	}
+}
+
+/**
+ *   check for playlist entries not in collection. If any, remove them and create new playlist revision.
+ */
+void CStateDB::repairSession(CSession* session) {
+	CCollection<CCollectionItem>* collection = session->getCollection();
+	CCollection<CPlaylistItem>* playlist = session->getPlaylist();
+
+	CCollection<CPlaylistItem>* newPlaylist = new CCollection<CPlaylistItem>();
+	bool unknownItemInPlaylist = false;
+
+	for(int i=0; i < playlist->size(); i++) {
+		CPlaylistItem* plItem = playlist->getItem(i);
+		unsigned hash = plItem->getHash();
+		CCollectionItem* item = collection->getByHash(hash);
+		if( item == 0 ) {
+			unknownItemInPlaylist = true;
+		}
+		else {
+			newPlaylist->insert(plItem);
+		}
+	}
+
+	if( unknownItemInPlaylist ) {
+		session->addPlaylistRev( newPlaylist );
+		updatePlaylistRevsTable(session, session->getPlaylistRevision(), session->getPlaylistRevision());
+	}
+	else {
+		delete newPlaylist;
+	}
+
 }
 
 void CStateDB::updateCollectionItem( CCollectionItem* item ) {
