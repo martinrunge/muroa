@@ -18,6 +18,10 @@ CPlaylistItem::CPlaylistItem(unsigned  hash) {
 	assembleText();
 }
 
+CPlaylistItem::CPlaylistItem(const CPlaylistItem& other) : CItemBase(other) {
+	m_collectionHash = other.m_collectionHash;
+}
+
 CPlaylistItem::~CPlaylistItem() {
 	// TODO Auto-generated destructor stub
 }
@@ -35,3 +39,16 @@ void CPlaylistItem::assembleText()
 	QString text(QString("%1").arg(m_collectionHash));
 	m_text = text;
 }
+
+CPlaylistItem& CPlaylistItem::operator=(const CPlaylistItem& rhs) {
+	if (this == &rhs) {    // Same object?
+		return *this;      // Yes, so skip assignment, and just return *this.
+	}
+	m_collectionHash = rhs.m_collectionHash;
+	CItemBase::operator=(rhs);
+
+    return *this;
+}
+
+
+

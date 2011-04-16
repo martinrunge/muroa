@@ -234,8 +234,8 @@ void CStateDB::repairSession(CSession* session) {
 	bool unknownItemInPlaylist = false;
 
 	for(int i=0; i < playlist->size(); i++) {
-		CPlaylistItem* plItem = playlist->getItem(i);
-		unsigned hash = plItem->getHash();
+		CPlaylistItem* plItem = new CPlaylistItem( *playlist->getItem(i) );
+		unsigned hash = plItem->getCollectionHash();
 		CCollectionItem* item = collection->getByHash(hash);
 		if( item == 0 ) {
 			unknownItemInPlaylist = true;

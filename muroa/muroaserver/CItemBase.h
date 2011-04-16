@@ -13,6 +13,7 @@
 class CItemBase {
 public:
 	CItemBase();
+	CItemBase(const CItemBase& other);
 	virtual ~CItemBase();
 
 //	void setText(QString text);
@@ -20,6 +21,11 @@ public:
     inline unsigned getHash() const { return m_hash; };
 
 protected:
+    inline CItemBase& operator=(const CItemBase& rhs) {
+    	m_text = rhs.m_text;
+    	m_hash = rhs.m_hash;
+    }
+
     QString m_text;
     unsigned m_hash;
 };
