@@ -52,6 +52,7 @@ public:
 
 	QString getText(void);
 	inline int getRevision(void) { return m_revision; };
+	inline void setRevision(int rev) { m_revision = rev; };
 
 private:
 	QList<T*> m_items;

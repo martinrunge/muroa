@@ -141,6 +141,9 @@ const QString CSession::getNextlistDiff(int fromRevision, int toRevision)
 
 void CSession::addCollectionRev(CCollection<CCollectionItem>* collection) {
 	m_latestCollectionRevision++;
+	if(collection->getRevision() == -1) {
+		collection->setRevision(m_latestCollectionRevision);
+	}
 	m_collectionRevisions[m_latestCollectionRevision] = collection;
 
 	for(int i=0; i < m_connections.size(); i++)
@@ -162,6 +165,9 @@ void CSession::addCollectionRev(QString collection)
 
 void CSession::addPlaylistRev(CCollection<CPlaylistItem>* playlist) {
 	m_latestPlaylistRevision++;
+	if(playlist->getRevision() == -1) {
+		playlist->setRevision(m_latestPlaylistRevision);
+	}
 	m_playlistRevisions[m_latestPlaylistRevision] = playlist;
 
 	for(int i=0; i < m_connections.size(); i++)
@@ -189,6 +195,9 @@ void CSession::addPlaylistRev(QString playlist)
 
 void CSession::addNextlistRev(CCollection<CPlaylistItem>* nextlist) {
 	m_latestNextlistRevision++;
+	if(nextlist->getRevision() == -1) {
+		nextlist->setRevision(m_latestNextlistRevision);
+	}
 	m_nextlistRevisions[m_latestNextlistRevision] = nextlist;
 
 	for(int i=0; i < m_connections.size(); i++)
