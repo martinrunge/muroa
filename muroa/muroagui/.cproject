@@ -9,6 +9,8 @@
 				<extensions/>
 			</storageModule>
 			<storageModule moduleId="org.eclipse.cdt.core.pathentry"/>
+			<storageModule moduleId="org.eclipse.cdt.core.externalSettings"/>
+			<storageModule moduleId="scannerConfiguration"/>
 			<storageModule moduleId="org.eclipse.cdt.make.core.buildtargets">
 				<buildTargets>
 					<target name="Run CMake" path="" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
@@ -21,7 +23,6 @@
 					</target>
 				</buildTargets>
 			</storageModule>
-			<storageModule moduleId="org.eclipse.cdt.core.externalSettings"/>
 		</cconfiguration>
 	</storageModule>
 </cproject>
