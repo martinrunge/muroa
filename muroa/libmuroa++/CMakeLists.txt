@@ -1,0 +1,41 @@
+cmake_minimum_required (VERSION 2.6)
+project (libmuroa++)
+
+set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake" ${CMAKE_MODULE_PATH})
+
+add_subdirectory(unittest)
+
+set(Boost_USE_MULTITHREADED ON)
+find_package( Boost 1.36.0 COMPONENTS system regex REQUIRED )
+
+
+add_definitions(  )
+
+
+set( SRC           CRootItem.cpp
+                   CItemBase.cpp
+                   CMediaItem.cpp
+                   CCategoryItem.cpp
+                   CDiff.cpp
+                   MuroaExceptions.cpp
+                   libmain.cpp 
+                   )
+                  
+
+set( HEADERS       CRootItem.h
+                   CItemBase.h
+                   CMediaItem.h
+                   CCategoryItem.h
+                   CDiff.h
+                   MuroaExceptions.h
+                   )
+                   
+include_directories(${CMAKE_SOURCE_DIR} ${Boost_INCLUDE_DIRS})
+
+link_directories(  )
+
+add_library( muroa++ SHARED ${SRC} ${HEADERS} )
+target_link_libraries( muroa++  ${Boost_LIBRARIES} )
+set_target_properties( muroa++  PROPERTIES  COMPILE_FLAGS "-std=gnu++0x" ) 
+
+install(TARGETS   muroa++ DESTINATION  lib)
