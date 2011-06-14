@@ -31,12 +31,9 @@
 using namespace std;
 
 CUtils::CUtils() {
-	// TODO Auto-generated constructor stub
-
 }
 
 CUtils::~CUtils() {
-	// TODO Auto-generated destructor stub
 }
 
 string CUtils::file2string(const string &fileName)

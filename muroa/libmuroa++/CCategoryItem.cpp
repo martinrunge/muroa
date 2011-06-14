@@ -31,7 +31,7 @@
 
 using namespace std;
 
-CCategoryItem::CCategoryItem(string text, CCategoryItem*  parent) : CItemBase(parent)
+CCategoryItem::CCategoryItem(string text, CCategoryItem*  parent) : CItemBase(parent, E_CAT)
 {
 	replaceTabs(text);
 	m_name = text;

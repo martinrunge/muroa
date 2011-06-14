@@ -52,6 +52,8 @@ public:
 	CMediaItem* addMediaItem(std::string textWoPath, CCategoryItem* parent, int posInParent = -1);
 	CMediaItem* addMediaItem(std::string text, int posInParent = -1);
 
+	CCategoryItem* getBase() { return m_base; };
+
 	std::string serialize();
 	void deserialize(std::string text);
 

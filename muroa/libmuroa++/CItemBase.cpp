@@ -27,12 +27,12 @@
 using namespace std;
 using namespace boost;
 
-CItemBase::CItemBase(CCategoryItem*  parent) :
-           m_parent(parent)
+CItemBase::CItemBase(CCategoryItem*  parent, const item_type_t type) :
+           m_parent(parent), m_item_type(type)
 {
 }
 
-CItemBase::CItemBase(std::string text ) {
+CItemBase::CItemBase(std::string text, const item_type_t type ): m_item_type(type) {
 	int tabpos = text.find('\t', 0);
 	int namepos = text.rfind('/', tabpos);
 

@@ -18,6 +18,7 @@ set( SRC           CRootItem.cpp
                    CCategoryItem.cpp
                    CDiff.cpp
                    MuroaExceptions.cpp
+                   CUtils.cpp
                    libmain.cpp 
                    )
                   
@@ -27,6 +28,7 @@ set( HEADERS       CRootItem.h
                    CMediaItem.h
                    CCategoryItem.h
                    CDiff.h
+                   CUtils.h
                    MuroaExceptions.h
                    )
                    
