@@ -27,12 +27,17 @@
 #include "CCategoryItem.h"
 #include "CMediaItem.h"
 
+#include <iostream>
+
+#include <stack>
+
+using namespace std;
 
 int CTreeModel::m_num_columns = 6;
 QString CTreeModel::m_column_headers[] = {"Artist", "Album", "Title", "Year", "Duration", "Filename"};
 
 
-CTreeModel::CTreeModel(CRootItem *rootItem) : m_rootItem(rootItem) {
+CTreeModel::CTreeModel( )  {
 
 }
 
@@ -54,7 +59,7 @@ QVariant CTreeModel::data(const QModelIndex &index, int role) const {
 }
 
 Qt::ItemFlags CTreeModel::flags(const QModelIndex &index) const {
-
+	return QAbstractItemModel::flags(index);
 }
 
 QVariant CTreeModel::headerData(int section, Qt::Orientation orientation, int role) const {
@@ -76,28 +81,107 @@ QVariant CTreeModel::headerData(int section, Qt::Orientation orientation, int ro
 
 QModelIndex CTreeModel::index(int row, int column, const QModelIndex &parent) const {
 
+	CItemBase *parentItem = itemFromIndex(parent);
+	CItemBase *ptr = getBase();
+	if(parentItem->numChildren() > 0 && parentItem->numChildren() > row)
+	{
+		ptr = parentItem->childAt(row);
+	}
+
+	return createIndex(row, column, ptr);
 }
 
 QModelIndex CTreeModel::parent(const QModelIndex &index) const {
+	CItemBase *item = itemFromIndex(index);
 
+	//qDebug() << QString("searching parent of: %1").arg(item->name());
+
+	if(!item)
+		return QModelIndex();
+	CItemBase *parentItem = item->getParent();
+	if (!parentItem)
+		return QModelIndex();
+	CItemBase *grandParentItem = parentItem->getParent();
+	if (!grandParentItem)
+		return QModelIndex();
+	int row = grandParentItem->childPos(parentItem);
+		return createIndex(row, 0, parentItem);
 }
 
-int CTreeModel::rowCount(const QModelIndex &parent) const {
+bool CTreeModel::hasChildren( const QModelIndex & parent ) {
+	CItemBase *parentItem = itemFromIndex(parent);
+	cout << "parent: (" << parent.row() << "," << parent.column() << ") ";
+	if (!parentItem)
+		return false;
 
+	cout << "Type: " << parentItem->type() << " num children: " <<  parentItem->numChildren() << endl;
+
+	return (parentItem->numChildren() > 0);
+}
+
+
+int CTreeModel::rowCount(const QModelIndex &parent) const {
+	CItemBase *parentItem = itemFromIndex(parent);
+	if (!parentItem)
+		return 0;
+
+	return parentItem->numChildren();
 }
 
 int CTreeModel::columnCount(const QModelIndex &parent) const {
 	return 6;
 }
 
+bool CTreeModel::beginInsertItems( const int pos, const int count, const CCategoryItem* parent ) {
+
+}
+
+bool CTreeModel::endInsertItems( ) {
+
+}
+
+bool CTreeModel::beginRemoveItems( const int pos, const int count, const CCategoryItem* parent ) {
+
+}
+
+bool CTreeModel::endRemoveItems( ) {
+
+}
+
+
 CItemBase* CTreeModel::itemFromIndex(const QModelIndex & index) const
 {
 	if (index.isValid()) {
 		return static_cast<CItemBase *>(index.internalPointer());
 	} else {
-		return m_rootItem->getBase();
+		return getBase();
 	}
 }
+
+
+QModelIndex CTreeModel::indexFromItem(const CItemBase* item) const {
+	CCategoryItem* parent = item->getParent();
+	stack<CCategoryItem*> cat_stack;
+	while(parent != 0) {
+		cat_stack.push(parent);
+		parent = parent->getParent();
+	}
+
+	QModelIndex mindex = QModelIndex();
+	parent = cat_stack.top();
+	cat_stack.pop();
+
+	while(!cat_stack.empty()) {
+		CCategoryItem* citem = cat_stack.top();
+		cat_stack.pop();
+		int row = parent->childPos(citem);
+		mindex = index( row, 0, mindex);
+	}
+
+	return mindex;
+}
+
+
 
 QVariant CTreeModel::dataFromColumn(CItemBase* item, int column) const {
 
@@ -148,4 +232,6 @@ QVariant CTreeModel::dataFromColumn(CItemBase* item, int column) const {
 	}
 	return result;
 }
+
+
 

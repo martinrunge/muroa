@@ -25,33 +25,40 @@
 #define CTREEMODEL_H_
 
 #include <QAbstractItemModel>
-
+#include "CRootItem.h"
 
 class CTreeItem;
-class CRootItem;
 class CItemBase;
 
-class CTreeModel: public QAbstractItemModel {
+class CTreeModel: public QAbstractItemModel, public CRootItem {
 	Q_OBJECT;
 public:
-	CTreeModel(CRootItem* muroaRootItem);
+	CTreeModel( );
 	virtual ~CTreeModel();
 
-	QVariant data(const QModelIndex &index, int role) const;
-    Qt::ItemFlags flags(const QModelIndex &index) const;
-
     QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const;
+	QVariant data(const QModelIndex &index, int role) const;
+
+	Qt::ItemFlags flags(const QModelIndex &index) const;
+
     QModelIndex index(int row, int column, const QModelIndex &parent = QModelIndex()) const;
     QModelIndex parent(const QModelIndex &index) const;
+	bool hasChildren( const QModelIndex & parent = QModelIndex() );
 
     int rowCount(const QModelIndex &parent = QModelIndex()) const;
     int columnCount(const QModelIndex &parent = QModelIndex()) const;
 
+	bool beginInsertItems( const int pos, const int count, const CCategoryItem* parent );
+	bool endInsertItems( );
+	bool beginRemoveItems( const int pos, const int count, const CCategoryItem* parent );
+	bool endRemoveItems( );
+
 private:
     QVariant dataFromColumn(CItemBase* item, int column) const;
     CItemBase* itemFromIndex(const QModelIndex & index) const;
+    QModelIndex indexFromItem(const CItemBase* item) const;
 
-    CRootItem *m_rootItem;
+    // CRootItem *m_rootItem;
 
     static int m_num_columns;
     static QString m_column_headers[];

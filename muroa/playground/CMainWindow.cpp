@@ -43,10 +43,9 @@ CMainWindow::CMainWindow(QWidget *parent)
 
 	std::string exampleCollection = CUtils::file2string( "testcases/example.txt" );
 
-	CRootItem rItem;
-	rItem.deserialize(exampleCollection);
 
-	m_leftTreeModel = new CTreeModel(&rItem);
+	m_leftTreeModel = new CTreeModel();
+	m_leftTreeModel->deserialize(exampleCollection);
 	// m_rightTreeModel = new CTreeModel(rItem);
 
 	ui.leftTreeView->setModel(m_leftTreeModel);
@@ -57,5 +56,6 @@ CMainWindow::~CMainWindow()
 {
 	//delete m_rightTreeModel;
 	delete m_leftTreeModel;
+	delete m_rootItem;
 }
 
