@@ -39,6 +39,10 @@ public:
 	inline bool operator!=(const CMediaItem& other){ return !operator==(other); };
 
 	void addChild(CMediaItem* newMediaItem, int pos = -1);
+	int numChildren() { return 0; };
+	CItemBase* childAt(unsigned row) { return 0; };
+	virtual unsigned childPos(CItemBase* child) { return 0; };
+
 	std::string serialize(bool asDiff = false);
 
 	static uint32_t hash( std::string stdstr );

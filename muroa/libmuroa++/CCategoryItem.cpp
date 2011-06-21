@@ -72,14 +72,78 @@ void CCategoryItem::addChild(CMediaItem*  newMediaItem, int pos) {
 	}
 }
 
-CMediaItem* CCategoryItem::getMediaItem(int pos) {
+CMediaItem* CCategoryItem::getMediaItem(unsigned pos) {
 	return m_media_items[pos];
 }
+
+CCategoryItem* CCategoryItem::getCategoryItem(std::string name) {
+	std::vector<CCategoryItem*>::iterator cit;
+	for(cit = m_sub_categories.begin(); cit != m_sub_categories.end(); cit++ ) {
+		if(name.compare((*cit)->getName()) == 0 ) {
+			return (*cit);
+		}
+	}
+	return 0;
+}
+
+/**
+ * categories first, media items then
+ */
+CItemBase* CCategoryItem::childAt(unsigned row) {
+	if(row < m_sub_categories.size()) {
+		return m_sub_categories[row];
+	}
+	else {
+		row -= m_sub_categories.size();
+		if(row < m_media_items.size()) {
+			return m_media_items[row];
+		}
+		else {
+			return 0;
+		}
+	}
+}
+
+unsigned CCategoryItem::childPos(CItemBase* child) {
+
+	unsigned pos = 0;
+
+	unsigned n_sub_cats = m_sub_categories.size();
+
+	for(pos = 0; pos < n_sub_cats; pos++ ) {
+		if( m_sub_categories[pos] == child ) {
+			return pos;
+		}
+	}
+
+	for(pos = n_sub_cats; pos < ( n_sub_cats + m_media_items.size() ); pos++ ) {
+		if( m_media_items[pos - n_sub_cats] == child ) {
+			return pos;
+		}
+	}
+
+	return 0;
+}
+
+
+int CCategoryItem::getNumMediaItems() {
+	return m_media_items.size();
+}
+
+int CCategoryItem::getNumCategories() {
+	return m_sub_categories.size();
+}
+
+int CCategoryItem::numChildren() {
+	int num = m_sub_categories.size();
+	num += m_media_items.size();
+	return num;
+}
+
 
 void CCategoryItem::delMediaItem(int pos) {
 	m_media_items.erase(m_media_items.begin() + pos);
 }
-
 
 void CCategoryItem::delCategory(CCategoryItem* categoryItem) {
 	std::vector<CCategoryItem*>::iterator cit;

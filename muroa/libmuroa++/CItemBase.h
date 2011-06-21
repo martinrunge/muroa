@@ -42,10 +42,14 @@ protected:
 	CItemBase(std::string text, const item_type_t type );
 
 public:
-	inline std::string getName() { return m_name; };
+	inline std::string getName() const { return m_name; };
 
-	inline CCategoryItem* getParent() { return m_parent; };
+	inline CCategoryItem* getParent() const { return m_parent; };
 	virtual void addChild(CMediaItem* newChild, int pos = -1) = 0;
+	virtual int numChildren() = 0;
+
+	virtual CItemBase* childAt(unsigned row) = 0;
+	virtual unsigned childPos(CItemBase* child) = 0;
 
 	inline std::string getText() { return m_text; };
 	virtual std::string serialize(bool asDiff = false) = 0;

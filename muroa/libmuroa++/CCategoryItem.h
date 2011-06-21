@@ -41,13 +41,19 @@ public:
 	void addChild(CCategoryItem* newSubCategory);
 	void addChild(CMediaItem*    newMediaItem, int pos = -1);
 
-	CMediaItem* getMediaItem(int pos);
-	void delMediaItem(int pos);
+	CMediaItem* getMediaItem(unsigned pos);
+	CCategoryItem* getCategoryItem(std::string name);
+	CItemBase* childAt(unsigned row);
+	unsigned childPos(CItemBase* child);
 
+	int numChildren();
+	int getNumMediaItems();
+	int getNumCategories();
+
+	void delMediaItem(int pos);
 	void delCategory(CCategoryItem* categoryItem);
 
 	std::string serialize(bool asDiff = false);
-
 	std::string diff(const CCategoryItem* other);
 
 	bool operator==(const CCategoryItem& other);

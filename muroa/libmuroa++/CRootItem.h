@@ -25,26 +25,6 @@ public:
 	CRootItem();
 	virtual ~CRootItem();
 
-	CCategoryItem* getItemPtr(std::string path) {
-    	std::map<std::string, CCategoryItem*>::iterator it;
-    	it = m_map.find(path);
-    	if(it == m_map.end()) {
-    		return 0;
-    	}
-    	else {
-    		return it->second;
-    	}
-   	}
-
-	inline void setItemPtr(std::string path, CCategoryItem* itemPtr) {
-		std::pair<std::map<std::string, CCategoryItem*>::iterator,bool> ret;
-		ret = m_map.insert(std::pair<std::string,CCategoryItem*>(path, itemPtr));
-		if (ret.second==false)
-		{
-		    std::cout << "element 'z' already existed";
-		    std::cout << " with a value of " << ret.first->second << std::endl;
-		}
-	}
 
 	CCategoryItem* addCategory(std::string name, CCategoryItem* parent = 0);
 
@@ -52,7 +32,7 @@ public:
 	CMediaItem* addMediaItem(std::string textWoPath, CCategoryItem* parent, int posInParent = -1);
 	CMediaItem* addMediaItem(std::string text, int posInParent = -1);
 
-	CCategoryItem* getBase() { return m_base; };
+	CCategoryItem* getBase() const { return m_base; };
 
 	std::string serialize();
 	void deserialize(std::string text);
@@ -62,6 +42,33 @@ public:
 
 	bool operator==(const CRootItem& other);
 
+	virtual bool beginInsertItems(const int pos, const int count, const CCategoryItem* parent);
+	virtual bool endInsertItems(void);
+	virtual bool beginRemoveItems(const int pos, const int count, const CCategoryItem* parent);
+	virtual bool endRemoveItems(void);
+
+	CCategoryItem* getItemPtr(std::string path);
+
+	//	CCategoryItem* getItemPtr(std::string path) {
+//    	std::map<std::string, CCategoryItem*>::iterator it;
+//    	it = m_map.find(path);
+//    	if(it == m_map.end()) {
+//    		return 0;
+//    	}
+//    	else {
+//    		return it->second;
+//    	}
+//   	}
+
+//	inline void setItemPtr(std::string path, CCategoryItem* itemPtr) {
+//		std::pair<std::map<std::string, CCategoryItem*>::iterator,bool> ret;
+//		ret = m_map.insert(std::pair<std::string,CCategoryItem*>(path, itemPtr));
+//		if (ret.second==false)
+//		{
+//		    std::cout << "element 'z' already existed";
+//		    std::cout << " with a value of " << ret.first->second << std::endl;
+//		}
+//	}
 
 private:
 	std::map<std::string, CCategoryItem*> m_map;

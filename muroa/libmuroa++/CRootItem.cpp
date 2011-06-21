@@ -23,7 +23,7 @@ using namespace std;
 
 CRootItem::CRootItem() {
 	m_base = new CCategoryItem("", 0);
-	setItemPtr(m_base->getName(), m_base);
+	// setItemPtr(m_base->getName(), m_base);
 }
 
 CRootItem::~CRootItem() {
@@ -97,13 +97,9 @@ void CRootItem::deserialize(std::string text) {
 	}
 }
 
-
-
 std::string CRootItem::serialize() {
 	return m_base->serialize();
 }
-
-
 
 string CRootItem::diff(const CRootItem& other) {
 //	CDiff differ;
@@ -239,6 +235,51 @@ bool CRootItem::operator==(const CRootItem& other) {
 }
 
 
+bool CRootItem::beginInsertItems(const int pos, const int count, const CCategoryItem* parent) {
+	return true;
+}
+
+bool CRootItem::endInsertItems(void) {
+	return true;
+}
+
+bool CRootItem::beginRemoveItems(const int pos, const int count, const CCategoryItem* parent) {
+	return true;
+}
+
+bool CRootItem::endRemoveItems(void) {
+	return true;
+}
+
+
+CCategoryItem* CRootItem::getItemPtr(std::string path) {
+	size_t lpos = 1;
+	CCategoryItem* parent = m_base;
+
+	while( lpos < path.size() ) {
+		size_t rpos = path.find('/', lpos);
+		if(rpos == string::npos) {
+			if( lpos != path.size() ) {
+				rpos = path.size();
+			}
+			else {
+				break;
+			}
+		}
+
+		string catName = path.substr(lpos , rpos - lpos);
+
+		CCategoryItem* cItem = parent->getCategoryItem(catName);
+		if(cItem == 0) {
+			return 0;
+		}
+		parent = cItem;
+		lpos = rpos + 1;
+	}
+	return parent;
+}
+
+
 CCategoryItem* CRootItem::mkPath(string path) {
 	size_t lpos = 1;
 	CCategoryItem* parent = m_base;
@@ -261,7 +302,7 @@ CCategoryItem* CRootItem::mkPath(string path) {
 		CCategoryItem* cItem = getItemPtr(catPath);
 		if(cItem == 0) {
 			cItem = new CCategoryItem( catName, parent);
-			setItemPtr(catPath, cItem);
+			// setItemPtr(catPath, cItem);
 		}
 		parent = cItem;
 		lpos = rpos + 1;
