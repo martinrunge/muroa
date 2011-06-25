@@ -115,8 +115,13 @@ void CConnection::sendCollection(CCollection<CCollectionItem>* collection)
 }
 
 void CConnection::sendCollectionDiff(int diffFromRev) {
-	QString collectionDiff = m_session->getCollectionDiff(diffFromRev);
-	sendCollectionDiff(diffFromRev, m_session->getCollectionRevision(), collectionDiff);
+	if(diffFromRev > m_session->getCollectionRevision()) {
+		sendCollection(m_session->getCollection());
+	}
+	else {
+		QString collectionDiff = m_session->getCollectionDiff(diffFromRev);
+		sendCollectionDiff(diffFromRev, m_session->getCollectionRevision(), collectionDiff);
+	}
 }
 
 
@@ -142,8 +147,13 @@ void CConnection::sendPlaylist(CCollection<CPlaylistItem>* playlist)
 }
 
 void CConnection::sendPlaylistDiff(int diffFromRev) {
-	QString playlistDiff = m_session->getPlaylistDiff(diffFromRev);
-	sendPlaylistDiff(diffFromRev, m_session->getPlaylistRevision(), playlistDiff);
+	if(diffFromRev > m_session->getPlaylistRevision()) {
+		sendPlaylist(m_session->getPlaylist());
+	}
+	else {
+		QString playlistDiff = m_session->getPlaylistDiff(diffFromRev);
+		sendPlaylistDiff(diffFromRev, m_session->getPlaylistRevision(), playlistDiff);
+	}
 }
 
 void CConnection::sendPlaylistDiff(int revision, int diffFromRev, QString diff) {
@@ -169,8 +179,13 @@ void CConnection::sendNextlist(CCollection<CPlaylistItem>* nextlist)
 }
 
 void CConnection::sendNextlistDiff(int diffFromRev) {
-	QString nextlistDiff = m_session->getNextlistDiff(diffFromRev);
-	sendNextlistDiff(diffFromRev, m_session->getNextlistRevision(), nextlistDiff);
+	if(diffFromRev > m_session->getNextlistRevision()) {
+		sendNextlist(m_session->getNextlist());
+	}
+	else {
+		QString nextlistDiff = m_session->getNextlistDiff(diffFromRev);
+		sendNextlistDiff(diffFromRev, m_session->getNextlistRevision(), nextlistDiff);
+	}
 }
 
 void CConnection::sendNextlistDiff(int revision, int diffFromRev, QString diff) {

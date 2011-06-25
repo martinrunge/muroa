@@ -13,13 +13,14 @@ extern "C" {
 #include <libavcodec/avcodec.h>
 }
 
+using namespace std;
+
 #include <string>
 #include <stdint.h>
 #include <assert.h>
 
 #include <thread>
 
-using namespace std;
 
 class CStream;
 

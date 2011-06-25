@@ -110,13 +110,10 @@ void CMediaScannerCtrl::terminate() {
 	std::unique_lock<std::mutex> lk(m_mutex);
 	int tries = 0;
 	while(m_child_running) {
-		bool signaled = m_cond_var.wait_for(lk, std::chrono::milliseconds(100));
+		cv_status cv_return_cause = m_cond_var.wait_for(lk, std::chrono::milliseconds(100));
 
 		cerr << "m_cond_var.wait_for returned due to ";
-		if(signaled) {
-			cerr << "notification from waitpid -> mediascanner process exited." << endl;
-		}
-		else {
+		if(cv_return_cause == cv_status::timeout) {
 			switch (tries) {
 				case 0:
 				case 1:
@@ -128,6 +125,9 @@ void CMediaScannerCtrl::terminate() {
 					cerr << "timeout -> send SIGKILL to mediascanner process" << endl;
 					kill(m_pid, SIGKILL);
 			}
+		}
+		else {
+			cerr << "notification from waitpid -> mediascanner process exited." << endl;
 		}
 		tries++;
 	}

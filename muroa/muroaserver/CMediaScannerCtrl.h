@@ -8,6 +8,8 @@
 #ifndef CMEDIASCANNERCTRL_H_
 #define CMEDIASCANNERCTRL_H_
 
+
+
 #include "CSubProcess.h"
 #include "mediascanner/CEventLoop.h"
 #include "mediascanner/CMsgQuit.h"

@@ -127,6 +127,8 @@ template <class T> int CCollection<T>::patch(QString* diff, int revision) throw(
 	QTextStream stream(diff, QIODevice::ReadOnly);
 	QString line;
 
+	m_revision = revision;
+
 	QRegExp rxdiff("^@@ -(\\d+),(\\d+)\\s+\\+(\\d+),(\\d+)\\s*@@$");
 
 	int oldStart(0);

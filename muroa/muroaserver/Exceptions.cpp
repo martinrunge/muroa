@@ -12,7 +12,6 @@ CException::CException(std::string reason) throw () {
 }
 
 CException::~CException() throw () {
-	// TODO Auto-generated destructor stub
 }
 
 const char* CException::what() const throw () {
@@ -28,7 +27,6 @@ CApiMisuseException::CApiMisuseException(std::string reason) throw () {
 }
 
 CApiMisuseException::~CApiMisuseException() throw () {
-	// TODO Auto-generated destructor stub
 }
 
 const char* CApiMisuseException::what() const throw () {
