@@ -29,17 +29,18 @@
 
 class CMediaItem;
 class CCategoryItem;
+class CRootItem;
 
 enum item_type { E_ROOT, E_CAT, E_MEDIAITEM };
 typedef enum item_type item_type_t;
 
 class CItemBase {
 public:
-	CItemBase(CCategoryItem*  parent, const item_type_t type);
+	CItemBase(CRootItem *root_item, CCategoryItem*  parent, const item_type_t type);
 	virtual ~CItemBase();
 
 protected:
-	CItemBase(std::string text, const item_type_t type );
+	CItemBase(CRootItem *root_item, std::string text, const item_type_t type);
 
 public:
 	inline std::string getName() const { return m_name; };
@@ -49,7 +50,7 @@ public:
 	virtual int numChildren() = 0;
 
 	virtual CItemBase* childAt(unsigned row) = 0;
-	virtual unsigned childPos(CItemBase* child) = 0;
+	virtual unsigned childPos(const CItemBase* const child) = 0;
 
 	inline std::string getText() { return m_text; };
 	virtual std::string serialize(bool asDiff = false) = 0;
@@ -65,6 +66,8 @@ protected:
 	void replaceTabs(std::string& str);
 
 	const item_type_t m_item_type;
+
+	CRootItem *m_root_item;
 
 };
 

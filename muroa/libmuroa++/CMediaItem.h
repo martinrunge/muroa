@@ -14,8 +14,8 @@
 
 class CMediaItem : public CItemBase {
 public:
-	CMediaItem(CCategoryItem*  parent, int posInParent = -1);
-	CMediaItem(std::string text, CCategoryItem*  parent, int posInParent = -1);
+	CMediaItem(CRootItem *root_item, CCategoryItem*  parent, int posInParent = -1);
+	CMediaItem(CRootItem *root_item, std::string text, CCategoryItem*  parent, int posInParent = -1);
 	virtual ~CMediaItem();
 
     inline std::string getAlbum() const { return m_album; }
@@ -41,7 +41,7 @@ public:
 	void addChild(CMediaItem* newMediaItem, int pos = -1);
 	int numChildren() { return 0; };
 	CItemBase* childAt(unsigned row) { return 0; };
-	virtual unsigned childPos(CItemBase* child) { return 0; };
+	virtual unsigned childPos(const CItemBase* const child) { return 0; };
 
 	std::string serialize(bool asDiff = false);
 

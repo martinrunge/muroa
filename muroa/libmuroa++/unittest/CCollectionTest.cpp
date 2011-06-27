@@ -66,26 +66,29 @@ void CCollectionTest::construct() {
 }
 
 void CCollectionTest::serializeMedia() {
-	CMediaItem *mItem = new CMediaItem("/path/to/file.mp3\tTest Artist 0\tTest Album 0	Test Title 9\t2008\t90\t3560093084", 0);
+	CMediaItem *mItem = new CMediaItem(m_root, "/path/to/file.mp3\tTest Artist 0\tTest Album 0	Test Title 9\t2008\t90\t3560093084", 0);
 	string result = mItem->serialize();
 
 	stringstream ss;
 	ss << mItem->getText();
 	string expected = ss.str();
+
+	delete mItem;
 	CPPUNIT_ASSERT(result.compare(expected) == 0 );
 }
 
 void CCollectionTest::deserializeMedia() {
-	CMediaItem *mItem = new CMediaItem("/path/to/file.mp3\tTest Artist 0\tTest Album 0	Test Title 9\t2008\t90\t2665035088", 0);
+	CMediaItem *mItem = new CMediaItem(m_root, "/path/to/file.mp3\tTest Artist 0\tTest Album 0	Test Title 9\t2008\t90\t2665035088", 0);
 	size_t hashval = mItem->getHash();
-	CPPUNIT_ASSERT( hashval == 2665035088 );
+	delete mItem;
+	CPPUNIT_ASSERT( hashval == 2665035088UL );
 }
 
 
 void CCollectionTest::serializeCategory() {
-	CCategoryItem* base = new CCategoryItem();
-	CCategoryItem *cItem = new CCategoryItem("Category1", base);
-	CMediaItem *mItem = new CMediaItem("Titel1", cItem);
+	CCategoryItem* base = new CCategoryItem(m_root);
+	CCategoryItem *cItem = new CCategoryItem(m_root, "Category1", base);
+	CMediaItem *mItem = new CMediaItem(m_root, "Titel1", cItem);
 	string result = base->serialize();
 
 	stringstream ss;
@@ -97,13 +100,13 @@ void CCollectionTest::serializeCategory() {
 
 void CCollectionTest::serialize() {
 	CCategoryItem *item;
-	CCategoryItem* base = new CCategoryItem();
+	CCategoryItem* base = new CCategoryItem(m_root);
 
-	item = new CCategoryItem("stufe1", base);
-	item = new CCategoryItem("stufe2", item);
-	item = new CCategoryItem("stufe3", item);
+	item = new CCategoryItem(m_root, "stufe1", base);
+	item = new CCategoryItem(m_root, "stufe2", item);
+	item = new CCategoryItem(m_root, "stufe3", item);
 
-	CMediaItem *mItem = new CMediaItem("Titel1", item);
+	CMediaItem *mItem = new CMediaItem(m_root, "Titel1", item);
 
 	string result = base->serialize();
 
@@ -136,7 +139,7 @@ void CCollectionTest::traverse() {
 }
 
 void CCollectionTest::replaceTabs() {
-	CMediaItem *mItem = new CMediaItem(0);
+	CMediaItem *mItem = new CMediaItem(m_root, 0);
 	mItem->setArtist("Tabula\tRasa\t");
 	mItem->setAlbum("On The \t way to \tabs");
 	mItem->setTitle("\tTab\tTab\t");

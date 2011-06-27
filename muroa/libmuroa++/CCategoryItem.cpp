@@ -21,6 +21,7 @@
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
 
+#include "CRootItem.h"
 #include "CCategoryItem.h"
 #include "CMediaItem.h"
 #include "CDiff.h"
@@ -31,7 +32,7 @@
 
 using namespace std;
 
-CCategoryItem::CCategoryItem(string text, CCategoryItem*  parent) : CItemBase(parent, E_CAT)
+CCategoryItem::CCategoryItem(CRootItem *root_item, string text, CCategoryItem*  parent) : CItemBase(root_item, parent, E_CAT)
 {
 	replaceTabs(text);
 	m_name = text;
@@ -60,16 +61,21 @@ CCategoryItem::~CCategoryItem() {
 }
 
 void CCategoryItem::addChild(CCategoryItem* newSubCategory) {
+	m_root_item->beginInsertItems( m_sub_categories.size(), 1, this );
 	m_sub_categories.push_back(newSubCategory);
+	m_root_item->endInsertItems();
 }
 
 void CCategoryItem::addChild(CMediaItem*  newMediaItem, int pos) {
 	if(pos == -1) {
+		m_root_item->beginInsertItems( m_media_items.size(), 1, this );
 		m_media_items.push_back(newMediaItem);
 	}
 	else {
+		m_root_item->beginInsertItems( pos, 1, this );
 		m_media_items.insert( m_media_items.begin() + pos, newMediaItem );
 	}
+	m_root_item->endInsertItems();
 }
 
 CMediaItem* CCategoryItem::getMediaItem(unsigned pos) {
@@ -104,7 +110,7 @@ CItemBase* CCategoryItem::childAt(unsigned row) {
 	}
 }
 
-unsigned CCategoryItem::childPos(CItemBase* child) {
+unsigned CCategoryItem::childPos(const CItemBase* const child) {
 
 	unsigned pos = 0;
 
@@ -147,9 +153,12 @@ void CCategoryItem::delMediaItem(int pos) {
 
 void CCategoryItem::delCategory(CCategoryItem* categoryItem) {
 	std::vector<CCategoryItem*>::iterator cit;
-	for(cit = m_sub_categories.begin(); cit != m_sub_categories.end(); cit++ ) {
+	int i = 0;
+	for(cit = m_sub_categories.begin(); cit != m_sub_categories.end(); cit++, i++ ) {
 		if(categoryItem == *cit) {
+			m_root_item->beginRemoveItems(i, 1, this );
 			m_sub_categories.erase(cit);
+			m_root_item->endRemoveItems();
 			break;
 		}
 	}

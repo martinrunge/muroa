@@ -22,7 +22,7 @@
 using namespace std;
 
 CRootItem::CRootItem() {
-	m_base = new CCategoryItem("", 0);
+	m_base = new CCategoryItem(this, "", 0);
 	// setItemPtr(m_base->getName(), m_base);
 }
 
@@ -33,10 +33,10 @@ CRootItem::~CRootItem() {
 CCategoryItem* CRootItem::addCategory(string name, CCategoryItem* parent) {
 	CCategoryItem* newItem;
 	if(parent == 0) {
-		newItem = new CCategoryItem(name, m_base);
+		newItem = new CCategoryItem(this, name, m_base);
 	}
 	else {
-		newItem = new CCategoryItem(name, parent);
+		newItem = new CCategoryItem(this, name, parent);
 	}
 	return newItem;
 }
@@ -45,13 +45,22 @@ CMediaItem* CRootItem::addMediaItem(CCategoryItem* parent, int posInParent) {
 	if (parent == 0)  {
 		parent = m_base;
 	}
-	CMediaItem* newItem = new CMediaItem(parent, posInParent);
+	if(posInParent == -1) {
+		posInParent = parent->numChildren();
+	}
+	beginInsertItems(posInParent, 1, parent );
+	CMediaItem* newItem = new CMediaItem(this, parent, posInParent);
+	endInsertItems();
 	return newItem;
 }
 
 CMediaItem* CRootItem::addMediaItem(string textWoPath, CCategoryItem* parent, int posInParent) {
-
-	CMediaItem* newItem = new CMediaItem(textWoPath, parent, posInParent);
+	if(posInParent == -1) {
+		posInParent = parent->numChildren();
+	}
+	beginInsertItems(posInParent, 1, parent );
+	CMediaItem* newItem = new CMediaItem(this, textWoPath, parent, posInParent);
+	endInsertItems();
 	return newItem;
 }
 
@@ -70,7 +79,13 @@ CMediaItem* CRootItem::addMediaItem(string text, int posInParent) {
 	}
 
 	string mItemText = text.substr(pathPos, text.size() - pathPos);
-	CMediaItem* newItem = new CMediaItem(mItemText, parent, posInParent);
+
+	if(posInParent == -1) {
+		posInParent = parent->numChildren();
+	}
+	beginInsertItems(posInParent, 1, parent );
+	CMediaItem* newItem = new CMediaItem(this, mItemText, parent, posInParent);
+	endInsertItems();
 	return newItem;
 }
 
@@ -301,7 +316,7 @@ CCategoryItem* CRootItem::mkPath(string path) {
 
 		CCategoryItem* cItem = getItemPtr(catPath);
 		if(cItem == 0) {
-			cItem = new CCategoryItem( catName, parent);
+			cItem = new CCategoryItem( this, catName, parent);
 			// setItemPtr(catPath, cItem);
 		}
 		parent = cItem;

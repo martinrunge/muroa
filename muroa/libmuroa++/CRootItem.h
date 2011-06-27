@@ -25,7 +25,6 @@ public:
 	CRootItem();
 	virtual ~CRootItem();
 
-
 	CCategoryItem* addCategory(std::string name, CCategoryItem* parent = 0);
 
 	CMediaItem* addMediaItem(CCategoryItem* parent = 0, int posInParent = -1);
@@ -71,6 +70,7 @@ public:
 //	}
 
 private:
+
 	std::map<std::string, CCategoryItem*> m_map;
 	CCategoryItem* m_base;
 

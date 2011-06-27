@@ -33,7 +33,7 @@ class CMediaItem;
 
 class CCategoryItem : public CItemBase {
 public:
-	CCategoryItem(std::string text = std::string(), CCategoryItem*  parent = 0);
+	CCategoryItem(CRootItem *root_item, std::string text = std::string(), CCategoryItem*  parent = 0);
 	virtual ~CCategoryItem();
 
 	inline std::string getPath() const { return m_path; };
@@ -44,7 +44,7 @@ public:
 	CMediaItem* getMediaItem(unsigned pos);
 	CCategoryItem* getCategoryItem(std::string name);
 	CItemBase* childAt(unsigned row);
-	unsigned childPos(CItemBase* child);
+	unsigned childPos(const CItemBase* const child);
 
 	int numChildren();
 	int getNumMediaItems();

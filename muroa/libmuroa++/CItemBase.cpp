@@ -27,12 +27,13 @@
 using namespace std;
 using namespace boost;
 
-CItemBase::CItemBase(CCategoryItem*  parent, const item_type_t type) :
-           m_parent(parent), m_item_type(type)
+CItemBase::CItemBase(CRootItem *root_item, CCategoryItem*  parent, const item_type_t type) :
+           m_parent(parent), m_item_type(type), m_root_item(root_item)
 {
 }
 
-CItemBase::CItemBase(std::string text, const item_type_t type ): m_item_type(type) {
+CItemBase::CItemBase(CRootItem *root_item, std::string text, const item_type_t type):
+		   m_item_type(type), m_root_item(root_item) {
 	int tabpos = text.find('\t', 0);
 	int namepos = text.rfind('/', tabpos);
 
