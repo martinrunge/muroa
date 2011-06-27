@@ -38,6 +38,7 @@ public:
     ~CMainWindow();
 
 public slots:
+	void patch(void);
 
 private:
     Ui::MainWindow ui;

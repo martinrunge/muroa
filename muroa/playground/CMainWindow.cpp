@@ -36,20 +36,24 @@ CMainWindow::CMainWindow(QWidget *parent)
 
 
 	connect(ui.action_Exit, SIGNAL(triggered()), qApp, SLOT(quit()));
+	connect(ui.actionPatch, SIGNAL(triggered()), this, SLOT(patch()));
     //connect(ui.actionOpen, SIGNAL(triggered()), this, SLOT(openConnection()));
     //connect(ui.actionClose, SIGNAL(triggered()), &m_connection, SLOT(close()));
 
 	statusBar()->addWidget(&m_status_label);
 
 	std::string exampleCollection = CUtils::file2string( "testcases/example.txt" );
+	std::string modifiedCollection = CUtils::file2string( "testcases/modified.txt" );
 
 
 	m_leftTreeModel = new CTreeModel();
 	m_leftTreeModel->deserialize(exampleCollection);
-	// m_rightTreeModel = new CTreeModel(rItem);
+
+	m_rightTreeModel = new CTreeModel();
+	m_rightTreeModel->deserialize(modifiedCollection);
 
 	ui.leftTreeView->setModel(m_leftTreeModel);
-	// ui.rightTreeView->setModel(m_rightTreeModel);
+	ui.rightTreeView->setModel(m_rightTreeModel);
 }
 
 CMainWindow::~CMainWindow()
@@ -59,3 +63,7 @@ CMainWindow::~CMainWindow()
 	delete m_rootItem;
 }
 
+void CMainWindow::patch(void) {
+	std::string diff = m_leftTreeModel->diff( *m_rightTreeModel );
+	m_leftTreeModel->patch(diff);
+}

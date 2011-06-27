@@ -133,19 +133,25 @@ int CTreeModel::columnCount(const QModelIndex &parent) const {
 }
 
 bool CTreeModel::beginInsertItems( const int pos, const int count, const CCategoryItem* parent ) {
-
+	QModelIndex parentIndex = index(parent);
+    QAbstractItemModel::beginInsertRows(parentIndex, pos, pos + count - 1);
+    return true;
 }
 
 bool CTreeModel::endInsertItems( ) {
-
+	QAbstractItemModel::endInsertRows();
+	return true;
 }
 
 bool CTreeModel::beginRemoveItems( const int pos, const int count, const CCategoryItem* parent ) {
-
+	QModelIndex parentIndex = index(parent);
+	QAbstractItemModel::beginRemoveRows(parentIndex, pos, pos + count - 1);
+	return true;
 }
 
 bool CTreeModel::endRemoveItems( ) {
-
+    QAbstractItemModel::endRemoveRows();
+	return true;
 }
 
 
@@ -158,6 +164,23 @@ CItemBase* CTreeModel::itemFromIndex(const QModelIndex & index) const
 	}
 }
 
+QModelIndex CTreeModel::index(const CItemBase* item, int column) const {
+
+	if(item ==  0) {
+		return QModelIndex();
+	}
+
+	CCategoryItem* parent = item->getParent();
+    if (parent == 0 ) {
+        return QModelIndex();
+    }
+
+    unsigned posInParent = parent->childPos(item);
+
+    return createIndex(posInParent, column, const_cast<CItemBase*>(item));
+}
+
+
 
 QModelIndex CTreeModel::indexFromItem(const CItemBase* item) const {
 	CCategoryItem* parent = item->getParent();
@@ -168,14 +191,14 @@ QModelIndex CTreeModel::indexFromItem(const CItemBase* item) const {
 	}
 
 	QModelIndex mindex = QModelIndex();
-	parent = cat_stack.top();
-	cat_stack.pop();
 
-	while(!cat_stack.empty()) {
+	while(!cat_stack.empty() ) {
 		CCategoryItem* citem = cat_stack.top();
 		cat_stack.pop();
-		int row = parent->childPos(citem);
-		mindex = index( row, 0, mindex);
+		if( citem != 0 ) {
+			int row = parent->childPos(citem);
+			mindex = index( row, 0, mindex);
+		}
 	}
 
 	return mindex;

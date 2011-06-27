@@ -54,6 +54,8 @@ public:
 	bool endRemoveItems( );
 
 private:
+    QModelIndex index(const CItemBase* item, int column = 0) const;
+
     QVariant dataFromColumn(CItemBase* item, int column) const;
     CItemBase* itemFromIndex(const QModelIndex & index) const;
     QModelIndex indexFromItem(const CItemBase* item) const;
