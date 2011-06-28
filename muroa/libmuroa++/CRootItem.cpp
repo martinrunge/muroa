@@ -310,7 +310,6 @@ CCategoryItem* CRootItem::mkPath(string path) {
 			}
 		}
 
-
 		string catPath = path.substr(0, rpos);
 		string catName = path.substr(lpos , rpos - lpos);
 

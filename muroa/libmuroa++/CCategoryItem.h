@@ -31,6 +31,7 @@
 
 class CMediaItem;
 
+
 class CCategoryItem : public CItemBase {
 public:
 	CCategoryItem(CRootItem *root_item, std::string text = std::string(), CCategoryItem*  parent = 0);
@@ -70,5 +71,12 @@ private:
 	int m_depth;
 	std::string m_path;
 };
+
+struct CompareCategoriesByName {
+public:
+    bool operator () (const CCategoryItem* const lhs, const CCategoryItem* const rhs) { return lhs->getName() < rhs->getName(); }
+    bool operator () (const CCategoryItem& lhs, const CCategoryItem& rhs) { return lhs.getName() < rhs.getName(); }
+};
+
 
 #endif /* CCATEGORYITEM_H_ */

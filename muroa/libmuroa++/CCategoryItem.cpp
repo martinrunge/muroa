@@ -26,9 +26,9 @@
 #include "CMediaItem.h"
 #include "CDiff.h"
 
-#include <typeinfo>
 #include <iostream>
 #include <cassert>
+#include <algorithm>
 
 using namespace std;
 
@@ -61,8 +61,13 @@ CCategoryItem::~CCategoryItem() {
 }
 
 void CCategoryItem::addChild(CCategoryItem* newSubCategory) {
-	m_root_item->beginInsertItems( m_sub_categories.size(), 1, this );
-	m_sub_categories.push_back(newSubCategory);
+	// binary search for insert pos
+	vector<CCategoryItem*>::iterator up;
+	up = upper_bound(m_sub_categories.begin(), m_sub_categories.end(), newSubCategory, CompareCategoriesByName() );
+
+	unsigned insertPos = up - m_sub_categories.begin();
+	m_root_item->beginInsertItems( insertPos, 1, this );
+	m_sub_categories.insert( up, newSubCategory);
 	m_root_item->endInsertItems();
 }
 
