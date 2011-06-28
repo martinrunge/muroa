@@ -46,28 +46,33 @@ public:
 	virtual bool beginRemoveItems(const int pos, const int count, const CCategoryItem* parent);
 	virtual bool endRemoveItems(void);
 
-	CCategoryItem* getItemPtr(std::string path);
+	// implementation traverses object tree and compares names
+	//CCategoryItem* getItemPtr(std::string path);
 
-	//	CCategoryItem* getItemPtr(std::string path) {
-//    	std::map<std::string, CCategoryItem*>::iterator it;
-//    	it = m_map.find(path);
-//    	if(it == m_map.end()) {
-//    		return 0;
-//    	}
-//    	else {
-//    		return it->second;
-//    	}
-//   	}
+	CCategoryItem* getItemPtr(std::string path) {
+    	std::map<std::string, CCategoryItem*>::iterator it;
+    	it = m_map.find(path);
+    	if(it == m_map.end()) {
+    		return 0;
+    	}
+    	else {
+    		return it->second;
+    	}
+   	}
 
-//	inline void setItemPtr(std::string path, CCategoryItem* itemPtr) {
-//		std::pair<std::map<std::string, CCategoryItem*>::iterator,bool> ret;
-//		ret = m_map.insert(std::pair<std::string,CCategoryItem*>(path, itemPtr));
-//		if (ret.second==false)
-//		{
-//		    std::cout << "element 'z' already existed";
-//		    std::cout << " with a value of " << ret.first->second << std::endl;
-//		}
-//	}
+	inline void setItemPtr(std::string path, CCategoryItem* itemPtr) {
+		std::pair<std::map<std::string, CCategoryItem*>::iterator,bool> ret;
+		ret = m_map.insert(std::pair<std::string,CCategoryItem*>(path, itemPtr));
+		if (ret.second==false)
+		{
+		    std::cout << "element 'z' already existed";
+		    std::cout << " with a value of " << ret.first->second << std::endl;
+		}
+	}
+
+	inline void delItemPtr(std::string path) {
+		m_map.erase(path);
+	}
 
 private:
 

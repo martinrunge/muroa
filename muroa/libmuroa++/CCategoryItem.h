@@ -39,8 +39,7 @@ public:
 
 	inline std::string getPath() const { return m_path; };
 
-	void addChild(CCategoryItem* newSubCategory);
-	void addChild(CMediaItem*    newMediaItem, int pos = -1);
+	void addChild(CMediaItem*  newMediaItem, int pos = -1);
 
 	CMediaItem* getMediaItem(unsigned pos);
 	CCategoryItem* getCategoryItem(std::string name);
@@ -64,6 +63,8 @@ public:
 
 	static std::string getParentPath(std::string ownPath);
 private:
+	void addChild(CCategoryItem* newSubCategory);
+
 	std::vector<CCategoryItem*>  m_sub_categories;
 	std::vector<CMediaItem*>     m_media_items;
 	std::istringstream m_iss;

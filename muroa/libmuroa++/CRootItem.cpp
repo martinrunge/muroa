@@ -265,34 +265,34 @@ bool CRootItem::beginRemoveItems(const int pos, const int count, const CCategory
 bool CRootItem::endRemoveItems(void) {
 	return true;
 }
-
-
-CCategoryItem* CRootItem::getItemPtr(std::string path) {
-	size_t lpos = 1;
-	CCategoryItem* parent = m_base;
-
-	while( lpos < path.size() ) {
-		size_t rpos = path.find('/', lpos);
-		if(rpos == string::npos) {
-			if( lpos != path.size() ) {
-				rpos = path.size();
-			}
-			else {
-				break;
-			}
-		}
-
-		string catName = path.substr(lpos , rpos - lpos);
-
-		CCategoryItem* cItem = parent->getCategoryItem(catName);
-		if(cItem == 0) {
-			return 0;
-		}
-		parent = cItem;
-		lpos = rpos + 1;
-	}
-	return parent;
-}
+//
+//   alternative implementation without a cache
+//CCategoryItem* CRootItem::getItemPtr(std::string path) {
+//	size_t lpos = 1;
+//	CCategoryItem* parent = m_base;
+//
+//	while( lpos < path.size() ) {
+//		size_t rpos = path.find('/', lpos);
+//		if(rpos == string::npos) {
+//			if( lpos != path.size() ) {
+//				rpos = path.size();
+//			}
+//			else {
+//				break;
+//			}
+//		}
+//
+//		string catName = path.substr(lpos , rpos - lpos);
+//
+//		CCategoryItem* cItem = parent->getCategoryItem(catName);
+//		if(cItem == 0) {
+//			return 0;
+//		}
+//		parent = cItem;
+//		lpos = rpos + 1;
+//	}
+//	return parent;
+//}
 
 
 CCategoryItem* CRootItem::mkPath(string path) {

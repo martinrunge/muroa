@@ -45,6 +45,7 @@ CCategoryItem::CCategoryItem(CRootItem *root_item, string text, CCategoryItem*  
 	if(m_parent) {
 		m_parent->addChild(this);
 	}
+	m_root_item->setItemPtr(m_path, this);
 }
 
 
@@ -58,6 +59,7 @@ CCategoryItem::~CCategoryItem() {
 	for(mit = m_media_items.begin(); mit != m_media_items.end(); mit++ ) {
 		delete *mit;
 	}
+	m_root_item->delItemPtr(m_path);
 }
 
 void CCategoryItem::addChild(CCategoryItem* newSubCategory) {
