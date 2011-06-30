@@ -28,14 +28,14 @@ uint32_t CMediaItem::hash( std::string stdstr ) {
 	return hash;
 }
 
-CMediaItem::CMediaItem(CRootItem *root_item, CCategoryItem*  parent, int posInParent) : CItemBase( root_item, parent, E_MEDIAITEM ) {
+CMediaItem::CMediaItem(CRootItem *root_item, CCategoryItem*  parent, int posInParent) : IContentItem( root_item, parent, CItemType::E_MEDIAITEM ) {
 	if(m_parent) {
 		m_parent->addChild(this, posInParent);
 	}
 }
 
 CMediaItem::CMediaItem(CRootItem *root_item, std::string text, CCategoryItem*  parent, int posInParent)
-   : CItemBase( root_item, parent, E_MEDIAITEM ) {
+   : IContentItem( root_item, parent, CItemType::E_MEDIAITEM ) {
 
 	m_text = text;
 	// first section is handled by CItemBase
@@ -175,9 +175,6 @@ bool CMediaItem::operator==(const CMediaItem& other) {
 	return rc;
 }
 
-void CMediaItem::addChild(CMediaItem* /*newMediaItem*/, int /*pos*/ ) {
-	throw std::runtime_error( "CMediaItem may not have children!");
-}
 
 string CMediaItem::serialize(bool asDiff) {
 	if(asDiff) {

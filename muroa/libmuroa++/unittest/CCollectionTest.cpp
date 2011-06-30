@@ -62,7 +62,7 @@ void CCollectionTest::construct() {
 	item = m_root->addCategory("stufe2", item);
 	item = m_root->addCategory("stufe3", item);
 
-	CMediaItem *mItem = m_root->addMediaItem("/path/to/file.mp3\tTest Artist 0\tTest Album 0	Test Title 9\t2008\t90\t3560093084", item);
+	IContentItem *mItem = m_root->addContentItem("/path/to/file.mp3\tTest Artist 0\tTest Album 0	Test Title 9\t2008\t90\t3560093084", item);
 }
 
 void CCollectionTest::serializeMedia() {
@@ -177,7 +177,8 @@ CRootItem* CCollectionTest::prepareFakeCollection(int numArtist, int numAlbum, i
 			for(int k=0; k < numArtist; k++) {
 				stringstream title_ss;
 				title_ss << "Test Title " << setw( floor(log10(numTitle)) ) << k;
-				CMediaItem* title = rItem->addMediaItem(title_ss.str(), album);
+				IContentItem* citem = rItem->addContentItem(title_ss.str(), album);
+				CMediaItem* title = reinterpret_cast<CMediaItem*>(citem);
 				title->setFilename("/path/to/file.mp3");
 				title->setArtist(artist_ss.str());
 				title->setAlbum(album_ss.str());

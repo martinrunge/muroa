@@ -23,7 +23,7 @@
 
 #include "CRootItem.h"
 #include "CCategoryItem.h"
-#include "CMediaItem.h"
+#include "IContentItem.h"
 #include "CDiff.h"
 
 #include <iostream>
@@ -32,7 +32,7 @@
 
 using namespace std;
 
-CCategoryItem::CCategoryItem(CRootItem *root_item, string text, CCategoryItem*  parent) : CItemBase(root_item, parent, E_CAT)
+CCategoryItem::CCategoryItem(CRootItem *root_item, string text, CCategoryItem*  parent) : CItemBase(root_item, parent, CItemType::E_CAT)
 {
 	replaceTabs(text);
 	m_name = text;
@@ -55,8 +55,8 @@ CCategoryItem::~CCategoryItem() {
 		delete *cit;
 	}
 
-	std::vector<CMediaItem*>::iterator mit;
-	for(mit = m_media_items.begin(); mit != m_media_items.end(); mit++ ) {
+	std::vector<IContentItem*>::iterator mit;
+	for(mit = m_content_items.begin(); mit != m_content_items.end(); mit++ ) {
 		delete *mit;
 	}
 	m_root_item->delItemPtr(m_path);
@@ -73,20 +73,20 @@ void CCategoryItem::addChild(CCategoryItem* newSubCategory) {
 	m_root_item->endInsertItems();
 }
 
-void CCategoryItem::addChild(CMediaItem*  newMediaItem, int pos) {
+void CCategoryItem::addChild(IContentItem*  newMediaItem, int pos) {
 	if(pos == -1) {
-		m_root_item->beginInsertItems( m_media_items.size(), 1, this );
-		m_media_items.push_back(newMediaItem);
+		m_root_item->beginInsertItems( m_content_items.size(), 1, this );
+		m_content_items.push_back(newMediaItem);
 	}
 	else {
 		m_root_item->beginInsertItems( pos, 1, this );
-		m_media_items.insert( m_media_items.begin() + pos, newMediaItem );
+		m_content_items.insert( m_content_items.begin() + pos, newMediaItem );
 	}
 	m_root_item->endInsertItems();
 }
 
-CMediaItem* CCategoryItem::getMediaItem(unsigned pos) {
-	return m_media_items[pos];
+IContentItem* CCategoryItem::getContentItem(unsigned pos) {
+	return m_content_items[pos];
 }
 
 CCategoryItem* CCategoryItem::getCategoryItem(std::string name) {
@@ -108,8 +108,8 @@ CItemBase* CCategoryItem::childAt(unsigned row) {
 	}
 	else {
 		row -= m_sub_categories.size();
-		if(row < m_media_items.size()) {
-			return m_media_items[row];
+		if(row < m_content_items.size()) {
+			return m_content_items[row];
 		}
 		else {
 			return 0;
@@ -129,8 +129,8 @@ unsigned CCategoryItem::childPos(const CItemBase* const child) {
 		}
 	}
 
-	for(pos = n_sub_cats; pos < ( n_sub_cats + m_media_items.size() ); pos++ ) {
-		if( m_media_items[pos - n_sub_cats] == child ) {
+	for(pos = n_sub_cats; pos < ( n_sub_cats + m_content_items.size() ); pos++ ) {
+		if( m_content_items[pos - n_sub_cats] == child ) {
 			return pos;
 		}
 	}
@@ -139,8 +139,8 @@ unsigned CCategoryItem::childPos(const CItemBase* const child) {
 }
 
 
-int CCategoryItem::getNumMediaItems() {
-	return m_media_items.size();
+int CCategoryItem::getNumContentItems() {
+	return m_content_items.size();
 }
 
 int CCategoryItem::getNumCategories() {
@@ -149,13 +149,13 @@ int CCategoryItem::getNumCategories() {
 
 int CCategoryItem::numChildren() {
 	int num = m_sub_categories.size();
-	num += m_media_items.size();
+	num += m_content_items.size();
 	return num;
 }
 
 
-void CCategoryItem::delMediaItem(int pos) {
-	m_media_items.erase(m_media_items.begin() + pos);
+void CCategoryItem::delContentItem(int pos) {
+	m_content_items.erase(m_content_items.begin() + pos);
 }
 
 void CCategoryItem::delCategory(CCategoryItem* categoryItem) {
@@ -184,11 +184,11 @@ string CCategoryItem::serialize(bool asDiff) {
 	if(asDiff) {
 		ostringstream oss;
 		oss << "+++ " << getPath() << endl;
-		oss << "@@ -0,0 +1," << m_media_items.size() << endl;
+		oss << "@@ -0,0 +1," << m_content_items.size() << endl;
 		result.append(oss.str());
 	}
-	std::vector<CMediaItem*>::iterator mit;
-	for(mit = m_media_items.begin(); mit != m_media_items.end(); mit++ ) {
+	std::vector<IContentItem*>::iterator mit;
+	for(mit = m_content_items.begin(); mit != m_content_items.end(); mit++ ) {
 		result.append((*mit)->serialize(asDiff));
 	}
 
@@ -252,14 +252,14 @@ string CCategoryItem::diff(const CCategoryItem* other) {
 
 
 	string ltext, rtext;
-	vector<CMediaItem*>::const_iterator mit;
-	vector<CMediaItem*>::const_iterator other_mit;
+	vector<IContentItem*>::const_iterator mit;
+	vector<IContentItem*>::const_iterator other_mit;
 
-	for(mit = m_media_items.begin(); mit != m_media_items.end(); mit++) {
+	for(mit = m_content_items.begin(); mit != m_content_items.end(); mit++) {
 		ltext.append((*mit)->getText());
 	}
 
-	for(other_mit = other->m_media_items.begin(); other_mit != other->m_media_items.end(); other_mit++) {
+	for(other_mit = other->m_content_items.begin(); other_mit != other->m_content_items.end(); other_mit++) {
 		rtext.append((*other_mit)->getText());
 	}
 
@@ -290,7 +290,7 @@ bool CCategoryItem::operator==(const CCategoryItem& other) {
 		return false;
 	}
 
-	if( m_media_items.size() != other.m_media_items.size() ) {
+	if( m_content_items.size() != other.m_content_items.size() ) {
 		return false;
 	}
 
@@ -305,9 +305,9 @@ bool CCategoryItem::operator==(const CCategoryItem& other) {
 
 	}
 
-	vector<CMediaItem*>::const_iterator mit = m_media_items.begin();
-	vector<CMediaItem*>::const_iterator other_mit = other.m_media_items.begin();
-	while( mit != m_media_items.end() && other_mit != other.m_media_items.end()) {
+	vector<IContentItem*>::const_iterator mit = m_content_items.begin();
+	vector<IContentItem*>::const_iterator other_mit = other.m_content_items.begin();
+	while( mit != m_content_items.end() && other_mit != other.m_content_items.end()) {
 		if( *(*mit) != *(*other_mit) ) {
 			return false;
 		}

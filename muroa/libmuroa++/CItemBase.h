@@ -27,26 +27,25 @@
 #include <string>
 #include <vector>
 
-class CMediaItem;
+#include "CItemType.h"
+
+class IContentItem;
 class CCategoryItem;
 class CRootItem;
 
-enum item_type { E_ROOT, E_CAT, E_MEDIAITEM };
-typedef enum item_type item_type_t;
-
 class CItemBase {
 public:
-	CItemBase(CRootItem *root_item, CCategoryItem*  parent, const item_type_t type);
+	CItemBase(CRootItem *root_item, CCategoryItem*  parent, const CItemType::item_type_t type);
 	virtual ~CItemBase();
 
 protected:
-	CItemBase(CRootItem *root_item, std::string text, const item_type_t type);
+	CItemBase(CRootItem *root_item, std::string text, const CItemType::item_type_t type);
 
 public:
 	inline std::string getName() const { return m_name; };
 
 	inline CCategoryItem* getParent() const { return m_parent; };
-	virtual void addChild(CMediaItem* newChild, int pos = -1) = 0;
+	virtual void addChild(IContentItem* newChild, int pos = -1) = 0;
 	virtual int numChildren() = 0;
 
 	virtual CItemBase* childAt(unsigned row) = 0;
@@ -65,7 +64,7 @@ protected:
 	std::string m_text;
 	void replaceTabs(std::string& str);
 
-	const item_type_t m_item_type;
+	const CItemType::item_type_t m_item_type;
 
 	CRootItem *m_root_item;
 

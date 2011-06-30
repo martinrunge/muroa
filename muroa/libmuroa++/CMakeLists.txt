@@ -13,7 +13,9 @@ add_definitions(  )
 
 
 set( SRC           CRootItem.cpp
+                   CItemType.cpp
                    CItemBase.cpp
+                   IContentItem.cpp
                    CMediaItem.cpp
                    CCategoryItem.cpp
                    CDiff.cpp
@@ -24,7 +26,9 @@ set( SRC           CRootItem.cpp
                   
 
 set( HEADERS       CRootItem.h
+                   CItemType.h
                    CItemBase.h
+                   IContentItem.h
                    CMediaItem.h
                    CCategoryItem.h
                    CDiff.h

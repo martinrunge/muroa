@@ -8,7 +8,7 @@
 #include "CRootItem.h"
 
 #include "CCategoryItem.h"
-#include "CMediaItem.h"
+#include "IContentItem.h"
 #include "CDiff.h"
 
 #include <iostream>
@@ -41,7 +41,7 @@ CCategoryItem* CRootItem::addCategory(string name, CCategoryItem* parent) {
 	return newItem;
 }
 
-CMediaItem* CRootItem::addMediaItem(CCategoryItem* parent, int posInParent) {
+IContentItem* CRootItem::addContentItem(CCategoryItem* parent, int posInParent) {
 	if (parent == 0)  {
 		parent = m_base;
 	}
@@ -49,23 +49,23 @@ CMediaItem* CRootItem::addMediaItem(CCategoryItem* parent, int posInParent) {
 		posInParent = parent->numChildren();
 	}
 	beginInsertItems(posInParent, 1, parent );
-	CMediaItem* newItem = new CMediaItem(this, parent, posInParent);
+	IContentItem* newItem = IContentItem::itemFactory( CItemType::E_MEDIAITEM, this, parent, posInParent);
 	endInsertItems();
 	return newItem;
 }
 
-CMediaItem* CRootItem::addMediaItem(string textWoPath, CCategoryItem* parent, int posInParent) {
+IContentItem* CRootItem::addContentItem(string textWoPath, CCategoryItem* parent, int posInParent) {
 	if(posInParent == -1) {
 		posInParent = parent->numChildren();
 	}
 	beginInsertItems(posInParent, 1, parent );
-	CMediaItem* newItem = new CMediaItem(this, textWoPath, parent, posInParent);
+	IContentItem* newItem = IContentItem::itemFactory( CItemType::E_MEDIAITEM, this, textWoPath, parent, posInParent);
 	endInsertItems();
 	return newItem;
 }
 
 
-CMediaItem* CRootItem::addMediaItem(string text, int posInParent) {
+IContentItem* CRootItem::addContentItem(string text, int posInParent) {
 
 	size_t pathPos = text.find('\t');
 	if(pathPos == string::npos) {
@@ -84,7 +84,7 @@ CMediaItem* CRootItem::addMediaItem(string text, int posInParent) {
 		posInParent = parent->numChildren();
 	}
 	beginInsertItems(posInParent, 1, parent );
-	CMediaItem* newItem = new CMediaItem(this, mItemText, parent, posInParent);
+	IContentItem* newItem = IContentItem::itemFactory( CItemType::E_MEDIAITEM, this, mItemText, parent, posInParent);
 	endInsertItems();
 	return newItem;
 }
@@ -102,7 +102,7 @@ void CRootItem::deserialize(std::string text) {
 			cerr << "CRootItem::deserialize: Error reading lines." << endl;
 		}
 
-		CMediaItem* mItem = addMediaItem(cline);
+		IContentItem* contItem = addContentItem(cline);
 
 		continue;
 
@@ -205,32 +205,32 @@ void CRootItem::patch(std::string diff) throw(std::invalid_argument, MalformedPa
 				{
 					//cerr << "adding line : << lineNr << endl;;
 					//cerr << "from diff : "<< content << endl;
-					CMediaItem* newItem = addMediaItem(content, lineNr - 1);
+					IContentItem* newItem = addContentItem(content, lineNr - 1);
 					break;
 				}
 				case '-': //remove
 				{
-					CMediaItem *mItem = parent->getMediaItem(lineNr - 1);
-					string itemText = mItem->getText();
+					IContentItem *contItem = parent->getContentItem(lineNr - 1);
+					string itemText = contItem->getText();
 					if(itemText.compare(0, itemText.size() - 1, content) != 0 )	// possible error:
 					{
 						cerr << "Error when removing line " << lineNr << " :" << endl;
 						cerr << "line expected from diff : "<< content << endl;
-						cerr << "differs form collection : " << mItem->getText();
+						cerr << "differs form collection : " << contItem->getText();
 					}
-					parent->delMediaItem(lineNr - 1);
+					parent->delContentItem(lineNr - 1);
 					lineNr--;
 					break;
 				}
 				case ' ': //check
 				{
-					CMediaItem *mItem = parent->getMediaItem(lineNr - 1);
-					string itemText = mItem->getText();
+					IContentItem *contItem = parent->getContentItem(lineNr - 1);
+					string itemText = contItem->getText();
 					if(itemText.compare(0, itemText.size() - 1, content) != 0 )	// possible error:
 					{
 						cerr << "Error when keeping line " << lineNr << " :" << endl;
 						cerr << "line expected from diff : "<< content << endl;
-						cerr << "differs form collection : " << mItem->getText();
+						cerr << "differs form collection : " << contItem->getText();
 					}
 					break;
 				}

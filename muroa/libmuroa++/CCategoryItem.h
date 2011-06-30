@@ -29,7 +29,7 @@
 #include <string>
 #include <sstream>
 
-class CMediaItem;
+class CContentItem;
 
 
 class CCategoryItem : public CItemBase {
@@ -39,18 +39,18 @@ public:
 
 	inline std::string getPath() const { return m_path; };
 
-	void addChild(CMediaItem*  newMediaItem, int pos = -1);
+	void addChild(IContentItem*  newContentItem, int pos = -1);
 
-	CMediaItem* getMediaItem(unsigned pos);
+	IContentItem* getContentItem(unsigned pos);
 	CCategoryItem* getCategoryItem(std::string name);
 	CItemBase* childAt(unsigned row);
 	unsigned childPos(const CItemBase* const child);
 
 	int numChildren();
-	int getNumMediaItems();
+	int getNumContentItems();
 	int getNumCategories();
 
-	void delMediaItem(int pos);
+	void delContentItem(int pos);
 	void delCategory(CCategoryItem* categoryItem);
 
 	std::string serialize(bool asDiff = false);
@@ -66,7 +66,7 @@ private:
 	void addChild(CCategoryItem* newSubCategory);
 
 	std::vector<CCategoryItem*>  m_sub_categories;
-	std::vector<CMediaItem*>     m_media_items;
+	std::vector<IContentItem*>   m_content_items;
 	std::istringstream m_iss;
 
 	int m_depth;

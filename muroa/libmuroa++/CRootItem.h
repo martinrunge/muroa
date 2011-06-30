@@ -18,7 +18,8 @@
 
 class CItemBase;
 class CCategoryItem;
-class CMediaItem;
+class IContentItem;
+
 
 class CRootItem {
 public:
@@ -27,9 +28,9 @@ public:
 
 	CCategoryItem* addCategory(std::string name, CCategoryItem* parent = 0);
 
-	CMediaItem* addMediaItem(CCategoryItem* parent = 0, int posInParent = -1);
-	CMediaItem* addMediaItem(std::string textWoPath, CCategoryItem* parent, int posInParent = -1);
-	CMediaItem* addMediaItem(std::string text, int posInParent = -1);
+	IContentItem* addContentItem(CCategoryItem* parent = 0, int posInParent = -1);
+	IContentItem* addContentItem(std::string textWoPath, CCategoryItem* parent, int posInParent = -1);
+	IContentItem* addContentItem(std::string text, int posInParent = -1);
 
 	CCategoryItem* getBase() const { return m_base; };
 

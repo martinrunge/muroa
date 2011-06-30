@@ -8,11 +8,12 @@
 #ifndef CMEDIAITEM_H_
 #define CMEDIAITEM_H_
 
-#include "CItemBase.h"
+// #include "CItemBase.h"
+#include "IContentItem.h"
 
 #include <string>
 
-class CMediaItem : public CItemBase {
+class CMediaItem : public IContentItem {
 public:
 	CMediaItem(CRootItem *root_item, CCategoryItem*  parent, int posInParent = -1);
 	CMediaItem(CRootItem *root_item, std::string text, CCategoryItem*  parent, int posInParent = -1);
@@ -38,10 +39,7 @@ public:
 	bool operator==(const CMediaItem& other);
 	inline bool operator!=(const CMediaItem& other){ return !operator==(other); };
 
-	void addChild(CMediaItem* newMediaItem, int pos = -1);
-	int numChildren() { return 0; };
-	CItemBase* childAt(unsigned row) { return 0; };
-	virtual unsigned childPos(const CItemBase* const child) { return 0; };
+// 	void addChild(IContentItem* newMediaItem, int pos = -1);
 
 	std::string serialize(bool asDiff = false);
 
