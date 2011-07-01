@@ -60,7 +60,7 @@ CMainWindow::~CMainWindow()
 {
 	//delete m_rightTreeModel;
 	delete m_leftTreeModel;
-	delete m_rootItem;
+	delete m_rightTreeModel;
 }
 
 void CMainWindow::patch(void) {

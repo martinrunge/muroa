@@ -43,8 +43,6 @@ public slots:
 private:
     Ui::MainWindow ui;
 
-    CRootItem *m_rootItem;
-
     CTreeModel *m_leftTreeModel;
     CTreeModel *m_rightTreeModel;
 

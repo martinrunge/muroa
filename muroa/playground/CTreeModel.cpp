@@ -210,7 +210,7 @@ QVariant CTreeModel::dataFromColumn(CItemBase* item, int column) const {
 
 	QVariant result;
 	switch(item->type()) {
-		case E_CAT:
+		case CItemType::E_CAT:
 		{
 			CCategoryItem *citem = reinterpret_cast<CCategoryItem*>(item);
 			switch( column ) {
@@ -223,7 +223,7 @@ QVariant CTreeModel::dataFromColumn(CItemBase* item, int column) const {
 			break;
 		}
 
-		case E_MEDIAITEM:
+		case CItemType::E_MEDIAITEM:
 		{
 			CMediaItem *mitem = reinterpret_cast<CMediaItem*>(item);
 			switch( column ) {
