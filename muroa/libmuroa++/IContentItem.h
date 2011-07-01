@@ -22,8 +22,8 @@ public:
 
 	virtual std::string serialize(bool asDiff = false) = 0;
 
-	static IContentItem* itemFactory(const item_type_t type, CRootItem *root_item, CCategoryItem *parent, const unsigned posInParent = -1);
-	static IContentItem* itemFactory(const item_type_t type, CRootItem *root_item, std::string text, CCategoryItem *parent, const unsigned posInParent = -1);
+	static IContentItem* itemFactory(const CItemType itemType, CRootItem *root_item, CCategoryItem *parent, const unsigned posInParent = -1);
+	static IContentItem* itemFactory(const CItemType itemType, CRootItem *root_item, std::string text, CCategoryItem *parent, const unsigned posInParent = -1);
 
 	bool operator==(const IContentItem& other);
 	inline bool operator!=(const IContentItem& other){ return !operator==(other); };

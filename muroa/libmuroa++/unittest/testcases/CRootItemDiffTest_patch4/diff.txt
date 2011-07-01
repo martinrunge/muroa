@@ -1,11 +1,11 @@
 +++ /Test Artist 0/Test Album 0
 @@ -2,2 +2,2 @@
--/Test Artist 0/Test Album 0	/path/to/file.mp3	Test Artist 0	Test Album 0	Test Title 3	2008	30	3877029623
--/Test Artist 0/Test Album 0	/path/to/file.mp3	Test Artist 0	Test Album 0	Test Title 4	2008	40	3123807543
-+/Test Artist 0/Test Album 0	/path/to/file.mp3	Test Artist 0	Test Album 0	Test Title 1	2008	10	1088506487
-+/Test Artist 0/Test Album 0	/path/to/file.mp3	Test Artist 0	Test Album 0	Test Title 2	2008	20	335284407
+-/Test Artist 0/Test Album 0	M	/path/to/file.mp3	Test Artist 0	Test Album 0	Test Title 3	2008	30	1912390267
+-/Test Artist 0/Test Album 0	M	/path/to/file.mp3	Test Artist 0	Test Album 0	Test Title 4	2008	40	1159168187
++/Test Artist 0/Test Album 0	M	/path/to/file.mp3	Test Artist 0	Test Album 0	Test Title 1	2008	10	3418834427
++/Test Artist 0/Test Album 0	M	/path/to/file.mp3	Test Artist 0	Test Album 0	Test Title 2	2008	20	2665612347
 @@ -4,0 +5,2 @@
-+/Test Artist 0/Test Album 0	/path/to/file.mp3	Test Artist 0	Test Album 0	Test Title 6	2008	60	1617363383
-+/Test Artist 0/Test Album 0	/path/to/file.mp3	Test Artist 0	Test Album 0	Test Title 7	2008	70	864141303
++/Test Artist 0/Test Album 0	M	/path/to/file.mp3	Test Artist 0	Test Album 0	Test Title 6	2008	60	3947691323
++/Test Artist 0/Test Album 0	M	/path/to/file.mp3	Test Artist 0	Test Album 0	Test Title 7	2008	70	3194469243
 @@ -6,1 +7,0 @@
--/Test Artist 0/Test Album 0	/path/to/file.mp3	Test Artist 0	Test Album 0	Test Title 9	2008	90	3652664439
+-/Test Artist 0/Test Album 0	M	s/path/to/file.mp3	Test Artist 0	Test Album 0	Test Title 9	2008	90	1760190590

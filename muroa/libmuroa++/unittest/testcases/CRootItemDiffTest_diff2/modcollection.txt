@@ -1,11 +1,11 @@
-/Test Artist 0/Test Album 0	/path/to/file.mp3	Test Artist 0	Test Album 0	Test Title 0	2008	0	3778216505
-/Test Artist 0/Test Album 2	/path/to/file.mp3	Test Artist 0	Test Album 2	Test Title 0	2008	0	2852182201
-/Test Artist 0/Test Album 2	/path/to/file.mp3	Test Artist 0	Test Album 2	Test Title 1	2008	10	2181633015
-/Test Artist 0/Test Album 2	/path/to/file.mp3	Test Artist 0	Test Album 2	Test Title 3	2008	30	675188855
-/Test Artist 0/Test Album 2	/path/to/file.mp3	Test Artist 0	Test Album 2	Test Title 5	2008	50	3463711991
-/Test Artist 0/Test Album 2	/path/to/file.mp3	Test Artist 0	Test Album 2	Test Title 7	2008	70	1957267831
-/Test Artist 0/Test Album 2	/path/to/file.mp3	Test Artist 0	Test Album 2	Test Title 8	2008	80	1204045751
-/Test Artist 0/Test Album 2	/path/to/file.mp3	Test Artist 0	Test Album 2	Test Title 9	2008	90	450823671
-/Test Artist 0/Test Album 5	/path/to/file.mp3	Test Artist 0	Test Album 5	Test Title 6	2008	60	2202696055
-/Test Artist 0/Test Album 5	/path/to/file.mp3	Test Artist 0	Test Album 5	Test Title 7	2008	70	1449473975
-/Test Artist 0/Test Album 5	/path/to/file.mp3	Test Artist 0	Test Album 5	Test Title 8	2008	80	696251895
+/Test Artist 0/Test Album 0	M	/path/to/file.mp3	Test Artist 0	Test Album 0	Test Title 0	2008	0	1300358581
+/Test Artist 0/Test Album 2	M	/path/to/file.mp3	Test Artist 0	Test Album 2	Test Title 0	2008	0	3075169589
+/Test Artist 0/Test Album 2	M	/path/to/file.mp3	Test Artist 0	Test Album 2	Test Title 1	2008	10	1272688251
+/Test Artist 0/Test Album 2	M	/path/to/file.mp3	Test Artist 0	Test Album 2	Test Title 3	2008	30	4061211387
+/Test Artist 0/Test Album 2	M	/path/to/file.mp3	Test Artist 0	Test Album 2	Test Title 5	2008	50	2554767227
+/Test Artist 0/Test Album 2	M	/path/to/file.mp3	Test Artist 0	Test Album 2	Test Title 7	2008	70	1048323067
+/Test Artist 0/Test Album 2	M	/path/to/file.mp3	Test Artist 0	Test Album 2	Test Title 8	2008	80	295100987
+/Test Artist 0/Test Album 2	M	/path/to/file.mp3	Test Artist 0	Test Album 2	Test Title 9	2008	90	3836846203
+/Test Artist 0/Test Album 5	M	/path/to/file.mp3	Test Artist 0	Test Album 5	Test Title 6	2008	60	2877293179
+/Test Artist 0/Test Album 5	M	/path/to/file.mp3	Test Artist 0	Test Album 5	Test Title 7	2008	70	2124071099
+/Test Artist 0/Test Album 5	M	/path/to/file.mp3	Test Artist 0	Test Album 5	Test Title 8	2008	80	1370849019

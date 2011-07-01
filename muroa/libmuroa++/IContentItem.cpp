@@ -19,8 +19,9 @@ IContentItem::~IContentItem() {
 
 }
 
-IContentItem* IContentItem::itemFactory(const item_type_t type, CRootItem *root_item, CCategoryItem *parent, const unsigned posInParent) {
-	switch(type) {
+IContentItem* IContentItem::itemFactory(const CItemType itemType, CRootItem *root_item, CCategoryItem *parent, const unsigned posInParent) {
+	const CItemType::item_type_t type_enum = itemType.getType();
+	switch(type_enum) {
 	case CItemType::E_ROOT:
 		return 0;
 		break;
@@ -40,8 +41,9 @@ IContentItem* IContentItem::itemFactory(const item_type_t type, CRootItem *root_
 	}
 }
 
-IContentItem* IContentItem::itemFactory(const item_type_t type, CRootItem *root_item, std::string text, CCategoryItem *parent, const unsigned posInParent) {
-	switch(type) {
+IContentItem* IContentItem::itemFactory(const CItemType itemType, CRootItem *root_item, std::string text, CCategoryItem *parent, const unsigned posInParent) {
+	const CItemType::item_type_t type_enum = itemType.getType();
+	switch(type_enum) {
 	case CItemType::E_ROOT:
 		return 0;
 		break;

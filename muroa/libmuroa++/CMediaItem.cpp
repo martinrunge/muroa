@@ -128,7 +128,7 @@ void CMediaItem::rehash() {
 	if( m_parent ) {
 		ss << m_parent->getPath();
 	}
-	ss << "\t" << m_filename << "\t" << m_artist << "\t" << m_album << "\t" << m_title << "\t" << m_year << "\t" << m_duration_in_s;
+	ss << "\tM\t" << m_filename << "\t" << m_artist << "\t" << m_album << "\t" << m_title << "\t" << m_year << "\t" << m_duration_in_s;
 	//ss << "m\t" <<  m_filename << "\t" << m_artist << "\t" << m_album << "\t" << m_title << "\t" << m_year << "\t" << m_duration_in_s;
 
 	m_hash = hash( ss.str() );

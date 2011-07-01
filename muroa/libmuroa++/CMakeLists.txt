@@ -4,6 +4,7 @@ project (libmuroa++)
 set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake" ${CMAKE_MODULE_PATH})
 
 add_subdirectory(unittest)
+add_subdirectory(util/rehash)
 
 set(Boost_USE_MULTITHREADED ON)
 find_package( Boost 1.36.0 COMPONENTS system regex REQUIRED )

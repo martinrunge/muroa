@@ -73,18 +73,25 @@ IContentItem* CRootItem::addContentItem(string text, int posInParent) {
 	}
 	string path = text.substr(0, pathPos);
 
+	size_t typePos = text.find('\t', pathPos + 1 );
+	if(pathPos == string::npos) {
+		return 0;
+	}
+	string typeStr = text.substr(pathPos + 1, typePos - pathPos - 1);
+	CItemType itemType(typeStr);
+
 	CCategoryItem* parent = getItemPtr(path);
 	if(parent == 0) {
 		parent = mkPath(path);
 	}
 
-	string mItemText = text.substr(pathPos, text.size() - pathPos);
+	string mItemText = text.substr(typePos, text.size() - typePos);
 
 	if(posInParent == -1) {
 		posInParent = parent->numChildren();
 	}
 	beginInsertItems(posInParent, 1, parent );
-	IContentItem* newItem = IContentItem::itemFactory( CItemType::E_MEDIAITEM, this, mItemText, parent, posInParent);
+	IContentItem* newItem = IContentItem::itemFactory( itemType, this, mItemText, parent, posInParent);
 	endInsertItems();
 	return newItem;
 }
