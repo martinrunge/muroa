@@ -54,7 +54,7 @@ public:
 	inline std::string getText() { return m_text; };
 	virtual std::string serialize(bool asDiff = false) = 0;
 
-	inline item_type_t type() { return m_item_type; };
+	inline const item_type_t type() const { return m_item_type; };
 
 protected:
 	std::string m_name;
