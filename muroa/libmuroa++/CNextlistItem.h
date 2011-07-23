@@ -26,11 +26,17 @@
 
 #include "IContentItem.h"
 
+class CPlaylistItem;
+
 class CNextlistItem: public IContentItem {
 public:
 	CNextlistItem(CRootItem *root_item, CCategoryItem*  parent, int posInParent = -1);
 	CNextlistItem(CRootItem *root_item, std::string text, CCategoryItem*  parent, int posInParent = -1);
 	virtual ~CNextlistItem();
+
+	inline uint32_t getPlaylistItemHash() { return m_playlistitem_hash; };
+	void setPlaylistItem(CPlaylistItem* plItem);
+	void setPlaylistItemHash(uint32_t hash);
 
 	bool operator==(const IContentItem& other);
 	inline bool operator!=(const IContentItem& other){ return !operator==(other); };
@@ -38,7 +44,10 @@ public:
 	std::string serialize(bool asDiff = false);
 
 private:
-	uint32_t m_mediaitem_hash;
+	uint32_t m_playlistitem_hash;
+	static uint32_t m_next_free_id;
+
+	void assembleText();
 
 };
 

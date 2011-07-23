@@ -7,6 +7,7 @@
 
 #include "CMediaItem.h"
 #include "CCategoryItem.h"
+#include "CRootItem.h"
 
 #include <sstream>
 #include <functional>
@@ -17,16 +18,6 @@
 
 using namespace std;
 
-uint32_t CMediaItem::hash( std::string stdstr ) {
-	uint32_t hash = 0;
-	int c;
-	const char* str = stdstr.c_str();
-
-	while (c = *str++)
-		hash = c + (hash << 6) + (hash << 16) - hash;
-
-	return hash;
-}
 
 CMediaItem::CMediaItem(CRootItem *root_item, CCategoryItem*  parent, int posInParent) : IContentItem( root_item, parent, CItemType::E_MEDIAITEM ) {
 	if(m_parent) {
@@ -131,8 +122,14 @@ void CMediaItem::rehash() {
 	ss << "\tM\t" << m_filename << "\t" << m_artist << "\t" << m_album << "\t" << m_title << "\t" << m_year << "\t" << m_duration_in_s;
 	//ss << "m\t" <<  m_filename << "\t" << m_artist << "\t" << m_album << "\t" << m_title << "\t" << m_year << "\t" << m_duration_in_s;
 
+	uint32_t oldhash = m_hash;
 	m_hash = hash( ss.str() );
 	ss << "\t" << m_hash << endl;
+
+	if( m_hash != oldhash ) {
+		m_root_item->setContentPtr(CItemType(CItemType::E_MEDIAITEM), this, m_hash );
+  //		m_root_item->delContentPtr(CItemType(CItemType::E_MEDIAITEM), oldhash );  // would delete this
+	}
 
 	m_text = ss.str();
 }

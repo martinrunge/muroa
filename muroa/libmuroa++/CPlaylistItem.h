@@ -26,6 +26,8 @@
 
 #include "IContentItem.h"
 
+class CMediaItem;
+
 class CPlaylistItem: public IContentItem {
 public:
 	CPlaylistItem(CRootItem *root_item, CCategoryItem*  parent, int posInParent = -1);
@@ -37,8 +39,17 @@ public:
 
 	std::string serialize(bool asDiff = false);
 
+	inline uint32_t getMediaItemHash() { return m_mediaitem_hash; };
+
+	void setMediaItemHash(uint32_t hash);
+	void setMediaItem(CMediaItem* mediaitem);
+
+
 private:
 	uint32_t m_mediaitem_hash;
+	static uint32_t m_next_free_id;
+
+	void assembleText();
 };
 
 #endif /* CPLAYLISTITEM_H_ */

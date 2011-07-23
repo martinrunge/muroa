@@ -24,6 +24,8 @@
 #include "CCollectionTest.h"
 #include "CCategoryItem.h"
 #include "CMediaItem.h"
+#include "CPlaylistItem.h"
+#include "CNextlistItem.h"
 #include "CRootItem.h"
 
 #include <cmath>
@@ -79,11 +81,55 @@ void CCollectionTest::serializeMedia() {
 
 void CCollectionTest::deserializeMedia() {
 	CMediaItem *mItem = new CMediaItem(m_root, "/path/to/file.mp3\tTest Artist 0\tTest Album 0	Test Title 9\t2008\t90\t2665035088", 0);
-	size_t hashval = mItem->getHash();
+	uint32_t hashval = mItem->getHash();
 	delete mItem;
 	CPPUNIT_ASSERT( hashval == 2008355788UL );
 }
 
+void CCollectionTest::serializePlaylist() {
+	CPlaylistItem *plItem = new CPlaylistItem(m_root, 0) ;
+	plItem->setMediaItemHash( 2350368098UL );
+	uint32_t hashval = plItem->getHash();
+
+	string serialisation = plItem->serialize();
+	delete plItem;
+	stringstream ss;
+	ss << "\tP\t" << 2350368098UL << "\t" << hashval;
+
+	CPPUNIT_ASSERT( serialisation.compare( ss.str()) == 0);
+
+}
+
+void CCollectionTest::deserializePlaylist() {
+	CPlaylistItem *plItem = new CPlaylistItem(m_root, "\tP\t2665035088\t2350368098", 0);
+	uint32_t hashval = plItem->getHash();
+	uint32_t mediahash = plItem->getMediaItemHash();
+	delete plItem;
+	CPPUNIT_ASSERT( hashval == 2350368098UL);
+	CPPUNIT_ASSERT( mediahash == 2665035088UL);
+}
+
+void CCollectionTest::serializeNextlist() {
+	CNextlistItem *nlItem = new CNextlistItem(m_root, 0) ;
+	nlItem->setPlaylistItemHash( 2350368098UL );
+	uint32_t hashval = nlItem->getHash();
+
+	string serialisation = nlItem->serialize();
+	delete nlItem;
+	stringstream ss;
+	ss << "\tN\t" << 2350368098UL << "\t" << hashval;
+
+	CPPUNIT_ASSERT( serialisation.compare( ss.str()) == 0);
+}
+
+void CCollectionTest::deserializeNextlist() {
+	CNextlistItem *nlItem = new CNextlistItem(m_root, "\tP\t2665035088\t2350368098", 0);
+	uint32_t hashval = nlItem->getHash();
+	uint32_t mediahash = nlItem->getPlaylistItemHash();
+	delete nlItem;
+	CPPUNIT_ASSERT( hashval == 2350368098UL);
+	CPPUNIT_ASSERT( mediahash == 2665035088UL);
+}
 
 void CCollectionTest::serializeCategory() {
 	CCategoryItem* base = new CCategoryItem(m_root);

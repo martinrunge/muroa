@@ -20,7 +20,7 @@ public:
 		             E_MEDIAITEM,
 		             E_PLAYLISTITEM,
 		             E_NEXTLISTITEM,
-	                 E_USER_TYPE = 1000 };
+	                 E_USER_TYPE };
 	typedef enum item_type item_type_t;
 
 	CItemType(const std::string typeStr);
@@ -33,6 +33,8 @@ public:
 
 	static std::string getString(const item_type_t type);
 	static item_type_t getType(const std::string typeStr);
+
+	inline static int numTypes() { return E_USER_TYPE + 1; };
 
 private:
 	static std::map<unsigned, std::string> m_type2str;

@@ -10,8 +10,11 @@
 
 #include "MuroaExceptions.h"
 
+#include "CItemType.h"
+
 #include <string>
 #include <map>
+#include <vector>
 #include <iostream>
 
 #include <stdexcept>
@@ -75,10 +78,16 @@ public:
 		m_map.erase(path);
 	}
 
+	IContentItem* getContentPtr(const CItemType& type, const uint32_t hash);
+	void setContentPtr(const CItemType& type, IContentItem* ptr, const uint32_t hash);
+	void delContentPtr(const CItemType& type, const uint32_t hash);
 private:
 
 	std::map<std::string, CCategoryItem*> m_map;
 	CCategoryItem* m_base;
+
+	std::vector< std::map< uint32_t, IContentItem* > > m_content_maps;
+
 
 	CCategoryItem* mkPath(std::string path);
 	long str2long(std::string str) throw(std::invalid_argument);

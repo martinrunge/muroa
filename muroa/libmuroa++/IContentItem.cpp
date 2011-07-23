@@ -68,3 +68,14 @@ bool IContentItem::operator==(const IContentItem& other) {
 	return true;
 }
 
+uint32_t IContentItem::hash( std::string stdstr ) {
+	uint32_t hash = 0;
+	int c;
+	const char* str = stdstr.c_str();
+
+	while (c = *str++)
+		hash = c + (hash << 6) + (hash << 16) - hash;
+
+	return hash;
+}
+

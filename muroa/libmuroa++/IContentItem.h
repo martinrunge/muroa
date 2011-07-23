@@ -28,6 +28,7 @@ public:
 	bool operator==(const IContentItem& other);
 	inline bool operator!=(const IContentItem& other){ return !operator==(other); };
 
+	inline uint32_t getHash() { return m_hash; };
 
 
 	// these have to be implemented to fit interface of CItemBase, but do not make sense for ContentItems
@@ -42,6 +43,12 @@ public:
 	void addChild(IContentItem* /*newMediaItem*/, int /*pos*/ ) {
 		throw std::runtime_error("ContentItems (derived from IContentItem) may not have children!");
 	};
+
+	static uint32_t hash( std::string stdstr );
+
+protected:
+	uint32_t m_hash;
+
 
 };
 

@@ -24,6 +24,10 @@ using namespace std;
 CRootItem::CRootItem() {
 	m_base = new CCategoryItem(this, "", 0);
 	// setItemPtr(m_base->getName(), m_base);
+
+	for(int i=0; i < CItemType::numTypes(); i++) {
+		m_content_maps.push_back( map<uint32_t, IContentItem*>() );
+	}
 }
 
 CRootItem::~CRootItem() {
@@ -94,6 +98,36 @@ IContentItem* CRootItem::addContentItem(string text, int posInParent) {
 	IContentItem* newItem = IContentItem::itemFactory( itemType, this, mItemText, parent, posInParent);
 	endInsertItems();
 	return newItem;
+}
+
+IContentItem* CRootItem::getContentPtr(const CItemType& type, const uint32_t hash) {
+	map<uint32_t, IContentItem*>::iterator it;
+	map<uint32_t, IContentItem*> content_map = m_content_maps[type.getType()];
+
+	it = content_map.find( hash );
+	if(it == content_map.end()) {
+		return 0;
+	}
+	else {
+		return it->second;
+	}
+}
+
+void CRootItem::setContentPtr(const CItemType& type, IContentItem* ptr, const uint32_t hash) {
+	pair<map<uint32_t, IContentItem*>::iterator, bool> ret;
+	map<uint32_t, IContentItem*> content_map = m_content_maps[type.getType()];
+
+	ret = content_map.insert(pair<uint32_t, IContentItem*>(hash, ptr));
+	if (ret.second==false)
+	{
+	    std::cout << "element 'z' already existed";
+	    std::cout << " with a value of " << ret.first->second << std::endl;
+	}
+}
+
+void CRootItem::delContentPtr(const CItemType& type, const uint32_t hash) {
+	map<uint32_t, IContentItem*> content_map = m_content_maps[type.getType()];
+	content_map.erase(hash);
 }
 
 
