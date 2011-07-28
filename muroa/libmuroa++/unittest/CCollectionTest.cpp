@@ -101,7 +101,7 @@ void CCollectionTest::serializePlaylist() {
 }
 
 void CCollectionTest::deserializePlaylist() {
-	CPlaylistItem *plItem = new CPlaylistItem(m_root, "\tP\t2665035088\t2350368098", 0);
+	CPlaylistItem *plItem = new CPlaylistItem(m_root, "\t2665035088\t2350368098", 0);
 	uint32_t hashval = plItem->getHash();
 	uint32_t mediahash = plItem->getMediaItemHash();
 	delete plItem;
@@ -123,7 +123,7 @@ void CCollectionTest::serializeNextlist() {
 }
 
 void CCollectionTest::deserializeNextlist() {
-	CNextlistItem *nlItem = new CNextlistItem(m_root, "\tP\t2665035088\t2350368098", 0);
+	CNextlistItem *nlItem = new CNextlistItem(m_root, "\t2665035088\t2350368098", 0);
 	uint32_t hashval = nlItem->getHash();
 	uint32_t mediahash = nlItem->getPlaylistItemHash();
 	delete nlItem;

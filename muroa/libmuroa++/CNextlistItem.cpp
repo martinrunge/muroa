@@ -45,10 +45,6 @@ CNextlistItem::CNextlistItem(CRootItem *root_item, std::string text, CCategoryIt
 	lpos = 1;
 
 	rpos = m_text.find('\t', lpos);
-	string typeStr = text.substr(lpos, rpos - lpos);
-	lpos = rpos + 1;
-
-	rpos = m_text.find('\t', lpos);
 	string playlistitemHashStr = text.substr(lpos, rpos - lpos);
 	m_playlistitem_hash = strtol(playlistitemHashStr.c_str(), NULL, 10);
 	lpos = rpos + 1;
@@ -58,6 +54,11 @@ CNextlistItem::CNextlistItem(CRootItem *root_item, std::string text, CCategoryIt
 	m_hash = strtol(hashStr.c_str(), NULL, 10);
 	lpos = rpos + 1;
 
+	assembleText();
+
+	if(m_parent) {
+		m_parent->addChild(this, posInParent);
+	}
 	m_root_item->setContentPtr(CItemType(CItemType::E_NEXTLISTITEM), this, m_hash );
 }
 

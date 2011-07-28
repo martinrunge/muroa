@@ -8,6 +8,8 @@
 #include "IContentItem.h"
 
 #include "CMediaItem.h"
+#include "CPlaylistItem.h"
+#include "CNextlistItem.h"
 
 IContentItem::IContentItem(CRootItem *root_item, CCategoryItem*  parent, const item_type_t type) :
    CItemBase(root_item, parent, type)
@@ -54,8 +56,10 @@ IContentItem* IContentItem::itemFactory(const CItemType itemType, CRootItem *roo
 		return new CMediaItem(root_item, text, parent, posInParent);
 		break;
 	case CItemType::E_PLAYLISTITEM:
+		return new CPlaylistItem(root_item, text, parent, posInParent);
 		break;
 	case CItemType::E_NEXTLISTITEM:
+		return new CNextlistItem(root_item, text, parent, posInParent);
 		break;
 	default:
 		return 0;

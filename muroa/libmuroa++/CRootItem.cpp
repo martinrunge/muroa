@@ -91,9 +91,9 @@ IContentItem* CRootItem::addContentItem(string text, int posInParent) {
 
 	string mItemText = text.substr(typePos, text.size() - typePos);
 
-	if(posInParent == -1) {
-		posInParent = parent->numChildren();
-	}
+//	if(posInParent == -1) {
+//		posInParent = parent->numChildren();
+//	}
 	beginInsertItems(posInParent, 1, parent );
 	IContentItem* newItem = IContentItem::itemFactory( itemType, this, mItemText, parent, posInParent);
 	endInsertItems();

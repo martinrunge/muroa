@@ -80,7 +80,7 @@ void CCategoryItem::addChild(IContentItem*  newMediaItem, int pos) {
 	}
 	else {
 		m_root_item->beginInsertItems( pos, 1, this );
-		m_content_items.insert( m_content_items.begin() + pos, newMediaItem );
+		m_content_items.insert( m_content_items.begin() + pos - m_sub_categories.size(), newMediaItem );
 	}
 	m_root_item->endInsertItems();
 }
