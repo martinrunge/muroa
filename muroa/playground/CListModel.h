@@ -1,9 +1,9 @@
 /***************************************************************************
- *                                                                         *
- *   CMainWindow.h                                                         *
- *                                                                         *
- *   This file is part of libmuroa++                                       *
- *   Copyright (C) 2011 by Martin Runge <martin.runge@web.de>              *
+ *
+ *   CListModel.h
+ *
+ *   This file is part of playground                                  *
+ *   Copyright (C) 2011 by Martin Runge <martin.runge@web.de>           *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -21,42 +21,28 @@
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
 
-#ifndef MUROAGUI_H
-#define MUROAGUI_H
+#ifndef CLISTMODEL_H_
+#define CLISTMODEL_H_
 
-#include <QtGui/QMainWindow>
-#include <QLabel>
-#include "CTreeModel.h"
-#include "CListModel.h"
-#include "ui_MainWindow.h"
+#include <QAbstractListModel>
+#include "CRootItem.h"
 
-class CMainWindow : public QMainWindow
-{
-    Q_OBJECT
+class CTreeItem;
+class CItemBase;
 
+class CListModel : public QAbstractListModel, public CRootItem {
 public:
-    CMainWindow(QWidget *parent = 0);
-    ~CMainWindow();
+	CListModel();
+	virtual ~CListModel();
 
-public slots:
-	void patchCollection(void);
-	void patchPlaylist(void);
-	void patchNextlist(void);
+	void setBase(CCategoryItem* base);
+
+	int rowCount(const QModelIndex& index) const;
+	QVariant data(const QModelIndex& index, int role = Qt::DisplayRole ) const;
+	QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole );
 
 private:
-    Ui::MainWindow ui;
-
-    CTreeModel *m_leftTreeModel;
-    CTreeModel *m_rightTreeModel;
-
-    CListModel *m_leftPlaylistModel;
-    CListModel *m_rightPlaylistModel;
-
-    CListModel *m_leftNextlistModel;
-    CListModel *m_rightNextlistModel;
-
-    QLabel m_status_label;
-
+	CCategoryItem* m_model_base;
 };
 
-#endif // MUROAGUI_H
+#endif /* CLISTMODEL_H_ */

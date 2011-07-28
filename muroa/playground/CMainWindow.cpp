@@ -36,7 +36,9 @@ CMainWindow::CMainWindow(QWidget *parent)
 
 
 	connect(ui.action_Exit, SIGNAL(triggered()), qApp, SLOT(quit()));
-	connect(ui.actionPatch, SIGNAL(triggered()), this, SLOT(patch()));
+	connect(ui.actionPatch_collection, SIGNAL(triggered()), this, SLOT(patchCollection()));
+	connect(ui.actionPatch_playlist, SIGNAL(triggered()), this, SLOT(patchPlaylist()));
+	connect(ui.actionPatch_nextlist, SIGNAL(triggered()), this, SLOT(patchNextlist()));
     //connect(ui.actionOpen, SIGNAL(triggered()), this, SLOT(openConnection()));
     //connect(ui.actionClose, SIGNAL(triggered()), &m_connection, SLOT(close()));
 
@@ -54,6 +56,32 @@ CMainWindow::CMainWindow(QWidget *parent)
 
 	ui.leftTreeView->setModel(m_leftTreeModel);
 	ui.rightTreeView->setModel(m_rightTreeModel);
+
+
+	std::string examplePlaylist = CUtils::file2string( "testcases/playlist.txt" );
+
+	m_leftPlaylistModel = new CListModel();
+	m_leftPlaylistModel->deserialize(examplePlaylist);
+	m_leftPlaylistModel->setBase( m_leftPlaylistModel->getItemPtr("/Playlist 1"));
+
+	m_rightPlaylistModel = new CListModel();
+	m_rightPlaylistModel->deserialize(examplePlaylist);
+
+	ui.leftPlaylistView->setModel(m_leftPlaylistModel);
+	ui.rightPlaylistView->setModel(m_rightPlaylistModel);
+
+
+//	m_leftNextlistModel = new CListModel();
+//	m_leftNextlistModel->deserialize(exampleCollection);
+//
+//	m_rightNextlistModel = new CListModel();
+//	m_rightNextlistModel->deserialize(modifiedCollection);
+//
+//	ui.leftNextlistView->setModel(m_leftNextlistModel);
+//	ui.rightNextlistView->setModel(m_rightNextlistModel);
+//
+
+
 }
 
 CMainWindow::~CMainWindow()
@@ -63,7 +91,15 @@ CMainWindow::~CMainWindow()
 	delete m_rightTreeModel;
 }
 
-void CMainWindow::patch(void) {
+void CMainWindow::patchCollection(void) {
 	std::string diff = m_leftTreeModel->diff( *m_rightTreeModel );
 	m_leftTreeModel->patch(diff);
+}
+
+void CMainWindow::patchPlaylist(void) {
+
+}
+
+void CMainWindow::patchNextlist(void) {
+
 }

@@ -14,14 +14,60 @@
    <string>MainWindow</string>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <layout class="QGridLayout" name="gridLayout">
+   <layout class="QGridLayout" name="gridLayout_2">
     <item row="0" column="0">
-     <widget class="QSplitter" name="splitter">
-      <property name="orientation">
-       <enum>Qt::Horizontal</enum>
+     <widget class="QTabWidget" name="tabWidget">
+      <property name="currentIndex">
+       <number>0</number>
       </property>
-      <widget class="QTreeView" name="leftTreeView"/>
-      <widget class="QTreeView" name="rightTreeView"/>
+      <widget class="QWidget" name="treeTab">
+       <attribute name="title">
+        <string>Tree Model (Co9llection)</string>
+       </attribute>
+       <layout class="QGridLayout" name="gridLayout">
+        <item row="0" column="0">
+         <widget class="QSplitter" name="splitter">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <widget class="QTreeView" name="leftTreeView"/>
+          <widget class="QTreeView" name="rightTreeView"/>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+      <widget class="QWidget" name="plTab">
+       <attribute name="title">
+        <string>List Model (Playlist)</string>
+       </attribute>
+       <layout class="QGridLayout" name="gridLayout_3">
+        <item row="0" column="0">
+         <widget class="QSplitter" name="splitter_2">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <widget class="QListView" name="leftPlaylistView"/>
+          <widget class="QListView" name="rightPlaylistView"/>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+      <widget class="QWidget" name="nlTab">
+       <attribute name="title">
+        <string>List Model (Nextlist)</string>
+       </attribute>
+       <layout class="QGridLayout" name="gridLayout_4">
+        <item row="0" column="0">
+         <widget class="QSplitter" name="splitter_3">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <widget class="QListView" name="leftNextlistView"/>
+          <widget class="QListView" name="rightNextlistView"/>
+         </widget>
+        </item>
+       </layout>
+      </widget>
      </widget>
     </item>
    </layout>
@@ -32,7 +78,7 @@
      <x>0</x>
      <y>0</y>
      <width>800</width>
-     <height>23</height>
+     <height>21</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu_File">
@@ -45,7 +91,9 @@
     <property name="title">
      <string>Testcases</string>
     </property>
-    <addaction name="actionPatch"/>
+    <addaction name="actionPatch_collection"/>
+    <addaction name="actionPatch_playlist"/>
+    <addaction name="actionPatch_nextlist"/>
    </widget>
    <addaction name="menu_File"/>
    <addaction name="menuTestcases"/>
@@ -59,12 +107,22 @@
     <string>Ctrl+Q</string>
    </property>
   </action>
-  <action name="actionPatch">
+  <action name="actionPatch_collection">
    <property name="text">
-    <string>patch</string>
+    <string>patch Collection</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+P</string>
+   </property>
+  </action>
+  <action name="actionPatch_playlist">
+   <property name="text">
+    <string>patch playlist</string>
+   </property>
+  </action>
+  <action name="actionPatch_nextlist">
+   <property name="text">
+    <string>patch nextlist</string>
    </property>
   </action>
  </widget>

@@ -9,11 +9,13 @@ add_definitions( ${QT4_DEFINITIONS} )
 
 
 set( SRC           CTreeModel.cpp
+                   CListModel.cpp
                    CMainWindow.cpp
                    main.cpp )
                   
 
 set( MOC_H         CTreeModel.h
+                   CListModel.h
                    CMainWindow.h
                    )
                    
