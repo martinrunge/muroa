@@ -49,7 +49,6 @@ public:
 protected:
 	uint32_t m_hash;
 
-
 };
 
 #endif /* ICONTENTITEM_H_ */

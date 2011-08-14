@@ -25,6 +25,8 @@
 #define CUTILS_H_
 
 #include <string>
+#include <cstdint>
+#include <stdexcept>
 
 class CUtils {
 public:
@@ -32,6 +34,9 @@ public:
 	virtual ~CUtils();
 
 	static std::string file2string(const std::string &fileName);
+
+	static long str2long(std::string str) throw(std::invalid_argument);
+	static uint32_t str2uint32(std::string str) throw(std::invalid_argument);
 
 };
 

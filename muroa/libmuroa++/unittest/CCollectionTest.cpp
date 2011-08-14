@@ -80,10 +80,10 @@ void CCollectionTest::serializeMedia() {
 }
 
 void CCollectionTest::deserializeMedia() {
-	CMediaItem *mItem = new CMediaItem(m_root, "/path/to/file.mp3\tTest Artist 0\tTest Album 0	Test Title 9\t2008\t90\t2665035088", 0);
+	CMediaItem *mItem = new CMediaItem(m_root, "/path/to/file.mp3\tTest Artist 0\tTest Album 0	Test Title 9\t2008\t90\t3201968177", 0);
 	uint32_t hashval = mItem->getHash();
 	delete mItem;
-	CPPUNIT_ASSERT( hashval == 2008355788UL );
+	CPPUNIT_ASSERT( hashval == 3201968177UL );
 }
 
 void CCollectionTest::serializePlaylist() {
@@ -101,7 +101,7 @@ void CCollectionTest::serializePlaylist() {
 }
 
 void CCollectionTest::deserializePlaylist() {
-	CPlaylistItem *plItem = new CPlaylistItem(m_root, "\t2665035088\t2350368098", 0);
+	CPlaylistItem *plItem = new CPlaylistItem(m_root, "2665035088\t2350368098", 0);
 	uint32_t hashval = plItem->getHash();
 	uint32_t mediahash = plItem->getMediaItemHash();
 	delete plItem;
@@ -123,7 +123,7 @@ void CCollectionTest::serializeNextlist() {
 }
 
 void CCollectionTest::deserializeNextlist() {
-	CNextlistItem *nlItem = new CNextlistItem(m_root, "\t2665035088\t2350368098", 0);
+	CNextlistItem *nlItem = new CNextlistItem(m_root, "2665035088\t2350368098", 0);
 	uint32_t hashval = nlItem->getHash();
 	uint32_t mediahash = nlItem->getPlaylistItemHash();
 	delete nlItem;
@@ -134,7 +134,7 @@ void CCollectionTest::deserializeNextlist() {
 void CCollectionTest::serializeCategory() {
 	CCategoryItem* base = new CCategoryItem(m_root);
 	CCategoryItem *cItem = new CCategoryItem(m_root, "Category1", base);
-	CMediaItem *mItem = new CMediaItem(m_root, "Titel1", cItem);
+	CMediaItem *mItem = new CMediaItem(m_root, "/path/to/file.mp3\tTest Artist 0\tTest Album 0	Test Title 9\t2008\t90\t3560093084", cItem);
 	string result = base->serialize();
 
 	stringstream ss;
@@ -152,7 +152,7 @@ void CCollectionTest::serialize() {
 	item = new CCategoryItem(m_root, "stufe2", item);
 	item = new CCategoryItem(m_root, "stufe3", item);
 
-	CMediaItem *mItem = new CMediaItem(m_root, "Titel1", item);
+	CMediaItem *mItem = new CMediaItem(m_root, "/path/to/file.mp3\tTest Artist 0\tTest Album 0	Test Title 9\t2008\t90\t3560093084", item);
 
 	string result = base->serialize();
 
@@ -223,7 +223,7 @@ CRootItem* CCollectionTest::prepareFakeCollection(int numArtist, int numAlbum, i
 			for(int k=0; k < numArtist; k++) {
 				stringstream title_ss;
 				title_ss << "Test Title " << setw( floor(log10(numTitle)) ) << k;
-				IContentItem* citem = rItem->addContentItem(title_ss.str(), album);
+				IContentItem* citem = rItem->addEmptyContentItem(CItemType("M") , album);
 				CMediaItem* title = reinterpret_cast<CMediaItem*>(citem);
 				title->setFilename("/path/to/file.mp3");
 				title->setArtist(artist_ss.str());

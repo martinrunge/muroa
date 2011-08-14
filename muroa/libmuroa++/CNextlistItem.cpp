@@ -25,6 +25,7 @@
 #include "CRootItem.h"
 #include "CCategoryItem.h"
 #include "CPlaylistItem.h"
+#include "CUtils.h"
 #include <sstream>
 using namespace std;
 
@@ -42,16 +43,16 @@ CNextlistItem::CNextlistItem(CRootItem *root_item, std::string text, CCategoryIt
 {
 	m_text = text;
 	size_t lpos, rpos;
-	lpos = 1;
+	lpos = 0;
 
 	rpos = m_text.find('\t', lpos);
 	string playlistitemHashStr = text.substr(lpos, rpos - lpos);
-	m_playlistitem_hash = strtol(playlistitemHashStr.c_str(), NULL, 10);
+	m_playlistitem_hash = CUtils::str2uint32(playlistitemHashStr.c_str());
 	lpos = rpos + 1;
 
 	rpos = m_text.find('\t', lpos);
 	string hashStr = text.substr(lpos, rpos - lpos);
-	m_hash = strtol(hashStr.c_str(), NULL, 10);
+	m_hash = CUtils::str2uint32(hashStr.c_str());
 	lpos = rpos + 1;
 
 	assembleText();
@@ -59,10 +60,12 @@ CNextlistItem::CNextlistItem(CRootItem *root_item, std::string text, CCategoryIt
 	if(m_parent) {
 		m_parent->addChild(this, posInParent);
 	}
+	// m_hash is an index that does not change during livetime of this object any more.
 	m_root_item->setContentPtr(CItemType(CItemType::E_NEXTLISTITEM), this, m_hash );
 }
 
 CNextlistItem::~CNextlistItem() {
+	m_root_item->delContentPtr(CItemType(CItemType::E_NEXTLISTITEM), m_hash );
 }
 
 void CNextlistItem::setPlaylistItem(CPlaylistItem* plItem) {

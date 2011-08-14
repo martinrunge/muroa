@@ -10,6 +10,7 @@
 #include "CCategoryItem.h"
 #include "IContentItem.h"
 #include "CDiff.h"
+#include "CUtils.h"
 
 #include <iostream>
 #include <sstream>
@@ -45,7 +46,20 @@ CCategoryItem* CRootItem::addCategory(string name, CCategoryItem* parent) {
 	return newItem;
 }
 
-IContentItem* CRootItem::addContentItem(CCategoryItem* parent, int posInParent) {
+//IContentItem* CRootItem::addContentItem(CCategoryItem* parent, int posInParent) {
+//	if (parent == 0)  {
+//		parent = m_base;
+//	}
+//	if(posInParent == -1) {
+//		posInParent = parent->numChildren();
+//	}
+//	beginInsertItems(posInParent, 1, parent );
+//	IContentItem* newItem = IContentItem::itemFactory( CItemType::E_MEDIAITEM, this, parent, posInParent);
+//	endInsertItems();
+//	return newItem;
+//}
+
+IContentItem* CRootItem::addEmptyContentItem(CItemType type, CCategoryItem* parent, int posInParent) {
 	if (parent == 0)  {
 		parent = m_base;
 	}
@@ -53,49 +67,38 @@ IContentItem* CRootItem::addContentItem(CCategoryItem* parent, int posInParent) 
 		posInParent = parent->numChildren();
 	}
 	beginInsertItems(posInParent, 1, parent );
-	IContentItem* newItem = IContentItem::itemFactory( CItemType::E_MEDIAITEM, this, parent, posInParent);
+	IContentItem* newItem = IContentItem::itemFactory( type, this, parent, posInParent);
 	endInsertItems();
 	return newItem;
 }
 
+
 IContentItem* CRootItem::addContentItem(string textWoPath, CCategoryItem* parent, int posInParent) {
+	CItemType itemType = getItemType(textWoPath);
 	if(posInParent == -1) {
 		posInParent = parent->numChildren();
 	}
 	beginInsertItems(posInParent, 1, parent );
-	IContentItem* newItem = IContentItem::itemFactory( CItemType::E_MEDIAITEM, this, textWoPath, parent, posInParent);
+	IContentItem* newItem = IContentItem::itemFactory( itemType, this, textWoPath, parent, posInParent);
 	endInsertItems();
 	return newItem;
 }
 
 
 IContentItem* CRootItem::addContentItem(string text, int posInParent) {
-
-	size_t pathPos = text.find('\t');
-	if(pathPos == string::npos) {
-		return 0;
-	}
-	string path = text.substr(0, pathPos);
-
-	size_t typePos = text.find('\t', pathPos + 1 );
-	if(pathPos == string::npos) {
-		return 0;
-	}
-	string typeStr = text.substr(pathPos + 1, typePos - pathPos - 1);
-	CItemType itemType(typeStr);
+	string path = stripFirstSection(text);
+	CItemType itemType = getItemType(text);
 
 	CCategoryItem* parent = getItemPtr(path);
 	if(parent == 0) {
 		parent = mkPath(path);
 	}
 
-	string mItemText = text.substr(typePos, text.size() - typePos);
-
 //	if(posInParent == -1) {
 //		posInParent = parent->numChildren();
 //	}
 	beginInsertItems(posInParent, 1, parent );
-	IContentItem* newItem = IContentItem::itemFactory( itemType, this, mItemText, parent, posInParent);
+	IContentItem* newItem = IContentItem::itemFactory( itemType, this, text, parent, posInParent);
 	endInsertItems();
 	return newItem;
 }
@@ -222,10 +225,10 @@ void CRootItem::patch(std::string diff) throw(std::invalid_argument, MalformedPa
 			string newStartStr = res[3];
 			string newLenStr = res[4];
 
-			oldStart = str2long( oldStartStr );
-			oldLen = str2long( oldLenStr );
-			newStart = str2long( newStartStr );
-			newLen = str2long( newLenStr );
+			oldStart = CUtils::str2long( oldStartStr );
+			oldLen = CUtils::str2long( oldLenStr );
+			newStart = CUtils::str2long( newStartStr );
+			newLen = CUtils::str2long( newLenStr );
 
 			if(oldLen == 0) oldStart++;
 			lineNr = oldStart + chunkSizeSum;
@@ -335,6 +338,45 @@ bool CRootItem::endRemoveItems(void) {
 //	return parent;
 //}
 
+std::string CRootItem::stripFirstSection(std::string& text) {
+	string retval;
+	size_t sec_off;
+	size_t firstTabPos = text.find('\t');
+	if(firstTabPos == string::npos) {
+		// no tab at all -> return whole string and set text empty
+		retval = text;
+		text = "";
+		return retval;
+	}
+	if(firstTabPos > 0) {
+		// does not start with a tab -> return substring before tab and set text to rest
+		retval = text.substr(0, firstTabPos);
+		text = text.substr(firstTabPos + 1, text.size() - firstTabPos - 1);
+	}
+	else {
+		// starts with a tab -> search second tab
+		size_t secondTabPos = text.find('\t', firstTabPos + 1);
+		if(secondTabPos == string::npos) {
+			// no second tab -> return text without leading tab and set text empty
+			retval = text.substr(1, text.size() - 1);
+			text = "";
+		}
+		else {
+			retval = text.substr(firstTabPos + 1, secondTabPos - firstTabPos - 1);
+			text = text.substr(secondTabPos + 1, text.size() - secondTabPos - 1);
+		}
+
+	}
+	return retval;
+}
+
+
+CItemType CRootItem::getItemType(std::string& text) {
+	string itemTypeStr = stripFirstSection(text);
+
+	return CItemType(itemTypeStr);
+
+}
 
 CCategoryItem* CRootItem::mkPath(string path) {
 	size_t lpos = 1;
@@ -366,13 +408,3 @@ CCategoryItem* CRootItem::mkPath(string path) {
 	return static_cast<CCategoryItem*>(parent);
 }
 
-
-long CRootItem::str2long(std::string str) throw(std::invalid_argument) {
-	errno = 0;
-	char* endptr;
-	long iVal = strtol( str.c_str(), &endptr, 10);
-	if (errno != 0 || *endptr != '\0' ) {
-		throw invalid_argument("convert string to int");
-	}
-	return iVal;
-}

@@ -54,3 +54,53 @@ string CUtils::file2string(const string &fileName)
     	return string();
    	}
 }
+
+
+long CUtils::str2long(std::string str) throw(std::invalid_argument) {
+	errno = 0;
+	char* endptr;
+	long iVal = strtol( str.c_str(), &endptr, 10);
+	if (errno != 0 || *endptr != '\0' ) {
+		switch (errno) {
+		case ERANGE:
+			throw invalid_argument("convert string to int (out of range)");
+			break;
+		case EINVAL:
+			throw invalid_argument("convert string to int");
+			break;
+		default:
+			throw invalid_argument("convert string to int");
+			break;
+		}
+	}
+	return iVal;
+}
+
+
+uint32_t CUtils::str2uint32(std::string str) throw(std::invalid_argument) {
+	errno = 0;
+	char* endptr;
+	unsigned long iVal = strtoul( str.c_str(), &endptr, 10);
+	if (errno != 0 || *endptr != '\0' ) {
+		switch (errno) {
+		case ERANGE:
+			throw invalid_argument("convert string to int (out of range)");
+			break;
+		case EINVAL:
+			throw invalid_argument("convert string to int");
+			break;
+		default:
+			throw invalid_argument("convert string to int");
+			break;
+		}
+	}
+//	if(iVal > UINT32_MAX) {
+//		throw invalid_argument("convert string to int (out of range)");
+//	}
+//	if(iVal < UINT32_MIN) {
+//		throw invalid_argument("convert string to int (out of range)");
+//	}
+
+	return iVal;
+}
+

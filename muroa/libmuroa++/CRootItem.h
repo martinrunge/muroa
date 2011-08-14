@@ -31,7 +31,8 @@ public:
 
 	CCategoryItem* addCategory(std::string name, CCategoryItem* parent = 0);
 
-	IContentItem* addContentItem(CCategoryItem* parent = 0, int posInParent = -1);
+//	IContentItem* addContentItem(CCategoryItem* parent = 0, int posInParent = -1);
+	IContentItem* addEmptyContentItem(CItemType type, CCategoryItem* parent, int posInParent = -1);
 	IContentItem* addContentItem(std::string textWoPath, CCategoryItem* parent, int posInParent = -1);
 	IContentItem* addContentItem(std::string text, int posInParent = -1);
 
@@ -55,8 +56,8 @@ public:
 
 	CCategoryItem* getItemPtr(std::string path) {
     	std::map<std::string, CCategoryItem*>::iterator it;
-    	it = m_map.find(path);
-    	if(it == m_map.end()) {
+    	it = m_category_map.find(path);
+    	if(it == m_category_map.end()) {
     		return 0;
     	}
     	else {
@@ -66,7 +67,7 @@ public:
 
 	inline void setItemPtr(std::string path, CCategoryItem* itemPtr) {
 		std::pair<std::map<std::string, CCategoryItem*>::iterator,bool> ret;
-		ret = m_map.insert(std::pair<std::string,CCategoryItem*>(path, itemPtr));
+		ret = m_category_map.insert(std::pair<std::string,CCategoryItem*>(path, itemPtr));
 		if (ret.second==false)
 		{
 		    std::cout << "element 'z' already existed";
@@ -75,7 +76,7 @@ public:
 	}
 
 	inline void delItemPtr(std::string path) {
-		m_map.erase(path);
+		m_category_map.erase(path);
 	}
 
 	IContentItem* getContentPtr(const CItemType& type, const uint32_t hash);
@@ -83,14 +84,15 @@ public:
 	void delContentPtr(const CItemType& type, const uint32_t hash);
 private:
 
-	std::map<std::string, CCategoryItem*> m_map;
+	std::map<std::string, CCategoryItem*> m_category_map;
+
 	CCategoryItem* m_base;
 
 	std::vector< std::map< uint32_t, IContentItem* > > m_content_maps;
 
-
+	std::string stripFirstSection(std::string& text);
+	CItemType getItemType(std::string& text);
 	CCategoryItem* mkPath(std::string path);
-	long str2long(std::string str) throw(std::invalid_argument);
 };
 
 #endif /* CROOTITEM_H_ */

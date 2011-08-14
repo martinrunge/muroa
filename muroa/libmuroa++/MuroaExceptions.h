@@ -42,5 +42,18 @@ private:
 	std::string m_reason;
 };
 
+class rpcError: public std::exception {
+public:
+	rpcError(std::string reason) {};
+	virtual ~rpcError() throw () {};
+
+	std::string getReason() { return m_reason; };
+
+	const char* what() { return m_reason.c_str(); }
+
+private:
+	std::string m_reason;
+};
+
 
 #endif /* MUROAEXCEPTIONS_H_ */

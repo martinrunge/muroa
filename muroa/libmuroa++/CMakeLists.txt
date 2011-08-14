@@ -24,7 +24,10 @@ set( SRC           CRootItem.cpp
                    CDiff.cpp
                    MuroaExceptions.cpp
                    CUtils.cpp
-                   libmain.cpp 
+                   libmain.cpp
+                   IRPC.cpp
+                   muroaxml/CMuroaXml.cpp
+                   muroaxml/CParserStateMachine.cpp 
                    )
                   
 
@@ -39,6 +42,9 @@ set( HEADERS       CRootItem.h
                    CDiff.h
                    CUtils.h
                    MuroaExceptions.h
+                   IRPC.h
+                   muroaxml/CMuroaXml.h
+                   muroaxml/CParserStateMachine.cpp
                    )
                    
 include_directories(${CMAKE_SOURCE_DIR} ${Boost_INCLUDE_DIRS})

@@ -25,7 +25,7 @@
 #include "CRootItem.h"
 #include "CCategoryItem.h"
 #include "CMediaItem.h"
-
+#include "CUtils.h"
 #include <sstream>
 using namespace std;
 
@@ -47,16 +47,16 @@ CPlaylistItem::CPlaylistItem(CRootItem *root_item, std::string text, CCategoryIt
 	// first section is handled by CItemBase
 	size_t lpos, rpos;
 	// lpos = m_text.find('\t', 1) + 1;
-	lpos = 1;
+	lpos = 0;
 
 	rpos = m_text.find('\t', lpos);
 	string mediaitemHashStr = text.substr(lpos, rpos - lpos);
-	m_mediaitem_hash = strtol(mediaitemHashStr.c_str(), NULL, 10);
+	m_mediaitem_hash = CUtils::str2uint32(mediaitemHashStr.c_str());
 	lpos = rpos + 1;
 
 	rpos = m_text.find('\t', lpos);
 	string hashStr = text.substr(lpos, rpos - lpos);
-	m_hash = strtol(hashStr.c_str(), NULL, 10);
+	m_hash = CUtils::str2uint32(hashStr.c_str());
 	lpos = rpos + 1;
 
 	assembleText();
@@ -64,10 +64,14 @@ CPlaylistItem::CPlaylistItem(CRootItem *root_item, std::string text, CCategoryIt
 	if(m_parent) {
 		m_parent->addChild(this, posInParent);
 	}
+
+	// for CPlaylistItem, m_hash is an index number that never changes during
+	// livetime of an object.
 	m_root_item->setContentPtr(CItemType(CItemType::E_PLAYLISTITEM), this, m_hash );
 }
 
 CPlaylistItem::~CPlaylistItem() {
+		m_root_item->delContentPtr(CItemType(CItemType::E_PLAYLISTITEM), m_hash );  // would delete this
 }
 
 void CPlaylistItem::setMediaItemHash(uint32_t hash) {
@@ -115,5 +119,6 @@ void CPlaylistItem::assembleText() {
 	ss << "\tP\t" << m_mediaitem_hash << "\t" << m_hash;
 
 	m_text = ss.str();
+
 }
 

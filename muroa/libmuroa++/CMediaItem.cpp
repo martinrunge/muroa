@@ -8,6 +8,7 @@
 #include "CMediaItem.h"
 #include "CCategoryItem.h"
 #include "CRootItem.h"
+#include "CUtils.h"
 
 #include <sstream>
 #include <functional>
@@ -32,7 +33,7 @@ CMediaItem::CMediaItem(CRootItem *root_item, std::string text, CCategoryItem*  p
 	// first section is handled by CItemBase
 	size_t lpos, rpos;
 	// lpos = m_text.find('\t', 1) + 1;
-	lpos = 1;
+	lpos = 0;
 
 	rpos = m_text.find('\t', lpos);
 	m_filename = text.substr(lpos, rpos - lpos);
@@ -52,16 +53,16 @@ CMediaItem::CMediaItem(CRootItem *root_item, std::string text, CCategoryItem*  p
 
 	rpos = m_text.find('\t', lpos);
 	string yearStr = text.substr(lpos, rpos - lpos);
-	m_year = strtol(yearStr.c_str(), NULL, 10);
+	m_year = CUtils::str2long(yearStr.c_str());
 	lpos = rpos + 1;
 
 	rpos = m_text.find('\t', lpos);
 	string durationStr = text.substr(lpos, rpos - lpos);
-	m_duration_in_s = strtol(durationStr.c_str(), NULL, 10);
+	m_duration_in_s = CUtils::str2long(durationStr.c_str());
 	lpos = rpos + 1;
 
 	string hashStr = text.substr(lpos);
-	m_hash = strtol(hashStr.c_str(), NULL, 10);
+	m_hash = CUtils::str2uint32(hashStr.c_str());
 
 	if(m_parent) {
 		m_parent->addChild(this, posInParent);
@@ -70,6 +71,7 @@ CMediaItem::CMediaItem(CRootItem *root_item, std::string text, CCategoryItem*  p
 }
 
 CMediaItem::~CMediaItem() {
+	m_root_item->delContentPtr(CItemType(CItemType::E_MEDIAITEM), m_hash );
 }
 
 void CMediaItem::setAlbum(string album)
@@ -128,7 +130,7 @@ void CMediaItem::rehash() {
 
 	if( m_hash != oldhash ) {
 		m_root_item->setContentPtr(CItemType(CItemType::E_MEDIAITEM), this, m_hash );
-  //		m_root_item->delContentPtr(CItemType(CItemType::E_MEDIAITEM), oldhash );  // would delete this
+ 		m_root_item->delContentPtr(CItemType(CItemType::E_MEDIAITEM), oldhash );  // would delete this
 	}
 
 	m_text = ss.str();
