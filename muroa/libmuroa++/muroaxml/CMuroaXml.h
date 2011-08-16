@@ -13,57 +13,48 @@
 #include "MuroaExceptions.h"
 
 #include <expat.h>
+#include <cstdint>
 
 class CMuroaXml: public IRPC , public CParserStateMachine {
 public:
 	CMuroaXml() throw(rpcError);
 	~CMuroaXml();
 
-    void join(std::string host, unsigned port);
-	void leave();
-
-	virtual void onConnectionStateChanged(int state);
+	void joinSession(uint32_t sessionID);
+	void leaveSession();
 
 	void play();
+	void pause();
 	void stop();
 	void next();
 	void prev();
 
-	void getCollection( int knownRev );
-	void getPlaylist( int knownRev );
-	void getNextlist( int knownRev );
+	void stateChanged(int newState);
+	void progress(uint32_t jobID, int progress);
+	void error(uint32_t jobID, int errorCode, std::string description);
 
-	void editCollection( int fromRev );
-	void editPlaylist( int fromRev );
-	void editNextlist( int fromRev );
+	void getCollection( unsigned knownRev = 0);
+	void getPlaylist( unsigned knownRev = 0);
+	void getNextlist( unsigned knownRev = 0);
 
-	virtual void onPlay();
-	virtual void onStop();
-	virtual void onNext();
-	virtual void onPrev();
+	void editCollection( unsigned fromRev );
+	void editPlaylist( unsigned fromRev );
+	void editNextlist( unsigned fromRev );
 
-	virtual void onGetCollection( int knownRev );
-	virtual void onGetPlaylist( int knownRev );
-	virtual void onGetNextlist( int knownRev );
 
-	virtual void onCollection( unsigned knownRev );
-	virtual void onPlaylist( unsigned knownRev );
-	virtual void onNextlist( unsigned knownRev );
-
-	virtual void onEditCollection( int fromRev );
-	virtual void onEditPlaylist( int fromRev );
-	virtual void onEditNextlist( int fromRev );
+	void newData(const char* data, int len);
 
 private:
-    void parseChunk(const char* buffer, const int len);
+	void sendData(std::string data);
 
-    static void XMLCALL startTagHandler(void *data, const char *el, const char **attr);
-    static void XMLCALL endTagHandler(void *data, const char *el);
+    static void XMLCALL startTagHandler(void *inst_ptr, const char *el, const char **attr);
+    static void XMLCALL endTagHandler(void *inst_ptr, const char *el);
+    static void XMLCALL characterHandler(void *inst_ptr, const char *s, int len);
 
 
 	XML_Parser m_parser;
 
-
+	uint32_t m_sessionID;
 };
 
 #endif /* CMUROAXML_H_ */

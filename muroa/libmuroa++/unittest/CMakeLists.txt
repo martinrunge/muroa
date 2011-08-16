@@ -15,6 +15,7 @@ set( unittests_SRCS   CCollectionTest.cpp
                       CDiffTest.cpp
                       CRootItemDiffTest.cpp
                       CMuroaXmlRpcTest.cpp
+                      CRpcDummy.cpp
                       LibMuroaTestApp.cpp
                       )
                     
@@ -25,6 +26,7 @@ set( unittests_H
                       CDiffTest.h
                       CRootItemDiffTest.h
                       CMuroaXmlRpcTest.h
+                      CRpcDummy.h
                       )                    
   
 

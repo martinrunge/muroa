@@ -39,6 +39,9 @@ enum session_state_t {SESSION_ROOT_STATE,
 	                  IN_STOP,
 	                  IN_NEXT,
 	                  IN_PREV,
+	                  IN_PROGRESS,
+	                  IN_STATE_CHANGED,
+	                  IN_ERROR,
                       IN_GET_COLLECTION_STATE,
                       IN_GET_PLAYLIST_STATE,
                       IN_GET_NEXTLIST_STATE,
@@ -72,9 +75,8 @@ public:
 	void onWarning(const std::string& text);
 	void onError(const std::string& text);
 
-	virtual void onJoin() = 0;
-	virtual void onJoin(const unsigned short port, const long token) = 0;
-	virtual void onLeave() = 0;
+	virtual void onJoinSession(uint32_t sessionID) = 0;
+	virtual void onLeaveSession() = 0;
 
 	virtual void onPlay() = 0;
 	virtual void onStop() = 0;
@@ -82,17 +84,21 @@ public:
 	virtual void onNext() = 0;
 	virtual void onPrev() = 0;
 
+	virtual void onStateChanged(int newState) = 0;
+	virtual void onProgress(uint32_t jobID, int progress) = 0;
+	virtual void onError(uint32_t jobID, int errorCode, std::string description) = 0;
+
 	virtual void onGetCollection( unsigned knownRev ) = 0;
 	virtual void onGetPlaylist( unsigned knownRev ) = 0;
 	virtual void onGetNextlist( unsigned knownRev ) = 0;
 
-	virtual void onCollection( unsigned knownRev ) = 0;
-	virtual void onPlaylist( unsigned knownRev ) = 0;
-	virtual void onNextlist( unsigned knownRev ) = 0;
+	virtual void onCollection( unsigned knownRev, std::string collection ) = 0;
+	virtual void onPlaylist( unsigned knownRev, std::string playlist ) = 0;
+	virtual void onNextlist( unsigned knownRev, std::string nextlist ) = 0;
 
-	virtual void onEditCollection( unsigned fromRev ) = 0;
-	virtual void onEditPlaylist( unsigned fromRev ) = 0;
-	virtual void onEditNextlist( unsigned fromRev ) = 0;
+	virtual void onEditCollection( unsigned fromRev, std::string editScript ) = 0;
+	virtual void onEditPlaylist( unsigned fromRev, std::string editScript ) = 0;
+	virtual void onEditNextlist( unsigned fromRev, std::string editScript ) = 0;
 
 	virtual void onStartSession() = 0;
 	virtual void onEndSession() = 0;
@@ -116,27 +122,31 @@ private:
 	unsigned m_fromRev;
 	unsigned m_diffFromRev;
 
-	int sessionState(const action_flag& init_start_end, const std::string& name, const char** properties);
-	int processSessionState(const action_flag& init_start_end, const std::string& name, const char** properties);
+	uint32_t m_jobID;
+	int m_progress;
+	int m_newState;
+	int m_errorCode;
+	std::string m_errorDescription;
+	std::string m_get_text;
+	std::string m_edit_text;
 
-	int parseJoinArgs(const char** properties);
+	int sessionState(const action_flag& init_start_end, const std::string& name, const char** attrs);
+	int processSessionState(const action_flag& init_start_end, const std::string& name, const char** attrs);
 
-	void parseNextArgs(const char** properties);
-    void parsePrevArgs(const char** properties);
-    void parseStopArgs(const char** properties);
-    void parsePlayArgs(const char** properties);
+	int parseJoinArgs(const char** attrs);
 
-    void parseGetNextlistArgs(const char** properties);
-    void parseGetPlaylistArgs(const char** properties);
-    void parseGetCollectionArgs(const char** properties);
+	void parseNextArgs(const char** attrs);
+    void parsePrevArgs(const char** attrs);
+    void parseStopArgs(const char** attrs);
+    void parsePlayArgs(const char** attrs);
 
-    void parseNextlistArgs(const char** properties);
-    void parsePlaylistArgs(const char** properties);
-    void parseCollectionArgs(const char** properties);
+	void parseProgressArgs(const char** attrs);
+	void parseStateChangedArgs(const char** attrs);
+	void parseErrorArgs(const char** attrs);
 
-    void parseEditNextlistArgs(const char** properties);
-    void parseEditPlaylistArgs(const char** properties);
-    void parseEditCollectionArgs(const char** properties);
+    void parseKnownRev(const char** attrs);
+    void parseFromRev(const char** attrs);
+    void parseDiffFromRev(const char** attrs);
 
 };
 
