@@ -17,7 +17,8 @@ set( SRC           CTcpConnection.cpp
                    CSettings.cpp
                    Exceptions.cpp
                    main.cpp
-                   avahi/asio-watch.cpp 
+                   # avahi/asio-watch.cpp 
+                   avahi/CAvahiThread.cpp
                    )
                   
 
@@ -27,7 +28,8 @@ set( HEADERS       CTcpConnection.h
                    CSignalHandler.h
                    CSettings.h
                    Exceptions.h
-                   avahi/asio-watch.h
+                   # avahi/asio-watch.h
+                   avahi/CAvahiThread.h
                    )
                    
 include_directories(${CMAKE_SOURCE_DIR} ${Boost_INCLUDE_DIRS} ${EXPAT_INCLUDE_DIRS})

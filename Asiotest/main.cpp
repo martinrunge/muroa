@@ -36,12 +36,16 @@
 #include <log4cplus/fileappender.h>
 #include <log4cplus/ndc.h>
 
+#include "avahi/CAvahiThread.h"
+
 #include <sys/stat.h>
 #include <string.h>
 
 #include "CSettings.h"
 #include "CTcpServer.h"
 #include "CSignalHandler.h"
+
+#include <thread>
 
 using namespace std;
 using namespace log4cplus;
@@ -152,8 +156,17 @@ int main(int argc, char** argv) {
 		CTcpServer server(io_service);
 		CSignalHandler::pointer sigPtr = CSignalHandler::create(io_service);
 		sigPtr->start();
-
+		CAvahiThread at(io_service);
+		std::thread t(at);
 		LOG4CPLUS_DEBUG(logger, "starting io_service");
+
+		sleep(10);
+		cerr << "trying to cacncel thread..." << endl;
+		pthread_t nt = t.native_handle();
+		pthread_cancel(nt);
+		cerr << "called cancel on thread, joining ..." << endl;
+		// t.join();
+		cerr << "thread joined." << endl;
 
 		io_service.run();
 	} catch (std::exception& e) {
