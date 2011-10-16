@@ -18,7 +18,7 @@ set( SRC           CTcpConnection.cpp
                    Exceptions.cpp
                    main.cpp
                    # avahi/asio-watch.cpp 
-                   avahi/CAvahiThread.cpp
+                   avahi/CDnsSdAvahi.cpp
                    )
                   
 
@@ -29,7 +29,7 @@ set( HEADERS       CTcpConnection.h
                    CSettings.h
                    Exceptions.h
                    # avahi/asio-watch.h
-                   avahi/CAvahiThread.h
+                   avahi/CDnsSdAvahi.h
                    )
                    
 include_directories(${CMAKE_SOURCE_DIR} ${Boost_INCLUDE_DIRS} ${EXPAT_INCLUDE_DIRS})
@@ -37,7 +37,7 @@ include_directories(${CMAKE_SOURCE_DIR} ${Boost_INCLUDE_DIRS} ${EXPAT_INCLUDE_DI
 link_directories(  )
 
 add_executable( asiotest ${SRC} ${HEADERS} )
-target_link_libraries( asiotest  ${Boost_LIBRARIES} ${EXPAT_LIBRARIES} -llog4cplus)
-set_target_properties( asiotest  PROPERTIES  COMPILE_FLAGS "-std=gnu++0x" ) 
+target_link_libraries( asiotest  ${Boost_LIBRARIES} ${EXPAT_LIBRARIES} log4cplus pthread avahi-client avahi-common)
+set_target_properties( asiotest  PROPERTIES  COMPILE_FLAGS "-std=gnu++0x -pthread" ) 
 
 install(TARGETS   asiotest DESTINATION  bin)

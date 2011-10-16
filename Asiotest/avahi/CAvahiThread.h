@@ -9,18 +9,35 @@
 #define CAVAHITHREAD_H_
 
 #include <boost/asio.hpp>
+#include <thread>
 
-class CAvahiThread  {
+#include <avahi-client/client.h>
+#include <avahi-client/publish.h>
+
+#include <avahi-common/alternative.h>
+#include <avahi-common/simple-watch.h>
+#include <avahi-common/malloc.h>
+#include <avahi-common/error.h>
+#include <avahi-common/timeval.h>
+
+namespace muroa {
+
+class CAvahiThread {
 public:
 	CAvahiThread( boost::asio::io_service& io_service );
 	virtual ~CAvahiThread();
 
 	void operator()() const;
+	void cancel();
 
 private:
 
 	boost::asio::io_service& m_io_service;
-	int setNonblocking(int fd) const;
+
+	AvahiEntryGroup *m_group;
+	AvahiSimplePoll *m_simple_poll;
+
 };
 
+}
 #endif /* CAVAHITHREAD_H_ */
