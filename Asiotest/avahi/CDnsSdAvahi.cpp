@@ -13,7 +13,7 @@
 #include <avahi-common/error.h>
 #include <avahi-common/alternative.h>
 #include <avahi-common/malloc.h>
-#include <avahi-qt4/qt-watch.h>
+#include <avahi-common/thread-watch.h>
 
 #include <assert.h>
 
@@ -38,24 +38,37 @@ void CDnsSdAvahi::staticEntryGroupCallback(AvahiEntryGroup *group, AvahiEntryGro
 
 
 CDnsSdAvahi::CDnsSdAvahi(boost::asio::io_service& io_service ) : m_io_service(io_service),
-                                                                 m_simple_poll(0),
+                                                                 m_threaded_poll(0),
                                                                  m_client(0),
                                                                  m_group(0)
 {
+	m_userdata.thisPtr = this;
+	m_serviceName = "muroa.tcp";
+	m_servicePort = 5566;
+
+
 	/* Allocate main loop object */
-    if (!(m_simple_poll = avahi_simple_poll_new())) {
+    if (!(m_threaded_poll = avahi_threaded_poll_new())) {
         ostringstream oss;
         oss << "Failed to create simple poll object." << endl;
 
         throw(muroa::configEx(oss.str()));
     }
+    int error;
+    m_client = avahi_client_new(avahi_threaded_poll_get(m_threaded_poll), AvahiClientFlags(0), &CDnsSdAvahi::staticClientCallback, &m_userdata, &error);
+
+	avahi_threaded_poll_start(m_threaded_poll);
 }
 
 CDnsSdAvahi::~CDnsSdAvahi() {
-    if(m_simple_poll) {
-        avahi_simple_poll_free(m_simple_poll);
-        m_simple_poll = 0;
+    if(m_threaded_poll) {
+        avahi_threaded_poll_stop(m_threaded_poll);
+        avahi_client_free(m_client);
+        avahi_threaded_poll_free(m_threaded_poll);
+        m_threaded_poll = 0;
 	}
+    /* Call this when the app shuts down */
+
 }
 
 void CDnsSdAvahi::cleanup()
@@ -63,39 +76,39 @@ void CDnsSdAvahi::cleanup()
 
 }
 
-void CDnsSdAvahi::operator ()()
-{
-	if(m_simple_poll != NULL) {
-		/* Allocate a new client */
-		int error;
-		m_client = avahi_client_new(avahi_simple_poll_get(m_simple_poll), AvahiClientFlags(0), &CDnsSdAvahi::staticClientCallback, &m_userdata, &error);
-
-		/* Check wether creating the client object succeeded */
-		if (m_client) {
-
-//			/* After 10s do some weird modification to the service */
-//			avahi_simple_poll_get(m_simple_poll)->timeout_new(
-//				avahi_simple_poll_get(m_simple_poll),
-//				avahi_elapse_time(&tv, 1000*10, 0),
-//				modify_callback,
-//				client);
-
-			/* Run the main loop */
-			avahi_simple_poll_loop(m_simple_poll);
-		}
-
-	    if (m_client) {
-	        avahi_client_free(m_client);
-	    }
-
-	}
-
-}
-
-void CDnsSdAvahi::cancel()
-{
-
-}
+//void CDnsSdAvahi::operator ()()
+//{
+//	if(m_threaded_poll != NULL) {
+//		/* Allocate a new client */
+//		int error;
+//		m_client = avahi_client_new(avahi_threaded_poll_get(m_threaded_poll), AvahiClientFlags(0), &CDnsSdAvahi::staticClientCallback, &m_userdata, &error);
+//
+//		/* Check wether creating the client object succeeded */
+//		if (m_client) {
+//
+////			/* After 10s do some weird modification to the service */
+////			avahi_simple_poll_get(m_threaded_poll)->timeout_new(
+////				avahi_simple_poll_get(m_threaded_poll),
+////				avahi_elapse_time(&tv, 1000*10, 0),
+////				modify_callback,
+////				client);
+//
+//			/* Run the main loop */
+//			avahi_simple_poll_loop(m_threaded_poll);
+//		}
+//
+//	    if (m_client) {
+//	        avahi_client_free(m_client);
+//	    }
+//
+//	}
+//
+//}
+//
+//void CDnsSdAvahi::cancel()
+//{
+//
+//}
 
 void CDnsSdAvahi::registerService(string serviceName, unsigned short servicePort)
 {

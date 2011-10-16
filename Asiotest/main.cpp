@@ -157,12 +157,12 @@ int main(int argc, char** argv) {
 		CSignalHandler::pointer sigPtr = CSignalHandler::create(io_service);
 		sigPtr->start();
 		muroa::CDnsSdAvahi at(io_service);
-		std::thread t(at);
+//		std::thread t(at);
 		LOG4CPLUS_DEBUG(logger, "starting io_service");
 		sleep(10);
-		at.cancel();
-		t.join();
-		cerr << "thread joined." << endl;
+//		at.cancel();
+//		t.join();
+//		cerr << "thread joined." << endl;
 
 		io_service.run();
 	} catch (std::exception& e) {

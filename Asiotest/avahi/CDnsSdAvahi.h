@@ -14,7 +14,7 @@
 
 #include <avahi-client/client.h>
 #include <avahi-client/publish.h>
-#include <avahi-common/simple-watch.h>
+#include <avahi-common/thread-watch.h>
 
 namespace muroa {
 
@@ -31,8 +31,8 @@ public:
 	CDnsSdAvahi(boost::asio::io_service& io_service);
 	virtual ~CDnsSdAvahi();
 
-	void operator()();
-	void cancel();
+//	void operator()();
+//	void cancel();
 
 	void registerService(std::string serviceName, unsigned short servicePort);
 
@@ -48,7 +48,7 @@ private:
 
 	struct userdata m_userdata;
 
-	AvahiSimplePoll *m_simple_poll;
+	AvahiThreadedPoll *m_threaded_poll;
     AvahiClient *m_client;
 	AvahiEntryGroup *m_group;
 
