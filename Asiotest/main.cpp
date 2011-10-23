@@ -41,6 +41,7 @@
 #include <sys/stat.h>
 #include <string.h>
 
+#include "CApp.h"
 #include "CSettings.h"
 #include "CTcpServer.h"
 #include "CSignalHandler.h"
@@ -70,6 +71,8 @@ int main(int argc, char** argv) {
     if(settings.parse(argc, argv) != 0) {
     	exit(0);
     }
+
+    muroa::CApp* app = muroa::CApp::getInstPtr();
 
     if(!settings.foreground()) {
     	errno = 0;
@@ -156,7 +159,8 @@ int main(int argc, char** argv) {
 		CTcpServer server(io_service);
 		CSignalHandler::pointer sigPtr = CSignalHandler::create(io_service);
 		sigPtr->start();
-		muroa::CDnsSdAvahi at(io_service);
+		muroa::CDnsSdAvahi dnssd(io_service);
+		dnssd.setServiceChangedHandler(boost::bind( &muroa::CApp::serviceChanged, app));
 //		std::thread t(at);
 		LOG4CPLUS_DEBUG(logger, "starting io_service");
 		sleep(10);

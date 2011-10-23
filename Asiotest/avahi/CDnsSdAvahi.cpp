@@ -35,9 +35,44 @@ void CDnsSdAvahi::staticEntryGroupCallback(AvahiEntryGroup *group, AvahiEntryGro
 	return instPtr->entryGroupCallback(group, state, userdata);
 }
 
+void CDnsSdAvahi::staticBrowseCallback(AvahiServiceBrowser *b,
+		                                             AvahiIfIndex interface,
+		                                             AvahiProtocol protocol,
+		                                             AvahiBrowserEvent event,
+		                                             const char *name,
+		                                             const char *type,
+		                                             const char *domain,
+		                                             AvahiLookupResultFlags flags,
+		                                             void* userdata)
+{
+	struct userdata*  udata = (struct userdata*) userdata;
+	CDnsSdAvahi* instPtr = udata->thisPtr;
+	return instPtr->browseCallback(b, interface, protocol, event, name, type, domain, flags, userdata);
+}
 
 
-CDnsSdAvahi::CDnsSdAvahi(boost::asio::io_service& io_service ) : m_io_service(io_service),
+void CDnsSdAvahi::staticResolveCallback( AvahiServiceResolver *r,
+                                                              AvahiIfIndex interface,
+                                                              AvahiProtocol protocol,
+                                                              AvahiResolverEvent event,
+                                                              const char *name,
+                                                              const char *type,
+                                                              const char *domain,
+                                                              const char *host_name,
+                                                              const AvahiAddress *address,
+                                                              uint16_t port,
+                                                              AvahiStringList *txt,
+                                                              AvahiLookupResultFlags flags,
+                                                              void* userdata)
+{
+	struct userdata*  udata = (struct userdata*) userdata;
+	CDnsSdAvahi* instPtr = udata->thisPtr;
+	return instPtr->resolveCallback(r, interface, protocol, event, name, type, domain, host_name, address, port, txt, flags, userdata);
+}
+
+
+
+CDnsSdAvahi::CDnsSdAvahi(boost::asio::io_service& io_service ) : CDnsSdBase(io_service),
                                                                  m_threaded_poll(0),
                                                                  m_client(0),
                                                                  m_group(0)
@@ -56,6 +91,15 @@ CDnsSdAvahi::CDnsSdAvahi(boost::asio::io_service& io_service ) : m_io_service(io
     }
     int error;
     m_client = avahi_client_new(avahi_threaded_poll_get(m_threaded_poll), AvahiClientFlags(0), &CDnsSdAvahi::staticClientCallback, &m_userdata, &error);
+
+    // Create the service browser
+    m_service_type = "_muroa._tcp";
+    m_service_browser = avahi_service_browser_new(m_client, AVAHI_IF_UNSPEC, AVAHI_PROTO_UNSPEC, m_service_type.c_str(), NULL, AvahiLookupFlags(0), &CDnsSdAvahi::staticBrowseCallback, &m_userdata);
+    if(!m_service_browser)
+    {
+      cerr << "Failed to create service browser: "<< avahi_strerror(avahi_client_errno(m_client)) << endl;
+      return;
+    }
 
 	avahi_threaded_poll_start(m_threaded_poll);
 }
@@ -76,61 +120,7 @@ void CDnsSdAvahi::cleanup()
 
 }
 
-//void CDnsSdAvahi::operator ()()
-//{
-//	if(m_threaded_poll != NULL) {
-//		/* Allocate a new client */
-//		int error;
-//		m_client = avahi_client_new(avahi_threaded_poll_get(m_threaded_poll), AvahiClientFlags(0), &CDnsSdAvahi::staticClientCallback, &m_userdata, &error);
-//
-//		/* Check wether creating the client object succeeded */
-//		if (m_client) {
-//
-////			/* After 10s do some weird modification to the service */
-////			avahi_simple_poll_get(m_threaded_poll)->timeout_new(
-////				avahi_simple_poll_get(m_threaded_poll),
-////				avahi_elapse_time(&tv, 1000*10, 0),
-////				modify_callback,
-////				client);
-//
-//			/* Run the main loop */
-//			avahi_simple_poll_loop(m_threaded_poll);
-//		}
-//
-//	    if (m_client) {
-//	        avahi_client_free(m_client);
-//	    }
-//
-//	}
-//
-//}
-//
-//void CDnsSdAvahi::cancel()
-//{
-//
-//}
 
-void CDnsSdAvahi::registerService(string serviceName, unsigned short servicePort)
-{
-	if(m_client)
-	{
-		cleanup();
-	}
-
-	m_serviceName = serviceName;
-	m_servicePort = servicePort;
-	m_userdata.thisPtr = this;
-    /* Allocate a new client */
-	int error;
-    // m_client = avahi_client_new(avahi_qt_poll_get(), AvahiClientFlags(0), &CDnsSdAvahi::staticClientCallback, &m_userdata, &error);
-
-    /* Check wether creating the client object succeeded */
-    if (!m_client) {
-        cerr << "Failed to create client: " << avahi_strerror(error) << endl;
-        cleanup();
-        return;
-    }
-}
 
 
 void CDnsSdAvahi::clientCallback(AvahiClient *client, AvahiClientState state, void * userdata)
@@ -170,7 +160,7 @@ void CDnsSdAvahi::clientCallback(AvahiClient *client, AvahiClientState state, vo
 			break;
 
 		case AVAHI_CLIENT_CONNECTING:
-			;
+			break;
 	}
 }
 
@@ -211,8 +201,118 @@ void CDnsSdAvahi::entryGroupCallback(AvahiEntryGroup *group, AvahiEntryGroupStat
 
 		case AVAHI_ENTRY_GROUP_UNCOMMITED:
 		case AVAHI_ENTRY_GROUP_REGISTERING:
-			;
+			break;
 	}
+}
+
+void CDnsSdAvahi::browseCallback(AvahiServiceBrowser *b,
+		            AvahiIfIndex interface,
+		            AvahiProtocol protocol,
+		            AvahiBrowserEvent event,
+		            const char *name,
+		            const char *type,
+		            const char *domain,
+		            AvahiLookupResultFlags flags,
+		            void* userdata)
+{
+    assert(b);
+
+    /* Called whenever a new services becomes available on the LAN or is removed from the LAN */
+
+    switch (event) {
+        case AVAHI_BROWSER_FAILURE:
+
+            cerr << "(DnsSD Browser): "<< avahi_strerror(avahi_client_errno(avahi_service_browser_get_client(b))) << endl;
+            return;
+
+        case AVAHI_BROWSER_NEW:
+            cerr << "(Browser) NEW: service '" << name <<"' of type '" << type << "' in domain '" << domain << "'" << endl;
+
+            /* We ignore the returned resolver object. In the callback
+               function we free it. If the server is terminated before
+               the callback function is called the server will free
+               the resolver for us. */
+
+            if (!(avahi_service_resolver_new(m_client, interface, protocol, name, type, domain, AVAHI_PROTO_UNSPEC, AvahiLookupFlags(0), &CDnsSdAvahi::staticResolveCallback, userdata)))
+                cerr << "Failed to resolve service '" << name << "': " << avahi_strerror(avahi_client_errno(m_client)) << endl;
+
+            break;
+
+        case AVAHI_BROWSER_REMOVE:
+        {
+            cerr << "(Browser) REMOVE: service '" << name << "' of type '" << type << "' in domain '" << domain << "'" << endl;
+            CServiceDesc tmpSd(name, "", domain, 0, interface, protocol);
+            removeService( tmpSd );
+            break;
+        }
+
+        case AVAHI_BROWSER_ALL_FOR_NOW:
+        case AVAHI_BROWSER_CACHE_EXHAUSTED:
+            cerr << "(Browser) " << (event == AVAHI_BROWSER_CACHE_EXHAUSTED ? "CACHE_EXHAUSTED" : "ALL_FOR_NOW") << endl;
+            break;
+    }
+}
+
+
+void CDnsSdAvahi::resolveCallback( AvahiServiceResolver *r,
+                                                 AvahiIfIndex interface,
+                                                 AvahiProtocol protocol,
+                                                 AvahiResolverEvent event,
+                                                 const char *name,
+                                                 const char *type,
+                                                 const char *domain,
+                                                 const char *host_name,
+                                                 const AvahiAddress *address,
+                                                 uint16_t port,
+                                                 AvahiStringList *txt,
+                                                 AvahiLookupResultFlags flags,
+                                                 void* userdata)
+{
+    assert(r);
+    /* Called whenever a service has been resolved successfully or timed out */
+
+    switch (event) {
+        case AVAHI_RESOLVER_FAILURE:
+            cerr << "(Resolver) Failed to resolve service '" << name << "' of type '" << type << "' in domain '" << domain << "':" << avahi_strerror(avahi_client_errno(avahi_service_resolver_get_client(r))) << endl;
+            break;
+
+        case AVAHI_RESOLVER_FOUND: {
+//            char a[AVAHI_ADDRESS_STR_MAX], *t;
+//            avahi_address_snprint(a, sizeof(a), address);
+
+            cerr << "Service '" << name << "' of type '" << type << "' in domain '" << domain << "':" << endl;
+            cerr << "Host: " << host_name << " Port: " << port << endl;
+
+            if(hasService(name) == 0)
+            {
+            	// no service with that name known yet
+            	addService(ServDescPtr( new CServiceDesc(name, host_name, domain, port, interface, protocol)));
+            }
+
+
+//            t = avahi_string_list_to_string(txt);
+//            fprintf(stderr,
+//                    "\t%s:%u (%s)\n"
+//                    "\tTXT=%s\n"
+//                    "\tcookie is %u\n"
+//                    "\tis_local: %i\n"
+//                    "\tour_own: %i\n"
+//                    "\twide_area: %i\n"
+//                    "\tmulticast: %i\n"
+//                    "\tcached: %i\n",
+//                    host_name, port, a,
+//                    t,
+//                    avahi_string_list_get_service_cookie(txt),
+//                    !!(flags & AVAHI_LOOKUP_RESULT_LOCAL),
+//                    !!(flags & AVAHI_LOOKUP_RESULT_OUR_OWN),
+//                    !!(flags & AVAHI_LOOKUP_RESULT_WIDE_AREA),
+//                    !!(flags & AVAHI_LOOKUP_RESULT_MULTICAST),
+//                    !!(flags & AVAHI_LOOKUP_RESULT_CACHED));
+
+//            avahi_free(t);
+        }
+    }
+    avahi_service_resolver_free(r);
 }
 
 
