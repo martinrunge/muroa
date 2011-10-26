@@ -43,16 +43,18 @@ public:
 	inline bool foreground() { return m_foreground; };
     inline int debuglevel() { return m_debuglevel; };
     inline unsigned port() { return m_port; };
+    inline std::string logfile() { return m_logfile; };
 
 private:
 	void usage(std::string appname);
-
-    log4cplus::Logger m_logger;
+	void applyDefaults();
 
     std::string m_configfile;
     bool m_foreground;
     int m_debuglevel;
     unsigned m_port;
+
+    std::string m_logfile;
 
 };
 

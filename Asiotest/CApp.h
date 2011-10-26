@@ -9,27 +9,34 @@
 #define CAPP_H_
 
 #include <mutex>
-class CSettings;
+#include <log4cplus/logger.h>
+
+#include "Exceptions.h"
+#include "CSettings.h"
 
 namespace muroa {
 
 class CApp {
 private:
-	CApp();
+	CApp(int argc, char** argv) throw(configEx);
 	virtual ~CApp();
-	CSettings* getSettingsPtr(void);
-	void setSettingsPtr(CSettings* settings_ptr);
+
 public:
-	static CApp* getInstPtr();
+	static CApp* getInstPtr(int argc = 0, char** argv = NULL) throw(configEx);
+	CSettings& settings();
+	log4cplus::Logger& logger();
 
 	void serviceChanged();
-	void notifyService(CServiceDesc servdesc);
 
 private:
 	static CApp* m_inst_ptr;
 	static std::mutex m_mutex;
 
-	CSettings* m_settings_ptr;
+	CSettings m_settings;
+	log4cplus::Logger m_logger;
+
+	void initLog();
+
 };
 
 } /* namespace muroa */

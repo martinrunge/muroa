@@ -16,15 +16,12 @@
 using namespace std;
 using namespace log4cplus;
 
-extern Logger logger;
-
 namespace muroa {
 
-CDnsSdBase::CDnsSdBase(boost::asio::io_service& io_service) : m_notify(false) ,
-		                                                      m_io_service(io_service),
-		                                                      m_notify_handler(0),
+CDnsSdBase::CDnsSdBase(boost::asio::io_service& io_service) : m_io_service(io_service),
 		                                                      m_service_changed_handler(0)
 {
+	CApp* m_app = CApp::getInstPtr();
 }
 
 CDnsSdBase::~CDnsSdBase() {
@@ -45,18 +42,8 @@ void CDnsSdBase::addService(ServDescPtr newService)
 {
 	// lock_guard<mutex> lk(m_mutex);
 	m_services.push_back(newService);
-	if( m_notify ) {
-		if( newService->getServiceName().compare(m_notify_service ) == 0 &&
-			newService->getHostName().compare(m_notify_host) == 0 &&
-			newService->getDomainName().compare(m_notify_domain) == 0 )
-		{
-			if(m_notify_handler) {
-				m_io_service.post( boost::bind(m_notify_handler, newService) );
-			}
-		}
-	}
 	if(m_service_changed_handler) {
-		LOG4CPLUS_TRACE(logger, "service added ..."  );
+		LOG4CPLUS_TRACE(Logger::getInstance("main"), "service added ..."  );
 		m_io_service.post( boost::bind(m_service_changed_handler) );
 	}
 }
@@ -92,7 +79,7 @@ int CDnsSdBase::removeService(const CServiceDesc& rmSd )
 	}
 
 	if(num > 0) {
-		LOG4CPLUS_TRACE(logger, "service changed."  );
+		LOG4CPLUS_TRACE(m_app->logger(), "service changed."  );
         m_io_service.post(boost::bind(m_service_changed_handler));
 	}
 
@@ -130,24 +117,6 @@ ServDescPtr CDnsSdBase::getService(string name, int which)
 		}
 	}
 	return ServDescPtr();
-}
-
-void CDnsSdBase::notifyOn(string service, string host, string domain)
-{
-	lock_guard<mutex> lk(m_mutex);
-	if( service.empty() || host.empty() || domain.empty() ) {
-		m_notify = false;
-	}
-	else {
-		m_notify = true;
-		m_notify_service = service;
-		m_notify_host = host;
-		m_notify_domain = domain;
-	}
-}
-
-void CDnsSdBase::setNotifyHandler(notify_handler_t handler) {
-	m_notify_handler = handler;
 }
 
 void CDnsSdBase::setServiceChangedHandler(service_changed_handler_t handler) {

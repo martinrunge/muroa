@@ -29,14 +29,9 @@
 #include <boost/enable_shared_from_this.hpp>
 #include <boost/asio.hpp>
 
-#include <log4cplus/logger.h>
-#include <log4cplus/loglevel.h>
-#include <log4cplus/layout.h>
-#include <log4cplus/configurator.h>
-#include <log4cplus/fileappender.h>
-#include <log4cplus/ndc.h>
 
 #include "avahi/CDnsSdAvahi.h"
+#include "Exceptions.h"
 
 #include <sys/stat.h>
 #include <string.h>
@@ -51,30 +46,19 @@
 using namespace std;
 using namespace log4cplus;
 
-Logger logger = Logger::getInstance("main");
-muroa::CSettings settings;
-
 int main(int argc, char** argv) {
 
-	SharedAppenderPtr logFileAppender(new FileAppender("myLogFile.log"));
-	logFileAppender->setName("LogfileAppender");
-	std::auto_ptr<Layout> myLayout = std::auto_ptr<Layout>(new log4cplus::TTCCLayout());
-	logFileAppender->setLayout(myLayout);
+    muroa::CApp* app;
 
-	logger.addAppender(logFileAppender);
-    // logger.setLogLevel ( DEBUG_LOG_LEVEL );
-	logger.setLogLevel ( TRACE_LOG_LEVEL );
-
-    BasicConfigurator config;
-    config.configure();
-
-    if(settings.parse(argc, argv) != 0) {
-    	exit(0);
+    try {
+    	app = muroa::CApp::getInstPtr(argc, argv);
+    }
+    catch( muroa::configEx ex ) {
+    	cerr << ex.what() << endl;
+    	exit(1);
     }
 
-    muroa::CApp* app = muroa::CApp::getInstPtr();
-
-    if(!settings.foreground()) {
+    if(!app->settings().foreground()) {
     	errno = 0;
         if ( pid_t pid = fork() ) {
         	if (pid > 0) {
@@ -84,7 +68,7 @@ int main(int argc, char** argv) {
         	}
         	else {
         		// pid < 0 -> failed to fork
-        		LOG4CPLUS_ERROR(logger, "failed to fork" << strerror(errno) );
+        		LOG4CPLUS_ERROR(app->logger(), "failed to fork" << strerror(errno) );
         		return 1;
         	}
         }
@@ -112,7 +96,7 @@ int main(int argc, char** argv) {
             		exit(0);
             	}
             	else {
-            		LOG4CPLUS_ERROR(logger, "second fork failed: " << strerror(errno) );
+            		LOG4CPLUS_ERROR(app->logger(), "second fork failed: " << strerror(errno) );
             		return 1;
             	}
             }
@@ -127,7 +111,7 @@ int main(int argc, char** argv) {
             errno = 0;
             if (open("/dev/null", O_RDONLY) < 0)
             {
-        		LOG4CPLUS_ERROR(logger, "Unable to open /dev/null: " << strerror(errno) );
+        		LOG4CPLUS_ERROR(app->logger(), "Unable to open /dev/null: " << strerror(errno) );
         		return 1;
             }
 
@@ -138,14 +122,14 @@ int main(int argc, char** argv) {
             errno = 0;
             if (open(output, flags, mode) < 0)
             {
-        		LOG4CPLUS_ERROR(logger, "Unable to open output file " << output << " :"<< strerror(errno) );
+        		LOG4CPLUS_ERROR(app->logger(), "Unable to open output file " << output << " :"<< strerror(errno) );
         		return 1;
             }
 
             // Also send standard error to the same log file.
             if (dup(1) < 0)
             {
-        		LOG4CPLUS_ERROR(logger, "Unable to duplicate stdout" );
+        		LOG4CPLUS_ERROR(app->logger(), "Unable to duplicate stdout" );
         		return 1;
             }
         }
@@ -160,13 +144,12 @@ int main(int argc, char** argv) {
 		sigPtr->start();
 		muroa::CDnsSdAvahi dnssd(io_service);
 		dnssd.setServiceChangedHandler(boost::bind( &muroa::CApp::serviceChanged, app));
-		dnssd.setNotifyHandler( boost::bind( &muroa::CApp::serviceChanged, app) );
 
-		LOG4CPLUS_DEBUG(logger, "starting io_service");
+		LOG4CPLUS_DEBUG(app->logger(), "starting io_service");
 
 		io_service.run();
 	} catch (std::exception& e) {
-		LOG4CPLUS_ERROR(logger, "Uncaught exception from mainloop: " << e.what());
+		LOG4CPLUS_ERROR(app->logger(), "Uncaught exception from mainloop: " << e.what());
 	}
 
 	return 0;

@@ -30,9 +30,9 @@ using namespace log4cplus;
 
 namespace muroa {
 
-CSettings::CSettings() throw() : m_logger(Logger::getInstance("main")),
-                                 m_foreground(false),
-                                 m_debuglevel(0) {
+CSettings::CSettings() throw() : m_foreground(false),
+                                 m_debuglevel(0),
+                                 m_logfile("") {
 }
 
 
@@ -45,8 +45,8 @@ int CSettings::parse(int argc, char** argv) throw(configEx) {
         {"foreground", 0, 0, 'f'},
         {"debuglevel", 1, 0, 'd'},
         {"port", 1, 0, 'p'},
+        {"logfile", 1, 0, 'l'},
         {"help", 0, 0, '?'},
-
         {0, 0, 0, 0}
     };
 
@@ -67,7 +67,6 @@ int CSettings::parse(int argc, char** argv) throw(configEx) {
             else {
             	throw configEx("--configfile option requires an argument");
             }
-            LOG4CPLUS_INFO(m_logger, "using configfile: " << m_configfile);
             break;
 
         case 'd':
@@ -82,6 +81,14 @@ int CSettings::parse(int argc, char** argv) throw(configEx) {
             m_port = strtoul(optarg, NULL, 10);
             break;
 
+        case 'l':
+            if (optarg) {
+                m_logfile = optarg;
+            }
+            else {
+            	throw configEx("--logfile option requires an argument");
+            }
+            break;
 
         case '?':
         	usage(argv[0]);
@@ -99,6 +106,8 @@ int CSettings::parse(int argc, char** argv) throw(configEx) {
             printf("%s ", argv[optind++]);
         printf("\n");
     }
+
+    applyDefaults();
     return 0;
 
 }
@@ -111,10 +120,17 @@ void CSettings::usage(string appname) {
 	cout << "usage:" << endl;
 	cout << appname << " <options>" << endl;
 	cout << "  --configfile  -c  \tspecify a config file" << endl;
+	cout << "  --logfile  -l     \tspecify a logfile" << endl;
 	cout << "  --port        -p  \tlisten on port" << endl;
 	cout << "  --foreground  -f  \tdo not fork into background, do not become a daemon, log to stderr." << endl;
 	cout << "  --debuglevel  -d  \tdebuglevel" << endl;
 	cout << "  --help        -?  \tthis message" << endl;
+}
+
+void CSettings::applyDefaults() {
+	if( m_logfile.empty() ) {
+		m_logfile = "/var/log/muroad.log";
+	}
 }
 
 
