@@ -23,6 +23,7 @@ public:
 	static CApp* getInstPtr();
 
 	void serviceChanged();
+	void notifyService(CServiceDesc servdesc);
 
 private:
 	static CApp* m_inst_ptr;

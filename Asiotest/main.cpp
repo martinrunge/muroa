@@ -148,7 +148,6 @@ int main(int argc, char** argv) {
         		LOG4CPLUS_ERROR(logger, "Unable to duplicate stdout" );
         		return 1;
             }
-
         }
     }
 
@@ -161,12 +160,9 @@ int main(int argc, char** argv) {
 		sigPtr->start();
 		muroa::CDnsSdAvahi dnssd(io_service);
 		dnssd.setServiceChangedHandler(boost::bind( &muroa::CApp::serviceChanged, app));
-//		std::thread t(at);
+		dnssd.setNotifyHandler( boost::bind( &muroa::CApp::serviceChanged, app) );
+
 		LOG4CPLUS_DEBUG(logger, "starting io_service");
-		sleep(10);
-//		at.cancel();
-//		t.join();
-//		cerr << "thread joined." << endl;
 
 		io_service.run();
 	} catch (std::exception& e) {

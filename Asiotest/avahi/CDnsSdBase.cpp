@@ -9,9 +9,14 @@
 #include <boost/bind.hpp>
 #include "CDnsSdBase.h"
 
+#include <log4cplus/logger.h>
+
 #include <iostream>
 
 using namespace std;
+using namespace log4cplus;
+
+extern Logger logger;
 
 namespace muroa {
 
@@ -51,7 +56,7 @@ void CDnsSdBase::addService(ServDescPtr newService)
 		}
 	}
 	if(m_service_changed_handler) {
-		cerr << "addService: posting to io_service ..." << endl;
+		LOG4CPLUS_TRACE(logger, "service added ..."  );
 		m_io_service.post( boost::bind(m_service_changed_handler) );
 	}
 }
@@ -87,6 +92,7 @@ int CDnsSdBase::removeService(const CServiceDesc& rmSd )
 	}
 
 	if(num > 0) {
+		LOG4CPLUS_TRACE(logger, "service changed."  );
         m_io_service.post(boost::bind(m_service_changed_handler));
 	}
 
