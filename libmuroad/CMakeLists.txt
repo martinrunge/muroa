@@ -42,7 +42,7 @@ include_directories(${CMAKE_SOURCE_DIR} ${Boost_INCLUDE_DIRS} ${EXPAT_INCLUDE_DI
 
 link_directories(  )
 
-add_library( shared  muroad   ${SRC} ${HEADERS} )
+add_library(  muroad SHARED  ${SRC} ${HEADERS} )
 target_link_libraries( muroad  ${Boost_LIBRARIES} ${EXPAT_LIBRARIES} log4cplus pthread avahi-client avahi-common)
 set_target_properties( muroad  PROPERTIES  COMPILE_FLAGS "-std=gnu++0x -pthread" ) 
 

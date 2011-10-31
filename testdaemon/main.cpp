@@ -23,14 +23,54 @@
 
 #include <iostream>
 #include <string>
+
+#include <sys/stat.h>
+#include <string.h>
+
 #include <log4cplus/logger.h>
+
+#include "CApp.h"
+#include "CSettings.h"
+#include "CTcpServer.h"
+#include "CSignalHandler.h"
+#include "avahi/CDnsSdAvahi.h"
+#include "Exceptions.h"
+
+#include <boost/asio.hpp>
 
 using namespace std;
 using namespace log4cplus;
 
 int main(int argc, char** argv) {
 
+    muroa::CApp* app;
 
+    try {
+    	app = muroa::CApp::getInstPtr(argc, argv);
+
+    	if(!app->settings().foreground()) {
+    		app->daemonize();
+    	}
+
+		boost::asio::io_service io_service;
+		CTcpServer server(io_service);
+		CSignalHandler::pointer sigPtr = CSignalHandler::create(io_service);
+		sigPtr->start();
+		muroa::CDnsSdAvahi dnssd(io_service);
+		dnssd.setServiceChangedHandler(boost::bind( &muroa::CApp::serviceChanged, app));
+
+		LOG4CPLUS_DEBUG(app->logger(), "starting io_service");
+
+		io_service.run();
+
+    }
+    catch( muroa::configEx ex ) {
+    	cerr << ex.what() << endl;
+    	exit(1);
+    }
+    catch (std::exception& e) {
+		LOG4CPLUS_ERROR(app->logger(), "Uncaught exception from mainloop: " << e.what());
+	}
 	return 0;
 }
 

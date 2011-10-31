@@ -27,6 +27,7 @@ public:
 	log4cplus::Logger& logger();
 
 	void serviceChanged();
+	int daemonize();
 
 private:
 	static CApp* m_inst_ptr;
