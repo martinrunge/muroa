@@ -1,4 +1,2 @@
-/myLogFile.log
-
 # ignore all generated files in build directory
-build/**/*
+*
