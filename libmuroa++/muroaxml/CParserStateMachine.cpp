@@ -79,7 +79,7 @@ void CParserStateMachine::onStartElement(const std::string& name, const char** a
 void CParserStateMachine::onEndElement(const std::string& name)
 {
 	std::cerr << "on_end_element()" << std::endl;
-	const char **nullptr = 0;
+	const char **null_ptr( 0 );
 
 	if(m_state.root_state == ROOT_STATE) {
 		// leave root state.
@@ -87,7 +87,7 @@ void CParserStateMachine::onEndElement(const std::string& name)
 	}
 	else {
 		// we are leaving a element unter root state. This is processed by the function 'RootState'
-		sessionState(END, name, nullptr);
+		sessionState(END, name, null_ptr);
 	}
 	return;
 

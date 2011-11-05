@@ -27,6 +27,8 @@
 using namespace std;
 using namespace log4cplus;
 
+namespace muroa {
+
 CTcpConnection::CTcpConnection(boost::asio::io_service& io_service) : m_socket(io_service), m_logger(Logger::getInstance("main")) {
 }
 
@@ -56,12 +58,20 @@ std::string CTcpConnection::remoteEndpointStr() {
 	return addr.to_string();
 }
 
-void CTcpConnection::data_received( boost::array<char, 8192> /*buffer*/, int /*length*/) {
+void CTcpConnection::writeData( boost::array<char, 8192> buffer, int length) {
+	m_socket.async_send(asio::buffer(m_buffer),
+                         boost::bind(&CTcpConnection::handle_write, shared_from_this(),
+                                     asio::placeholders::error,
+                                     asio::placeholders::bytes_transferred));
+	return;
+}
+
+void CTcpConnection::dataReceived( boost::array<char, 8192> /*buffer*/, int /*length*/) {
 	return;
 }
 
 
-void CTcpConnection::handle_write(const boost::system::error_code& error) {
+void CTcpConnection::handle_write(const boost::system::error_code& error, size_t bytes_transferred) {
     if (!error) {
 
     }
@@ -89,4 +99,6 @@ void CTcpConnection::handle_read(const boost::system::error_code& error, size_t 
     else {
     	delete this;
     }
+}
+
 }

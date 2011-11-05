@@ -45,6 +45,7 @@
 
 using namespace std;
 using namespace log4cplus;
+using namespace muroa;
 
 int main(int argc, char** argv) {
 
@@ -139,10 +140,10 @@ int main(int argc, char** argv) {
 	try {
 
 		boost::asio::io_service io_service;
-		CTcpServer server(io_service);
+		CTcpServer server(io_service, app);
 		CSignalHandler::pointer sigPtr = CSignalHandler::create(io_service);
 		sigPtr->start();
-		muroa::CDnsSdAvahi dnssd(io_service);
+		muroa::CDnsSdAvahi dnssd(io_service, app->settings().serviceName(), app->settings().port(), app->settings().serviceType());
 		dnssd.setServiceChangedHandler(boost::bind( &muroa::CApp::serviceChanged, app));
 
 		LOG4CPLUS_DEBUG(app->logger(), "starting io_service");

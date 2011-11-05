@@ -42,8 +42,15 @@ public:
 
 	inline bool foreground() { return m_foreground; };
     inline int debuglevel() { return m_debuglevel; };
-    inline unsigned port() { return m_port; };
+    unsigned short port();
+    void setPort(unsigned short port);
+    inline bool searchFreePort() { return m_search_free_port; };
+    unsigned short ipversion() {return m_ip_version; };
+
     inline std::string logfile() { return m_logfile; };
+
+    inline std::string serviceName() {return m_service_name; };
+    inline std::string serviceType() {return m_service_type; };
 
 private:
 	void usage(std::string appname);
@@ -52,9 +59,15 @@ private:
     std::string m_configfile;
     bool m_foreground;
     int m_debuglevel;
-    unsigned m_port;
+    unsigned short m_port;
+    bool m_search_free_port;
+
+    std::string m_service_name;
+    std::string m_service_type;
 
     std::string m_logfile;
+
+    unsigned short m_ip_version;
 
 };
 

@@ -22,24 +22,64 @@
  ***************************************************************************/
 
 #include "CTcpServer.h"
-
+#include "CApp.h"
+#include "avahi/CDnsSdAvahi.h"
 
 using namespace std;
 using namespace log4cplus;
 
+namespace muroa {
 
-CTcpServer::CTcpServer(boost::asio::io_service& io_service) : m_acceptor(io_service), m_logger(Logger::getInstance("main")) {
-	tcp::endpoint endpoint(tcp::v4(), 1356);
-	m_acceptor.open(endpoint.protocol());
+CTcpServer::CTcpServer(boost::asio::io_service& io_service, CApp* app)
+
+                     : m_acceptor(io_service),
+	                   m_logger(Logger::getInstance("main")),
+	                   m_app(app)
+
+{
+	CSettings& settings = m_app->settings();
+
+	boost::asio::ip::tcp protocol = tcp::v4();
+	if( settings.ipversion() == 6 ) {
+		protocol = tcp::v6();
+	}
+
+	m_acceptor.open(protocol);
 	m_acceptor.set_option(boost::asio::ip::tcp::acceptor::reuse_address(true));
-	m_acceptor.bind(endpoint);
-	m_acceptor.listen();
 
+	tcp::endpoint endpoint;
+
+	unsigned short portNr = settings.port();
+	bool found = false;
+	while( !found ) {
+		endpoint = tcp::endpoint(protocol, portNr);
+		boost::system::error_code ec;
+		m_acceptor.bind(endpoint, ec);
+		int val = ec.value();
+		if( val == EADDRINUSE ) {
+			portNr++;
+		}
+		else {
+			found = true;
+		}
+
+	}
+	settings.setPort(portNr);
+
+	m_dnssd = new CDnsSdAvahi(io_service, settings.serviceName(), portNr, settings.serviceType());
+	m_dnssd->setServiceChangedHandler(boost::bind( &muroa::CApp::serviceChanged, app));
+
+
+	m_acceptor.listen();
 	start_accept();
 }
 
 CTcpServer::~CTcpServer() {
-	// TODO Auto-generated destructor stub
+	delete m_dnssd;
+}
+
+CConnectionManager* CTcpServer::getConnctionManager() {
+	return &m_connectionManager;
 }
 
 void CTcpServer::start_accept() {
@@ -54,4 +94,6 @@ void CTcpServer::handle_accept(CTcpConnection::pointer new_connection, const boo
 	  m_connectionManager.start(new_connection);
   }
   start_accept();
+}
+
 }

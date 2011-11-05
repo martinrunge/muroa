@@ -148,7 +148,7 @@ void walkTree(string dir) {
 
 	if ( !fs::exists( full_path ) || !fs::is_directory( full_path ) )
 	{
-		std::cout << "\nNot found: " << full_path.file_string() << std::endl;
+		std::cout << "\nNot found: " << full_path.c_str() << std::endl;
 		return;
 	}
 	// use a stack of struct iterstate instead of resursion;
@@ -184,7 +184,7 @@ void walkTree(string dir) {
 				else if ( fs::is_regular_file( state.dirIter->status() ) ) {
 					++file_count;
 					//std::cerr << state.dirIter->path() << "  "  << state.dirIter->path().extension() << "\n";
-					if( string(".txt").compare(state.dirIter->path().extension()) == 0 ) {
+					if( string(".txt").compare(state.dirIter->path().extension().c_str()) == 0 ) {
 						rehashFile(state.dirIter->path().string());
 					}
 				}

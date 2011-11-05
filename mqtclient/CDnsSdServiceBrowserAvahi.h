@@ -1,47 +1,34 @@
 /*
- * CDnsSdAvahi.h
+ * CDnsSdServiceBrowserAvahi.h
  *
  *  Created on: 23 Mar 2010
  *      Author: martin
  */
 
-#ifndef CDNSSDAVAHI_H_
-#define CDNSSDAVAHI_H_
+#ifndef CDNSSDSERVICEBROWSERAVAHI_H_
+#define CDNSSDSERVICEBROWSERAVAHI_H_
 
-#include <boost/asio.hpp>
+#include "CDnsSdBase.h"
 
 #include <string>
 
 #include <avahi-client/client.h>
-#include <avahi-client/publish.h>
 #include <avahi-client/lookup.h>
-#include <avahi-common/thread-watch.h>
 
-#include "CDnsSdBase.h"
-#include "CServiceDesc.h"
-
-namespace muroa {
-
-class CDnsSdAvahi;
+class CDnsSdServiceBrowserAvahi;
 
 struct userdata
 {
-	CDnsSdAvahi* thisPtr;
+	CDnsSdServiceBrowserAvahi* thisPtr;
 };
 
 
-class CDnsSdAvahi : public CDnsSdBase {
+class CDnsSdServiceBrowserAvahi: public CDnsSdBase {
 public:
-	CDnsSdAvahi(boost::asio::io_service& io_service, std::string service_name, unsigned short service_port, std::string service_type = "_muroa._tcp");
-	virtual ~CDnsSdAvahi();
+	CDnsSdServiceBrowserAvahi(QString serviceType);
+	virtual ~CDnsSdServiceBrowserAvahi();
 
-//	void operator()();
-//	void cancel();
-
-//	void registerService(std::string serviceName, unsigned short servicePort);
-
-	void clientCallback(AvahiClient *client, AvahiClientState state, void * userdata);
-	void entryGroupCallback(AvahiEntryGroup *group, AvahiEntryGroupState state, void *userdata);
+	void clientCallback( AvahiClient *client, AvahiClientState state, void * userdata);
 	void browseCallback( AvahiServiceBrowser *b,
 			             AvahiIfIndex interface,
 			             AvahiProtocol protocol,
@@ -66,8 +53,7 @@ public:
 	                      AvahiLookupResultFlags flags,
 	                      void* userdata);
 
-	static void staticClientCallback(AvahiClient *client, AvahiClientState state, void * userdata);
-	static void staticEntryGroupCallback(AvahiEntryGroup *group, AvahiEntryGroupState state, void *userdata);
+	static void staticClientCallback( AvahiClient *client, AvahiClientState state, void * userdata);
 	static void staticBrowseCallback( AvahiServiceBrowser *b,
                                       AvahiIfIndex interface,
                                       AvahiProtocol protocol,
@@ -93,21 +79,16 @@ public:
 	                                   void* userdata);
 
 
+
 private:
 	void cleanup();
-	void createService(AvahiClient *client);
 
 	struct userdata m_userdata;
 
-	AvahiThreadedPoll *m_threaded_poll;
     AvahiClient *m_client;
-	AvahiEntryGroup *m_group;
-	AvahiServiceBrowser *m_service_browser;
+	AvahiServiceBrowser *m_serviceBrowser;
 
-	std::string m_serviceName;
-	std::string m_service_type;
-	unsigned short m_servicePort;
+	QString m_serviceType;
 };
 
-} // namespace muroa
-#endif /* CDNSSDAVAHI_H_ */
+#endif /* CDNSSDSERVICEBROWSERAVAHI_H_ */

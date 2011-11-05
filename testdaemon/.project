@@ -3,6 +3,8 @@
 	<name>testdaemon</name>
 	<comment></comment>
 	<projects>
+		<project>libmuroa++</project>
+		<project>libmuroad</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>

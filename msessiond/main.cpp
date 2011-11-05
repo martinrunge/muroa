@@ -1,6 +1,6 @@
 /***************************************************************************
  *
- *   CConnectionManager.h
+ *   main.cpp
  *
  *   This file is part of Asiotest                                  *
  *   Copyright (C) 2011 by Martin Runge <martin.runge@web.de>           *
@@ -21,35 +21,56 @@
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
 
-#ifndef CCONNECTIONMANAGER_H_
-#define CCONNECTIONMANAGER_H_
+#include <iostream>
+#include <string>
 
-#include <boost/noncopyable.hpp>
-#include "CTcpConnection.h"
+#include <sys/stat.h>
+#include <string.h>
 
-#include <set>
-namespace muroa {
+#include <log4cplus/logger.h>
 
-class CConnectionManager : private boost::noncopyable {
-public:
-	CConnectionManager();
-	virtual ~CConnectionManager();
+#include "CApp.h"
+#include "CSettings.h"
+#include "CTcpServer.h"
+#include "CSignalHandler.h"
+#include "avahi/CDnsSdAvahi.h"
+#include "Exceptions.h"
 
-	  /// Add the specified connection to the manager and start it.
-	  void start(CTcpConnection::pointer c);
+#include <boost/asio.hpp>
 
-	  /// Stop the specified connection.
-	  void stop(CTcpConnection::pointer c);
+using namespace std;
+using namespace log4cplus;
+using namespace muroa;
 
-	  /// Stop all connections.
-	  void stopAll();
+int main(int argc, char** argv) {
 
-	  std::set<CTcpConnection::pointer> getConnections();
+    muroa::CApp* app;
 
-	private:
-	  /// The managed connections.
-	  std::set<CTcpConnection::pointer> m_connections;
+    try {
+    	app = muroa::CApp::getInstPtr(argc, argv);
 
-};
+    	if(!app->settings().foreground()) {
+    		app->daemonize();
+    	}
+
+		boost::asio::io_service io_service;
+		CTcpServer server(io_service, app);
+		CSignalHandler::pointer sigPtr = CSignalHandler::create(io_service);
+		sigPtr->start();
+
+		LOG4CPLUS_DEBUG(app->logger(), "starting io_service");
+
+		io_service.run();
+
+    }
+    catch( muroa::configEx ex ) {
+    	cerr << ex.what() << endl;
+    	exit(1);
+    }
+    catch (std::exception& e) {
+    	cerr << e.what() << endl;
+		LOG4CPLUS_ERROR(app->logger(), "Uncaught exception from mainloop: " << e.what());
+	}
+	return 0;
 }
-#endif /* CCONNECTIONMANAGER_H_ */
+

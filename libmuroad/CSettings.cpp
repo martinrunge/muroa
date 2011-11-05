@@ -33,6 +33,8 @@ namespace muroa {
 CSettings::CSettings() throw() : m_foreground(false),
                                  m_debuglevel(0),
                                  m_logfile("") {
+
+    applyDefaults();
 }
 
 
@@ -45,6 +47,7 @@ int CSettings::parse(int argc, char** argv) throw(configEx) {
         {"foreground", 0, 0, 'f'},
         {"debuglevel", 1, 0, 'd'},
         {"port", 1, 0, 'p'},
+        {"searchport", 0, 0, 's'},
         {"logfile", 1, 0, 'l'},
         {"help", 0, 0, '?'},
         {0, 0, 0, 0}
@@ -81,6 +84,10 @@ int CSettings::parse(int argc, char** argv) throw(configEx) {
             m_port = strtoul(optarg, NULL, 10);
             break;
 
+        case 's':
+            m_search_free_port = true;
+            break;
+
         case 'l':
             if (optarg) {
                 m_logfile = optarg;
@@ -107,9 +114,16 @@ int CSettings::parse(int argc, char** argv) throw(configEx) {
         printf("\n");
     }
 
-    applyDefaults();
     return 0;
 
+}
+
+unsigned short CSettings::port() {
+	return m_port;
+};
+
+void CSettings::setPort(unsigned short port) {
+	m_port = port;
 }
 
 CSettings::~CSettings() throw() {
@@ -122,16 +136,21 @@ void CSettings::usage(string appname) {
 	cout << "  --configfile  -c  \tspecify a config file" << endl;
 	cout << "  --logfile  -l     \tspecify a logfile" << endl;
 	cout << "  --port        -p  \tlisten on port" << endl;
+	cout << "  --searchport  -s  \tsearch for a free port, starting at --port" << endl;
 	cout << "  --foreground  -f  \tdo not fork into background, do not become a daemon, log to stderr." << endl;
 	cout << "  --debuglevel  -d  \tdebuglevel" << endl;
 	cout << "  --help        -?  \tthis message" << endl;
 }
 
 void CSettings::applyDefaults() {
-	if( m_logfile.empty() ) {
-		m_logfile = "/var/log/muroad.log";
-	}
+	m_logfile = "/var/log/muroad.log";
+
+    m_service_name = "MuroaClient";
+    m_service_type = "_muroa._tcp";
+
+    m_ip_version = 4;
 }
+
 
 
 } /* namespace muroa */

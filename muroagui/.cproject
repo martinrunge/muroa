@@ -8,21 +8,28 @@
 				<externalSettings/>
 				<extensions/>
 			</storageModule>
-			<storageModule moduleId="org.eclipse.cdt.core.pathentry"/>
 			<storageModule moduleId="org.eclipse.cdt.core.externalSettings"/>
-			<storageModule moduleId="scannerConfiguration"/>
-			<storageModule moduleId="org.eclipse.cdt.make.core.buildtargets">
-				<buildTargets>
-					<target name="Run CMake" path="" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
-						<buildCommand>cmake</buildCommand>
-						<buildArguments>-E chdir build cmake -DCMAKE_BUILD_TYPE=Debug ..</buildArguments>
-						<buildTarget/>
-						<stopOnError>false</stopOnError>
-						<useDefaultCommand>false</useDefaultCommand>
-						<runAllBuilders>true</runAllBuilders>
-					</target>
-				</buildTargets>
-			</storageModule>
 		</cconfiguration>
 	</storageModule>
+	<storageModule moduleId="org.eclipse.cdt.make.core.buildtargets">
+		<buildTargets>
+			<target name="Run CMake" path="" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
+				<buildCommand>cmake</buildCommand>
+				<buildArguments>-E chdir build cmake -DCMAKE_BUILD_TYPE=Debug ..</buildArguments>
+				<stopOnError>false</stopOnError>
+				<useDefaultCommand>false</useDefaultCommand>
+				<runAllBuilders>true</runAllBuilders>
+			</target>
+			<target name="Build" path="" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
+				<buildCommand>make</buildCommand>
+				<buildArguments>-C build -j 4 VERBOSE=1</buildArguments>
+				<buildTarget/>
+				<stopOnError>true</stopOnError>
+				<useDefaultCommand>false</useDefaultCommand>
+				<runAllBuilders>true</runAllBuilders>
+			</target>
+		</buildTargets>
+	</storageModule>
+	<storageModule moduleId="scannerConfiguration"/>
+	<storageModule moduleId="org.eclipse.cdt.core.pathentry"/>
 </cproject>

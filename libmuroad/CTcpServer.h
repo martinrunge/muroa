@@ -35,16 +35,23 @@
 
 #include "CTcpConnection.h"
 #include "CConnectionManager.h"
+
 using boost::asio::ip::tcp;
 
 #ifndef CTCPSERVER_H_
 #define CTCPSERVER_H_
 
+namespace muroa {
+
+class CApp;
+class CDnsSdAvahi;
+
 class CTcpServer : private boost::noncopyable
 {
 public:
-	CTcpServer(boost::asio::io_service& io_service);
+	CTcpServer(boost::asio::io_service& io_service, CApp* app);
 	virtual ~CTcpServer();
+	CConnectionManager* getConnctionManager();
 
 private:
   void start_accept();
@@ -53,6 +60,10 @@ private:
   tcp::acceptor m_acceptor;
   CConnectionManager m_connectionManager;
   log4cplus::Logger m_logger;
+
+  CApp* m_app;
+  CDnsSdAvahi* m_dnssd;
 };
 
+}
 #endif /* CTCPSERVER_H_ */

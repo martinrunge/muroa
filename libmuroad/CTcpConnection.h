@@ -39,6 +39,8 @@
 using boost::asio::ip::tcp;
 using namespace boost;
 
+namespace muroa {
+
 class CTcpConnection : public boost::enable_shared_from_this<CTcpConnection>
 {
 public:
@@ -60,17 +62,17 @@ public:
   tcp::endpoint remoteEndpoint();
   std::string remoteEndpointStr();
 
-  void write_data( boost::array<char, 8192> buffer, int length);
+  void writeData( boost::array<char, 8192> buffer, int length);
 
 protected:
-  virtual void data_received( boost::array<char, 8192> buffer, int length);
+  virtual void dataReceived( boost::array<char, 8192> buffer, int length);
+  CTcpConnection(boost::asio::io_service& io_service);
 
 private:
-  CTcpConnection(boost::asio::io_service& io_service);
 
   void start_read();
 
-  void handle_write(const boost::system::error_code& error);
+  void handle_write(const boost::system::error_code& error, size_t bytes_transferred);
   void handle_read(const boost::system::error_code& error, size_t bytes_transferred);
 
   tcp::socket m_socket;
@@ -81,5 +83,7 @@ private:
   log4cplus::Logger m_logger;
 
 };
+
+}
 
 #endif /* CTCPCONNECTION_H_ */

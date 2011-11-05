@@ -25,6 +25,8 @@
 
 using namespace std;
 
+namespace muroa {
+
 CConnectionManager::CConnectionManager() {
 }
 
@@ -51,3 +53,8 @@ void CConnectionManager::stopAll() {
 	  m_connections.clear();
 }
 
+std::set<CTcpConnection::pointer> CConnectionManager::getConnections() {
+	return m_connections;
+}
+
+}
