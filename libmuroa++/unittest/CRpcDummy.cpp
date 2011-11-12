@@ -37,6 +37,10 @@ string CRpcDummy::getLastCmd() {
 	return m_last_cmd;
 }
 
+vector<string> CRpcDummy::getLastStringVec() {
+	return m_last_stringvec;
+}
+
 void CRpcDummy::onDataToSend(const char* data, int length) {
 	m_receiver->newData(data, length);
 }
@@ -134,9 +138,13 @@ void CRpcDummy::onEditNextlist(unsigned  fromRev, string nextlistDiff) {
 	m_last_cmd = oss.str();
 }
 
-void CRpcDummy::onJoinSession(uint32_t sessionID) {
+void CRpcDummy::onListSessions(std::vector<std::string> sessionList) {
+	m_last_stringvec = sessionList;
+}
+
+void CRpcDummy::onJoinSession(string  sessionName) {
 	ostringstream oss;
-	oss << "joinSession((" << sessionID << ")";
+	oss << "joinSession((" << sessionName << ")";
 	m_last_cmd = oss.str();
 }
 

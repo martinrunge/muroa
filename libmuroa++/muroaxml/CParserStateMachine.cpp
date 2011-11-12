@@ -20,6 +20,7 @@
 
 #include "CParserStateMachine.h"
 #include "CUtils.h"
+#include "muroaxml/xmlCommands.h"
 
 #include <iostream>
 using namespace std;
@@ -71,7 +72,14 @@ void CParserStateMachine::onStartElement(const std::string& name, const char** a
 	}
 	else {
 		// the state machine is in root state. Whatever can happen from here is handeled by the function 'SessionState'
-		sessionState(INIT, name, attributes);
+		if(name.compare(xmlCommands::joinSession) == 0) {
+			// list sessions
+			parseJoinArgs(attributes);
+		}
+		if(name.compare(xmlCommands::listSessions) == 0) {
+			// list sessions
+			parseListSessionArgs(attributes);
+		}
 	}
 	return;
 }
@@ -82,15 +90,15 @@ void CParserStateMachine::onEndElement(const std::string& name)
 	const char **null_ptr( 0 );
 
 	if(m_state.root_state == ROOT_STATE) {
-		// leave root state.
-		// handle the data received in root state from here.
+		if(name.compare("session") == 0) {
+			m_state.root_state = IN_SESSION_STATE;
+		}
 	}
 	else {
 		// we are leaving a element unter root state. This is processed by the function 'RootState'
 		sessionState(END, name, null_ptr);
 	}
 	return;
-
 }
 
 void CParserStateMachine::onCharacters(const std::string& text)
@@ -313,24 +321,45 @@ int CParserStateMachine::sessionState(const action_flag& init_start_end, const s
 	return 0;
 }
 
-int CParserStateMachine::parseJoinArgs(const char** attrs) {
+
+int CParserStateMachine::parseListSessionArgs(const char** attrs) {
 	string name, value;
-	uint32_t sessionID = 0;
+	vector<string> sessionList;
 
 	for(int i=0; attrs[i]; i+=2)
 	{
 		name = attrs[i];
 		value = attrs[i + 1];
 
-		if(name.compare("sessionID") == 0) {
+		if(name.compare("name") == 0) {
 			cerr << name << endl;
-			sessionID = CUtils::str2uint32(value);
-			// get pos to PlaylistAddCall
-			cerr << "CParserStateMachine::stateMachine join: sessionID = " << sessionID << endl;
+			sessionList.push_back(value);
 		}
 	}
-	onJoinSession(sessionID);
+	onListSessions(sessionList);
+	return 0;
+}
 
+int CParserStateMachine::parseJoinArgs(const char** attrs) {
+	string name, value;
+	string sessionName;
+
+	for(int i=0; attrs[i]; i+=2)
+	{
+		name = attrs[i];
+		value = attrs[i + 1];
+
+		if(name.compare("name") == 0) {
+			cerr << name << endl;
+			sessionName = value;
+			// get pos to PlaylistAddCall
+			cerr << "CParserStateMachine::stateMachine join: sessionName = '" << sessionName << "'" << endl;
+		}
+	}
+	onJoinSession(sessionName);
+	if(m_state.root_state == ROOT_STATE) {
+		m_state.root_state = IN_SESSION_STATE;
+	}
 	return 0;
 }
 

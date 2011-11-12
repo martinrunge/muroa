@@ -27,9 +27,9 @@ public:
     void dataReceived( boost::array<char, 8192> buffer, int length);
 
 private:
-  CConnection(boost::asio::io_service& io_service);
+    CConnection(boost::asio::io_service& io_service);
 
-  CRpc *m_rpc;
+    CRpc *m_rpc;
 };
 
 } /* namespace muroa */

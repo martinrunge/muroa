@@ -31,9 +31,20 @@ CMuroaXml::CMuroaXml() throw (rpcError)
 CMuroaXml::~CMuroaXml() {
 }
 
-void CMuroaXml::joinSession(uint32_t sessionID) {
+void CMuroaXml::listSessions(vector<string> sessionList) {
+	vector<string>::iterator it;
 	ostringstream oss;
-	oss << "<" << xmlCommands::joinSession << " sessionID=\"" << sessionID << "\">" << endl;
+	oss << "<" << xmlCommands::listSessions;
+	for( it = sessionList.begin(); it != sessionList.end(); it++) {
+		oss << " name=\"" << *it << "\"";
+	}
+	oss << "/>" << endl;
+	sendData(oss.str());
+}
+
+void CMuroaXml::joinSession(string sessionName) {
+	ostringstream oss;
+	oss << "<" << xmlCommands::joinSession << " name=\"" << sessionName << "\">" << endl;
 	sendData(oss.str());
 }
 

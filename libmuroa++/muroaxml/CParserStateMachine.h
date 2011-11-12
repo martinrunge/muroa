@@ -75,7 +75,8 @@ public:
 	void onWarning(const std::string& text);
 	void onError(const std::string& text);
 
-	virtual void onJoinSession(uint32_t sessionID) = 0;
+	virtual void onListSessions(std::vector<std::string> sessionList) = 0;
+	virtual void onJoinSession(std::string sessionName) = 0;
 	virtual void onLeaveSession() = 0;
 
 	virtual void onPlay() = 0;
@@ -133,6 +134,7 @@ private:
 	int sessionState(const action_flag& init_start_end, const std::string& name, const char** attrs);
 	int processSessionState(const action_flag& init_start_end, const std::string& name, const char** attrs);
 
+	int parseListSessionArgs(const char** attrs);
 	int parseJoinArgs(const char** attrs);
 
 	void parseNextArgs(const char** attrs);

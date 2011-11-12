@@ -46,12 +46,17 @@ namespace muroa {
 class CApp;
 class CDnsSdAvahi;
 
+typedef CTcpConnection::pointer(*factory_ptr_t)(boost::asio::io_service& io_service);
+
 class CTcpServer : private boost::noncopyable
 {
 public:
-	CTcpServer(boost::asio::io_service& io_service, CApp* app);
+	CTcpServer(boost::asio::io_service& io_service, CApp* app, factory_ptr_t connection_factory);
 	virtual ~CTcpServer();
 	CConnectionManager* getConnctionManager();
+
+	void setConnectionFactory( factory_ptr_t connection_factory );
+	factory_ptr_t getConnectionFactory(void);
 
 private:
   void start_accept();
@@ -59,6 +64,7 @@ private:
 
   tcp::acceptor m_acceptor;
   CConnectionManager m_connectionManager;
+  factory_ptr_t m_connection_factory;
   log4cplus::Logger m_logger;
 
   CApp* m_app;

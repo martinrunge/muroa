@@ -16,6 +16,9 @@ class CRpcDummy;
 
 class CMuroaXmlRpcTest: public CppUnit::TestFixture {
 	  CPPUNIT_TEST_SUITE( CMuroaXmlRpcTest );
+	  CPPUNIT_TEST( listSessions );
+	  CPPUNIT_TEST( joinSession );
+
 	  CPPUNIT_TEST( play );
 	  CPPUNIT_TEST( pause );
 	  CPPUNIT_TEST( stop );
@@ -47,6 +50,9 @@ public:
 	void setUp();
     void tearDown();
 
+    void listSessions();
+    void joinSession();
+
 	void play();
 	void pause();
 	void stop();
@@ -73,7 +79,7 @@ private:
 	CRpcDummy *m_rpc_in;
 	CRpcDummy *m_rpc_out;
 
-	const uint32_t m_sessionID;
+	std::string m_sessionName;
 };
 
 #endif /* CMUROAXMLRPCTEST_H_ */

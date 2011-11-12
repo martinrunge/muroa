@@ -72,8 +72,9 @@ void CTcpConnection::dataReceived( boost::array<char, 8192> /*buffer*/, int /*le
 
 
 void CTcpConnection::handle_write(const boost::system::error_code& error, size_t bytes_transferred) {
-    if (!error) {
-
+    if (error) {
+        LOG4CPLUS_ERROR(m_logger, "error in handle_read:  " << error.message());
+        delete this;
     }
 }
 
@@ -87,16 +88,11 @@ void CTcpConnection::start_read() {
 
 void CTcpConnection::handle_read(const boost::system::error_code& error, size_t bytes_transferred) {
     if (!error) {
-        LOG4CPLUS_TRACE(m_logger, "CTcpConnection::handle_read(" << bytes_transferred << ") from " << remoteEndpointStr());
-        ostringstream oss;
-    	std::vector<char>::iterator it;
-    	if(bytes_transferred > 0) {
- 			oss << m_buffer.data();
-    	}
-    	LOG4CPLUS_TRACE(m_logger, oss.str());
+    	dataReceived(m_buffer, bytes_transferred);
     	start_read();
     }
     else {
+    	LOG4CPLUS_ERROR(m_logger, "error in handle_read:  " << error.message());
     	delete this;
     }
 }

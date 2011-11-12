@@ -46,12 +46,13 @@ qt4_wrap_cpp( MOC_SOURCES ${MOC_H} )
 
 include_directories( ${CMAKE_CURRENT_BINARY_DIR}  ${CMAKE_SOURCE_DIR} ${CMAKE_SOURCE_DIR}/../libmuroa++)
 
-link_directories( ${QT_LIB_DIR} )
+link_directories( ${QT_LIB_DIR} "${CMAKE_SOURCE_DIR}/../libmuroa++/build")
 
 add_executable( mqtclient ${SRC} ${MOC_SOURCES} ${UIS_H} ${RCCS_SRC})
 target_link_libraries( mqtclient   avahi-client
-#                                   avahi-service
                                    avahi-qt4
+                                   muroa++
+                                   xdiff
                                    ${QT_LIBRARIES} )
 
 set_target_properties( mqtclient PROPERTIES  COMPILE_FLAGS "-std=gnu++0x" ) 

@@ -44,7 +44,7 @@ namespace muroa {
 class CTcpConnection : public boost::enable_shared_from_this<CTcpConnection>
 {
 public:
-  ~CTcpConnection();
+  virtual ~CTcpConnection();
 
   typedef boost::shared_ptr<CTcpConnection> pointer;
 

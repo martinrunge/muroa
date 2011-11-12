@@ -25,6 +25,7 @@
 #define CRPCDUMMY_H_
 
 #include "muroaxml/CMuroaXml.h"
+#include <vector>
 #include <string>
 
 class CRpcDummy: public CMuroaXml {
@@ -33,10 +34,12 @@ public:
 	virtual ~CRpcDummy();
 
 	std::string getLastCmd();
+    std::vector<std::string> getLastStringVec();
 
 	void onDataToSend(const char* data, int length);
 
-	void onJoinSession(uint32_t sessionID);
+	void onListSessions(std::vector<std::string> sessionList);
+	void onJoinSession(std::string sessionName);
 	void onLeaveSession();
 
 	void onPlay();
@@ -68,6 +71,7 @@ public:
 private:
 	CRpcDummy* m_receiver;
 	std::string m_last_cmd;
+	std::vector<std::string> m_last_stringvec;
 };
 
 #endif /* CRPCDUMMY_H_ */

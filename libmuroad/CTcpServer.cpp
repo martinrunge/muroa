@@ -30,11 +30,13 @@ using namespace log4cplus;
 
 namespace muroa {
 
-CTcpServer::CTcpServer(boost::asio::io_service& io_service, CApp* app)
+CTcpServer::CTcpServer(boost::asio::io_service& io_service, CApp* app, factory_ptr_t connection_factory)
 
                      : m_acceptor(io_service),
 	                   m_logger(Logger::getInstance("main")),
-	                   m_app(app)
+	                   m_app(app),
+ 	                   m_connection_factory(connection_factory)
+
 
 {
 	CSettings& settings = m_app->settings();
@@ -78,12 +80,21 @@ CTcpServer::~CTcpServer() {
 	delete m_dnssd;
 }
 
+void CTcpServer::setConnectionFactory( factory_ptr_t connection_factory ) {
+	m_connection_factory = connection_factory;
+}
+
+factory_ptr_t CTcpServer::getConnectionFactory(void) {
+	return m_connection_factory;
+}
+
+
 CConnectionManager* CTcpServer::getConnctionManager() {
 	return &m_connectionManager;
 }
 
 void CTcpServer::start_accept() {
-  CTcpConnection::pointer new_connection = CTcpConnection::create(m_acceptor.get_io_service());
+  CTcpConnection::pointer new_connection = m_connection_factory(m_acceptor.get_io_service());
 
   m_acceptor.async_accept(new_connection->socket(),
                          boost::bind(&CTcpServer::handle_accept, this, new_connection, boost::asio::placeholders::error));

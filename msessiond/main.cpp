@@ -36,6 +36,8 @@
 #include "avahi/CDnsSdAvahi.h"
 #include "Exceptions.h"
 
+#include "CConnection.h"
+
 #include <boost/asio.hpp>
 
 using namespace std;
@@ -54,7 +56,9 @@ int main(int argc, char** argv) {
     	}
 
 		boost::asio::io_service io_service;
-		CTcpServer server(io_service, app);
+		CTcpServer server(io_service, app, reinterpret_cast<factory_ptr_t>(&CConnection::create));
+		// server.setConnectionFactory(reinterpret_cast<factory_ptr_t>(&CConnection::create));
+
 		CSignalHandler::pointer sigPtr = CSignalHandler::create(io_service);
 		sigPtr->start();
 
