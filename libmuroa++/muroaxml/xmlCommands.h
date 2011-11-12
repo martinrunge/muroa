@@ -38,6 +38,7 @@ public:
     static const std::string editCollection;
     static const std::string editPlaylist;
     static const std::string editNextlist;
+    static const std::string listSessions;
     static const std::string joinSession;
     static const std::string leaveSession;
 

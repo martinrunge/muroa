@@ -44,5 +44,6 @@ const std::string xmlCommands::getNextlist = string("getNextlist");
 const std::string xmlCommands::editCollection = string("editCollection");
 const std::string xmlCommands::editPlaylist = string("editPlaylist");
 const std::string xmlCommands::editNextlist = string("editNextlist");
+const std::string xmlCommands::listSessions = string("sessionList");
 const std::string xmlCommands::joinSession = string("session");
 const std::string xmlCommands::leaveSession = string("</session>\n");

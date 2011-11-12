@@ -9,6 +9,7 @@
 #define IRPC_H_
 
 #include <string>
+#include <vector>
 #include "MuroaExceptions.h"
 
 class IRPC {
@@ -16,8 +17,11 @@ public:
 //	IRPC() throw(rpcError);
 	virtual ~IRPC() {}
 
-	virtual void joinSession(uint32_t sessionID) = 0;
-	virtual void onJoinSession(uint32_t sessionID) = 0;
+	virtual void listSessions(std::vector<std::string> sessionList) = 0;
+	virtual void onListSessions(std::vector<std::string> sessionList) = 0;
+
+	virtual void joinSession(std::string sessionName) = 0;
+	virtual void onJoinSession(std::string sessionName) = 0;
 
 	virtual void leaveSession() = 0;
 	virtual void onLeaveSession() = 0;

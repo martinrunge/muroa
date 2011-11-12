@@ -6,7 +6,7 @@
  */
 
 #include "CMuroaXmlRpcTest.h"
-
+#include "muroaxml/xmlCommands.h"
 #include "CRpcDummy.h"
 
 #include <string>
@@ -15,7 +15,7 @@ CPPUNIT_TEST_SUITE_REGISTRATION( CMuroaXmlRpcTest );
 
 using namespace std;
 
-CMuroaXmlRpcTest::CMuroaXmlRpcTest() : m_sessionID(7518){
+CMuroaXmlRpcTest::CMuroaXmlRpcTest() : m_sessionName("Meine Über Session mit äöüß!"){
 }
 
 CMuroaXmlRpcTest::~CMuroaXmlRpcTest() {
@@ -24,7 +24,7 @@ CMuroaXmlRpcTest::~CMuroaXmlRpcTest() {
 void CMuroaXmlRpcTest::setUp() {
 	m_rpc_in = new CRpcDummy();
 	m_rpc_out = new CRpcDummy(m_rpc_in);
-	m_rpc_out->joinSession(m_sessionID);
+	m_rpc_out->joinSession(m_sessionName);
 }
 
 void CMuroaXmlRpcTest::tearDown() {
@@ -33,6 +33,24 @@ void CMuroaXmlRpcTest::tearDown() {
 	delete m_rpc_in;
 }
 
+void CMuroaXmlRpcTest::listSessions() {
+	vector<string> sl;
+	sl.push_back("default");
+//	sl.push_back("Special with whitspace");
+//	sl.push_back("Deutsch mit Umlauten äöüß");
+
+	m_rpc_out->listSessions(sl);
+	string last_cmd = m_rpc_in->getLastCmd();
+	vector<string> recv_sl = m_rpc_in->getLastStringVec();
+	CPPUNIT_ASSERT(last_cmd.compare(xmlCommands::listSessions) == 0);
+	CPPUNIT_ASSERT(last_cmd.compare(xmlCommands::listSessions) == 0);
+
+
+}
+
+void CMuroaXmlRpcTest::joinSession() {
+
+}
 
 void CMuroaXmlRpcTest::play() {
 	m_rpc_out->play();

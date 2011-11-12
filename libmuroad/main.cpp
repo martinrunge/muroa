@@ -140,7 +140,7 @@ int main(int argc, char** argv) {
 	try {
 
 		boost::asio::io_service io_service;
-		CTcpServer server(io_service, app);
+		CTcpServer server(io_service, app, &CTcpConnection::create);
 		CSignalHandler::pointer sigPtr = CSignalHandler::create(io_service);
 		sigPtr->start();
 		muroa::CDnsSdAvahi dnssd(io_service, app->settings().serviceName(), app->settings().port(), app->settings().serviceType());
