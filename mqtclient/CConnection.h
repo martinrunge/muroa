@@ -21,9 +21,13 @@ public:
     ~CConnection();
 
     void onDataToSend(const char *data, int length);
+<<<<<<< HEAD
 
 	void onListSessions(std::vector<std::string> sessions);
 	void onJoinSession(std::string sessionName);
+=======
+	void onJoinSession(uint32_t sessionID);
+>>>>>>> 485bf2644495e28e4bf913a061d7967e02fa0fc0
 	void onLeaveSession();
 
 	void onPlay();

@@ -140,7 +140,10 @@ void CRpcDummy::onEditNextlist(unsigned  fromRev, string nextlistDiff) {
 
 void CRpcDummy::onListSessions(std::vector<std::string> sessionList) {
 	m_last_stringvec = sessionList;
+<<<<<<< HEAD
 	m_last_cmd = "sessionList";
+=======
+>>>>>>> 485bf2644495e28e4bf913a061d7967e02fa0fc0
 }
 
 void CRpcDummy::onJoinSession(string  sessionName) {

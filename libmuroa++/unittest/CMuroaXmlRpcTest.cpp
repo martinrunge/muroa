@@ -24,7 +24,11 @@ CMuroaXmlRpcTest::~CMuroaXmlRpcTest() {
 void CMuroaXmlRpcTest::setUp() {
 	m_rpc_in = new CRpcDummy();
 	m_rpc_out = new CRpcDummy(m_rpc_in);
+<<<<<<< HEAD
 	m_rpc_out->open();
+=======
+	m_rpc_out->joinSession(m_sessionName);
+>>>>>>> 485bf2644495e28e4bf913a061d7967e02fa0fc0
 }
 
 void CMuroaXmlRpcTest::tearDown() {
@@ -34,17 +38,30 @@ void CMuroaXmlRpcTest::tearDown() {
 }
 
 void CMuroaXmlRpcTest::listSessions() {
+<<<<<<< HEAD
 	// m_rpc_out->leaveSession();
 	vector<string> sl;
 	sl.push_back("default");
 	sl.push_back("Special with whitspace");
 	sl.push_back("Deutsch mit Umlauten äöüß");
+=======
+	vector<string> sl;
+	sl.push_back("default");
+//	sl.push_back("Special with whitspace");
+//	sl.push_back("Deutsch mit Umlauten äöüß");
+>>>>>>> 485bf2644495e28e4bf913a061d7967e02fa0fc0
 
 	m_rpc_out->listSessions(sl);
 	string last_cmd = m_rpc_in->getLastCmd();
 	vector<string> recv_sl = m_rpc_in->getLastStringVec();
+<<<<<<< HEAD
 	CPPUNIT_ASSERT(last_cmd.compare(xmlCommands::sessionList) == 0);
 	CPPUNIT_ASSERT(recv_sl == sl);
+=======
+	CPPUNIT_ASSERT(last_cmd.compare(xmlCommands::listSessions) == 0);
+	CPPUNIT_ASSERT(last_cmd.compare(xmlCommands::listSessions) == 0);
+
+>>>>>>> 485bf2644495e28e4bf913a061d7967e02fa0fc0
 
 }
 

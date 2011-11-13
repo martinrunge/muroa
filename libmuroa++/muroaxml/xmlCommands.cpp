@@ -50,3 +50,9 @@ const std::string xmlCommands::getNextlist = string("getNextlist");
 const std::string xmlCommands::editCollection = string("editCollection");
 const std::string xmlCommands::editPlaylist = string("editPlaylist");
 const std::string xmlCommands::editNextlist = string("editNextlist");
+<<<<<<< HEAD
+=======
+const std::string xmlCommands::listSessions = string("sessionList");
+const std::string xmlCommands::joinSession = string("session");
+const std::string xmlCommands::leaveSession = string("</session>\n");
+>>>>>>> 485bf2644495e28e4bf913a061d7967e02fa0fc0

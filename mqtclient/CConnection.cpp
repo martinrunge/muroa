@@ -25,11 +25,14 @@ void CConnection::close() {
 }
 
 void CConnection::onDataToSend(const char *data, int length) {
+<<<<<<< HEAD
 	m_socket.write(data, length);
 }
 
 void CConnection::onListSessions(vector<string> sessions) {
 
+=======
+>>>>>>> 485bf2644495e28e4bf913a061d7967e02fa0fc0
 }
 
 void CConnection::onJoinSession(string sessionName) {
@@ -46,6 +49,7 @@ void CConnection::onPause() {
 
 void CConnection::onStop() {
 }
+<<<<<<< HEAD
 
 void CConnection::onNext()
 {
@@ -63,6 +67,25 @@ void CConnection::onProgress(uint32_t jobID, int progress)
 {
 }
 
+=======
+
+void CConnection::onNext()
+{
+}
+
+void CConnection::onPrev()
+{
+}
+
+void CConnection::onStateChanged(int newState)
+{
+}
+
+void CConnection::onProgress(uint32_t jobID, int progress)
+{
+}
+
+>>>>>>> 485bf2644495e28e4bf913a061d7967e02fa0fc0
 void CConnection::onError(uint32_t jobID, int errorCode, std::string description)
 {
 }
@@ -80,6 +103,7 @@ void CConnection::onGetNextlist(unsigned  knownRev)
 }
 
 void CConnection::onCollection(unsigned  diffFromRev, std::string collection)
+<<<<<<< HEAD
 {
 }
 
@@ -95,6 +119,23 @@ void CConnection::onEditCollection(unsigned  fromRev, std::string collectionDiff
 {
 }
 
+=======
+{
+}
+
+void CConnection::onPlaylist(unsigned  diffFromRev, std::string playlist)
+{
+}
+
+void CConnection::onNextlist(unsigned  diffFromRev, std::string nextlist)
+{
+}
+
+void CConnection::onEditCollection(unsigned  fromRev, std::string collectionDiff)
+{
+}
+
+>>>>>>> 485bf2644495e28e4bf913a061d7967e02fa0fc0
 void CConnection::onEditPlaylist(unsigned  fromRev, std::string playlistDiff)
 {
 }
@@ -104,6 +145,7 @@ void CConnection::onEditNextlist(unsigned  fromRev, std::string nextlistDiff)
 }
 
 void CConnection::connected() {
+<<<<<<< HEAD
     emit connectionStatusChanged( e_connected );
 
     QString lastSession;
@@ -121,6 +163,20 @@ void CConnection::connected() {
 }
 
 void CConnection::disconnected() {
+=======
+    qDebug() << QString("CStateMachine::connected");
+    if(rejoinLastSession) {
+    	joinSession(lastSession);
+    } else {
+
+    }
+    joinSession(1);
+    emit connectionStatusChanged( e_connected );
+}
+
+void CConnection::disconnected() {
+    qDebug() << QString("CStateMachine::disconnected");
+>>>>>>> 485bf2644495e28e4bf913a061d7967e02fa0fc0
     emit connectionStatusChanged( e_disconnected );
 }
 

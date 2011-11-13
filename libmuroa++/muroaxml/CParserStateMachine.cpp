@@ -66,6 +66,7 @@ void CParserStateMachine::onStartElement(const std::string& name, const char** a
 	{
 		std::cerr << attributes[i] << " = " << attributes[i + 1] << std::endl;
 	}
+<<<<<<< HEAD
 	switch (m_state.root_state) {
 		case IN_SESSION_STATE:
 			// we reached root state (for root state this can only happen at at document start)
@@ -87,6 +88,22 @@ void CParserStateMachine::onStartElement(const std::string& name, const char** a
 				sessionListState(INIT, name, attributes);
 			}
 			break;
+=======
+	if(m_state.root_state == IN_SESSION_STATE) {
+		// we reached root state (for root state this can only happen at at document start)
+		sessionState(START, name, attributes);
+	}
+	else {
+		// the state machine is in root state. Whatever can happen from here is handeled by the function 'SessionState'
+		if(name.compare(xmlCommands::joinSession) == 0) {
+			// list sessions
+			parseJoinArgs(attributes);
+		}
+		if(name.compare(xmlCommands::listSessions) == 0) {
+			// list sessions
+			parseListSessionArgs(attributes);
+		}
+>>>>>>> 485bf2644495e28e4bf913a061d7967e02fa0fc0
 	}
 	return;
 }
@@ -96,6 +113,7 @@ void CParserStateMachine::onEndElement(const std::string& name)
 	std::cerr << "on_end_element()" << std::endl;
 	const char **null_ptr( 0 );
 
+<<<<<<< HEAD
 	switch (m_state.root_state) {
 		case IN_SESSION_STATE:
 			// we reached root state (for root state this can only happen at at document start)
@@ -119,6 +137,16 @@ void CParserStateMachine::onEndElement(const std::string& name)
 				m_state.root_state = ROOT_STATE;
 			}
 			break;
+=======
+	if(m_state.root_state == ROOT_STATE) {
+		if(name.compare("session") == 0) {
+			m_state.root_state = IN_SESSION_STATE;
+		}
+	}
+	else {
+		// we are leaving a element unter root state. This is processed by the function 'RootState'
+		sessionState(END, name, null_ptr);
+>>>>>>> 485bf2644495e28e4bf913a061d7967e02fa0fc0
 	}
 	return;
 }
