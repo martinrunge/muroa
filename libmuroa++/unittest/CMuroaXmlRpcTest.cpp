@@ -24,27 +24,27 @@ CMuroaXmlRpcTest::~CMuroaXmlRpcTest() {
 void CMuroaXmlRpcTest::setUp() {
 	m_rpc_in = new CRpcDummy();
 	m_rpc_out = new CRpcDummy(m_rpc_in);
-	m_rpc_out->joinSession(m_sessionName);
+	m_rpc_out->open();
 }
 
 void CMuroaXmlRpcTest::tearDown() {
-	m_rpc_out->leaveSession();
+	m_rpc_out->close();
 	delete m_rpc_out;
 	delete m_rpc_in;
 }
 
 void CMuroaXmlRpcTest::listSessions() {
+	// m_rpc_out->leaveSession();
 	vector<string> sl;
 	sl.push_back("default");
-//	sl.push_back("Special with whitspace");
-//	sl.push_back("Deutsch mit Umlauten äöüß");
+	sl.push_back("Special with whitspace");
+	sl.push_back("Deutsch mit Umlauten äöüß");
 
 	m_rpc_out->listSessions(sl);
 	string last_cmd = m_rpc_in->getLastCmd();
 	vector<string> recv_sl = m_rpc_in->getLastStringVec();
-	CPPUNIT_ASSERT(last_cmd.compare(xmlCommands::listSessions) == 0);
-	CPPUNIT_ASSERT(last_cmd.compare(xmlCommands::listSessions) == 0);
-
+	CPPUNIT_ASSERT(last_cmd.compare(xmlCommands::sessionList) == 0);
+	CPPUNIT_ASSERT(recv_sl == sl);
 
 }
 
@@ -53,6 +53,7 @@ void CMuroaXmlRpcTest::joinSession() {
 }
 
 void CMuroaXmlRpcTest::play() {
+	m_rpc_out->joinSession(m_sessionName);
 	m_rpc_out->play();
 	string last_cmd = m_rpc_in->getLastCmd();
 
@@ -60,6 +61,7 @@ void CMuroaXmlRpcTest::play() {
 }
 
 void CMuroaXmlRpcTest::pause() {
+	m_rpc_out->joinSession(m_sessionName);
 	m_rpc_out->pause();
 	string last_cmd = m_rpc_in->getLastCmd();
 
@@ -67,6 +69,7 @@ void CMuroaXmlRpcTest::pause() {
 }
 
 void CMuroaXmlRpcTest::stop() {
+	m_rpc_out->joinSession(m_sessionName);
 	m_rpc_out->stop();
 	string last_cmd = m_rpc_in->getLastCmd();
 
@@ -74,6 +77,7 @@ void CMuroaXmlRpcTest::stop() {
 }
 
 void CMuroaXmlRpcTest::prev() {
+	m_rpc_out->joinSession(m_sessionName);
 	m_rpc_out->prev();
 	string last_cmd = m_rpc_in->getLastCmd();
 
@@ -81,6 +85,7 @@ void CMuroaXmlRpcTest::prev() {
 }
 
 void CMuroaXmlRpcTest::next() {
+	m_rpc_out->joinSession(m_sessionName);
 	m_rpc_out->next();
 	string last_cmd = m_rpc_in->getLastCmd();
 
@@ -89,6 +94,7 @@ void CMuroaXmlRpcTest::next() {
 
 
 void CMuroaXmlRpcTest::progress() {
+	m_rpc_out->joinSession(m_sessionName);
 	m_rpc_out->progress(17, 89);
 	string last_cmd = m_rpc_in->getLastCmd();
 
@@ -96,6 +102,7 @@ void CMuroaXmlRpcTest::progress() {
 }
 
 void CMuroaXmlRpcTest::stateChanged() {
+	m_rpc_out->joinSession(m_sessionName);
 	m_rpc_out->stateChanged(2);
 	string last_cmd = m_rpc_in->getLastCmd();
 
@@ -103,6 +110,7 @@ void CMuroaXmlRpcTest::stateChanged() {
 }
 
 void CMuroaXmlRpcTest::error() {
+	m_rpc_out->joinSession(m_sessionName);
 	m_rpc_out->error(17, -1, "does not match.");
 	string last_cmd = m_rpc_in->getLastCmd();
 
@@ -110,6 +118,7 @@ void CMuroaXmlRpcTest::error() {
 }
 
 void CMuroaXmlRpcTest::getCollection() {
+	m_rpc_out->joinSession(m_sessionName);
 	m_rpc_out->getCollection();
 	string last_cmd = m_rpc_in->getLastCmd();
 
@@ -122,6 +131,7 @@ void CMuroaXmlRpcTest::getCollection() {
 }
 
 void CMuroaXmlRpcTest::getPlaylist() {
+	m_rpc_out->joinSession(m_sessionName);
 	m_rpc_out->getPlaylist();
 	string last_cmd = m_rpc_in->getLastCmd();
 
@@ -134,6 +144,7 @@ void CMuroaXmlRpcTest::getPlaylist() {
 }
 
 void CMuroaXmlRpcTest::getNextlist() {
+	m_rpc_out->joinSession(m_sessionName);
 	m_rpc_out->getNextlist();
 	string last_cmd = m_rpc_in->getLastCmd();
 
@@ -146,21 +157,27 @@ void CMuroaXmlRpcTest::getNextlist() {
 }
 
 void CMuroaXmlRpcTest::collection() {
+	m_rpc_out->joinSession(m_sessionName);
 }
 
 void CMuroaXmlRpcTest::playlist() {
+	m_rpc_out->joinSession(m_sessionName);
 }
 
 void CMuroaXmlRpcTest::nextlist() {
+	m_rpc_out->joinSession(m_sessionName);
 }
 
 void CMuroaXmlRpcTest::editCollection() {
+	m_rpc_out->joinSession(m_sessionName);
 }
 
 void CMuroaXmlRpcTest::editPlaylist() {
+	m_rpc_out->joinSession(m_sessionName);
 }
 
 
 void CMuroaXmlRpcTest::editNextlist() {
+	m_rpc_out->joinSession(m_sessionName);
 }
 

@@ -31,7 +31,10 @@ state machine for the command parser
 
 
 enum root_state_t {   ROOT_STATE,
+	                  IN_SESSION_LIST_STATE,
 					  IN_SESSION_STATE };
+
+enum session_list_state_t { IN_DESC };
 
 enum session_state_t {SESSION_ROOT_STATE,
 	                  IN_PLAY,
@@ -56,6 +59,7 @@ enum session_state_t {SESSION_ROOT_STATE,
 
 typedef struct {
 	root_state_t root_state;
+	session_list_state_t session_list_state;
 	session_state_t session_state;
 } parser_state;
 
@@ -132,6 +136,7 @@ private:
 	std::string m_edit_text;
 
 	int sessionState(const action_flag& init_start_end, const std::string& name, const char** attrs);
+
 	int processSessionState(const action_flag& init_start_end, const std::string& name, const char** attrs);
 
 	int parseListSessionArgs(const char** attrs);
@@ -149,6 +154,15 @@ private:
     void parseKnownRev(const char** attrs);
     void parseFromRev(const char** attrs);
     void parseDiffFromRev(const char** attrs);
+
+
+    std::vector<std::string> m_sessionList;
+    std::string m_tmp_session_name;
+
+	int sessionListState(const action_flag& init_start_end, const std::string& name, const char** attrs);
+
+    void parseSessionListArgs(const char** attrs);
+    void parseSessionDescArgs(const char** attrs);
 
 };
 

@@ -6,10 +6,19 @@
  */
 
 #include "CRpc.h"
+#include "CConnection.h"
+#include "CSessionContainer.h"
+#include "CSession.h"
+
+#include <vector>
+#include <string>
+
 
 namespace muroa {
 
-CRpc::CRpc() {
+using namespace std;
+
+CRpc::CRpc(CConnection* connection) : m_connection(connection){
 	// TODO Auto-generated constructor stub
 
 }
@@ -18,12 +27,17 @@ CRpc::~CRpc() {
 	// TODO Auto-generated destructor stub
 }
 
-    void CRpc::onDataToSend(const char *data, int length)
-    {
+    void CRpc::onDataToSend(const char *data, int length) {
+    	m_connection->writeData(data, length);
     }
 
-    void CRpc::onJoinSession(uint32_t sessionID)
-    {
+	void CRpc::onListSessions(vector<string> sessions) {
+		vector<string> knownSessions = CSessionContainer::getInstPtr()->listSessions();
+		listSessions(knownSessions);
+	}
+
+	void CRpc::onJoinSession(string name) {
+		m_connection->joinSession(name);
     }
 
     void CRpc::onLeaveSession()

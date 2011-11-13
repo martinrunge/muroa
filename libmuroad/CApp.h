@@ -19,10 +19,11 @@ namespace muroa {
 class CApp {
 private:
 	CApp(int argc, char** argv) throw(configEx);
-	virtual ~CApp();
 
 public:
 	static CApp* getInstPtr(int argc = 0, char** argv = NULL) throw(configEx);
+	virtual ~CApp();
+
 	CSettings& settings();
 	log4cplus::Logger& logger();
 

@@ -58,8 +58,8 @@ std::string CTcpConnection::remoteEndpointStr() {
 	return addr.to_string();
 }
 
-void CTcpConnection::writeData( boost::array<char, 8192> buffer, int length) {
-	m_socket.async_send(asio::buffer(m_buffer),
+void CTcpConnection::writeData( const char* buffer, int length) {
+	m_socket.async_send(asio::buffer(buffer, length),
                          boost::bind(&CTcpConnection::handle_write, shared_from_this(),
                                      asio::placeholders::error,
                                      asio::placeholders::bytes_transferred));

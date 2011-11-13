@@ -12,14 +12,17 @@
 
 namespace muroa {
 
+class CConnection;
+
 class CRpc: public CMuroaXml {
 public:
-	CRpc();
+	CRpc(CConnection* connection);
 	virtual ~CRpc();
 
 	void onDataToSend(const char* data, int length);
+	void onListSessions(std::vector<std::string> sessions);
 
-	void onJoinSession(uint32_t sessionID);
+	void onJoinSession(std::string name);
 	void onLeaveSession();
 
 	void onPlay();
@@ -48,6 +51,8 @@ public:
 	void onEndSession(){ };
 	void onXmlVersion(){ };
 
+private:
+	CConnection* m_connection;
 
 };
 

@@ -8,7 +8,7 @@ int main(int argc, char *argv[])
 
     QCoreApplication::setOrganizationName("muroa");
     QCoreApplication::setOrganizationDomain("muroa.org");
-    QCoreApplication::setApplicationName("muroagui");
+    QCoreApplication::setApplicationName("mqtclient");
 
     QApplication a(argc, argv);
     QTextCodec::setCodecForTr(QTextCodec::codecForName("UTF-8"));

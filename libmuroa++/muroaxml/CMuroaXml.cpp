@@ -31,14 +31,22 @@ CMuroaXml::CMuroaXml() throw (rpcError)
 CMuroaXml::~CMuroaXml() {
 }
 
+void CMuroaXml::open() {
+	sendData(xmlCommands::open);
+}
+
+void CMuroaXml::close() {
+	sendData(xmlCommands::close);
+}
+
 void CMuroaXml::listSessions(vector<string> sessionList) {
 	vector<string>::iterator it;
 	ostringstream oss;
-	oss << "<" << xmlCommands::listSessions;
+	oss << "<" << xmlCommands::sessionList << ">" << endl;
 	for( it = sessionList.begin(); it != sessionList.end(); it++) {
-		oss << " name=\"" << *it << "\"";
+		oss << "<" << xmlCommands::sessionDesc << " name=\"" << *it << "\"/>" << endl;
 	}
-	oss << "/>" << endl;
+	oss << "</" << xmlCommands::sessionList << ">" << endl;
 	sendData(oss.str());
 }
 

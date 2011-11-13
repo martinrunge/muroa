@@ -62,7 +62,7 @@ public:
   tcp::endpoint remoteEndpoint();
   std::string remoteEndpointStr();
 
-  void writeData( boost::array<char, 8192> buffer, int length);
+  void writeData( const char* buffer, int length );
 
 protected:
   virtual void dataReceived( boost::array<char, 8192> buffer, int length);

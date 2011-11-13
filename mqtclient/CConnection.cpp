@@ -18,15 +18,18 @@ CConnection::~CConnection() {
 
 void CConnection::open(QString host, int port) {
     m_socket.connectToHost(host, port);
-    emit connectionStatusChanged( e_connected );
 }
 
 void CConnection::close() {
     m_socket.disconnectFromHost();
-    emit connectionStatusChanged( e_disconnected );
 }
 
 void CConnection::onDataToSend(const char *data, int length) {
+	m_socket.write(data, length);
+}
+
+void CConnection::onListSessions(vector<string> sessions) {
+
 }
 
 void CConnection::onJoinSession(string sessionName) {
@@ -101,18 +104,23 @@ void CConnection::onEditNextlist(unsigned  fromRev, std::string nextlistDiff)
 }
 
 void CConnection::connected() {
-    qDebug() << QString("CStateMachine::connected");
-    if(rejoinLastSession) {
-    	joinSession(lastSession);
-    } else {
-
-    }
-    joinSession(1);
     emit connectionStatusChanged( e_connected );
+
+    QString lastSession;
+    // if rejoin last session
+    if( m_settings.value("rejoin", false).toBool() ) {
+    	QString lastSession = m_settings.value("sesionName", "").toString();
+    }
+
+	if( !lastSession.isEmpty() ) {
+		joinSession(string(lastSession.toUtf8()));
+	}
+    else {
+    	listSessions();
+    }
 }
 
 void CConnection::disconnected() {
-    qDebug() << QString("CStateMachine::disconnected");
     emit connectionStatusChanged( e_disconnected );
 }
 

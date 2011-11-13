@@ -8,6 +8,7 @@
 #ifndef CSESSION_H_
 #define CSESSION_H_
 
+#include <string>
 #include <vector>
 #include <set>
 #include <CConnection.h>
@@ -19,8 +20,10 @@ class CTcpServer;
 
 class CSession {
 public:
-	CSession();
+	CSession(std::string name);
 	virtual ~CSession();
+
+	std::string getName() { return m_name; };
 
 	void toAll( CCmdBase* cmd );
 
@@ -31,6 +34,8 @@ private:
 	bool hasConnection(CConnection::pointer conn);
 
 	CTcpServer* m_tcp_server;
+
+	std::string m_name;
 };
 
 } /* namespace muroa */

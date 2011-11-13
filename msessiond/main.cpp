@@ -31,9 +31,7 @@
 
 #include "CApp.h"
 #include "CSettings.h"
-#include "CTcpServer.h"
-#include "CSignalHandler.h"
-#include "avahi/CDnsSdAvahi.h"
+#include "CSessionContainer.h"
 #include "Exceptions.h"
 
 #include "CConnection.h"
@@ -45,8 +43,10 @@ using namespace log4cplus;
 using namespace muroa;
 
 int main(int argc, char** argv) {
+	int rc = 0;
 
     muroa::CApp* app;
+    muroa::CSessionContainer *sc;
 
     try {
     	app = muroa::CApp::getInstPtr(argc, argv);
@@ -56,25 +56,24 @@ int main(int argc, char** argv) {
     	}
 
 		boost::asio::io_service io_service;
-		CTcpServer server(io_service, app, reinterpret_cast<factory_ptr_t>(&CConnection::create));
-		// server.setConnectionFactory(reinterpret_cast<factory_ptr_t>(&CConnection::create));
 
-		CSignalHandler::pointer sigPtr = CSignalHandler::create(io_service);
-		sigPtr->start();
+		sc = CSessionContainer::create(io_service, app);
 
 		LOG4CPLUS_DEBUG(app->logger(), "starting io_service");
-
 		io_service.run();
 
     }
     catch( muroa::configEx ex ) {
     	cerr << ex.what() << endl;
-    	exit(1);
+    	rc = -1;
     }
     catch (std::exception& e) {
     	cerr << e.what() << endl;
 		LOG4CPLUS_ERROR(app->logger(), "Uncaught exception from mainloop: " << e.what());
 	}
-	return 0;
+    delete sc;
+    delete app;
+
+	return rc;
 }
 

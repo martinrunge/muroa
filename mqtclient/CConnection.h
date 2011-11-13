@@ -3,6 +3,7 @@
 
 #include <QObject>
 #include <QTcpSocket>
+#include <QSettings>
 
 #include <muroaxml/CMuroaXml.h>
 #include <cmds/CCmdBase.h>
@@ -20,7 +21,9 @@ public:
     ~CConnection();
 
     void onDataToSend(const char *data, int length);
-	void onJoinSession(uint32_t sessionID);
+
+	void onListSessions(std::vector<std::string> sessions);
+	void onJoinSession(std::string sessionName);
 	void onLeaveSession();
 
 	void onPlay();
@@ -71,6 +74,9 @@ private:
 
     int m_state;
     int m_xml_depth;
+
+    QSettings m_settings;
+
 
 };
 

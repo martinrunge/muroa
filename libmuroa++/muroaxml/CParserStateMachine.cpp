@@ -66,20 +66,27 @@ void CParserStateMachine::onStartElement(const std::string& name, const char** a
 	{
 		std::cerr << attributes[i] << " = " << attributes[i + 1] << std::endl;
 	}
-	if(m_state.root_state == IN_SESSION_STATE) {
-		// we reached root state (for root state this can only happen at at document start)
-		sessionState(START, name, attributes);
-	}
-	else {
-		// the state machine is in root state. Whatever can happen from here is handeled by the function 'SessionState'
-		if(name.compare(xmlCommands::joinSession) == 0) {
-			// list sessions
-			parseJoinArgs(attributes);
-		}
-		if(name.compare(xmlCommands::listSessions) == 0) {
-			// list sessions
-			parseListSessionArgs(attributes);
-		}
+	switch (m_state.root_state) {
+		case IN_SESSION_STATE:
+			// we reached root state (for root state this can only happen at at document start)
+			sessionState(START, name, attributes);
+			break;
+
+		case IN_SESSION_LIST_STATE:
+			sessionListState(START, name, attributes);
+			break;
+
+		case ROOT_STATE:
+		default:
+
+			// the state machine is in root state. Whatever can happen from here is handeled by the function 'SessionState'
+			if(name.compare(xmlCommands::joinSession) == 0) {
+				sessionState(INIT, name, attributes);
+			}
+			if(name.compare(xmlCommands::sessionList) == 0) {
+				sessionListState(INIT, name, attributes);
+			}
+			break;
 	}
 	return;
 }
@@ -89,14 +96,29 @@ void CParserStateMachine::onEndElement(const std::string& name)
 	std::cerr << "on_end_element()" << std::endl;
 	const char **null_ptr( 0 );
 
-	if(m_state.root_state == ROOT_STATE) {
-		if(name.compare("session") == 0) {
-			m_state.root_state = IN_SESSION_STATE;
-		}
-	}
-	else {
-		// we are leaving a element unter root state. This is processed by the function 'RootState'
-		sessionState(END, name, null_ptr);
+	switch (m_state.root_state) {
+		case IN_SESSION_STATE:
+			// we reached root state (for root state this can only happen at at document start)
+			sessionState(END, name, null_ptr);
+			break;
+
+		case IN_SESSION_LIST_STATE:
+			sessionListState(END, name, null_ptr);
+			break;
+
+		case ROOT_STATE:
+		default:
+
+			// the state machine is in root state. Whatever can happen from here is handeled by the function 'SessionState'
+			if(name.compare(xmlCommands::joinSession) == 0) {
+				if(name.compare("session") == 0) {
+					m_state.root_state = ROOT_STATE;
+				}
+			}
+			if(name.compare(xmlCommands::sessionList) == 0) {
+				m_state.root_state = ROOT_STATE;
+			}
+			break;
 	}
 	return;
 }
@@ -459,3 +481,67 @@ void CParserStateMachine::parseDiffFromRev(const char** attrs) {
 		}
 	}
 }
+
+
+
+int CParserStateMachine::sessionListState(const action_flag& init_start_end, const std::string& name, const char** attrs) {
+	std::cerr << "CParserStateMachine::sessionListState" << std::endl;
+	switch (init_start_end) {
+	case INIT:
+		m_xml_tag_depth = 1;
+		parseSessionListArgs(attrs);
+		m_state.root_state = IN_SESSION_LIST_STATE;
+		break;
+
+	case START:
+		if (name.compare(xmlCommands::sessionDesc) == 0) {
+			m_state.session_list_state = IN_DESC;
+			parseSessionDescArgs(attrs);
+		}
+		else {
+			cerr << "CParserStateMachine::processSessionListState (START): unknown tag received :'" << name << "' !" << endl;
+			m_tag_unknown_depth++;
+			m_xml_tag_depth++;
+		}
+		break;
+
+	case END:
+		if(name.compare(xmlCommands::sessionList) == 0) {
+			// end of session
+			onListSessions( m_sessionList );
+			m_xml_tag_depth = 0;
+			m_state.root_state = ROOT_STATE;
+		}
+		else if(name.compare(xmlCommands::sessionDesc) == 0) {
+			m_sessionList.push_back(m_tmp_session_name);
+		}
+		else {
+			cerr << "CParserStateMachine::processSessionListState (END): unknown tag received :'" << name << "' !" << endl;
+			m_tag_unknown_depth--;
+			m_xml_tag_depth--;
+		}
+		break;
+	}
+
+	return 0;
+}
+
+
+void CParserStateMachine::parseSessionListArgs(const char** attrs){
+	return;
+}
+
+
+void CParserStateMachine::parseSessionDescArgs(const char** attrs){
+	for(int i=0; attrs[i]; i+=2)
+	{
+		string name  = attrs[i];
+		string value = attrs[i + 1];
+
+		if(name.compare("name") == 0) {
+			cerr << name << endl;
+			m_tmp_session_name = value;
+		}
+	}
+}
+

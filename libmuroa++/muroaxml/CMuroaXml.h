@@ -20,7 +20,10 @@ public:
 	CMuroaXml() throw(rpcError);
 	~CMuroaXml();
 
-	void listSessions(std::vector<std::string> sessionList);
+	void open();
+	void close();
+
+	void listSessions(std::vector<std::string> sessionList = std::vector<std::string>());
 
 	void joinSession(std::string sessionName);
 

@@ -25,9 +25,15 @@ xmlCommands::~xmlCommands()
 {
 }
 
-const std::string xmlCommands::sessionStart = string("<Session>\n");
-const std::string xmlCommands::sessionEnd = string("</Session>\n");
+const std::string xmlCommands::open = string("<muroa>\n");
+const std::string xmlCommands::close = string("</muroa>\n");
 
+const std::string xmlCommands::sessionList = string("sessionList");
+
+const std::string xmlCommands::sessionDesc = string("sessionDesc");
+
+const std::string xmlCommands::joinSession = string("session");
+const std::string xmlCommands::leaveSession = string("</session>\n");
 
 const std::string xmlCommands::play = string("<play/>");
 const std::string xmlCommands::pause = string("<pause/>\n");
@@ -44,6 +50,3 @@ const std::string xmlCommands::getNextlist = string("getNextlist");
 const std::string xmlCommands::editCollection = string("editCollection");
 const std::string xmlCommands::editPlaylist = string("editPlaylist");
 const std::string xmlCommands::editNextlist = string("editNextlist");
-const std::string xmlCommands::listSessions = string("sessionList");
-const std::string xmlCommands::joinSession = string("session");
-const std::string xmlCommands::leaveSession = string("</session>\n");

@@ -15,7 +15,7 @@ using namespace std;
 
 namespace muroa {
 
-CSession::CSession() {
+CSession::CSession(string name) : m_name(name){
 	// TODO Auto-generated constructor stub
 
 }

@@ -21,8 +21,12 @@ public:
 
     ~xmlCommands();
 
-    static const std::string sessionStart;
-    static const std::string sessionEnd;
+    static const std::string open;
+    static const std::string close;
+    static const std::string sessionList;
+    static const std::string sessionDesc;
+    static const std::string joinSession;
+    static const std::string leaveSession;
     static const std::string play;
     static const std::string pause;
     static const std::string stop;
@@ -38,9 +42,6 @@ public:
     static const std::string editCollection;
     static const std::string editPlaylist;
     static const std::string editNextlist;
-    static const std::string listSessions;
-    static const std::string joinSession;
-    static const std::string leaveSession;
 
 
 

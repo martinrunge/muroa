@@ -9,14 +9,16 @@ find_package( Boost 1.36.0 COMPONENTS filesystem system REQUIRED )
 
 add_definitions(-D__STDC_CONSTANT_MACROS)
 
-set( SRCS             CSession.cpp
+set( SRCS             CSessionContainer.cpp
+                      CSession.cpp
                       CConnection.cpp
                       CRpc.cpp
                       main.cpp
                       )
                     
                    
-set( HEADERS          CSession.h
+set( HEADERS          CSessionContainer.h
+                      CSession.h
                       CConnection.h
                       CRpc.h)                    
   
