@@ -40,11 +40,8 @@ private:
     CConnection(boost::asio::io_service& io_service);
 
     CRpc *m_rpc;
-<<<<<<< HEAD
     CSession* m_session;
     CSessionContainer* m_session_container;
-=======
->>>>>>> 485bf2644495e28e4bf913a061d7967e02fa0fc0
 };
 
 } /* namespace muroa */

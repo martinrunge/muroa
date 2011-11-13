@@ -17,14 +17,10 @@ public:
 //	IRPC() throw(rpcError);
 	virtual ~IRPC() {}
 
-<<<<<<< HEAD
 	virtual void open() = 0;
 	virtual void close() = 0;
 
 	virtual void listSessions(std::vector<std::string> sessionList = std::vector<std::string>()) = 0;
-=======
-	virtual void listSessions(std::vector<std::string> sessionList) = 0;
->>>>>>> 485bf2644495e28e4bf913a061d7967e02fa0fc0
 	virtual void onListSessions(std::vector<std::string> sessionList) = 0;
 
 	virtual void joinSession(std::string sessionName) = 0;

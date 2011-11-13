@@ -56,14 +56,6 @@ int main(int argc, char** argv) {
     	}
 
 		boost::asio::io_service io_service;
-<<<<<<< HEAD
-=======
-		CTcpServer server(io_service, app, reinterpret_cast<factory_ptr_t>(&CConnection::create));
-		// server.setConnectionFactory(reinterpret_cast<factory_ptr_t>(&CConnection::create));
-
-		CSignalHandler::pointer sigPtr = CSignalHandler::create(io_service);
-		sigPtr->start();
->>>>>>> 485bf2644495e28e4bf913a061d7967e02fa0fc0
 
 		sc = CSessionContainer::create(io_service, app);
 
