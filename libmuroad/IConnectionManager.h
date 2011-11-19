@@ -1,6 +1,6 @@
 /***************************************************************************
  *
- *   CTcpServer.h
+ *   IConnectionManager.h
  *
  *   This file is part of Asiotest                                  *
  *   Copyright (C) 2011 by Martin Runge <martin.runge@web.de>           *
@@ -21,55 +21,29 @@
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
 
+#ifndef ICONNECTIONMANAGER_H_
+#define ICONNECTIONMANAGER_H_
 
-#include <ctime>
-#include <iostream>
-#include <string>
-#include <boost/bind.hpp>
-#include <boost/shared_ptr.hpp>
-#include <boost/enable_shared_from_this.hpp>
-#include <boost/asio.hpp>
-
-#include <log4cplus/logger.h>
-#include <log4cplus/loglevel.h>
-
+#include <boost/noncopyable.hpp>
 #include "CTcpConnection.h"
-#include "IConnectionManager.h"
-
-using boost::asio::ip::tcp;
-
-#ifndef CTCPSERVER_H_
-#define CTCPSERVER_H_
 
 namespace muroa {
 
-class CApp;
-class CDnsSdAvahi;
-
-typedef CTcpConnection::pointer(*factory_ptr_t)(boost::asio::io_service& io_service);
-
-class CTcpServer : private boost::noncopyable
-{
+class IConnectionManager : private boost::noncopyable {
 public:
-	CTcpServer(boost::asio::io_service& io_service, IConnectionManager* cm, CApp* app, factory_ptr_t connection_factory);
-	virtual ~CTcpServer();
-	IConnectionManager* getConnctionManager();
+	IConnectionManager() {};
+	virtual ~IConnectionManager() {};
 
-	void setConnectionFactory( factory_ptr_t connection_factory );
-	factory_ptr_t getConnectionFactory(void);
+	  /// Add the specified connection to the manager.
+	  virtual void add(CTcpConnection::pointer c) = 0;
 
-private:
-  void start_accept();
-  void handle_accept(CTcpConnection::pointer new_connection, const boost::system::error_code& error);
+	  /// Remove the specified connection.
+	  virtual void remove(CTcpConnection::pointer c) = 0;
 
-  tcp::acceptor m_acceptor;
-  IConnectionManager* m_connectionManager;
-  factory_ptr_t m_connection_factory;
-  log4cplus::Logger m_logger;
+	  /// Remove all connections.
+	  virtual void removeAll() = 0;
 
-  CApp* m_app;
-  CDnsSdAvahi* m_dnssd;
 };
-
 }
-#endif /* CTCPSERVER_H_ */
+
+#endif /* ICONNECTIONMANAGER_H_ */

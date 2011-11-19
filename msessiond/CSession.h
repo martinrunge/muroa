@@ -25,17 +25,17 @@ public:
 
 	std::string getName() { return m_name; };
 
+	void addConnection(CConnection::pointer ptr);
+	void removeConnection(CConnection::pointer ptr);
+
 	void toAll( CCmdBase* cmd );
 
 private:
-
-	std::set<CTcpConnection::pointer> getConnections();
-
 	bool hasConnection(CConnection::pointer conn);
 
-	CTcpServer* m_tcp_server;
-
+	// CTcpServer* m_tcp_server;
 	std::string m_name;
+	std::set<CConnection::pointer> m_connections;
 };
 
 } /* namespace muroa */

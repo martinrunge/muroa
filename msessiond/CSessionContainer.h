@@ -8,7 +8,10 @@
 #ifndef CSESSIONCONTAINER_H_
 #define CSESSIONCONTAINER_H_
 
+#include "IConnectionManager.h"
+
 #include <map>
+#include <set>
 #include <vector>
 #include <string>
 #include <mutex>
@@ -23,7 +26,7 @@ namespace muroa {
 class CSession;
 class CApp;
 
-class CSessionContainer {
+class CSessionContainer : public IConnectionManager {
 
 private:
 	CSessionContainer( CApp* app );
@@ -31,6 +34,10 @@ private:
 
 public:
 	virtual ~CSessionContainer();
+
+	void add(CTcpConnection::pointer c);
+	void remove(CTcpConnection::pointer c);
+	void removeAll();
 
 	static CSessionContainer* create( boost::asio::io_service& io_service, CApp* app );
 	static CSessionContainer* getInstPtr( ) { return m_inst_ptr; };

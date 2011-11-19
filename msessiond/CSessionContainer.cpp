@@ -37,7 +37,7 @@ CSessionContainer::CSessionContainer( CApp* app ) : m_tcp_server(0), m_app(app) 
 
 void CSessionContainer::setup( boost::asio::io_service& io_service) {
 
-	m_tcp_server = new CTcpServer(io_service, m_app, reinterpret_cast<factory_ptr_t>(&CConnection::create));
+	m_tcp_server = new CTcpServer(io_service, this, m_app, reinterpret_cast<factory_ptr_t>(&CConnection::create));
 
 	m_sigPtr = CSignalHandler::create(io_service);
 	m_sigPtr->start();
@@ -48,6 +48,22 @@ void CSessionContainer::setup( boost::asio::io_service& io_service) {
 
 CSessionContainer::~CSessionContainer() {
 
+}
+
+void CSessionContainer::add(CTcpConnection::pointer c) {
+	CConnection::pointer cp(static_pointer_cast<CConnection>(c));
+
+	m_sessionless_connections.insert(cp);
+}
+
+void CSessionContainer::remove(CTcpConnection::pointer c) {
+	CConnection::pointer cp(static_pointer_cast<CConnection>(c));
+	m_sessionless_connections.erase(cp);
+}
+
+void CSessionContainer::removeAll() {
+	  std::for_each(m_sessionless_connections.begin(), m_sessionless_connections.end(), boost::bind(&CConnection::stop, _1));
+	  m_sessionless_connections.clear();
 }
 
 CSessionContainer *CSessionContainer::create(boost::asio::io_service & io_service, CApp *app) {
@@ -86,6 +102,8 @@ CSession* CSessionContainer::assignConnection(CConnection::pointer ptr, std::str
 		session = it->second;
 	}
 
+	session->addConnection(ptr);
+	remove(ptr);
 	return session;
 }
 

@@ -24,12 +24,16 @@ CSession::~CSession() {
 	// TODO Auto-generated destructor stub
 }
 
-void CSession::toAll( CCmdBase* cmd ) {
-
+void CSession::addConnection(CConnection::pointer ptr) {
+	m_connections.insert(ptr);
 }
 
-std::set<CTcpConnection::pointer> CSession::getConnections() {
-	m_tcp_server->getConnctionManager()->getConnections();
+void CSession::removeConnection(CConnection::pointer ptr) {
+	m_connections.erase(ptr);
+}
+
+void CSession::toAll( CCmdBase* cmd ) {
+
 }
 
 

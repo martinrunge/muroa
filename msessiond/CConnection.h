@@ -19,7 +19,7 @@ class CRpc;
 class CSession;
 class CSessionContainer;
 
-class CConnection : public CTcpConnection, public boost::enable_shared_from_this<CConnection> {
+class CConnection : public boost::enable_shared_from_this<CConnection>, public CTcpConnection {
 public:
 	virtual ~CConnection();
 

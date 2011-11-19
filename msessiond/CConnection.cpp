@@ -16,8 +16,6 @@ namespace muroa {
 CConnection::CConnection(boost::asio::io_service& io_service) : CTcpConnection(io_service) {
 	m_session_container = CSessionContainer::getInstPtr();
 	m_rpc = new CRpc(this);
-
-	m_session_container->addSessionlessConnection(boost::enable_shared_from_this<CConnection>::shared_from_this());
 }
 
 CConnection::~CConnection() {

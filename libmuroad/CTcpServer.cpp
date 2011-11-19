@@ -30,9 +30,10 @@ using namespace log4cplus;
 
 namespace muroa {
 
-CTcpServer::CTcpServer(boost::asio::io_service& io_service, CApp* app, factory_ptr_t connection_factory)
+CTcpServer::CTcpServer(boost::asio::io_service& io_service, IConnectionManager* cm, CApp* app, factory_ptr_t connection_factory)
 
                      : m_acceptor(io_service),
+                       m_connectionManager(cm),
 	                   m_logger(Logger::getInstance("main")),
 	                   m_app(app),
  	                   m_connection_factory(connection_factory)
@@ -89,8 +90,8 @@ factory_ptr_t CTcpServer::getConnectionFactory(void) {
 }
 
 
-CConnectionManager* CTcpServer::getConnctionManager() {
-	return &m_connectionManager;
+IConnectionManager* CTcpServer::getConnctionManager() {
+	return m_connectionManager;
 }
 
 void CTcpServer::start_accept() {
@@ -102,7 +103,8 @@ void CTcpServer::start_accept() {
 
 void CTcpServer::handle_accept(CTcpConnection::pointer new_connection, const boost::system::error_code& error) {
   if (!error) {
-	  m_connectionManager.start(new_connection);
+	  new_connection->start();
+	  m_connectionManager->add(new_connection);
   }
   start_accept();
 }

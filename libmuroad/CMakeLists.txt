@@ -12,12 +12,12 @@ add_definitions(  )
 
 set( SRC           CTcpConnection.cpp
                    CTcpServer.cpp
-                   CConnectionManager.cpp
+                   # CConnectionManager.cpp
                    CSignalHandler.cpp
                    CSettings.cpp
                    Exceptions.cpp
                    CApp.cpp
-                   main.cpp
+                   # main.cpp
                    # avahi/asio-watch.cpp
                    avahi/CDnsSdBase.cpp
                    avahi/CDnsSdAvahi.cpp
@@ -27,7 +27,7 @@ set( SRC           CTcpConnection.cpp
 
 set( HEADERS       CTcpConnection.h
                    CTcpServer.h
-                   CConnectionManager.h
+                   IConnectionManager.h
                    CSignalHandler.h
                    CSettings.h
                    Exceptions.h
