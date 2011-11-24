@@ -32,13 +32,12 @@
 
 #include <signal.h>
 
-class CSignalHandler : public boost::enable_shared_from_this<CSignalHandler> {
+class CSignalHandler {
 public:
 	virtual ~CSignalHandler();
-	typedef boost::shared_ptr<CSignalHandler> pointer;
 
-	static pointer create(boost::asio::io_service& io_service) {
-		return pointer(new CSignalHandler(io_service));
+	static CSignalHandler* create(boost::asio::io_service& io_service) {
+		return new CSignalHandler(io_service);
 	}
 
 	void start();

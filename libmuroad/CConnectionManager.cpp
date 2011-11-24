@@ -35,13 +35,13 @@ CConnectionManager::~CConnectionManager() {
 }
 
 /// Add the specified connection to the manager and start it.
-void CConnectionManager::start(CTcpConnection::pointer c) {
+void CConnectionManager::start(CTcpConnection* c) {
 	  m_connections.insert(c);
 	  c->start();
 }
 
 /// Stop the specified connection.
-void CConnectionManager::stop(CTcpConnection::pointer c) {
+void CConnectionManager::stop(CTcpConnection* c) {
 	  m_connections.erase(c);
 	  c->stop();
 

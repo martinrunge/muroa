@@ -95,13 +95,13 @@ IConnectionManager* CTcpServer::getConnctionManager() {
 }
 
 void CTcpServer::start_accept() {
-  CTcpConnection::pointer new_connection = m_connection_factory(m_acceptor.get_io_service());
+  CTcpConnection* new_connection = m_connection_factory(m_acceptor.get_io_service());
 
   m_acceptor.async_accept(new_connection->socket(),
                          boost::bind(&CTcpServer::handle_accept, this, new_connection, boost::asio::placeholders::error));
 }
 
-void CTcpServer::handle_accept(CTcpConnection::pointer new_connection, const boost::system::error_code& error) {
+void CTcpServer::handle_accept(CTcpConnection* new_connection, const boost::system::error_code& error) {
   if (!error) {
 	  new_connection->start();
 	  m_connectionManager->add(new_connection);

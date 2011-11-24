@@ -3,6 +3,7 @@
 	<name>mqtclient</name>
 	<comment></comment>
 	<projects>
+		<project>libmuroa++</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>

@@ -9,6 +9,7 @@
 #define CRPC_H_
 
 #include <muroaxml/CMuroaXml.h>
+#include "sessionEx.h"
 
 namespace muroa {
 

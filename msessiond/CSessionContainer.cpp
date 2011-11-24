@@ -12,7 +12,7 @@
 #include <boost/asio.hpp>
 #include <algorithm>
 
-
+#include "sessionEx.h"
 
 namespace muroa {
 
@@ -50,14 +50,13 @@ CSessionContainer::~CSessionContainer() {
 
 }
 
-void CSessionContainer::add(CTcpConnection::pointer c) {
-	CConnection::pointer cp(static_pointer_cast<CConnection>(c));
-
+void CSessionContainer::add(CTcpConnection* c) {
+	CConnection* cp = static_cast<CConnection*>(c);
 	m_sessionless_connections.insert(cp);
 }
 
-void CSessionContainer::remove(CTcpConnection::pointer c) {
-	CConnection::pointer cp(static_pointer_cast<CConnection>(c));
+void CSessionContainer::remove(CTcpConnection* c) {
+	CConnection* cp = static_cast<CConnection*>(c);
 	m_sessionless_connections.erase(cp);
 }
 
@@ -85,11 +84,11 @@ std::vector<std::string> CSessionContainer::listSessions() {
 	return sessionNames;
 }
 
-void CSessionContainer::addSessionlessConnection(CConnection::pointer ptr) {
+void CSessionContainer::addSessionlessConnection(CConnection* ptr) {
 	m_sessionless_connections.insert(ptr);
 }
 
-CSession* CSessionContainer::assignConnection(CConnection::pointer ptr, std::string sessionName) {
+CSession* CSessionContainer::assignConnection(CConnection* ptr, std::string sessionName) {
 	CSession* session;
 
 	map<string, CSession*>::iterator it;

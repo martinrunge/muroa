@@ -64,6 +64,11 @@ public slots:
     void disconnected();
     void error();
 
+    void play();
+    void stop();
+    void next();
+    void prev();
+
     void sendCommand(muroa::CCmdBase* cmd);
 
     void readyRead();

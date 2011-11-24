@@ -35,10 +35,10 @@ public:
 	virtual ~IConnectionManager() {};
 
 	  /// Add the specified connection to the manager.
-	  virtual void add(CTcpConnection::pointer c) = 0;
+	  virtual void add(CTcpConnection* c) = 0;
 
 	  /// Remove the specified connection.
-	  virtual void remove(CTcpConnection::pointer c) = 0;
+	  virtual void remove(CTcpConnection* c) = 0;
 
 	  /// Remove all connections.
 	  virtual void removeAll() = 0;

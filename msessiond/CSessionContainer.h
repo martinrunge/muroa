@@ -35,16 +35,16 @@ private:
 public:
 	virtual ~CSessionContainer();
 
-	void add(CTcpConnection::pointer c);
-	void remove(CTcpConnection::pointer c);
+	void add(CTcpConnection* c);
+	void remove(CTcpConnection* c);
 	void removeAll();
 
 	static CSessionContainer* create( boost::asio::io_service& io_service, CApp* app );
 	static CSessionContainer* getInstPtr( ) { return m_inst_ptr; };
 	std::vector<std::string> listSessions();
 
-	void addSessionlessConnection(CConnection::pointer ptr);
-	CSession* assignConnection(CConnection::pointer ptr, std::string sessionName);
+	void addSessionlessConnection(CConnection* ptr);
+	CSession* assignConnection(CConnection* ptr, std::string sessionName);
 
 private:
 	static CSessionContainer* m_inst_ptr;
@@ -53,10 +53,10 @@ private:
 	CTcpServer* m_tcp_server;
 	CApp* m_app;
 
-	CSignalHandler::pointer m_sigPtr;
+	CSignalHandler* m_sigPtr;
 
 	std::map<std::string, CSession*> m_sessions;
-	std::set<CConnection::pointer> m_sessionless_connections;
+	std::set<CConnection*> m_sessionless_connections;
 };
 
 } /* namespace muroa */

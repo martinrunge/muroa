@@ -9,7 +9,8 @@ find_package( Boost 1.36.0 COMPONENTS filesystem system REQUIRED )
 
 add_definitions(-D__STDC_CONSTANT_MACROS)
 
-set( SRCS             CSessionContainer.cpp
+set( SRCS             sessionEx.cpp
+                      CSessionContainer.cpp
                       CSession.cpp
                       CConnection.cpp
                       CRpc.cpp
@@ -17,10 +18,12 @@ set( SRCS             CSessionContainer.cpp
                       )
                     
                    
-set( HEADERS          CSessionContainer.h
+set( HEADERS          sessionEx.h
+                      CSessionContainer.h
                       CSession.h
                       CConnection.h
-                      CRpc.h)                    
+                      CRpc.h
+                      )                    
   
 
 include_directories(${SOURCE_DIR} ${Boost_INCLUDE_DIRS} ${CMAKE_SOURCE_DIR} ${CMAKE_SOURCE_DIR}/../libmuroad ${CMAKE_SOURCE_DIR}/../libmuroa++) 

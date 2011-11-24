@@ -87,7 +87,7 @@ link_directories( ${QT_LIB_DIR} )
 
 add_executable( muroagui ${SRC} ${MOC_SOURCES} ${UIS_H} ${RCCS_SRC})
 target_link_libraries( muroagui    avahi-client
-                                   avahi-service
+                                   # avahi-service
                                    avahi-qt4
                                    ${QT_LIBRARIES} )
 

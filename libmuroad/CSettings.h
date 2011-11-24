@@ -38,7 +38,7 @@ public:
 	CSettings() throw();
 	virtual ~CSettings() throw();
 
-	int parse(int argc, char** argv) throw(configEx);
+	int parse(int argc, char** argv) throw(muroa::configEx);
 
 	inline bool foreground() { return m_foreground; };
     inline int debuglevel() { return m_debuglevel; };

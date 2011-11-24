@@ -13,18 +13,16 @@
 #include <vector>
 #include <string>
 
+using namespace std;
 
 namespace muroa {
 
-using namespace std;
-
 CRpc::CRpc(CConnection* connection) : m_connection(connection){
-	// TODO Auto-generated constructor stub
-
+	open();
 }
 
 CRpc::~CRpc() {
-	// TODO Auto-generated destructor stub
+	// close();
 }
 
     void CRpc::onDataToSend(const char *data, int length) {

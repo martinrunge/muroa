@@ -26,8 +26,6 @@
 #include <vector>
 #include <boost/array.hpp>
 #include <boost/bind.hpp>
-#include <boost/shared_ptr.hpp>
-#include <boost/enable_shared_from_this.hpp>
 #include <boost/asio.hpp>
 
 #include <log4cplus/logger.h>
@@ -41,23 +39,21 @@ using namespace boost;
 
 namespace muroa {
 
-class CTcpConnection : public boost::enable_shared_from_this<CTcpConnection>
+class CTcpConnection
 {
 public:
   virtual ~CTcpConnection();
 
-  typedef boost::shared_ptr<CTcpConnection> pointer;
-
-  static pointer create(boost::asio::io_service& io_service) {
-    return pointer(new CTcpConnection(io_service));
+  static CTcpConnection* create(boost::asio::io_service& io_service) {
+    return new CTcpConnection(io_service);
   }
 
   tcp::socket& socket() {
     return m_socket;
   }
 
-  void start();
-  void stop();
+  virtual void start();
+  virtual void stop();
 
   tcp::endpoint remoteEndpoint();
   std::string remoteEndpointStr();

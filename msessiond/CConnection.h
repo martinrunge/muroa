@@ -19,14 +19,15 @@ class CRpc;
 class CSession;
 class CSessionContainer;
 
-class CConnection : public boost::enable_shared_from_this<CConnection>, public CTcpConnection {
+class CConnection : public CTcpConnection {
 public:
 	virtual ~CConnection();
 
-	typedef boost::shared_ptr<CConnection> pointer;
+	void start();
+	void stop();
 
-	static pointer create(boost::asio::io_service& io_service) {
-	    return pointer(new CConnection(io_service));
+	static CConnection* create(boost::asio::io_service& io_service) {
+	    return new CConnection(io_service);
 	}
 
 	void joinSession(std::string name);

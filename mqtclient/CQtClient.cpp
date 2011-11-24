@@ -19,10 +19,10 @@ CQtClient::CQtClient(QWidget *parent)
     connect(ui.actionOpen, SIGNAL(triggered()), this, SLOT(openConnection()));
     connect(ui.actionClose, SIGNAL(triggered()), this, SLOT(closeConnection()));
 
-//    connect(ui.actionPlayPause, SIGNAL(triggered()), &m_connection, SLOT(play()));
-//    connect(ui.actionStop, SIGNAL(triggered()), &m_connection, SLOT(stop()));
-//    connect(ui.actionNext, SIGNAL(triggered()), &m_connection, SLOT(next()));
-//    connect(ui.actionPrevious, SIGNAL(triggered()), &m_connection, SLOT(prev()));
+    connect(ui.actionPlayPause, SIGNAL(triggered()), &m_connection, SLOT(play()));
+    connect(ui.actionStop, SIGNAL(triggered()), &m_connection, SLOT(stop()));
+    connect(ui.actionNext, SIGNAL(triggered()), &m_connection, SLOT(next()));
+    connect(ui.actionPrevious, SIGNAL(triggered()), &m_connection, SLOT(prev()));
 
     connect(ui.action_Preferences, SIGNAL(triggered()), this, SLOT(showPreferences()));
 
@@ -33,7 +33,7 @@ CQtClient::CQtClient(QWidget *parent)
 	setupServiceBrowser();
 
 
-//	connect(&m_connection, SIGNAL(progressSig(int, int)), this, SLOT(progress(int,int)));
+	connect(&m_connection, SIGNAL(progressSig(int, int)), this, SLOT(progress(int,int)));
 	connectionStatusChanged( e_disconnected );
 }
 

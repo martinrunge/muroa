@@ -9,6 +9,7 @@
 #include "xmlCommands.h"
 
 #include <sstream>
+#include <iostream>
 
 using namespace std;
 
@@ -141,6 +142,9 @@ void CMuroaXml::editNextlist(unsigned fromRev) {
 void CMuroaXml::newData(const char* data, int len) {
 	int done = 0;
 	if(XML_Parse(m_parser, data, len, done) == XML_STATUS_ERROR) {
+		enum XML_Error err = XML_GetErrorCode(m_parser);
+
+	    cerr << "error parsing xml data: " << data << " : " << XML_ErrorString(err) << endl;
 	    // throw exception;
 	}
 }

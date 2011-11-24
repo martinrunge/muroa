@@ -1,5 +1,7 @@
 #include "CConnection.h"
 
+#include "muroaConstants.h"
+
 #include <QDebug>
 
 using namespace std;
@@ -29,7 +31,16 @@ void CConnection::onDataToSend(const char *data, int length) {
 }
 
 void CConnection::onListSessions(vector<string> sessions) {
-
+	if(sessions.size() >= 1) {
+		string sname = sessions[0];
+		if(sname.compare(CREATE_NEW_SESSION) == 0) {
+			sname = "default";
+		}
+		joinSession(sname);
+	}
+	else {
+		// present a list of all session to user
+	}
 }
 
 void CConnection::onJoinSession(string sessionName) {
@@ -103,8 +114,28 @@ void CConnection::onEditNextlist(unsigned  fromRev, std::string nextlistDiff)
 {
 }
 
+void CConnection::play()
+{
+	CMuroaXml::play();
+}
+
+void CConnection::stop()
+{
+	CMuroaXml::stop();
+}
+
+void CConnection::next() {
+	CMuroaXml::next();
+}
+
+void CConnection::prev() {
+	CMuroaXml::prev();
+}
+
+
 void CConnection::connected() {
     emit connectionStatusChanged( e_connected );
+    CMuroaXml::open();
 
     QString lastSession;
     // if rejoin last session

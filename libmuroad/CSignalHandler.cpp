@@ -61,7 +61,7 @@ CSignalHandler::~CSignalHandler() {
 
 void CSignalHandler::start() {
 	m_socket.async_read_some(asio::buffer(m_buffer),
-                             boost::bind(&CSignalHandler::handle_read, shared_from_this(),
+                             boost::bind(&CSignalHandler::handle_read, this,
                                          asio::placeholders::error,
                                          asio::placeholders::bytes_transferred));
 

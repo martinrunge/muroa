@@ -36,19 +36,19 @@ public:
 	virtual ~CConnectionManager();
 
 	  /// Add the specified connection to the manager and start it.
-	  void start(CTcpConnection::pointer c);
+	  void start(CTcpConnection* c);
 
 	  /// Stop the specified connection.
-	  void stop(CTcpConnection::pointer c);
+	  void stop(CTcpConnection* c);
 
 	  /// Stop all connections.
 	  void stopAll();
 
-	  std::set<CTcpConnection::pointer> getConnections();
+	  std::set<CTcpConnection*> getConnections();
 
 	private:
 	  /// The managed connections.
-	  std::set<CTcpConnection::pointer> m_connections;
+	  std::set<CTcpConnection*> m_connections;
 
 };
 }

@@ -59,7 +59,7 @@ void CParserStateMachine::onEndDocument()
 
 void CParserStateMachine::onStartElement(const std::string& name, const char** attributes)
 {
-	std::cerr << "node name=" << name << std::endl;
+	std::cerr << "start node name=" << name << std::endl;
 
 	// Print attributes:
 	for(int i=0; attributes[i]; i+=2)

@@ -60,7 +60,7 @@ std::string CTcpConnection::remoteEndpointStr() {
 
 void CTcpConnection::writeData( const char* buffer, int length) {
 	m_socket.async_send(asio::buffer(buffer, length),
-                         boost::bind(&CTcpConnection::handle_write, shared_from_this(),
+                         boost::bind(&CTcpConnection::handle_write, this,
                                      asio::placeholders::error,
                                      asio::placeholders::bytes_transferred));
 	return;
@@ -73,14 +73,14 @@ void CTcpConnection::dataReceived( boost::array<char, 8192> /*buffer*/, int /*le
 
 void CTcpConnection::handle_write(const boost::system::error_code& error, size_t bytes_transferred) {
     if (error) {
-        LOG4CPLUS_ERROR(m_logger, "error in handle_read:  " << error.message());
+        LOG4CPLUS_ERROR(m_logger, "error in handle_write:  " << error.message());
         delete this;
     }
 }
 
 void CTcpConnection::start_read() {
 	m_socket.async_read_some(asio::buffer(m_buffer),
-                             boost::bind(&CTcpConnection::handle_read, shared_from_this(),
+                             boost::bind(&CTcpConnection::handle_read, this,
                                          asio::placeholders::error,
                                          asio::placeholders::bytes_transferred));
 }
@@ -93,7 +93,7 @@ void CTcpConnection::handle_read(const boost::system::error_code& error, size_t 
     }
     else {
     	LOG4CPLUS_ERROR(m_logger, "error in handle_read:  " << error.message());
-    	delete this;
+    	// delete this;
     }
 }
 

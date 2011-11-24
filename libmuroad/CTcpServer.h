@@ -26,8 +26,6 @@
 #include <iostream>
 #include <string>
 #include <boost/bind.hpp>
-#include <boost/shared_ptr.hpp>
-#include <boost/enable_shared_from_this.hpp>
 #include <boost/asio.hpp>
 
 #include <log4cplus/logger.h>
@@ -46,7 +44,7 @@ namespace muroa {
 class CApp;
 class CDnsSdAvahi;
 
-typedef CTcpConnection::pointer(*factory_ptr_t)(boost::asio::io_service& io_service);
+typedef CTcpConnection*(*factory_ptr_t)(boost::asio::io_service& io_service);
 
 class CTcpServer : private boost::noncopyable
 {
@@ -60,7 +58,7 @@ public:
 
 private:
   void start_accept();
-  void handle_accept(CTcpConnection::pointer new_connection, const boost::system::error_code& error);
+  void handle_accept(CTcpConnection* new_connection, const boost::system::error_code& error);
 
   tcp::acceptor m_acceptor;
   IConnectionManager* m_connectionManager;
