@@ -36,7 +36,7 @@ void CConnection::onListSessions(vector<string> sessions) {
 		if(sname.compare(CREATE_NEW_SESSION) == 0) {
 			sname = "default";
 		}
-		joinSession(sname);
+		doJoinSession(sname);
 	}
 	else {
 		// present a list of all session to user
@@ -130,6 +130,16 @@ void CConnection::next() {
 
 void CConnection::prev() {
 	CMuroaXml::prev();
+}
+
+
+void CConnection::doJoinSession(string name) {
+	joinSession(name);
+
+    getMediaCol(m_sm.getCollectionModelPtr()->getRevision());
+    getPlaylist(m_sm.getPlaylistModelPtr()->getRevision());
+    getNextlist(m_sm.getNextlistModelPtr()->getRevision());
+
 }
 
 

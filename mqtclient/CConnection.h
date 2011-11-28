@@ -75,6 +75,9 @@ public slots:
 
 
 private:
+
+    void doJoinSession(std::string name);
+
     QTcpSocket m_socket;
 
     int m_state;
