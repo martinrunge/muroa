@@ -22,6 +22,7 @@
  ***************************************************************************/
 
 #include "CSettings.h"
+#include "CApp.h"
 
 #include <getopt.h>
 
@@ -30,11 +31,13 @@ using namespace log4cplus;
 
 namespace muroa {
 
-CSettings::CSettings() throw() : m_foreground(false),
-                                 m_debuglevel(0),
-                                 m_logfile("") {
+CSettings::CSettings(CApp* app) throw() : m_foreground(false),
+                                          m_debuglevel(0),
+                                          m_logfile(""),
+                                          m_app(app) {
 
     applyDefaults();
+
 }
 
 
@@ -113,7 +116,13 @@ int CSettings::parse(int argc, char** argv) throw(configEx) {
             printf("%s ", argv[optind++]);
         printf("\n");
     }
-
+    using boost::property_tree::ptree;
+    try {
+    	read_json(m_configfile, m_pt);
+    }
+    catch(boost::property_tree::json_parser::json_parser_error err) {
+    	LOG4CPLUS_ERROR( m_app->logger() , "failed to load config file '" << m_configfile << "': " << err.what() );
+    }
     return 0;
 
 }
@@ -124,6 +133,22 @@ unsigned short CSettings::port() {
 
 void CSettings::setPort(unsigned short port) {
 	m_port = port;
+}
+
+string CSettings::getProptery(const string& key, const string& defaultVal) {
+	return m_pt.get(key, defaultVal);
+}
+
+void CSettings::setProptery(const string& key, const string& val) {
+	m_pt.put(key, val);
+}
+
+int CSettings::getProptery(const string& key, const int& defaultVal) {
+	return m_pt.get(key, defaultVal);
+}
+
+void CSettings::setProptery(const string& key, const int& val) {
+	m_pt.put(key, val);
 }
 
 CSettings::~CSettings() throw() {
@@ -144,6 +169,7 @@ void CSettings::usage(string appname) {
 
 void CSettings::applyDefaults() {
 	m_logfile = "/var/log/muroad.log";
+	m_configfile = "/etc/muroa.conf";
 
     m_service_name = "MuroaClient";
     m_service_type = "_muroa._tcp";

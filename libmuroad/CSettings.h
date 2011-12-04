@@ -27,15 +27,20 @@
 #include <log4cplus/logger.h>
 #include <log4cplus/loglevel.h>
 
+#include <boost/property_tree/ptree.hpp>
+#include <boost/property_tree/json_parser.hpp>
+
 #include <string>
 
 #include "Exceptions.h"
 
 namespace muroa {
 
+class CApp;
+
 class CSettings {
 public:
-	CSettings() throw();
+	CSettings(CApp* app) throw();
 	virtual ~CSettings() throw();
 
 	int parse(int argc, char** argv) throw(muroa::configEx);
@@ -51,6 +56,12 @@ public:
 
     inline std::string serviceName() {return m_service_name; };
     inline std::string serviceType() {return m_service_type; };
+
+    std::string getProptery(const std::string& key, const std::string& defaultVal);
+    void setProptery(const std::string& key, const std::string& val);
+
+    int getProptery(const std::string& key, const int& defaultVal);
+    void setProptery(const std::string& key, const int& val);
 
 private:
 	void usage(std::string appname);
@@ -68,7 +79,9 @@ private:
     std::string m_logfile;
 
     unsigned short m_ip_version;
+    boost::property_tree::ptree m_pt;
 
+    CApp* m_app;
 };
 
 } /* namespace muroa */

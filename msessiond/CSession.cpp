@@ -9,6 +9,10 @@
 #include <cmds/CCmdBase.h>
 #include <CTcpServer.h>
 #include "CMediaScannerCtrl.h"
+#include "CApp.h"
+
+#include "mediascanner/CMsgScanDir.h"
+#include "mediascanner/CMsgOpenDb.h"
 
 #include <sstream>
 
@@ -32,7 +36,8 @@ CSession::CSession(string name, boost::asio::io_service& io_service) : m_name(na
                                                                       m_minNextlistRev(0),
                                                                       m_playlistPos(0),
                                                                       m_stateDB("state.db"),
-                                                                      m_io_service(io_service) {
+                                                                      m_io_service(io_service),
+                                                                      m_app(CApp::getInstPtr()){
 
 	// all thee collection have an empty revision 0!
 	m_mediaColRevs[m_maxMediaColRev] = new CRootItem();
@@ -222,6 +227,11 @@ CRootItem*  CSession::getRev(const map<unsigned, CRootItem*>& collection,
 
 void CSession::scanCollection(uint32_t jobID) {
 	m_mediaScanner->start(jobID);
+	CMsgOpenDb* dbmsg = new CMsgOpenDb( getProperty("stateDBfile", "state.db") );
+	m_mediaScanner->sendMsg(dbmsg);
+	CMsgScanDir* sdmsg = new CMsgScanDir("/home/martin/Desktop");
+	m_mediaScanner->sendMsg(sdmsg);
+
 }
 
 void CSession::scanProgress(uint32_t progress) {
@@ -246,6 +256,33 @@ void CSession::reportError(int32_t errCode, string message) {
 
 void CSession::toAll( CCmdBase* cmd ) {
 
+}
+
+string CSession::getProperty(string key, string defaultVal) {
+	string privKey = privatePropertyKey(key);
+	string value = m_app->settings().getProptery(privKey, defaultVal);
+	return value;
+}
+
+void CSession::setProperty(string key, string val) {
+	string privKey = privatePropertyKey(key);
+	m_app->settings().setProptery(privKey, val);
+}
+
+int CSession::getProperty(string key, int defaultVal) {
+	string privKey = privatePropertyKey(key);
+	int value = m_app->settings().getProptery(privKey, defaultVal);
+	return value;
+}
+
+void CSession::setProperty(string key, int val) {
+	string privKey = privatePropertyKey(key);
+	m_app->settings().setProptery(privKey, val);
+}
+
+string CSession::privatePropertyKey(string key) {
+	string privKey = "session." + m_name + "." + key;
+	return privKey;
 }
 
 

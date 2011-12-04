@@ -35,7 +35,7 @@ CSettings& CApp::settings() { return m_settings; }
 Logger& CApp::logger() { return m_logger; };
 
 
-CApp::CApp(int argc, char** argv) throw(configEx) : m_logger(Logger::getInstance("main"))
+CApp::CApp(int argc, char** argv) throw(configEx) : m_settings(this), m_logger(Logger::getInstance("main"))
 {
 	if( m_settings.parse(argc, argv) != 0) {
     	throw configEx("error parsing commandline parameters");

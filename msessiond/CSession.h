@@ -22,6 +22,7 @@ namespace muroa {
 class CCmdBase;
 class CTcpServer;
 class CMediaScannerCtrl;
+class CApp;
 
 class CSession : boost::noncopyable {
 public:
@@ -77,6 +78,12 @@ public:
 
 	void toAll( CCmdBase* cmd );
 
+	std::string getProperty(std::string key, std::string defaultVal = "");
+	void setProperty(std::string key, std::string val);
+
+	int getProperty(std::string key, int defaultVal = 0);
+	void setProperty(std::string key, int val);
+
 private:
 	bool hasConnection(CConnection* conn);
 
@@ -107,6 +114,8 @@ private:
     boost::asio::io_service& m_io_service;
     CMediaScannerCtrl* m_mediaScanner;
 
+    CApp* m_app;
+    std::string privatePropertyKey(std::string key);
 };
 
 } /* namespace muroa */
