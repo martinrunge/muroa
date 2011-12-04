@@ -88,6 +88,12 @@ void CMuroaXml::stateChanged(int newState) {
 	sendData(oss.str());
 }
 
+void CMuroaXml::scanCollection(uint32_t jobID) {
+	ostringstream oss;
+	oss << "<" << xmlCommands::scanCollection << " jobID=\"" << jobID << "\"/>" << endl;
+	sendData(oss.str());
+}
+
 void CMuroaXml::progress(uint32_t jobID, int progress) {
 	ostringstream oss;
 	oss << "<" << xmlCommands::progress << " jobID=\"" << jobID << "\" progress=\"" << progress << "\"/>" << endl;
@@ -120,21 +126,27 @@ void CMuroaXml::getNextlist(unsigned knownRev) {
 	sendData(oss.str());
 }
 
-void CMuroaXml::editCollection(unsigned fromRev) {
+void CMuroaXml::editCollection(unsigned fromRev, string diff ) {
 	ostringstream oss;
-	oss << "<" << xmlCommands::editCollection << " fromRev=\"" << fromRev << "\"/>" << endl;
+	oss << "<" << xmlCommands::editCollection << " fromRev=\"" << fromRev << "\">" << endl;
+	oss << diff << endl;
+	oss << "</" << xmlCommands::editCollection << ">" << endl;
 	sendData(oss.str());
 }
 
-void CMuroaXml::editPlaylist(unsigned fromRev) {
+void CMuroaXml::editPlaylist(unsigned fromRev, string diff ) {
 	ostringstream oss;
-	oss << "<" << xmlCommands::editPlaylist << " fromRev=\"" << fromRev << "\"/>" << endl;
+	oss << "<" << xmlCommands::editPlaylist << " fromRev=\"" << fromRev << "\">" << endl;
+	oss << diff << endl;
+	oss << "</" << xmlCommands::editPlaylist << ">" << endl;
 	sendData(oss.str());
 }
 
-void CMuroaXml::editNextlist(unsigned fromRev) {
+void CMuroaXml::editNextlist(unsigned fromRev, string diff ) {
 	ostringstream oss;
-	oss << "<" << xmlCommands::editNextlist << " fromRev=\"" << fromRev << "\"/>" << endl;
+	oss << "<" << xmlCommands::editNextlist << " fromRev=\"" << fromRev << "\">" << endl;
+	oss << diff << endl;
+	oss << "</" << xmlCommands::editNextlist << ">" << endl;
 	sendData(oss.str());
 }
 

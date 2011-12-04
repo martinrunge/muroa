@@ -66,6 +66,11 @@ CRpc::~CRpc() {
     {
     }
 
+    void CRpc::onScanCollection(uint32_t jobID) {
+    	// scan collection and give progress reports
+    	m_connection->getSession()->scanCollection(jobID);
+    }
+
     void CRpc::onProgress(uint32_t jobID, int progress)
     {
     }
@@ -74,16 +79,16 @@ CRpc::~CRpc() {
     {
     }
 
-    void CRpc::onGetCollection(unsigned  knownRev)
-    {
+    void CRpc::onGetCollection(unsigned  knownRev) {
+    	m_connection->sendLatestMediaColRev(knownRev);
     }
 
-    void CRpc::onGetPlaylist(unsigned  knownRev)
-    {
+    void CRpc::onGetPlaylist(unsigned  knownRev) {
+    	m_connection->sendLatestPlaylistRev(knownRev);
     }
 
-    void CRpc::onGetNextlist(unsigned  knownRev)
-    {
+    void CRpc::onGetNextlist(unsigned  knownRev) {
+    	m_connection->sendLatestNextlistRev(knownRev);
     }
 
     void CRpc::onCollection(unsigned  diffFromRev, std::string collection)

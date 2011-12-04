@@ -49,6 +49,7 @@ public:
 	void onPrev();
 
 	void onStateChanged(int newState);
+	void onScanCollection(uint32_t jobID);
 	void onProgress(uint32_t jobID, int progress);
 	void onError(uint32_t jobID, int errorCode, std::string description);
 

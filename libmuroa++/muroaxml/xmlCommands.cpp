@@ -41,6 +41,7 @@ const std::string xmlCommands::stop = string("<stop/>\n");
 const std::string xmlCommands::next = string("<next/>");
 const std::string xmlCommands::prev = string("<prev/>");
 const std::string xmlCommands::progress = string("progress");
+const std::string xmlCommands::scanCollection = string("scanCollection");
 const std::string xmlCommands::stateChanged = string("stateChanged");
 const std::string xmlCommands::error = string("error");
 const std::string xmlCommands::XML_ver = string("<?xml version=\"1.0\"?>\n");

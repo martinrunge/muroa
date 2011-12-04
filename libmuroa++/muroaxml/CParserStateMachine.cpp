@@ -23,6 +23,7 @@
 #include "muroaxml/xmlCommands.h"
 
 #include <iostream>
+#include <assert.h>
 using namespace std;
 
 
@@ -195,7 +196,11 @@ int CParserStateMachine::sessionState(const action_flag& init_start_end, const s
 		else if (name.compare("leave") == 0) {
 			m_state.session_state = IN_LEAVE;
 		}
-		else if (name.compare("progress") == 0) {
+		else if (name.compare(xmlCommands::scanCollection) == 0) {
+			m_state.session_state = IN_SCAN_COLLECTION;
+			m_jobID = parseJobID(attrs);
+		}
+		else if (name.compare(xmlCommands::progress) == 0) {
 			m_state.session_state = IN_PROGRESS;
 			parseProgressArgs(attrs);
 		}
@@ -279,7 +284,10 @@ int CParserStateMachine::sessionState(const action_flag& init_start_end, const s
 		else if(name.compare("stop") == 0) {
 			onStop();
 		}
-		else if (name.compare("progress") == 0) {
+		else if (name.compare(xmlCommands::scanCollection) == 0) {
+			onScanCollection(m_jobID);
+		}
+		else if (name.compare(xmlCommands::progress) == 0) {
 			onProgress(m_jobID, m_progress);
 		}
 		else if (name.compare("stateChanged") == 0) {
@@ -385,6 +393,20 @@ int CParserStateMachine::parseJoinArgs(const char** attrs) {
 	return 0;
 }
 
+uint32_t CParserStateMachine::parseJobID(const char** attrs) {
+	assert(attrs[0]);
+	assert(attrs[1]);
+
+	uint32_t jobID;
+	string name  = attrs[0];
+	string value = attrs[1];
+
+	if(name.compare("jobID") == 0) {
+		jobID = CUtils::str2uint32(value);
+	}
+
+	return jobID;
+}
 
 
 void CParserStateMachine::parseNextArgs(const char **attrs) {
@@ -400,7 +422,9 @@ void CParserStateMachine::parsePlayArgs(const char **attrs) {
 }
 
 void CParserStateMachine::parseProgressArgs(const char** attrs) {
-	for(int i=0; attrs[i]; i+=2)
+	m_jobID = parseJobID(attrs);
+
+	for(int i=2; attrs[i]; i+=2)
 	{
 		string name  = attrs[i];
 		string value = attrs[i + 1];

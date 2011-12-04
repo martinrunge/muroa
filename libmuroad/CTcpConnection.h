@@ -60,6 +60,8 @@ public:
 
   void writeData( const char* buffer, int length );
 
+  inline boost::asio::io_service& getIoService() { return m_socket.get_io_service(); };
+
 protected:
   virtual void dataReceived( boost::array<char, 8192> buffer, int length);
   CTcpConnection(boost::asio::io_service& io_service);

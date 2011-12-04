@@ -32,6 +32,10 @@ public:
 
 	void joinSession(std::string name);
 
+	void sendLatestMediaColRev(unsigned knownRev = 0);
+	void sendLatestPlaylistRev(unsigned knownRev = 0);
+	void sendLatestNextlistRev(unsigned knownRev = 0);
+
 	void dataReceived( boost::array<char, 8192> buffer, int length);
 
     CSession *getSession() const;

@@ -10,21 +10,42 @@ add_definitions( ${QT4_DEFINITIONS} )
 
 set( SRC           CQtClient.cpp
                    CConnection.cpp
+                   CSessionSM.cpp
                    CServiceBrowser.cpp
                    CServiceDesc.cpp
                    CDnsSdBase.cpp
                    CDnsSdServiceBrowserAvahi.cpp
                    CPreferencesDlg.cpp
+                   
+                   cmds/CmdBase.cpp
+                   cmds/CmdGetMediaCol.cpp
+                   cmds/CmdGetPlaylist.cpp
+                   cmds/CmdGetNextlist.cpp
+                   cmds/CmdEditMediaCol.cpp
+                   cmds/CmdEditPlaylist.cpp
+                   cmds/CmdEditNextlist.cpp
+                   cmds/CmdScanCollection.cpp
+                   
                    main.cpp )
                   
 
 set( MOC_H         CQtClient.h
                    CConnection.h
+                   CSessionSM.h
                    CServiceBrowser.h
                    CServiceDesc.h
                    CDnsSdBase.h
                    CDnsSdServiceBrowserAvahi.h
                    CPreferencesDlg.h
+
+                   cmds/CmdBase.h
+                   cmds/CmdGetMediaCol.h
+                   cmds/CmdGetPlaylist.h
+                   cmds/CmdGetNextlist.h
+                   cmds/CmdEditMediaCol.h
+                   cmds/CmdEditPlaylist.h
+                   cmds/CmdEditNextlist.h
+                   cmds/CmdScanCollection.h
                    )
                    
 SET(UIS            mQtClient.ui  

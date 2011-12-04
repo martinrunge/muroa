@@ -24,6 +24,8 @@ CQtClient::CQtClient(QWidget *parent)
     connect(ui.actionNext, SIGNAL(triggered()), &m_connection, SLOT(next()));
     connect(ui.actionPrevious, SIGNAL(triggered()), &m_connection, SLOT(prev()));
 
+    connect(ui.actionScanCollection, SIGNAL(triggered()), m_connection.getSessionSMPtr(), SLOT(scanCollection()));
+
     connect(ui.action_Preferences, SIGNAL(triggered()), this, SLOT(showPreferences()));
 
 	statusBar()->addWidget(&m_connection_status_label);

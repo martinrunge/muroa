@@ -36,6 +36,7 @@ public:
 	void prev();
 
 	void stateChanged(int newState);
+	void scanCollection(uint32_t jobID);
 	void progress(uint32_t jobID, int progress);
 	void error(uint32_t jobID, int errorCode, std::string description);
 
@@ -43,9 +44,9 @@ public:
 	void getPlaylist( unsigned knownRev = 0);
 	void getNextlist( unsigned knownRev = 0);
 
-	void editCollection( unsigned fromRev );
-	void editPlaylist( unsigned fromRev );
-	void editNextlist( unsigned fromRev );
+	void editCollection( unsigned fromRev, std::string diff );
+	void editPlaylist( unsigned fromRev, std::string diff );
+	void editNextlist( unsigned fromRev, std::string diff );
 
 
 	void newData(const char* data, int len);

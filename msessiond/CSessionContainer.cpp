@@ -42,7 +42,7 @@ void CSessionContainer::setup( boost::asio::io_service& io_service) {
 	m_sigPtr = CSignalHandler::create(io_service);
 	m_sigPtr->start();
 
-	CSession* createNewSession = new CSession(CREATE_NEW_SESSION);
+	CSession* createNewSession = new CSession(CREATE_NEW_SESSION, io_service);
 	m_sessions.insert(pair<string, CSession*>(CREATE_NEW_SESSION, createNewSession));
 }
 
@@ -94,7 +94,7 @@ CSession* CSessionContainer::assignConnection(CConnection* ptr, std::string sess
 	map<string, CSession*>::iterator it;
 	it = m_sessions.find( sessionName );
 	if(it == m_sessions.end()) {
-		session = new CSession(sessionName);
+		session = new CSession(sessionName, ptr->getIoService());
 		m_sessions.insert(pair<string, CSession*>(sessionName, session));
 	}
 	else {

@@ -1,14 +1,14 @@
-/*
- * CSession.cpp
- *
- *  Created on: 31 Oct 2011
- *      Author: martin
+/**
+ * \file  CSession.cpp
+ * \date 31 Oct 2011
+ * \author Martin Runge <martin dot runge at web dot de>
  */
 
 #include "CSession.h"
 
 #include <cmds/CCmdBase.h>
 #include <CTcpServer.h>
+#include "CMediaScannerCtrl.h"
 
 #include <sstream>
 
@@ -16,20 +16,30 @@ using namespace std;
 
 namespace muroa {
 
-CSession::CSession(string name) : m_name(name),
-                                  m_maxMediaColRev(0),
-                                  m_maxPlaylistRev(0),
-                                  m_maxNextlistRev(0),
-                                  m_minMediaColRev(0),
-                                  m_minPlaylistRev(0),
-                                  m_minNextlistRev(0),
-                                  m_playlistPos(0),
-                                  m_stateDB("state.db"){
+/**
+ * \class CSession
+ * \brief This class holds the state of a session.
+ *
+ * All connections that belong to a session \b must use the same io_service!!!
+ *
+ */
+CSession::CSession(string name, boost::asio::io_service& io_service) : m_name(name),
+                                                                      m_maxMediaColRev(0),
+                                                                      m_maxPlaylistRev(0),
+                                                                      m_maxNextlistRev(0),
+                                                                      m_minMediaColRev(0),
+                                                                      m_minPlaylistRev(0),
+                                                                      m_minNextlistRev(0),
+                                                                      m_playlistPos(0),
+                                                                      m_stateDB("state.db"),
+                                                                      m_io_service(io_service) {
 
 	// all thee collection have an empty revision 0!
 	m_mediaColRevs[m_maxMediaColRev] = new CRootItem();
 	m_playlistRevs[m_maxPlaylistRev] = new CRootItem();
 	m_nextlistRevs[m_maxNextlistRev] = new CRootItem();
+
+	m_mediaScanner = new CMediaScannerCtrl(this, m_io_service);
 }
 
 CSession::~CSession() {
@@ -208,6 +218,30 @@ CRootItem*  CSession::getRev(const map<unsigned, CRootItem*>& collection,
 		}
 	}
 	return it->second;
+}
+
+void CSession::scanCollection(uint32_t jobID) {
+	m_mediaScanner->start(jobID);
+}
+
+void CSession::scanProgress(uint32_t progress) {
+
+}
+
+void CSession::jobFinished(uint32_t jobID) {
+
+}
+
+void CSession::collectionChanged(uint32_t newRev, uint32_t minRev, uint32_t maxRev) {
+
+}
+
+void CSession::response(uint32_t requestID, int32_t returnCode, string message) {
+
+}
+
+void CSession::reportError(int32_t errCode, string message) {
+
 }
 
 void CSession::toAll( CCmdBase* cmd ) {

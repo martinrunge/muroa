@@ -42,6 +42,7 @@ enum session_state_t {SESSION_ROOT_STATE,
 	                  IN_STOP,
 	                  IN_NEXT,
 	                  IN_PREV,
+	                  IN_SCAN_COLLECTION,
 	                  IN_PROGRESS,
 	                  IN_STATE_CHANGED,
 	                  IN_ERROR,
@@ -90,6 +91,7 @@ public:
 	virtual void onPrev() = 0;
 
 	virtual void onStateChanged(int newState) = 0;
+	virtual void onScanCollection(uint32_t jobID) = 0;
 	virtual void onProgress(uint32_t jobID, int progress) = 0;
 	virtual void onError(uint32_t jobID, int errorCode, std::string description) = 0;
 
@@ -138,6 +140,8 @@ private:
 	int sessionState(const action_flag& init_start_end, const std::string& name, const char** attrs);
 
 	int processSessionState(const action_flag& init_start_end, const std::string& name, const char** attrs);
+
+	uint32_t parseJobID(const char** attrs);
 
 	int parseListSessionArgs(const char** attrs);
 	int parseJoinArgs(const char** attrs);

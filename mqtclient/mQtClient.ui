@@ -143,6 +143,7 @@
     </property>
     <addaction name="actionGet_Revision_1"/>
     <addaction name="actionGet_next_Revision"/>
+    <addaction name="actionScanCollection"/>
    </widget>
    <widget class="QMenu" name="menu_File">
     <property name="title">
@@ -253,6 +254,11 @@
    </property>
    <property name="text">
     <string>P&amp;revious</string>
+   </property>
+  </action>
+  <action name="actionScanCollection">
+   <property name="text">
+    <string>&amp;Scan Collection</string>
    </property>
   </action>
  </widget>

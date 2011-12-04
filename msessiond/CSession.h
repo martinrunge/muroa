@@ -1,8 +1,8 @@
-/*
- * CSession.h
+/**
+ * \file CSession.h
  *
- *  Created on: 31 Oct 2011
- *      Author: martin
+ *  \date 31 Oct 2011
+ *  \author  Martin Runge <martin dot runge at web dot de>
  */
 
 #ifndef CSESSION_H_
@@ -21,10 +21,11 @@ namespace muroa {
 
 class CCmdBase;
 class CTcpServer;
+class CMediaScannerCtrl;
 
-class CSession {
+class CSession : boost::noncopyable {
 public:
-	CSession(std::string name);
+	CSession(std::string name, boost::asio::io_service& io_service);
 	virtual ~CSession();
 
 	std::string getName() { return m_name; };
@@ -67,8 +68,12 @@ public:
 	void setMinPlaylistRevision(int rev) throw();
 	void setMinNextlistRevision(int rev) throw();
 
-
-
+	void scanCollection(uint32_t jobID);
+	void scanProgress(uint32_t progress);
+	void jobFinished(uint32_t jobID);
+	void collectionChanged(uint32_t newRev, uint32_t minRev, uint32_t maxRev);
+	void response(uint32_t requestID, int32_t returnCode, std::string message);
+	void reportError(int32_t errCode, std::string message);
 
 	void toAll( CCmdBase* cmd );
 
@@ -98,6 +103,9 @@ private:
     unsigned m_playlistPos;
 
     std::string m_stateDB;
+
+    boost::asio::io_service& m_io_service;
+    CMediaScannerCtrl* m_mediaScanner;
 
 };
 

@@ -1,12 +1,15 @@
 #include "CConnection.h"
-
+#include "cmds/CmdBase.h"
+#include "cmds/CmdEditMediaCol.h"
+#include "cmds/CmdEditPlaylist.h"
+#include "cmds/CmdEditNextlist.h"
 #include "muroaConstants.h"
 
 #include <QDebug>
 
 using namespace std;
 
-CConnection::CConnection() {
+CConnection::CConnection() : m_sm(this) {
 	connect(&m_socket, SIGNAL(connected()), this, SLOT(connected()));
     connect(&m_socket, SIGNAL(disconnected()), this, SLOT(disconnected()));
     connect(&m_socket, SIGNAL(readyRead()), this, SLOT(readyRead()));
@@ -136,9 +139,9 @@ void CConnection::prev() {
 void CConnection::doJoinSession(string name) {
 	joinSession(name);
 
-    getMediaCol(m_sm.getCollectionModelPtr()->getRevision());
-    getPlaylist(m_sm.getPlaylistModelPtr()->getRevision());
-    getNextlist(m_sm.getNextlistModelPtr()->getRevision());
+    m_sm.getLatestMediaCol();
+    m_sm.getLatestPlaylist();
+    m_sm.getLatestNextlist();
 
 }
 
@@ -175,8 +178,66 @@ void CConnection::readyRead() {
     newData(data.data(), data.length());
 }
 
-void CConnection::sendCommand(muroa::CCmdBase* cmd) {
+void CConnection::sendCommand(CmdBase* cmd) {
     qDebug() << QString("sendCommand %1").arg(QString::fromUtf8(cmd->name().c_str()));
+
+    switch(cmd->type()) {
+		case CmdBase::GET_MEDIA_COL:
+		{
+			getCollection( cmd->knownRev() );
+		}
+		break;
+		case CmdBase::GET_PLAYLIST:
+		{
+			getPlaylist( cmd->knownRev() );
+		}
+		break;
+		case CmdBase::GET_NEXTLIST:
+		{
+			getNextlist( cmd->knownRev() );
+		}
+		break;
+		case CmdBase::EDIT_MEDIA_COL:
+		{
+			CmdEditMediaCol* emc = static_cast<CmdEditMediaCol*>(cmd);
+			editCollection( emc->knownRev(), emc->data() );
+		}
+		break;
+		case CmdBase::EDIT_PLAYLIST:
+		{
+
+		}
+		break;
+		case CmdBase::EDIT_NEXTLIST:
+		{
+
+		}
+		break;
+		case CmdBase::PLAY:
+		{
+
+		} break;
+		case CmdBase::PAUSE:
+		{
+
+		} break;
+		case CmdBase::NEXT:
+		{
+
+		} break;
+		case CmdBase::PREV:
+		{
+
+		} break;
+		case CmdBase::SCAN_COLLECTION:
+		{
+			scanCollection(cmd->id());
+		} break;
+		default:
+		{
+
+		} break;
+    }
     delete cmd;
 }
 

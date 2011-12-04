@@ -5,6 +5,8 @@
 #include <QTcpSocket>
 #include <QSettings>
 
+#include "CSessionSM.h"
+
 #include <muroaxml/CMuroaXml.h>
 #include <cmds/CCmdBase.h>
 
@@ -33,6 +35,7 @@ public:
 	void onPrev();
 
 	void onStateChanged(int newState);
+	void onScanCollection(uint32_t jobID) {};
 	void onProgress(uint32_t jobID, int progress);
 	void onError(uint32_t jobID, int errorCode, std::string description);
 
@@ -52,6 +55,8 @@ public:
 	void onEndSession(){ };
 	void onXmlVersion(){ };
 
+	inline CSessionSM* getSessionSMPtr() { return &m_sm; };
+
 signals:
     void connectionStatusChanged(enum connectionState state);
     void progressSig(int done, int total);
@@ -69,7 +74,7 @@ public slots:
     void next();
     void prev();
 
-    void sendCommand(muroa::CCmdBase* cmd);
+    void sendCommand(CmdBase* cmd);
 
     void readyRead();
 
@@ -79,6 +84,7 @@ private:
     void doJoinSession(std::string name);
 
     QTcpSocket m_socket;
+    CSessionSM m_sm;
 
     int m_state;
     int m_xml_depth;

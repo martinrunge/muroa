@@ -1,11 +1,14 @@
 cmake_minimum_required (VERSION 2.6)
 
-set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../cmake" ${CMAKE_MODULE_PATH})
+set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake" ${CMAKE_MODULE_PATH})
+
 set(VERBOSE 1)
 
 set(Boost_USE_STATIC_LIBS   ON )
 set(Boost_USE_MULTITHREADED ON )
 find_package( Boost 1.36.0 COMPONENTS filesystem system REQUIRED )
+
+add_subdirectory(mediascanner)
 
 add_definitions(-D__STDC_CONSTANT_MACROS)
 
@@ -14,15 +17,41 @@ set( SRCS             sessionEx.cpp
                       CSession.cpp
                       CConnection.cpp
                       CRpc.cpp
+                      CMediaScannerCtrl.cpp 
+                      CSubProcess.cpp 
+                      
+                      mediascanner/CMsgBase.cpp
+                      mediascanner/CMsgError.cpp
+                      mediascanner/CMsgQuit.cpp
+                      mediascanner/CMsgResponse.cpp
+                      mediascanner/CMsgFinished.cpp
+                      mediascanner/CMsgProgress.cpp
+                      mediascanner/CMsgOpenDb.cpp
+                      mediascanner/CMsgScanDir.cpp
+                      mediascanner/CMsgCollectionChanged.cpp
+                      mediascanner/CMediaItem.cpp
+ 
                       main.cpp
                       )
                     
-                   
 set( HEADERS          sessionEx.h
                       CSessionContainer.h
                       CSession.h
                       CConnection.h
                       CRpc.h
+                      CMediaScannerCtrl.h 
+                      CSubProcess.h
+                       
+                      mediascanner/CMsgBase.h
+                      mediascanner/CMsgError.h
+                      mediascanner/CMsgQuit.h
+                      mediascanner/CMsgResponse.h
+                      mediascanner/CMsgFinished.h
+                      mediascanner/CMsgProgress.h
+                      mediascanner/CMsgOpenDb.h
+                      mediascanner/CMsgScanDir.h
+                      mediascanner/CMsgCollectionChanged.h
+                      mediascanner/CMediaItem.h
                       )                    
   
 

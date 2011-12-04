@@ -32,6 +32,7 @@ public:
     static const std::string stop;
     static const std::string next;
     static const std::string prev;
+    static const std::string scanCollection;
     static const std::string progress;
     static const std::string stateChanged;
     static const std::string error;

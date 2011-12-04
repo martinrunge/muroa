@@ -37,6 +37,9 @@ public:
 	virtual void stateChanged(int newState) = 0;
 	virtual void onStateChanged(int newState) = 0;
 
+	virtual void scanCollection(uint32_t jobID) = 0;
+	virtual void onScanCollection(uint32_t jobID) = 0;
+
 	virtual void progress(uint32_t jobID, int progress) = 0;
 	virtual void onProgress(uint32_t jobID, int progress) = 0;
 
@@ -47,9 +50,9 @@ public:
 	virtual void getPlaylist( unsigned knownRev ) = 0;
 	virtual void getNextlist( unsigned knownRev ) = 0;
 
-	virtual void editCollection( unsigned fromRev ) = 0;
-	virtual void editPlaylist( unsigned fromRev ) = 0;
-	virtual void editNextlist( unsigned fromRev ) = 0;
+	virtual void editCollection( unsigned fromRev, std::string diff ) = 0;
+	virtual void editPlaylist( unsigned fromRev, std::string diff ) = 0;
+	virtual void editNextlist( unsigned fromRev, std::string diff ) = 0;
 
 	virtual void onPlay() = 0;
 	virtual void onStop() = 0;
