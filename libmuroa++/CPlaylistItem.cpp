@@ -70,6 +70,20 @@ CPlaylistItem::CPlaylistItem(CRootItem *root_item, std::string text, CCategoryIt
 	m_root_item->setContentPtr(CItemType(CItemType::E_PLAYLISTITEM), this, m_hash );
 }
 
+CPlaylistItem::CPlaylistItem(uint32_t mediaItemHash) : IContentItem(0, 0, CItemType::E_PLAYLISTITEM),  m_mediaitem_hash(mediaItemHash) {
+	m_hash = m_next_free_id++;
+}
+
+void CPlaylistItem::setParent(CRootItem *root_item, CCategoryItem*  parent, int posInParent) {
+	m_root_item = root_item;
+	m_parent = parent;
+
+	if(m_parent) {
+		m_parent->addChild(this, posInParent);
+	}
+}
+
+
 CPlaylistItem::~CPlaylistItem() {
 		m_root_item->delContentPtr(CItemType(CItemType::E_PLAYLISTITEM), m_hash );  // would delete this
 }

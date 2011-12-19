@@ -73,6 +73,9 @@ private:
 
 	int m_last_error_code;
 	std::string m_last_error_msg;
+
+
+	FILE* m_dbg_file;
 };
 
 #endif /* CSUBPROCESS_H_ */

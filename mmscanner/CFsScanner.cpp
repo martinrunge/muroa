@@ -82,7 +82,7 @@ int CFsScanner::walkTree(string dir) {
 
 	if ( !fs::exists( full_path ) || !fs::is_directory( full_path ) )
 	{
-		std::cout << "\nNot found: " << full_path.string() << std::endl;
+		std::cerr << "\nNot found: " << full_path.string() << std::endl;
 		return -1;
 	}
 	// use a stack of struct iterstate instead of resursion;
@@ -144,7 +144,7 @@ int CFsScanner::walkTree(string dir) {
 			}
 			catch ( const std::exception & ex ) {
 				++err_count;
-				std::cout << state.dirIter->path().filename() << " " << ex.what() << std::endl;
+				std::cerr << state.dirIter->path().filename() << " " << ex.what() << std::endl;
 			}
 			state.dirIter++;
 		}
@@ -156,10 +156,13 @@ int CFsScanner::walkTree(string dir) {
 	CMsgFinished* finiMsg = new CMsgFinished(m_jobID);
 	m_parent->postEvent(finiMsg);
 
-	std::cout << "\n" << file_count << " files\n"
-			<< dir_count << " directories\n"
-			<< other_count << " others\n"
-			<< err_count << " errors\n";
+	std::cerr << "\n" << file_count << " files\n"
+	         << dir_count << " directories\n"
+	 		 << other_count << " others\n"
+	 		 << err_count << " errors\n";
+
+	std::cout << "*************************************************************************" << endl << flush;
+	std::cerr << "*************************************************************************" << endl << flush;
 
 	return 0;
 }
@@ -180,7 +183,7 @@ int CFsScanner::walkTreeBFS(std::string dir) {
 
 	if ( !fs::exists( full_path ) || !fs::is_directory( full_path ) )
 	{
-		std::cout << "\nNot found: " << full_path.string() << std::endl;
+		std::cerr << "\nNot found: " << full_path.string() << std::endl;
 		return -1;
 	}
 	// use a stack of struct iterstate instead of resursion;
@@ -232,7 +235,7 @@ int CFsScanner::walkTreeBFS(std::string dir) {
 			}
 			catch ( const std::exception & ex ) {
 				++err_count;
-				std::cout << state.dirIter->path().filename() << " " << ex.what() << std::endl;
+				std::cerr << state.dirIter->path().filename() << " " << ex.what() << std::endl;
 			}
 			state.dirIter++;
 		}
@@ -241,11 +244,11 @@ int CFsScanner::walkTreeBFS(std::string dir) {
 	m_progress_num_dirs = m_progressDirs.size();
 
 
-	std::cout << "\n" << file_count << " files\n"
-			<< dir_count << " directories\n"
-			<< other_count << " others\n"
-			<< err_count << " errors\n"
-			<< depth << " max depth\n";
+	std::cerr << "\n" << file_count << " files\n"
+			  << dir_count << " directories\n"
+			  << other_count << " others\n"
+			  << err_count << " errors\n"
+			  << depth << " max depth\n";
 
 	return 0;
 }
@@ -283,14 +286,14 @@ CMediaItem* CFsScanner::readTag( fs::path path ) {
 		TagLib::String title = f.tag()->title();
 
 		// cout << " Artist: " << artist.to8Bit(true) << " Album: " << album.to8Bit(true) << " Title; " << title.to8Bit(true) << endl;
-
 		item->setFilename( path.string() );
 		item->setAlbum( album.to8Bit(true) );
 		item->setArtist( artist.to8Bit(true) );
 		item->setTitle( title.to8Bit(true) );
 		item->setYear( f.tag()->year() );
 	}
-	// m_decoder.open(path.string().c_str());
+	item->setDuration(0);
+    // m_decoder.open(path.string().c_str());
 	// int duration = m_decoder.getDuration();
 	// m_decoder.close();
 	// item->setDuration(duration);

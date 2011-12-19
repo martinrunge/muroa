@@ -19,7 +19,6 @@
 
 using namespace std;
 
-
 CMediaItem::CMediaItem(CRootItem *root_item, CCategoryItem*  parent, int posInParent) : IContentItem( root_item, parent, CItemType::E_MEDIAITEM ) {
 	if(m_parent) {
 		m_parent->addChild(this, posInParent);
@@ -68,6 +67,20 @@ CMediaItem::CMediaItem(CRootItem *root_item, std::string text, CCategoryItem*  p
 		m_parent->addChild(this, posInParent);
 	}
 	rehash();
+}
+
+CMediaItem::CMediaItem() : IContentItem( 0, 0, CItemType::E_MEDIAITEM ) {
+}
+
+void CMediaItem::setParent(CRootItem *root_item, CCategoryItem*  parent, int posInParent) {
+	m_root_item = root_item;
+	m_parent = parent;
+
+	rehash();
+
+	if(m_parent) {
+		m_parent->addChild(this, posInParent);
+	}
 }
 
 CMediaItem::~CMediaItem() {
@@ -128,7 +141,7 @@ void CMediaItem::rehash() {
 	m_hash = hash( ss.str() );
 	ss << "\t" << m_hash << endl;
 
-	if( m_hash != oldhash ) {
+	if( m_hash != oldhash && m_root_item != 0) {
 		m_root_item->setContentPtr(CItemType(CItemType::E_MEDIAITEM), this, m_hash );
  		m_root_item->delContentPtr(CItemType(CItemType::E_MEDIAITEM), oldhash );  // would delete this
 	}

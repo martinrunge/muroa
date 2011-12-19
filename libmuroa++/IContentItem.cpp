@@ -11,6 +11,7 @@
 #include "CPlaylistItem.h"
 #include "CNextlistItem.h"
 
+
 IContentItem::IContentItem(CRootItem *root_item, CCategoryItem*  parent, const item_type_t type) :
    CItemBase(root_item, parent, type)
 {
@@ -34,8 +35,10 @@ IContentItem* IContentItem::itemFactory(const CItemType itemType, CRootItem *roo
 		return new CMediaItem(root_item, parent, posInParent);
 		break;
 	case CItemType::E_PLAYLISTITEM:
+		return new CPlaylistItem(root_item, parent, posInParent);
 		break;
 	case CItemType::E_NEXTLISTITEM:
+		return new CNextlistItem(root_item, parent, posInParent);
 		break;
 	default:
 		return 0;
@@ -65,6 +68,17 @@ IContentItem* IContentItem::itemFactory(const CItemType itemType, CRootItem *roo
 		return 0;
 		break;
 	}
+}
+
+IContentItem* IContentItem::itemFactory(CMediaItem* item, CRootItem *root_item, CCategoryItem *parent, const unsigned posInParent) {
+		 CMediaItem* newItem = new CMediaItem(root_item, parent, posInParent);
+         newItem->setArtist(item->getArtist());
+		 newItem->setAlbum(item->getAlbum());
+		 newItem->setTitle(item->getTitle());
+		 newItem->setDuration(item->getDuration());
+		 newItem->setYear(item->getYear());
+		 newItem->setFilename(item->getFilename());
+		 return newItem;
 }
 
 

@@ -6,7 +6,7 @@
  */
 
 #include "CStateDbBase.h"
-#include "mediascanner/CMediaItem.h"
+#include <CMediaItem.h>
 
 #include <iostream>
 #include <sstream>

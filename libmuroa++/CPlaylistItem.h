@@ -30,9 +30,12 @@ class CMediaItem;
 
 class CPlaylistItem: public IContentItem {
 public:
+	CPlaylistItem(uint32_t mediaItemHash);
 	CPlaylistItem(CRootItem *root_item, CCategoryItem*  parent, int posInParent = -1);
 	CPlaylistItem(CRootItem *root_item, std::string text, CCategoryItem*  parent, int posInParent = -1);
 	virtual ~CPlaylistItem();
+
+	void setParent(CRootItem *root_item, CCategoryItem*  parent, int posInParent = -1);
 
 	bool operator==(const IContentItem& other);
 	inline bool operator!=(const IContentItem& other){ return !operator==(other); };

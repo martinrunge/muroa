@@ -8,7 +8,7 @@
 #ifndef CSTATEDBUPDATER_H_
 #define CSTATEDBUPDATER_H_
 
-#include "../CStateDbBase.h"
+#include <CStateDbBase.h>
 
 #include <string>
 #include <vector>

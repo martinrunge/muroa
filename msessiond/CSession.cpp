@@ -11,8 +11,8 @@
 #include "CMediaScannerCtrl.h"
 #include "CApp.h"
 
-#include "mediascanner/CMsgScanDir.h"
-#include "mediascanner/CMsgOpenDb.h"
+#include "../mmscanner/CMsgScanDir.h"
+#include "../mmscanner/CMsgOpenDb.h"
 
 #include <sstream>
 

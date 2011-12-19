@@ -124,6 +124,7 @@ pid_t CSubProcess::start(std::string executable, std::vector<std::string> args, 
 			m_waitthread = new thread( &CSubProcess::waitPid, this);
 		}
 	}
+	m_dbg_file = ::fopen("mmscannerin.bin", "w");
 	return m_pid;
 }
 
@@ -136,6 +137,7 @@ int CSubProcess::sendSignal(int sig_no) {
 }
 
 void CSubProcess::toStdin(const char* buffer, int length) {
+	::fwrite(buffer, length, 1, m_dbg_file);
 	m_stdin_sock.async_send(asio::buffer(buffer, length),
                             boost::bind(&CSubProcess::writtenToStdin, this,
                             asio::placeholders::error,
@@ -197,6 +199,7 @@ void CSubProcess::finished() {
 	m_waitthread->join();
 	delete m_waitthread;
 	m_waitthread = 0;
+	fclose(m_dbg_file);
 	// m_parent->child finished
 }
 

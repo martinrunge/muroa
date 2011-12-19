@@ -13,6 +13,7 @@
 
 class CRootItem;
 class CCategoryItem;
+class CMediaItem;
 
 class IContentItem : public CItemBase {
 public:
@@ -24,6 +25,7 @@ public:
 
 	static IContentItem* itemFactory(const CItemType itemType, CRootItem *root_item, CCategoryItem *parent, const unsigned posInParent = -1);
 	static IContentItem* itemFactory(const CItemType itemType, CRootItem *root_item, std::string text, CCategoryItem *parent, const unsigned posInParent = -1);
+	static IContentItem* itemFactory(CMediaItem* item, CRootItem *root_item, CCategoryItem *parent, const unsigned posInParent);
 
 	bool operator==(const IContentItem& other);
 	inline bool operator!=(const IContentItem& other){ return !operator==(other); };

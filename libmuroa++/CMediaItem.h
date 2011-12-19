@@ -15,9 +15,12 @@
 
 class CMediaItem : public IContentItem {
 public:
+	CMediaItem();
 	CMediaItem(CRootItem *root_item, CCategoryItem*  parent, int posInParent = -1);
 	CMediaItem(CRootItem *root_item, std::string text, CCategoryItem*  parent, int posInParent = -1);
 	virtual ~CMediaItem();
+
+	void setParent(CRootItem *root_item, CCategoryItem*  parent, int posInParent = -1);
 
     inline std::string getAlbum() const { return m_album; }
     inline std::string getArtist() const { return m_artist; }

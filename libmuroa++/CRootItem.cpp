@@ -24,8 +24,7 @@ using namespace std;
 
 CRootItem::CRootItem() {
 	m_base = new CCategoryItem(this, "", 0);
-	// setItemPtr(m_base->getName(), m_base);
-
+	setItemPtr("/", m_base);
 	for(int i=0; i < CItemType::numTypes(); i++) {
 		m_content_maps.push_back( map<uint32_t, IContentItem*>() );
 	}
@@ -84,6 +83,16 @@ IContentItem* CRootItem::addContentItem(string textWoPath, CCategoryItem* parent
 	return newItem;
 }
 
+IContentItem* CRootItem::addContentItem(IContentItem* item, CCategoryItem* parent, int posInParent) {
+	if(posInParent == -1) {
+		posInParent = parent->numChildren();
+	}
+	beginInsertItems(posInParent, 1, parent );
+	IContentItem* newItem = IContentItem::itemFactory( item->type(), this, parent, posInParent);
+	endInsertItems();
+
+	return newItem;
+}
 
 IContentItem* CRootItem::addContentItem(string text, int posInParent) {
 	string path = stripFirstSection(text);
@@ -309,6 +318,43 @@ bool CRootItem::beginRemoveItems(const int pos, const int count, const CCategory
 bool CRootItem::endRemoveItems(void) {
 	return true;
 }
+
+CCategoryItem* CRootItem::getItemPtr(std::string path) {
+	std::map<std::string, CCategoryItem*>::iterator it;
+	it = m_category_map.find(path);
+	if(it == m_category_map.end()) {
+		return 0;
+	}
+	else {
+		return it->second;
+	}
+	}
+
+void CRootItem::setItemPtr(std::string path, CCategoryItem* itemPtr) {
+	std::pair<std::map<std::string, CCategoryItem*>::iterator,bool> ret;
+	ret = m_category_map.insert(std::pair<std::string,CCategoryItem*>(path, itemPtr));
+	if (ret.second==false)
+	{
+	    std::cout << "element 'z' already existed";
+	    std::cout << " with a value of " << ret.first->second << std::endl;
+	}
+}
+
+void CRootItem::delItemPtr(std::string path) {
+	m_category_map.erase(path);
+}
+
+CRootItem::iterator CRootItem::begin() {
+
+
+	return iterator(m_base);
+}
+
+CRootItem::iterator CRootItem::end() {
+	return iterator(m_base, m_base->numChildren());
+}
+
+
 //
 //   alternative implementation without a cache
 //CCategoryItem* CRootItem::getItemPtr(std::string path) {
@@ -407,4 +453,5 @@ CCategoryItem* CRootItem::mkPath(string path) {
 
 	return static_cast<CCategoryItem*>(parent);
 }
+
 

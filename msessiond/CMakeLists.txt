@@ -7,8 +7,8 @@ set(VERBOSE 1)
 set(Boost_USE_STATIC_LIBS   ON )
 set(Boost_USE_MULTITHREADED ON )
 find_package( Boost 1.36.0 COMPONENTS filesystem system REQUIRED )
+find_package( Sqlite REQUIRED )
 
-add_subdirectory(mediascanner)
 
 add_definitions(-D__STDC_CONSTANT_MACROS)
 
@@ -18,18 +18,19 @@ set( SRCS             sessionEx.cpp
                       CConnection.cpp
                       CRpc.cpp
                       CMediaScannerCtrl.cpp 
-                      CSubProcess.cpp 
+                      CSubProcess.cpp
+                      CStateDbBase.cpp
+                      CStateDB.cpp 
                       
-                      mediascanner/CMsgBase.cpp
-                      mediascanner/CMsgError.cpp
-                      mediascanner/CMsgQuit.cpp
-                      mediascanner/CMsgResponse.cpp
-                      mediascanner/CMsgFinished.cpp
-                      mediascanner/CMsgProgress.cpp
-                      mediascanner/CMsgOpenDb.cpp
-                      mediascanner/CMsgScanDir.cpp
-                      mediascanner/CMsgCollectionChanged.cpp
-                      mediascanner/CMediaItem.cpp
+                      ../mmscanner/CMsgBase.cpp
+                      ../mmscanner/CMsgError.cpp
+                      ../mmscanner/CMsgQuit.cpp
+                      ../mmscanner/CMsgResponse.cpp
+                      ../mmscanner/CMsgFinished.cpp
+                      ../mmscanner/CMsgProgress.cpp
+                      ../mmscanner/CMsgOpenDb.cpp
+                      ../mmscanner/CMsgScanDir.cpp
+                      ../mmscanner/CMsgCollectionChanged.cpp
  
                       main.cpp
                       )
@@ -41,23 +42,25 @@ set( HEADERS          sessionEx.h
                       CRpc.h
                       CMediaScannerCtrl.h 
                       CSubProcess.h
+                      CStateDbBase.h
+                      CStateDB.h
                        
-                      mediascanner/CMsgBase.h
-                      mediascanner/CMsgError.h
-                      mediascanner/CMsgQuit.h
-                      mediascanner/CMsgResponse.h
-                      mediascanner/CMsgFinished.h
-                      mediascanner/CMsgProgress.h
-                      mediascanner/CMsgOpenDb.h
-                      mediascanner/CMsgScanDir.h
-                      mediascanner/CMsgCollectionChanged.h
-                      mediascanner/CMediaItem.h
+                      ../mmscanner/CMsgBase.h
+                      ../mmscanner/CMsgError.h
+                      ../mmscanner/CMsgQuit.h
+                      ../mmscanner/CMsgResponse.h
+                      ../mmscanner/CMsgFinished.h
+                      ../mmscanner/CMsgProgress.h
+                      ../mmscanner/CMsgOpenDb.h
+                      ../mmscanner/CMsgScanDir.h
+                      ../mmscanner/CMsgCollectionChanged.h
                       )                    
   
 
-include_directories(${SOURCE_DIR} ${Boost_INCLUDE_DIRS} ${CMAKE_SOURCE_DIR} ${CMAKE_SOURCE_DIR}/../libmuroad ${CMAKE_SOURCE_DIR}/../libmuroa++) 
+include_directories(${SOURCE_DIR} ${Boost_INCLUDE_DIRS} ${SQLITE_INCLUDE_DIR} 
+                    ${CMAKE_SOURCE_DIR} ${CMAKE_SOURCE_DIR}/../libmuroad ${CMAKE_SOURCE_DIR}/../libmuroa++) 
 
-link_directories(${BINARY_DIR} "${CMAKE_SOURCE_DIR}/../libmuroad/build" "${CMAKE_SOURCE_DIR}/../libmuroa++/build")
+link_directories(${BINARY_DIR} ${SQLITE_LIBRARY_DIRS} "${CMAKE_SOURCE_DIR}/../libmuroad/build" "${CMAKE_SOURCE_DIR}/../libmuroa++/build")
 
 ADD_EXECUTABLE(msessiond ${SRCS} ${HEADERS} )
 
@@ -66,6 +69,7 @@ set_target_properties( msessiond PROPERTIES  COMPILE_FLAGS "-std=gnu++0x" )
 TARGET_LINK_LIBRARIES(msessiond    muroad
                                    muroa++
                                    ${Boost_LIBRARIES} 
+                                   ${SQLITE_LIBRARIES}
                                    xdiff
                                    log4cplus
                                    )

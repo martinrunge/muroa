@@ -6,7 +6,7 @@
  */
 
 #include "CMsgBase.h"
-#include "../sessionEx.h"
+#include <sessionEx.h>
 #include <sstream>
 
 #include "CMsgError.h"

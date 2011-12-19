@@ -1,12 +1,12 @@
 cmake_minimum_required (VERSION 2.6)
 
-set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../cmake" ${CMAKE_MODULE_PATH})
+set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../msessiond/cmake" ${CMAKE_MODULE_PATH})
 
 set(Boost_USE_STATIC_LIBS   ON )
 set(Boost_USE_MULTITHREADED ON )
 
 find_package(PkgConfig)
-find_package( Boost 1.36.0 COMPONENTS filesystem REQUIRED )
+find_package( Boost 1.36.0 COMPONENTS filesystem system REQUIRED )
 find_package( TagLib REQUIRED )
 find_package( Sqlite REQUIRED )
 
@@ -17,10 +17,7 @@ set(SRCS     mediascanner.cpp
              CMediaScanner.cpp
              CFsScanner.cpp
              CStateDbUpdater.cpp
-             ../CStateDbBase.cpp
-             CMediaItem.cpp 
-             ../CSubProcess.cpp
-             ../sessionEx.cpp 
+             # CMediaItem.cpp 
              CMsgBase.cpp
              CMsgError.cpp
              CMsgQuit.cpp
@@ -30,16 +27,16 @@ set(SRCS     mediascanner.cpp
              CMsgFinished.cpp
              CMsgProgress.cpp
              CMsgCollectionChanged.cpp
+             ../msessiond/CStateDbBase.cpp
+             ../msessiond/CSubProcess.cpp
+             ../msessiond/sessionEx.cpp 
              )
 
 set( HEADER  CMediaScanner.h
              CEventLoop.h
              CFsScanner.h
              CStateDbUpdater.h
-             ../CStateDbBase.h
-             CMediaItem.h 
-             ../CSubProcess.h
-             ../sessionEx.h 
+             # CMediaItem.h 
              CMsgBase.h
              CMsgError.h
              CMsgQuit.h
@@ -49,19 +46,26 @@ set( HEADER  CMediaScanner.h
              CMsgFinished.h
              CMsgProgress.h
              CMsgCollectionChanged.h
+             ../msessiond/CStateDbBase.h
+             ../msessiond/CSubProcess.h
+             ../msessiond/sessionEx.h 
              )
 
 
-include_directories(${SOURCE_DIR} ${Boost_INCLUDE_DIRS} ${Taglib_CFLAGS} ${SQLITE_INCLUDE_DIR}) 
+include_directories(${SOURCE_DIR} ${Boost_INCLUDE_DIRS} ${Taglib_CFLAGS} ${SQLITE_INCLUDE_DIR} 
+                    "${CMAKE_CURRENT_SOURCE_DIR}/../msessiond" "${CMAKE_SOURCE_DIR}/../libmuroa++") 
 
-link_directories(${BINARY_DIR} ${SQLITE_LIBRARY_DIRS}  )
+link_directories(${BINARY_DIR} ${SQLITE_LIBRARY_DIRS} "${CMAKE_SOURCE_DIR}/../libmuroa++/build")
 
-ADD_EXECUTABLE(mediascanner ${SRCS} )
+ADD_EXECUTABLE(mmscanner ${SRCS} )
 
-set_target_properties( mediascanner PROPERTIES  COMPILE_FLAGS "-std=gnu++0x" ) 
+set_target_properties( mmscanner PROPERTIES  COMPILE_FLAGS "-std=gnu++0x" ) 
 
-TARGET_LINK_LIBRARIES(mediascanner  
+TARGET_LINK_LIBRARIES(mmscanner  
                                 ${Boost_LIBRARIES} 
                                 ${Taglib_LIBRARIES}  
                                 ${SQLITE_LIBRARIES} 
+                                muroa++
+                                xdiff
+                                log4cplus
                                 )

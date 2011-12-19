@@ -14,9 +14,11 @@ add_definitions(  )
 
 
 set( SRC           CRootItem.cpp
+                   CRootItemIterator.cpp
                    CItemType.cpp
                    CItemBase.cpp
                    CCategoryItem.cpp
+                   # CCategoryItemIterator.cpp
                    IContentItem.cpp
                    CMediaItem.cpp
                    CPlaylistItem.cpp
@@ -35,9 +37,11 @@ set( SRC           CRootItem.cpp
                   
 
 set( HEADERS       CRootItem.h
+                   CRootItemIterator.h
                    CItemType.h
                    CItemBase.h
                    CCategoryItem.h
+                   # CCategoryItemIterator.h
                    IContentItem.h
                    CMediaItem.h
                    CPlaylistItem.cpp

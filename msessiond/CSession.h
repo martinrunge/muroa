@@ -42,13 +42,17 @@ public:
 	const std::string getPlaylistDiff(unsigned fromRevision, int toRevision = -1) const;
 	const std::string getNextlistDiff(unsigned fromRevision, int toRevision = -1) const;
 
-	inline int getCollectionRevision() const { return m_maxMediaColRev; };
-	inline int getPlaylistRevision() const { return m_maxPlaylistRev; };
-	inline int getNextlistRevision() const { return m_maxNextlistRev; };
+	inline int getMaxMediaColRev() const { return m_maxMediaColRev; };
+	inline int getMaxPlaylistRev() const { return m_maxPlaylistRev; };
+	inline int getMaxNextlistRev() const { return m_maxNextlistRev; };
 
 	inline int getMinMediaColRev() const { return m_minMediaColRev; };
 	inline int getMinPlaylistRev() const { return m_minPlaylistRev; };
 	inline int getMinNextlistRev() const { return m_minNextlistRev; };
+
+	inline void setMinMediaColRev( const unsigned min ) { m_minMediaColRev = min; };
+	inline void setMinPlaylistRev( const unsigned min ) { m_minPlaylistRev = min; };
+	inline void setMinNextlistRev( const unsigned min ) { m_minNextlistRev = min; };
 
 
 	void addMediaColRev(CRootItem* ri);

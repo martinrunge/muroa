@@ -21,7 +21,7 @@
 #include <sys/wait.h>
 #include <string.h>
 
-#include "mediascanner/CMsgError.h"
+#include "../mmscanner/CMsgError.h"
 
 using namespace std;
 using namespace boost::asio;
@@ -47,7 +47,7 @@ void CMediaScannerCtrl::start(uint32_t jobID) {
 
 	vector<string> args;
 
-	pid_t pid = CSubProcess::start("./build/mediascanner/mediascanner" , args ,0 ,0);
+	pid_t pid = CSubProcess::start("../mmscanner/build/mmscanner" , args ,0 ,0);
 
 	if(pid < 0) {
 		cerr << "could not start mediascanner" << endl;

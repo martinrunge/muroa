@@ -25,17 +25,43 @@
 #define CCATEGORYITEM_H_
 
 #include "CItemBase.h"
+// #include "CCategoryItemIterator.h"
 
 #include <string>
+#include <stack>
 #include <sstream>
 
 class CContentItem;
+class CCategoryItem;
+
+class CCategoryItemIterator : public std::iterator<std::bidirectional_iterator_tag, CCategoryItem*>
+{
+	int m_pos;
+	CCategoryItem* m_base;
+
+	std::stack<int> m_pos_stack;
+	std::stack<CCategoryItem*> m_base_stack;
+
+public:
+  CCategoryItemIterator(CCategoryItem* base, int pos);
+  CCategoryItemIterator(const CCategoryItemIterator& it);
+  CCategoryItemIterator& operator++();
+  CCategoryItemIterator operator++(int);
+  bool operator==(const CCategoryItemIterator& rhs);
+  bool operator!=(const CCategoryItemIterator& rhs);
+  CItemBase* operator*();
+};
+
 
 
 class CCategoryItem : public CItemBase {
 public:
 	CCategoryItem(CRootItem *root_item, std::string text = std::string(), CCategoryItem*  parent = 0);
 	virtual ~CCategoryItem();
+
+	typedef CCategoryItemIterator iterator;
+	iterator begin();
+	iterator end();
 
 	inline std::string getPath() const { return m_path; };
 

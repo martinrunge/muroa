@@ -12,6 +12,8 @@
 
 #include "CItemType.h"
 
+#include "CRootItemIterator.h"
+
 #include <string>
 #include <map>
 #include <vector>
@@ -19,9 +21,15 @@
 
 #include <stdexcept>
 
+#include "CCategoryItem.h"
+
 class CItemBase;
-class CCategoryItem;
 class IContentItem;
+
+class CMediaItem;
+
+#include <iterator>
+using namespace std;
 
 
 class CRootItem {
@@ -29,12 +37,18 @@ public:
 	CRootItem();
 	virtual ~CRootItem();
 
+	typedef muroa::CRootItemIterator iterator;
+	iterator begin();
+	iterator end();
+
 	CCategoryItem* addCategory(std::string name, CCategoryItem* parent = 0);
 
 //	IContentItem* addContentItem(CCategoryItem* parent = 0, int posInParent = -1);
 	IContentItem* addEmptyContentItem(CItemType type, CCategoryItem* parent, int posInParent = -1);
 	IContentItem* addContentItem(std::string textWoPath, CCategoryItem* parent, int posInParent = -1);
 	IContentItem* addContentItem(std::string text, int posInParent = -1);
+
+	IContentItem* addContentItem(IContentItem* item, CCategoryItem* parent, int posInParent = -1);
 
 	CCategoryItem* getBase() const { return m_base; };
 
@@ -54,30 +68,10 @@ public:
 	// implementation traverses object tree and compares names
 	//CCategoryItem* getItemPtr(std::string path);
 
-	CCategoryItem* getItemPtr(std::string path) {
-    	std::map<std::string, CCategoryItem*>::iterator it;
-    	it = m_category_map.find(path);
-    	if(it == m_category_map.end()) {
-    		return 0;
-    	}
-    	else {
-    		return it->second;
-    	}
-   	}
+	CCategoryItem* getItemPtr(std::string path = "/");
+    void setItemPtr(std::string path, CCategoryItem* itemPtr);
 
-	inline void setItemPtr(std::string path, CCategoryItem* itemPtr) {
-		std::pair<std::map<std::string, CCategoryItem*>::iterator,bool> ret;
-		ret = m_category_map.insert(std::pair<std::string,CCategoryItem*>(path, itemPtr));
-		if (ret.second==false)
-		{
-		    std::cout << "element 'z' already existed";
-		    std::cout << " with a value of " << ret.first->second << std::endl;
-		}
-	}
-
-	inline void delItemPtr(std::string path) {
-		m_category_map.erase(path);
-	}
+	void delItemPtr(std::string path);
 
 	IContentItem* getContentPtr(const CItemType& type, const uint32_t hash);
 	void setContentPtr(const CItemType& type, IContentItem* ptr, const uint32_t hash);

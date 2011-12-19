@@ -11,12 +11,12 @@
 
 
 #include "CSubProcess.h"
-#include "mediascanner/CEventLoop.h"
-#include "mediascanner/CMsgQuit.h"
-#include "mediascanner/CMsgResponse.h"
-#include "mediascanner/CMsgProgress.h"
-#include "mediascanner/CMsgFinished.h"
-#include "mediascanner/CMsgCollectionChanged.h"
+#include "../mmscanner/CEventLoop.h"
+#include "../mmscanner/CMsgQuit.h"
+#include "../mmscanner/CMsgResponse.h"
+#include "../mmscanner/CMsgProgress.h"
+#include "../mmscanner/CMsgFinished.h"
+#include "../mmscanner/CMsgCollectionChanged.h"
 
 #include <boost/array.hpp>
 #include <boost/bind.hpp>

@@ -8,7 +8,7 @@
 #include "CEventLoop.h"
 #include "CMsgBase.h"
 
-#include "../sessionEx.h"
+#include <sessionEx.h>
 
 #include <pthread.h>
 #include <sys/types.h>
@@ -47,7 +47,8 @@ void CEventLoop::sendEvent(CMsgBase *msg) {
 	const char * buffer = msg->serialize(size);
 
 	written = write( fileno(stdout), buffer, size);
-
+	::fsync(fileno(stdout));
+	m_dbg_file << "sent " << written << "bytes to parent (after fsync())" << endl;
 }
 
 
@@ -88,7 +89,7 @@ int CEventLoop::run() {
 		else {
 			if(readable(fileno(stdin))) {
 				m_dbg_file << "m_socket readable" << endl;
-				ssize_t numBytes = recv(fileno(stdin), bufFreePtr, bufferFreeSize, 0);
+				ssize_t numBytes = read(fileno(stdin), bufFreePtr, bufferFreeSize);
 				m_dbg_file << "recv: " << numBytes << " bytes of data" << endl;
 				bufferSize += numBytes;
 				bufferFreeSize -= numBytes;
