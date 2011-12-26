@@ -46,7 +46,9 @@ void CEventLoop::sendEvent(CMsgBase *msg) {
 	int size;
 	const char * buffer = msg->serialize(size);
 
-	written = write( fileno(stdout), buffer, size);
+	//written = send( fileno(stdout), buffer, size, 0);
+	 written = write( fileno(stdout), buffer, size);
+	// write( fileno(stdout), "sendEvent", 10);
 	::fsync(fileno(stdout));
 	m_dbg_file << "sent " << written << "bytes to parent (after fsync())" << endl;
 }

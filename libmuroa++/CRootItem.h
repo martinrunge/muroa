@@ -70,8 +70,9 @@ public:
 
 	CCategoryItem* getItemPtr(std::string path = "/");
     void setItemPtr(std::string path, CCategoryItem* itemPtr);
-
 	void delItemPtr(std::string path);
+	CCategoryItem* mkPath(std::string path);
+
 
 	IContentItem* getContentPtr(const CItemType& type, const uint32_t hash);
 	void setContentPtr(const CItemType& type, IContentItem* ptr, const uint32_t hash);
@@ -86,7 +87,6 @@ private:
 
 	std::string stripFirstSection(std::string& text);
 	CItemType getItemType(std::string& text);
-	CCategoryItem* mkPath(std::string path);
 };
 
 #endif /* CROOTITEM_H_ */

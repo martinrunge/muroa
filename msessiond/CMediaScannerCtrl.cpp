@@ -112,34 +112,35 @@ void CMediaScannerCtrl::fromStdout(const char* buffer, int length) {
 
 	m_bufSize += length;
 
-	try {
-		char* buf = m_bufPtr;
-		int size = m_bufSize;
+	while(m_bufSize > 0) {
+		try {
+			char* buf = m_bufPtr;
+			int size = m_bufSize;
 
-		cerr << "calling msgFactory: bufPtr=" << hex << (void*)buf << dec << " bufferSize=" << size << endl;
-		msg = CMsgBase::msgFactory( buf, size );
-		cerr << "after return: bufPtr=" << hex << (void*)buf << dec << " bufferSize=" << size << endl;
+			cerr << "calling msgFactory: bufPtr=" << hex << (void*)buf << dec << " bufferSize=" << size << endl;
+			msg = CMsgBase::msgFactory( buf, size );
+			cerr << "after return: bufPtr=" << hex << (void*)buf << dec << " bufferSize=" << size << endl;
 
-		int freeSpaceAtBeginning = buf - m_bufPtr;
-		if( size < freeSpaceAtBeginning) {
-			memcpy(m_bufPtr, buf, size);
-		} else {
-			memmove(m_bufPtr, buf, size);
+			int freeSpaceAtBeginning = buf - m_bufPtr;
+			if( size < freeSpaceAtBeginning) {
+				memcpy(m_bufPtr, buf, size);
+			} else {
+				memmove(m_bufPtr, buf, size);
+			}
+			m_bufSize = size;
+
 		}
-		m_bufSize = size;
+		catch(NeedMoreDataException dataEx) {
+			cerr << dataEx.reason() << endl;
 
+			// not enough data received yet to deserialize a message. So dont handle it either.
+			return;
+		}
+
+		// handle the CMsg object, no matter if it was receiver via socket or eventQueue.
+		bool run = handleMsg(msg);
+		if(run == false) stop();
 	}
-	catch(NeedMoreDataException dataEx) {
-		cerr << dataEx.reason() << endl;
-
-		// not enough data received yet to deserialize a message. So dont handle it either.
-		return;
-	}
-
-	// handle the CMsg object, no matter if it was receiver via socket or eventQueue.
-	bool run = handleMsg(msg);
-	if(run == false) stop();
-
 }
 
 void CMediaScannerCtrl::fromStderr(const char* buffer, int length) {
@@ -166,7 +167,7 @@ bool CMediaScannerCtrl::handleMsg(CMsgBase* msg) {
 	    {
 			CMsgError* error = reinterpret_cast<CMsgError*>(msg);
 			cerr << "CMediaScannerCtrl::handleMsg Error: " << error->getMessage() << endl;
-			m_parent->reportError(error->getErrorCode(), error->getMessage());
+			m_parent->reportError(error->getID(), error->getErrorCode(), error->getMessage());
 			break;
 	    }
 		case E_MSG_RESP:
@@ -184,7 +185,7 @@ bool CMediaScannerCtrl::handleMsg(CMsgBase* msg) {
 		case E_MSG_PROGRESS:
 		{
 			CMsgProgress* progMsg = reinterpret_cast<CMsgProgress*>(msg);
-			m_parent->scanProgress(progMsg->getProgress());
+			m_parent->scanProgress(progMsg->getJobID(), progMsg->getProgress());
 			break;
 		}
 		case E_MSG_FINISHED:

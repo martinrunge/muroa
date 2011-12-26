@@ -23,6 +23,7 @@ class CCmdBase;
 class CTcpServer;
 class CMediaScannerCtrl;
 class CApp;
+class CStateDB;
 
 class CSession : boost::noncopyable {
 public:
@@ -74,11 +75,11 @@ public:
 	void setMinNextlistRevision(int rev) throw();
 
 	void scanCollection(uint32_t jobID);
-	void scanProgress(uint32_t progress);
+	void scanProgress(uint32_t jobID, uint32_t progress);
 	void jobFinished(uint32_t jobID);
 	void collectionChanged(uint32_t newRev, uint32_t minRev, uint32_t maxRev);
 	void response(uint32_t requestID, int32_t returnCode, std::string message);
-	void reportError(int32_t errCode, std::string message);
+	void reportError(uint32_t jobID, int32_t errCode, std::string message);
 
 	void toAll( CCmdBase* cmd );
 
@@ -113,7 +114,8 @@ private:
 
     unsigned m_playlistPos;
 
-    std::string m_stateDB;
+    std::string m_stateDBFilename;
+    CStateDB* m_stateDB;
 
     boost::asio::io_service& m_io_service;
     CMediaScannerCtrl* m_mediaScanner;

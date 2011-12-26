@@ -26,7 +26,8 @@ public:
 	virtual ~CStateDB();
 
 	int open();
-	int close();	void saveSession(CSession const * const session);
+	int close();
+	void saveSession(CSession const * const session);
 	void restoreSession(CSession * const session);
 
 	CRootItem* getMediaColRev(int rev);

@@ -10,6 +10,7 @@
 #include <CTcpServer.h>
 #include "CMediaScannerCtrl.h"
 #include "CApp.h"
+#include "CStateDB.h"
 
 #include "../mmscanner/CMsgScanDir.h"
 #include "../mmscanner/CMsgOpenDb.h"
@@ -35,7 +36,7 @@ CSession::CSession(string name, boost::asio::io_service& io_service) : m_name(na
                                                                       m_minPlaylistRev(0),
                                                                       m_minNextlistRev(0),
                                                                       m_playlistPos(0),
-                                                                      m_stateDB("state.db"),
+                                                                      m_stateDBFilename("state.db"),
                                                                       m_io_service(io_service),
                                                                       m_app(CApp::getInstPtr()){
 
@@ -45,9 +46,17 @@ CSession::CSession(string name, boost::asio::io_service& io_service) : m_name(na
 	m_nextlistRevs[m_maxNextlistRev] = new CRootItem();
 
 	m_mediaScanner = new CMediaScannerCtrl(this, m_io_service);
+
+	m_stateDB = new CStateDB(m_stateDBFilename);
+	m_stateDB->open();
+	m_stateDB->restoreSession(this);
 }
 
 CSession::~CSession() {
+	m_stateDB->saveSession(this);
+	m_stateDB->close();
+	delete m_stateDB;
+
 	for(int i = m_minNextlistRev; i <= m_maxNextlistRev; i++) {
 		m_nextlistRevs.erase(i);
 	}
@@ -234,7 +243,7 @@ void CSession::scanCollection(uint32_t jobID) {
 
 }
 
-void CSession::scanProgress(uint32_t progress) {
+void CSession::scanProgress(uint32_t jobID, uint32_t progress) {
 
 }
 
@@ -243,14 +252,17 @@ void CSession::jobFinished(uint32_t jobID) {
 }
 
 void CSession::collectionChanged(uint32_t newRev, uint32_t minRev, uint32_t maxRev) {
+	CRootItem* newMediaColRev = m_stateDB->getMediaColRev(newRev);
+	addMediaColRev(newMediaColRev);
 
+	assert(newRev == m_maxMediaColRev);
 }
 
 void CSession::response(uint32_t requestID, int32_t returnCode, string message) {
 
 }
 
-void CSession::reportError(int32_t errCode, string message) {
+void CSession::reportError(uint32_t jobID, int32_t errCode, string message) {
 
 }
 

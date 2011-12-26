@@ -132,9 +132,9 @@ void CStateDB::restoreMediaCols(CSession * const session) {
 	if(m_db == 0) throw(CApiMisuseException("Calling restoreCollection(), but DB not opened."));
 	bool found;
 
-	int minRev =  getIntValue("MinMediaColRev", found);
+	int minRev =  getIntValue("CollectionRevMin", found);
 	assert(found);
-	int maxRev = getIntValue("MaxMediaColRev", found);
+	int maxRev = getIntValue("CollectionRevMax", found);
 	assert(found);
 
 	session->setMinMediaColRev( minRev );
@@ -159,6 +159,9 @@ CRootItem* CStateDB::getMediaColRev(int rev) {
 			oss << "/" << item->getArtist() << "/" << item->getAlbum();
 
 			CCategoryItem* parent = mediaCol->getItemPtr(oss.str());
+			if(parent == 0) {
+				parent = mediaCol->mkPath(oss.str());
+			}
 			mediaCol->addContentItem(item, parent);
 		}
 	} while(item != 0);
@@ -194,9 +197,9 @@ void CStateDB::restorePlaylists(CSession * const session) {
 	if(m_db == 0) throw(CApiMisuseException("Calling restorePlaylists(), but DB not opened."));
 	bool found;
 
-	int minRev = getIntValue("MinPlaylistRev", found);
+	int minRev = getIntValue("PlaylistRevMin", found);
 	assert(found);
-	int maxRev = getIntValue("MaxPlaylistRev", found);
+	int maxRev = getIntValue("PlaylistRevMax", found);
 	assert(found);
 
 	session->setMinPlaylistRev( minRev );
@@ -222,9 +225,9 @@ void CStateDB::restoreNextlists(CSession * const session) {
 	if(m_db == 0) throw(CApiMisuseException("Calling restoreNextlists(), but DB not opened."));
 	bool found;
 
-	int minRev = getIntValue("MinNextlistRev", found);
+	int minRev = getIntValue("NextlistRevMin", found);
 	assert(found);
-	int maxRev = getIntValue("MaxNextlistRev", found);
+	int maxRev = getIntValue("NextlistRevMax", found);
 	assert(found);
 
 	session->setMinNextlistRev( minRev );
