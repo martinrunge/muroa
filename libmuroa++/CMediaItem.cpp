@@ -69,7 +69,7 @@ CMediaItem::CMediaItem(CRootItem *root_item, std::string text, CCategoryItem*  p
 	rehash();
 }
 
-CMediaItem::CMediaItem() : IContentItem( 0, 0, CItemType::E_MEDIAITEM ) {
+CMediaItem::CMediaItem(CRootItem *root_item ) : IContentItem( root_item, 0, CItemType::E_MEDIAITEM ) {
 }
 
 void CMediaItem::setParent(CRootItem *root_item, CCategoryItem*  parent, int posInParent) {

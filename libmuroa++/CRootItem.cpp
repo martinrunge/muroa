@@ -88,10 +88,11 @@ IContentItem* CRootItem::addContentItem(IContentItem* item, CCategoryItem* paren
 		posInParent = parent->numChildren();
 	}
 	beginInsertItems(posInParent, 1, parent );
-	IContentItem* newItem = IContentItem::itemFactory( item->type(), this, parent, posInParent);
+	parent->addChild(item, posInParent);
+
 	endInsertItems();
 
-	return newItem;
+	return item;
 }
 
 IContentItem* CRootItem::addContentItem(string text, int posInParent) {

@@ -12,18 +12,26 @@
 
 namespace muroa {
 
-enum cmd_type {
-	E_PLAY,
-	E_STOP,
-	E_NEXT,
-	E_RPEV,
-
-};
-
-
-class CCmdBase {
+class Cmd {
 public:
-	virtual ~CCmdBase();
+
+	enum type_t {
+		PLAY,
+		STOP,
+		NEXT,
+		PREV,
+		ERROR,
+		FINI,
+		PROGRESS,
+		OPENDB,
+		RESP,
+		COLCHANGED,
+		PLCHANGED,
+		NLCHANGED,
+	};
+	typedef enum type_t type_t;
+
+	virtual ~Cmd();
 
 	inline std::string name() const { return m_name; };
 	inline void setName(std::string name) { m_name = name; };
@@ -36,13 +44,14 @@ public:
 	int id() { return m_id; };
 
 	virtual void timeout();
+	Cmd::type_t type() { return m_type; };
 
 protected:
-	CCmdBase(enum cmd_type type);
+	Cmd(type_t type);
 	std::string m_name;
 
 	int m_known_rev;
-	enum cmd_type m_type;
+	type_t m_type;
 
 private:
 	const long long m_id;

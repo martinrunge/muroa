@@ -19,7 +19,7 @@
 
 namespace muroa {
 
-class CCmdBase;
+class Cmd;
 class CTcpServer;
 class CMediaScannerCtrl;
 class CApp;
@@ -81,7 +81,7 @@ public:
 	void response(uint32_t requestID, int32_t returnCode, std::string message);
 	void reportError(uint32_t jobID, int32_t errCode, std::string message);
 
-	void toAll( CCmdBase* cmd );
+	void toAll( Cmd* cmd );
 
 	std::string getProperty(std::string key, std::string defaultVal = "");
 	void setProperty(std::string key, std::string val);

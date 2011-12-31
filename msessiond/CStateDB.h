@@ -32,11 +32,11 @@ public:
 
 	CRootItem* getMediaColRev(int rev);
 
-	CMediaItem* getMediaItemByHash(unsigned hash);
-    CMediaItem* getMediaItemByPos(int colPos, int colRev);
+	CMediaItem* getMediaItemByHash(unsigned hash, CRootItem* ri);
+    CMediaItem* getMediaItemByPos(int colPos, int colRev, CRootItem* ri);
 
-    CPlaylistItem* getPlaylistItemByPos(int pos, int rev);
-    CNextlistItem* getNextlistItemByPos(int pos, int rev);
+    CPlaylistItem* getPlaylistItemByPos(int pos, int rev, CRootItem* ri);
+    CNextlistItem* getNextlistItemByPos(int pos, int rev, CRootItem* ri);
 
     void updateMediaColTable( CSession const * const session, int minrev = -1, int maxrev = -1 );
 
@@ -50,9 +50,9 @@ public:
 
 
 private:
-    CMediaItem* getMediaItemFromStmt(sqlite3_stmt *pStmt);
-	CPlaylistItem* getPlaylistItemFromStmt(sqlite3_stmt *pStmt);
-	CNextlistItem* getNextlistItemFromStmt(sqlite3_stmt *pStmt);
+    CMediaItem* getMediaItemFromStmt(sqlite3_stmt *pStmt, CRootItem* ri);
+	CPlaylistItem* getPlaylistItemFromStmt(sqlite3_stmt *pStmt, CRootItem* ri);
+	CNextlistItem* getNextlistItemFromStmt(sqlite3_stmt *pStmt, CRootItem* ri);
 
     void updateMediaItem( CMediaItem* item );
 

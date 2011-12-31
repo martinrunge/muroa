@@ -215,7 +215,7 @@ void CStateDbBase::createCollectionTable( ) {
 }
 
 void CStateDbBase::createCollectionRevisionsTable() {
-	createTable("collectionRevs" , "(colPos INTEGER, colHash INTEGER REFERENCES collection (hash),  ColRev INTEGER)");
+	createTable("collectionRevs" , "(colPath TEXT, colPos INTEGER, colHash INTEGER REFERENCES collection (hash),  ColRev INTEGER)");
 }
 
 int CStateDbBase::updateMediaItem( CMediaItem* item ) {

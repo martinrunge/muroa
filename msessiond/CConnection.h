@@ -13,11 +13,24 @@
 #include <boost/enable_shared_from_this.hpp>
 
 
+
 namespace muroa {
 
 class CRpc;
 class CSession;
 class CSessionContainer;
+
+class Cmd;
+class CmdPlay;
+class CmdStop;
+class CmdNext;
+class CmdPrev;
+class CmdProgress;
+class CmdFinished;
+class CmdColChanged;
+class CmdResp;
+class CmdError;
+
 
 class CConnection : public CTcpConnection {
 public:
@@ -41,12 +54,25 @@ public:
     CSession *getSession() const;
     void setSession(CSession *session);
 
+    void sendCmd( Cmd* cmd );
+
 private:
     CConnection(boost::asio::io_service& io_service);
 
     CRpc *m_rpc;
     CSession* m_session;
     CSessionContainer* m_session_container;
+
+
+    void play(CmdPlay* playCmd);
+    void stop(CmdStop* stopCmd);
+    void next(CmdNext* nextCmd);
+    void prev(CmdPrev* prevCmd);
+    void progress(CmdProgress* progressMsg);
+    void finished(CmdFinished* finishedCmd);
+    void collectionChanged(CmdColChanged* colChangedCmd);
+    void response(CmdResp* respCmd);
+    void error(CmdError* errorMsg);
 };
 
 } /* namespace muroa */

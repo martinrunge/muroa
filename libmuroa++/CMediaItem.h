@@ -15,7 +15,7 @@
 
 class CMediaItem : public IContentItem {
 public:
-	CMediaItem();
+	CMediaItem(CRootItem *root_item = 0);
 	CMediaItem(CRootItem *root_item, CCategoryItem*  parent, int posInParent = -1);
 	CMediaItem(CRootItem *root_item, std::string text, CCategoryItem*  parent, int posInParent = -1);
 	virtual ~CMediaItem();

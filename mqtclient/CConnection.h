@@ -8,7 +8,7 @@
 #include "CSessionSM.h"
 
 #include <muroaxml/CMuroaXml.h>
-#include <cmds/CCmdBase.h>
+#include <cmds/Cmd.h>
 
 enum connectionState {
 	e_disconnected,

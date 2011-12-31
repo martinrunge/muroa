@@ -13,6 +13,12 @@
 #include "CConnection.h"
 #include "CRpc.h"
 
+#include <cmds/Cmd.h>
+#include <cmds/SimpleCmds.h>
+#include <cmds/CmdError.h>
+#include <cmds/CmdProgress.h>
+#include <cmds/CmdColChanged.h>
+
 namespace muroa {
 
 CConnection::CConnection(boost::asio::io_service& io_service) : CTcpConnection(io_service) , m_rpc(0) {
@@ -111,5 +117,90 @@ void CConnection::setSession(CSession *session) {
 	m_session = session;
 }
 
+void CConnection::sendCmd( Cmd* cmd ) {
+	switch(cmd->type()) {
+	case Cmd::PLAY:
+	{
+		CmdPlay* msg = reinterpret_cast<CmdPlay*>(cmd);
+		play(msg);
+		break;
+	}
+	case Cmd::STOP:
+	{
+		CmdStop* msg = reinterpret_cast<CmdStop*>(cmd);
+		stop(msg);
+		break;
+	}
+	case Cmd::NEXT:
+	{
+		CmdNext* msg = reinterpret_cast<CmdNext*>(cmd);
+		next(msg);
+		break;
+	}
+	case Cmd::PREV:
+	{
+		CmdPrev* msg = reinterpret_cast<CmdPrev*>(cmd);
+		prev(msg);
+		break;
+	}
+	case Cmd::PROGRESS:
+	{
+		CmdProgress* msg = reinterpret_cast<CmdProgress*>(cmd);
+		progress(msg);
+		break;
+	}
+	case Cmd::FINI:
+	{
+		break;
+	}
+	case Cmd::OPENDB:
+	{
+		break;
+	}
+	case Cmd::RESP:
+	{
+		break;
+	}
+	default:
+		break;
+
+	}
+}
+
+void CConnection::play(CmdPlay* playCmd) {
+	m_rpc->play();
+}
+
+void CConnection::stop(CmdStop* stopCmd) {
+	m_rpc->stop();
+}
+
+void CConnection::next(CmdNext* nextCmd) {
+	m_rpc->next();
+}
+
+void CConnection::prev(CmdPrev* prevCmd) {
+	m_rpc->prev();
+}
+
+void CConnection::progress(CmdProgress* progressMsg) {
+	m_rpc->progress(progressMsg->getCorrespondingJobId(), progressMsg->getProgress());
+}
+
+void CConnection::finished(CmdFinished* finishedCmd) {
+//	m_rpc->finished(finishedCmd->getCorrespondingJonID());
+}
+
+void CConnection::collectionChanged(CmdColChanged* colChangedCmd) {
+	m_rpc->editCollection(colChangedCmd->getFromRev(), colChangedCmd->getDiff());
+}
+
+void CConnection::response(CmdResp* respCmd) {
+//	m_rpc->
+}
+
+void CConnection::error(CmdError* errorMsg) {
+	m_rpc->error(errorMsg->getCorrespondingJobID(), errorMsg->getErrorCode(), errorMsg->getDescription());
+}
 
 } /* namespace muroa */

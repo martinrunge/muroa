@@ -148,15 +148,17 @@ void CStateDB::restoreMediaCols(CSession * const session) {
 CRootItem* CStateDB::getMediaColRev(int rev) {
 	CRootItem* mediaCol = new CRootItem();
 
-	CMediaItem* item;
+	CMediaItem* item = (CMediaItem*)0xffFFffFF;
 	int pos = 0;
 	do {
-		item = getMediaItemByPos(pos, rev);
+		item = getMediaItemByPos(pos, rev, mediaCol );
 		pos++;
 		if(item) {
 
 			ostringstream oss;
 			oss << "/" << item->getArtist() << "/" << item->getAlbum();
+
+			cerr << oss.str();
 
 			CCategoryItem* parent = mediaCol->getItemPtr(oss.str());
 			if(parent == 0) {
@@ -210,7 +212,7 @@ void CStateDB::restorePlaylists(CSession * const session) {
 		CPlaylistItem* item;
 		int pos = 0;
 		do {
-			item = getPlaylistItemByPos(pos, rev);
+			item = getPlaylistItemByPos(pos, rev, playlist);
 			pos++;
 			if(item) {
 				CCategoryItem* parent = playlist->getItemPtr();
@@ -238,7 +240,7 @@ void CStateDB::restoreNextlists(CSession * const session) {
 		CNextlistItem* item;
 		int pos = 0;
 		do {
-			item = getNextlistItemByPos(pos, rev);
+			item = getNextlistItemByPos(pos, rev, nextlist);
 			pos++;
 			if(item) {
 				CCategoryItem* parent = nextlist->getItemPtr();
@@ -350,7 +352,7 @@ void CStateDB::updateMediaItem( CMediaItem* item ) {
 }
 
 
-CMediaItem* CStateDB::getMediaItemByPos(int colPos, int colRev) {
+CMediaItem* CStateDB::getMediaItemByPos(int colPos, int colRev, CRootItem* ri) {
 	CMediaItem* item = 0;
 
 	assert(m_getMediaItemByPosStmt != 0);
@@ -370,7 +372,7 @@ CMediaItem* CStateDB::getMediaItemByPos(int colPos, int colRev) {
 		retval = sqlite3_step( m_getMediaItemByPosStmt );
 		switch(retval) {
 		case SQLITE_ROW:
-			item = getMediaItemFromStmt(m_getMediaItemByPosStmt);
+			item = getMediaItemFromStmt(m_getMediaItemByPosStmt, ri);
 			num_found++;
  			break;
 
@@ -394,7 +396,7 @@ CMediaItem* CStateDB::getMediaItemByPos(int colPos, int colRev) {
 	return item;
 }
 
-CMediaItem* CStateDB::getMediaItemByHash(unsigned hash) {
+CMediaItem* CStateDB::getMediaItemByHash(unsigned hash, CRootItem* ri) {
 	CMediaItem* item;
 
 	int retval = sqlite3_bind_int(m_selectMediaItemStmt, 1, hash);
@@ -406,7 +408,7 @@ CMediaItem* CStateDB::getMediaItemByHash(unsigned hash) {
 		retval = sqlite3_step( m_selectMediaItemStmt );
 		switch(retval) {
 		case SQLITE_ROW:
-			item = getMediaItemFromStmt(m_selectMediaItemStmt);
+			item = getMediaItemFromStmt(m_selectMediaItemStmt, ri);
 			break;
 
 		case SQLITE_DONE:
@@ -430,8 +432,8 @@ CMediaItem* CStateDB::getMediaItemByHash(unsigned hash) {
 	return item;
 }
 
-CMediaItem* CStateDB::getMediaItemFromStmt(sqlite3_stmt *pStmt) {
-	CMediaItem* item = new CMediaItem;
+CMediaItem* CStateDB::getMediaItemFromStmt(sqlite3_stmt *pStmt, CRootItem* ri) {
+	CMediaItem* item = new CMediaItem(ri);
 	// (hash INTEGER, file TEXT, artist TEXT, album TEXT, title TEXT, duration INTEGER, num_played INTEGER, num_skipped INTEGER, num_repeated INTEGER, rating INTEGER)";
 	int numCol = sqlite3_column_count(pStmt);
 	// Scerr << "result has " << numCol << " columns" << endl;
@@ -554,13 +556,13 @@ int CStateDB::rowIDofPlRevEntry(int plPos, int colHash, int plRev, int colRev) {
 }
 
 
-CPlaylistItem* CStateDB::getPlaylistItemFromStmt(sqlite3_stmt *pStmt) {
+CPlaylistItem* CStateDB::getPlaylistItemFromStmt(sqlite3_stmt *pStmt, CRootItem* ri) {
 	unsigned hash = sqlite3_column_int(pStmt, 0);
 	CPlaylistItem* item = new CPlaylistItem( hash );
 	return item;
 }
 
-CPlaylistItem* CStateDB::getPlaylistItemByPos(int pos, int rev) {
+CPlaylistItem* CStateDB::getPlaylistItemByPos(int pos, int rev, CRootItem* ri) {
 	CPlaylistItem* item = 0;
 
 	int retval = sqlite3_bind_int(m_selectPlaylistItemStmt, 1, pos);
@@ -582,7 +584,7 @@ CPlaylistItem* CStateDB::getPlaylistItemByPos(int pos, int rev) {
 		retval = sqlite3_step( m_selectPlaylistItemStmt );
 		switch(retval) {
 		case SQLITE_ROW:
-			item = getPlaylistItemFromStmt(m_selectPlaylistItemStmt);
+			item = getPlaylistItemFromStmt(m_selectPlaylistItemStmt, ri);
 			break;
 
 		case SQLITE_DONE:
@@ -606,7 +608,7 @@ CPlaylistItem* CStateDB::getPlaylistItemByPos(int pos, int rev) {
 	return item;
 }
 
-CNextlistItem* CStateDB::getNextlistItemByPos(int pos, int rev) {
+CNextlistItem* CStateDB::getNextlistItemByPos(int pos, int rev, CRootItem* ri) {
 
 }
 

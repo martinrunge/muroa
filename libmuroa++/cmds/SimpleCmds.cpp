@@ -5,47 +5,47 @@
  *      Author: martin
  */
 
-#include "CSimpleCmds.h"
+#include "SimpleCmds.h"
 
 namespace muroa {
 
-CCmdPlay::CCmdPlay() {
+CmdPlay::CmdPlay() : Cmd(Cmd::PLAY) {
 	// TODO Auto-generated constructor stub
 
 }
 
-CCmdPlay::~CCmdPlay() {
+CmdPlay::~CmdPlay() {
 	// TODO Auto-generated destructor stub
 }
 
 
 
-CCmdStop::CCmdStop() {
+CmdStop::CmdStop() : Cmd(Cmd::STOP) {
 	// TODO Auto-generated constructor stub
 
 }
 
-CCmdStop::~CCmdStop() {
+CmdStop::~CmdStop() {
 	// TODO Auto-generated destructor stub
 }
 
 
-CCmdNext::CCmdNext() {
+CmdNext::CmdNext() : Cmd(Cmd::NEXT) {
 	// TODO Auto-generated constructor stub
 
 }
 
-CCmdNext::~CCmdNext() {
+CmdNext::~CmdNext() {
 	// TODO Auto-generated destructor stub
 }
 
 
-CCmdPrev::CCmdPrev() {
+CmdPrev::CmdPrev() : Cmd(Cmd::PREV)  {
 	// TODO Auto-generated constructor stub
 
 }
 
-CCmdPrev::~CCmdPrev() {
+CmdPrev::~CmdPrev() {
 	// TODO Auto-generated destructor stub
 }
 

@@ -6,7 +6,10 @@
 
 #include "CSession.h"
 
-#include <cmds/CCmdBase.h>
+#include <cmds/Cmd.h>
+#include <cmds/CmdProgress.h>
+#include <cmds/SimpleCmds.h>
+
 #include <CTcpServer.h>
 #include "CMediaScannerCtrl.h"
 #include "CApp.h"
@@ -16,6 +19,7 @@
 #include "../mmscanner/CMsgOpenDb.h"
 
 #include <sstream>
+
 
 using namespace std;
 
@@ -244,7 +248,8 @@ void CSession::scanCollection(uint32_t jobID) {
 }
 
 void CSession::scanProgress(uint32_t jobID, uint32_t progress) {
-
+	CmdProgress* progCmd = new CmdProgress(jobID, progress);
+	toAll(progCmd);
 }
 
 void CSession::jobFinished(uint32_t jobID) {
@@ -266,8 +271,13 @@ void CSession::reportError(uint32_t jobID, int32_t errCode, string message) {
 
 }
 
-void CSession::toAll( CCmdBase* cmd ) {
-
+void CSession::toAll( Cmd* cmd ) {
+	set<CConnection*>::iterator it = m_connections.begin();
+	while( it != m_connections.end() ) {
+		(*it)->sendCmd(cmd);
+		++it;
+	}
+	delete cmd;
 }
 
 string CSession::getProperty(string key, string defaultVal) {
