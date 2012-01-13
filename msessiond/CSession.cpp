@@ -41,7 +41,6 @@ CSession::CSession(string name, boost::asio::io_service& io_service) : m_name(na
                                                                       m_minNextlistRev(0),
                                                                       m_playlistPos(0),
                                                                       m_stateDBFilename("state.db"),
-                                                                      m_io_service(io_service),
                                                                       m_app(CApp::getInstPtr()){
 
 	// all thee collection have an empty revision 0!
@@ -49,11 +48,30 @@ CSession::CSession(string name, boost::asio::io_service& io_service) : m_name(na
 	m_playlistRevs[m_maxPlaylistRev] = new CRootItem();
 	m_nextlistRevs[m_maxNextlistRev] = new CRootItem();
 
-	m_mediaScanner = new CMediaScannerCtrl(this, m_io_service);
+	m_mediaScanner = new CMediaScannerCtrl(this, io_service);
 
 	m_stateDB = new CStateDB(m_stateDBFilename);
 	m_stateDB->open();
 	m_stateDB->restoreSession(this);
+}
+
+
+// this c-tor is intended for unittest only
+CSession::CSession( std::string name ) :    m_name(name),
+											m_maxMediaColRev(0),
+											m_maxPlaylistRev(0),
+											m_maxNextlistRev(0),
+											m_minMediaColRev(0),
+											m_minPlaylistRev(0),
+											m_minNextlistRev(0),
+											m_playlistPos(0),
+											m_stateDBFilename("unittest_state.db"),
+											m_app(CApp::getInstPtr()) {
+
+	// all thee collection have an empty revision 0!
+	m_mediaColRevs[m_maxMediaColRev] = new CRootItem();
+	m_playlistRevs[m_maxPlaylistRev] = new CRootItem();
+	m_nextlistRevs[m_maxNextlistRev] = new CRootItem();
 }
 
 CSession::~CSession() {

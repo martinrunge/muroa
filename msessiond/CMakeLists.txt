@@ -8,7 +8,9 @@ set(Boost_USE_STATIC_LIBS   ON )
 set(Boost_USE_MULTITHREADED ON )
 find_package( Boost 1.36.0 COMPONENTS filesystem system REQUIRED )
 find_package( Sqlite REQUIRED )
+find_package( TagLib REQUIRED )
 
+# add_subdirectory(unittest)
 
 add_definitions(-D__STDC_CONSTANT_MACROS)
 
@@ -20,7 +22,8 @@ set( SRCS             sessionEx.cpp
                       CMediaScannerCtrl.cpp 
                       CSubProcess.cpp
                       CStateDbBase.cpp
-                      CStateDB.cpp 
+                      CStateDB.cpp
+                      CMediaItemCategorizer.cpp 
                       
                       ../mmscanner/CMsgBase.cpp
                       ../mmscanner/CMsgError.cpp
@@ -31,8 +34,7 @@ set( SRCS             sessionEx.cpp
                       ../mmscanner/CMsgOpenDb.cpp
                       ../mmscanner/CMsgScanDir.cpp
                       ../mmscanner/CMsgCollectionChanged.cpp
- 
-                      main.cpp
+              
                       )
                     
 set( HEADERS          sessionEx.h
@@ -44,6 +46,7 @@ set( HEADERS          sessionEx.h
                       CSubProcess.h
                       CStateDbBase.h
                       CStateDB.h
+                      CMediaItemCategorizer.h 
                        
                       ../mmscanner/CMsgBase.h
                       ../mmscanner/CMsgError.h
@@ -62,7 +65,7 @@ include_directories(${SOURCE_DIR} ${Boost_INCLUDE_DIRS} ${SQLITE_INCLUDE_DIR}
 
 link_directories(${BINARY_DIR} ${SQLITE_LIBRARY_DIRS} "${CMAKE_SOURCE_DIR}/../libmuroad/build" "${CMAKE_SOURCE_DIR}/../libmuroa++/build")
 
-ADD_EXECUTABLE(msessiond ${SRCS} ${HEADERS} )
+ADD_EXECUTABLE(msessiond main.cpp ${SRCS} ${HEADERS} )
 
 set_target_properties( msessiond PROPERTIES  COMPILE_FLAGS "-std=gnu++0x" ) 
 
@@ -73,3 +76,62 @@ TARGET_LINK_LIBRARIES(msessiond    muroad
                                    xdiff
                                    log4cplus
                                    )
+                                   
+                                   
+                                   
+find_package ( Qt4 REQUIRED COMPONENTS QtCore QtGui QtNetwork QtXml QtDbus )
+
+include ( ${QT_USE_FILE} )
+                                   
+set(unittests_SRCS     unittest/SessionTest.cpp
+                       unittest/CFakeMediaCollection.cpp 
+                       unittest/CDecoderTest.cpp 
+                       unittest/CCategorizerTest.cpp
+                       # unittest/CMediaFileTest.cpp 
+                       unittest/CDataBaseTest.cpp
+                       # unittest/CTimeTest.cpp
+                       # unittest/CSubProcessTest.cpp
+                       # unittest/CMediaScannerTest.cpp
+                       ../mmscanner/CStateDbUpdater.cpp
+                       ../mmscanner/CFsScanner.cpp
+                       ../mmscanner/CMediaScanner.cpp
+                       ../mmscanner/CEventLoop.cpp
+                       )
+
+set(unittests_HEADERS  unittest/CFakeMediaCollection.h 
+                       unittest/CDecoderTest.h
+                       # unittest/CMediaFileTest.h 
+                       unittest/CDataBaseTest.h
+                       unittest/CCategorizerTest.h
+                       # unittest/CTimeTest.h
+                       # unittest/CSubProcessTest.h
+                       # unittest/CMediaScannerTest.h
+                       ../mmscanner/CStateDbUpdater.h
+                       ../mmscanner/CFsScanner.h
+                       ../mmscanner/CMediaScanner.h
+                       ../mmscanner/CEventLoop.h
+                       )
+                                   
+ADD_EXECUTABLE(msessiondtest ${unittests_SRCS} ${unittests_HEADERS} ${SRCS} ${HEADERS} )
+
+set_target_properties( msessiondtest PROPERTIES  COMPILE_FLAGS "-std=gnu++0x" ) 
+
+TARGET_LINK_LIBRARIES(msessiondtest  cppunit 
+                                     muroa++
+                                     muroad
+                                     ${Boost_LIBRARIES} 
+                                     ${Taglib_LIBRARIES} 
+                                     ${QT_LIBRARIES} 
+                                     ${SQLITE_LIBRARIES} 
+                                     xdiff
+                                     ${ALSA_LIBRARY}
+                                     avahi-client
+                                     avahi-qt4
+                                     avformat
+                                     avcodec
+                                     avutil  
+                                     qxcppunitd 
+                                     qxrunnerd
+                                     )
+                                   
+                                   

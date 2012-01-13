@@ -15,7 +15,10 @@
 
 class CMediaItem;
 class CPlaylistItem;
-class CSession;
+
+namespace muroa {
+	class CSession;
+}
 
 class CStateDbBase {
 public:

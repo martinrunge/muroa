@@ -28,6 +28,7 @@ class CStateDB;
 class CSession : boost::noncopyable {
 public:
 	CSession(std::string name, boost::asio::io_service& io_service);
+ 	CSession( std::string name );
 	virtual ~CSession();
 
 	std::string getName() { return m_name; };
@@ -117,7 +118,7 @@ private:
     std::string m_stateDBFilename;
     CStateDB* m_stateDB;
 
-    boost::asio::io_service& m_io_service;
+    // boost::asio::io_service& m_io_service;
     CMediaScannerCtrl* m_mediaScanner;
 
     CApp* m_app;
