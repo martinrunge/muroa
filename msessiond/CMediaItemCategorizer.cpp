@@ -19,7 +19,14 @@ CMediaItemCategorizer::~CMediaItemCategorizer() {
 }
 
 CRootItem* CMediaItemCategorizer::categorize(std::vector<CMediaItem*> *mItems ) {
-	CRootItem* ri;
+	CRootItem* ri = new CRootItem;
+	CCategoryItem* parent;
+
+	for( std::vector<CMediaItem*>::iterator it = mItems->begin(); it != mItems->end(); it++) {
+		string path = "/" + (*it)->getArtist() + "/" + (*it)->getAlbum();
+		parent = ri->mkPath(path);
+		ri->addContentItem(*it, parent);
+	}
 
 	return ri;
 }

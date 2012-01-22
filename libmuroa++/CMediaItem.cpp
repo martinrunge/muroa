@@ -84,7 +84,9 @@ void CMediaItem::setParent(CRootItem *root_item, CCategoryItem*  parent, int pos
 }
 
 CMediaItem::~CMediaItem() {
-	m_root_item->delContentPtr(CItemType(CItemType::E_MEDIAITEM), m_hash );
+	if(m_root_item != 0) {
+		m_root_item->delContentPtr(CItemType(CItemType::E_MEDIAITEM), m_hash );
+	}
 }
 
 void CMediaItem::setAlbum(string album)
