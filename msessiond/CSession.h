@@ -79,7 +79,7 @@ public:
 	void setMinPlaylistRevision(int rev) throw();
 	void setMinNextlistRevision(int rev) throw();
 
-	void scanCollection(uint32_t jobID);
+	void scanCollection(CConnection* initiator, uint32_t jobID);
 	void scanProgress(uint32_t jobID, uint32_t progress);
 	void jobFinished(uint32_t jobID);
 	void collectionChanged(uint32_t newRev, uint32_t minRev, uint32_t maxRev);
@@ -108,6 +108,8 @@ private:
 	// CTcpServer* m_tcp_server;
 	std::string m_name;
 	std::set<CConnection*> m_connections;
+
+	std::map<uint32_t, CConnection*> m_job_initiators;
 
 	std::map<unsigned, CRootItem*> m_mediaColRevs;
 	std::map<unsigned, CRootItem*> m_playlistRevs;

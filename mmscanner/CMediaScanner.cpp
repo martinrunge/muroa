@@ -104,9 +104,9 @@ bool CMediaScanner::handleMsg(CMsgBase* msg) {
 
 					if( nrChanges > 0 ) {
 						bool found;
-						int minRev = m_stateDbUpdater->getIntValue("CollectionRevMin", found);
+						int minRev = m_stateDbUpdater->getIntValue("MinMediaColRev", found);
 						assert(found);
-						int maxRev = m_stateDbUpdater->getIntValue("CollectionRevMax", found);
+						int maxRev = m_stateDbUpdater->getIntValue("MaxmediaColRev", found);
 						assert(found);
 						CMsgCollectionChanged* colChanged = new CMsgCollectionChanged( maxRev, minRev, maxRev );
 						sendEvent(colChanged);

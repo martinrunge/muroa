@@ -37,7 +37,7 @@ int CStateDbUpdater::appendCollectionRev(std::vector<CMediaItem*> *collection) {
 
 	beginTansaction();
 
-	int maxRev = getIntValue("CollectionRevMax", found);
+	int maxRev = getIntValue("MaxMediaColRev", found);
 	assert(found == true);
 	maxRev++;
 
@@ -48,7 +48,7 @@ int CStateDbUpdater::appendCollectionRev(std::vector<CMediaItem*> *collection) {
 	}
 
 	if(nrChanges > 0) {
-		setValue("CollectionRevMax", maxRev);
+		setValue("MaxMediaColRev", maxRev);
 	}
 
 	endTransaction();

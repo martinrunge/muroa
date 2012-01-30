@@ -8,6 +8,7 @@
 
 #include <cmds/Cmd.h>
 #include <cmds/CmdProgress.h>
+#include <cmds/CmdFinished.h>
 #include <cmds/SimpleCmds.h>
 
 #include <CTcpServer.h>
@@ -262,22 +263,31 @@ CRootItem*  CSession::getRev(const map<unsigned, CRootItem*>& collection,
 	return it->second;
 }
 
-void CSession::scanCollection(uint32_t jobID) {
+void CSession::scanCollection(CConnection* initiator, uint32_t jobID) {
+	// bookkeeping: remember, which connection ordered to scan the collection
+	m_job_initiators.insert(std::pair<uint32_t, CConnection*>(jobID, initiator));
+
 	m_mediaScanner->start(jobID);
 	CMsgOpenDb* dbmsg = new CMsgOpenDb( getProperty("stateDBfile", "state.db") );
 	m_mediaScanner->sendMsg(dbmsg);
 	CMsgScanDir* sdmsg = new CMsgScanDir("/home/martin/Desktop");
 	m_mediaScanner->sendMsg(sdmsg);
-
 }
 
 void CSession::scanProgress(uint32_t jobID, uint32_t progress) {
-	CmdProgress* progCmd = new CmdProgress(jobID, progress);
-	toAll(progCmd);
+	map<uint32_t, CConnection*>::iterator it = m_job_initiators.find(jobID);
+	if(it != m_job_initiators.end()) {
+		CmdProgress* progCmd = new CmdProgress(jobID, progress);
+		it->second->sendCmd(progCmd);
+	}
 }
 
 void CSession::jobFinished(uint32_t jobID) {
-
+	map<uint32_t, CConnection*>::iterator it = m_job_initiators.find(jobID);
+	if(it != m_job_initiators.end()) {
+		CmdFinished* finiCmd = new CmdFinished(jobID);
+		it->second->sendCmd(finiCmd);
+	}
 }
 
 void CSession::collectionChanged(uint32_t newRev, uint32_t minRev, uint32_t maxRev) {

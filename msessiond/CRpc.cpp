@@ -68,7 +68,7 @@ CRpc::~CRpc() {
 
     void CRpc::onScanCollection(uint32_t jobID) {
     	// scan collection and give progress reports
-    	m_connection->getSession()->scanCollection(jobID);
+    	m_connection->getSession()->scanCollection(m_connection, jobID);
     }
 
     void CRpc::onProgress(uint32_t jobID, int progress)

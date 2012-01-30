@@ -180,34 +180,34 @@ void CStateDbBase::createGeneralTable() {
 	bool found;
 	createTable("general", "(key TEXT UNIQUE, value TEXT)");
 
-	int colRevMinVal = getIntValue("CollectionRevMin", found);
+	int colRevMinVal = getIntValue("MinMediaColRev", found);
 	if(!found) {
-		setValue("CollectionRevMin", 0);
+		setValue("MinMediaColRev", 0);
 	}
 
-	int colRevMaxVal = getIntValue("CollectionRevMax", found);
+	int colRevMaxVal = getIntValue("MaxMediaColRev", found);
 	if(!found) {
-		setValue("CollectionRevMax", 0);
+		setValue("MaxMediaColRev", 0);
 	}
 
-	int plRevMinVal = getIntValue("PlaylistRevMin", found);
+	int plRevMinVal = getIntValue("MinPlaylistRev", found);
 	if(!found) {
-		setValue("PlaylistRevMin", 0);
+		setValue("MinPlaylistRev", 0);
 	}
 
-	int plRevMaxVal = getIntValue("PlaylistRevMax", found);
+	int plRevMaxVal = getIntValue("MaxPlaylistRev", found);
 	if(!found) {
-		setValue("PlaylistRevMax", 0);
+		setValue("MaxPlaylistRev", 0);
 	}
 
-	int nlRevMinVal = getIntValue("NextlistRevMin", found);
+	int nlRevMinVal = getIntValue("MinNextlistRev", found);
 	if(!found) {
-		setValue("NextlistRevMin", 0);
+		setValue("MinNextlistRev", 0);
 	}
 
-	int nlRevMaxVal = getIntValue("NextlistRevMax", found);
+	int nlRevMaxVal = getIntValue("MaxNextlistRev", found);
 	if(!found) {
-		setValue("NextlistRevMax", 0);
+		setValue("MaxNextlistRev", 0);
 	}
 }
 

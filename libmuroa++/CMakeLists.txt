@@ -35,6 +35,7 @@ set( SRC           CRootItem.cpp
                    cmds/SimpleCmds.cpp
                    cmds/CmdError.cpp 
                    cmds/CmdProgress.cpp 
+                   cmds/CmdFinished.cpp 
                    cmds/CmdColChanged.cpp 
                    )
                   
@@ -60,6 +61,7 @@ set( HEADERS       CRootItem.h
                    cmds/SimpleCmds.h 
                    cmds/CmdError.h 
                    cmds/CmdProgress.h 
+                   cmds/CmdFinished.h
                    cmds/CmdColChanged.h 
                    )
                    

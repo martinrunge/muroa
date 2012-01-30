@@ -135,9 +135,9 @@ void CStateDB::restoreMediaCols(CSession * const session) {
 	bool found;
 
 	int minRev =  getIntValue("MinMediaColRev", found);
-	assert(found);
+	if(!found) return;
 	int maxRev = getIntValue("MaxMediaColRev", found);
-	assert(found);
+	if(!found) return;
 
 	session->setMinMediaColRev( minRev );
 	session->setMaxMediaColRev( minRev );  // max rev will be reached by calling addMediaVolRev() several times.
@@ -209,9 +209,9 @@ void CStateDB::restorePlaylists(CSession * const session) {
 	bool found;
 
 	int minRev = getIntValue("MinPlaylistRev", found);
-	assert(found);
+	if(!found) return;
 	int maxRev = getIntValue("MaxPlaylistRev", found);
-	assert(found);
+	if(!found) return;
 
 	session->setMinPlaylistRev( minRev );
 	session->setMaxPlaylistRev( minRev );  // max rev will be set by addPlaylistRev();
@@ -240,9 +240,9 @@ void CStateDB::restoreNextlists(CSession * const session) {
 	bool found;
 
 	int minRev = getIntValue("MinNextlistRev", found);
-	assert(found);
+	if(!found) return;
 	int maxRev = getIntValue("MaxNextlistRev", found);
-	assert(found);
+	if(!found) return;
 
 	session->setMinNextlistRev( minRev );
 	session->setMaxNextlistRev( minRev );  // max rev will be set by addNextlistRev();

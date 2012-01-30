@@ -21,7 +21,7 @@ public:
 		NEXT,
 		PREV,
 		ERROR,
-		FINI,
+		FINISHED,
 		PROGRESS,
 		OPENDB,
 		RESP,

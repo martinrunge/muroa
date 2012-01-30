@@ -149,7 +149,7 @@ void CConnection::sendCmd( Cmd* cmd ) {
 		progress(msg);
 		break;
 	}
-	case Cmd::FINI:
+	case Cmd::FINISHED:
 	{
 		break;
 	}

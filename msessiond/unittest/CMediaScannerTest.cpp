@@ -88,8 +88,8 @@ void CMediaScannerTest::testDbUpdater() {
 	sleep(1);
 
 	bool found;
-	int old_max_rev = m_media_scanner->m_stateDbUpdater->getIntValue("CollectionRevMax", found);
-	CPPUNIT_ASSERT_MESSAGE("'CollectionRevMax' not found in general table.", found );
+	int old_max_rev = m_media_scanner->m_stateDbUpdater->getIntValue("MaxMediaColRev", found);
+	CPPUNIT_ASSERT_MESSAGE("'MaxMediaColRev' not found in general table.", found );
 
 	m_media_scanner->postEvent(scanDirMsg);
 
@@ -101,7 +101,7 @@ void CMediaScannerTest::testDbUpdater() {
 	int max_rev, i = 0;
 	do
 	{
-		max_rev = m_media_scanner->m_stateDbUpdater->getIntValue("CollectionRevMax", found);
+		max_rev = m_media_scanner->m_stateDbUpdater->getIntValue("MaxMediaColRev", found);
 		CPPUNIT_ASSERT(found );
 		sleep(1);
 		i++;
