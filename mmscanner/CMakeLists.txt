@@ -69,3 +69,17 @@ TARGET_LINK_LIBRARIES(mmscanner
                                 xdiff
                                 log4cplus
                                 )
+
+                              
+###################################################################################
+# This step merges a gdb_index section into the binary to speed up debugging.
+# Doing this by add_custom_command will become obsolete as soon as the linker does it. 
+###################################################################################
+add_custom_command(TARGET mmscanner
+                   POST_BUILD  
+                   COMMAND  ${CMAKE_SOURCE_DIR}/../scripts/mkgdbindex.sh mmscanner 
+                   WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+                   COMMENT "building gdb index")
+                                   
+###################################################################################                                   
+                                

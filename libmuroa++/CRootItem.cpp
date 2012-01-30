@@ -26,12 +26,16 @@ CRootItem::CRootItem() {
 	m_base = new CCategoryItem(this, "", 0);
 	setItemPtr("/", m_base);
 	for(int i=0; i < CItemType::numTypes(); i++) {
-		m_content_maps.push_back( map<uint32_t, IContentItem*>() );
+		m_content_maps.push_back( new map<uint32_t, IContentItem*>() );
 	}
 }
 
 CRootItem::~CRootItem() {
 	delete m_base;
+
+	for(int i=0; i < CItemType::numTypes(); i++) {
+		delete m_content_maps[i];
+	}
 }
 
 CCategoryItem* CRootItem::addCategory(string name, CCategoryItem* parent) {
@@ -90,6 +94,8 @@ IContentItem* CRootItem::addContentItem(IContentItem* item, CCategoryItem* paren
 	beginInsertItems(posInParent, 1, parent );
 	parent->addChild(item, posInParent);
 
+	setContentPtr(CItemType(item->type()), item, item->getHash());
+
 	endInsertItems();
 
 	return item;
@@ -115,10 +121,10 @@ IContentItem* CRootItem::addContentItem(string text, int posInParent) {
 
 IContentItem* CRootItem::getContentPtr(const CItemType& type, const uint32_t hash) {
 	map<uint32_t, IContentItem*>::iterator it;
-	map<uint32_t, IContentItem*> content_map = m_content_maps[type.getType()];
+	map<uint32_t, IContentItem*>* content_map = m_content_maps[type.getType()];
 
-	it = content_map.find( hash );
-	if(it == content_map.end()) {
+	it = content_map->find( hash );
+	if(it == content_map->end()) {
 		return 0;
 	}
 	else {
@@ -128,9 +134,9 @@ IContentItem* CRootItem::getContentPtr(const CItemType& type, const uint32_t has
 
 void CRootItem::setContentPtr(const CItemType& type, IContentItem* ptr, const uint32_t hash) {
 	pair<map<uint32_t, IContentItem*>::iterator, bool> ret;
-	map<uint32_t, IContentItem*> content_map = m_content_maps[type.getType()];
+	map<uint32_t, IContentItem*>* content_map = m_content_maps[type.getType()];
 
-	ret = content_map.insert(pair<uint32_t, IContentItem*>(hash, ptr));
+	ret = content_map->insert(pair<uint32_t, IContentItem*>(hash, ptr));
 	if (ret.second==false)
 	{
 	    std::cout << "element 'z' already existed";
@@ -139,8 +145,8 @@ void CRootItem::setContentPtr(const CItemType& type, IContentItem* ptr, const ui
 }
 
 void CRootItem::delContentPtr(const CItemType& type, const uint32_t hash) {
-	map<uint32_t, IContentItem*> content_map = m_content_maps[type.getType()];
-	content_map.erase(hash);
+	map<uint32_t, IContentItem*>* content_map = m_content_maps[type.getType()];
+	content_map->erase(hash);
 }
 
 

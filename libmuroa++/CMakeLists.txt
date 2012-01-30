@@ -69,6 +69,19 @@ link_directories(  )
 
 add_library( muroa++ SHARED ${SRC} ${HEADERS} )
 target_link_libraries( muroa++  ${Boost_LIBRARIES} ${EXPAT_LIBRARIES})
-set_target_properties( muroa++  PROPERTIES  COMPILE_FLAGS "-std=gnu++0x" ) 
+set_target_properties( muroa++  PROPERTIES  COMPILE_FLAGS "-std=gnu++0x" )
+
+###################################################################################
+# This step merges a gdb_index section into the binary to speed up debugging.
+# Doing this by add_custom_command will become obsolete as soon as the linker does it. 
+###################################################################################
+add_custom_command(TARGET muroa++
+                   POST_BUILD  
+                   COMMAND  ${CMAKE_SOURCE_DIR}/../scripts/mkgdbindex.sh libmuroa++.so 
+                   WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+                   COMMENT "building gdb index")
+                                   
+###################################################################################                                   
+ 
 
 install(TARGETS   muroa++ DESTINATION  lib)

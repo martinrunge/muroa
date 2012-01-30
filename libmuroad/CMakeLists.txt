@@ -46,4 +46,17 @@ add_library(  muroad SHARED  ${SRC} ${HEADERS} )
 target_link_libraries( muroad  ${Boost_LIBRARIES} ${EXPAT_LIBRARIES} log4cplus pthread avahi-client avahi-common)
 set_target_properties( muroad  PROPERTIES  COMPILE_FLAGS "-std=gnu++0x -pthread" ) 
 
+###################################################################################
+# This step merges a gdb_index section into the binary to speed up debugging.
+# Doing this by add_custom_command will become obsolete as soon as the linker does it. 
+###################################################################################
+add_custom_command(TARGET muroad
+                   POST_BUILD  
+                   COMMAND  ${CMAKE_SOURCE_DIR}/../scripts/mkgdbindex.sh libmuroad.so 
+                   WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+                   COMMENT "building gdb index")
+                                   
+###################################################################################                                   
+
+
 install(TARGETS   muroad DESTINATION  lib)

@@ -78,6 +78,20 @@ TARGET_LINK_LIBRARIES(msessiond    muroad
                                    )
                                    
                                    
+################################################################################
+# This step merges a gdb_index section into the binary to speed up debugging.
+# Doing this by add_custom_command will become obsolete as soon as the linker does it. 
+################################################################################
+
+add_custom_command(TARGET msessiond
+                   POST_BUILD  
+                   COMMAND  ${CMAKE_SOURCE_DIR}/../scripts/mkgdbindex.sh msessiond 
+                   WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+                   COMMENT "building gdb index")
+
+###############################################################################                                   
+                                   
+                                   
                                    
 find_package ( Qt4 REQUIRED COMPONENTS QtCore QtGui QtNetwork QtXml QtDbus )
 
@@ -133,5 +147,18 @@ TARGET_LINK_LIBRARIES(msessiondtest  cppunit
                                      qxcppunitd 
                                      qxrunnerd
                                      )
+                                     
+################################################################################
+# This step merges a gdb_index section into the binary to speed up debugging.
+# Doing this by add_custom_command will become obsolete as soon as the linker does it. 
+################################################################################
+
+add_custom_command(TARGET msessiondtest
+                   POST_BUILD  
+                   COMMAND  ${CMAKE_SOURCE_DIR}/../scripts/mkgdbindex.sh msessiondtest 
+                   WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+                   COMMENT "building gdb index")
+
+################################################################################                                     
                                    
                                    

@@ -78,5 +78,18 @@ target_link_libraries( mqtclient   avahi-client
 
 set_target_properties( mqtclient PROPERTIES  COMPILE_FLAGS "-std=gnu++0x" ) 
 
+###################################################################################
+# This step merges a gdb_index section into the binary to speed up debugging.
+# Doing this by add_custom_command will become obsolete as soon as the linker does it. 
+###################################################################################
+add_custom_command(TARGET mqtclient
+                   POST_BUILD  
+                   COMMAND  ${CMAKE_SOURCE_DIR}/../scripts/mkgdbindex.sh mqtclient 
+                   WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+                   COMMENT "building gdb index")
+                                   
+###################################################################################                                   
+
+
 install(TARGETS   mqtclient
         DESTINATION  bin)

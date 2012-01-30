@@ -24,7 +24,7 @@ class CFakeMediaCollection;
 
 class CDataBaseTest : public CppUnit::TestFixture {
 	  CPPUNIT_TEST_SUITE( CDataBaseTest );
-	  CPPUNIT_TEST( testDB );
+	  CPPUNIT_TEST( readMediaItem );
 	  CPPUNIT_TEST( readGeneral );
 	  CPPUNIT_TEST( selectColRevs );
 	  //CPPUNIT_TEST( StateDbUpdater );
@@ -40,7 +40,7 @@ public:
 	void setUp();
 	void tearDown();
 
-	void testDB();
+	void readMediaItem();
 	void readGeneral();
 	void selectColRevs();
 

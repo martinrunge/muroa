@@ -65,6 +65,7 @@ CSession::CSession( std::string name ) :    m_name(name),
 											m_minPlaylistRev(0),
 											m_minNextlistRev(0),
 											m_playlistPos(0),
+											m_stateDB(0),
 											m_stateDBFilename("unittest_state.db"),
 											m_app(CApp::getInstPtr()) {
 
@@ -72,12 +73,17 @@ CSession::CSession( std::string name ) :    m_name(name),
 	m_mediaColRevs[m_maxMediaColRev] = new CRootItem();
 	m_playlistRevs[m_maxPlaylistRev] = new CRootItem();
 	m_nextlistRevs[m_maxNextlistRev] = new CRootItem();
+
 }
 
 CSession::~CSession() {
-	m_stateDB->saveSession(this);
-	m_stateDB->close();
-	delete m_stateDB;
+
+	if(m_stateDB != 0) {
+		m_stateDB->saveSession(this);
+		m_stateDB->close();
+		delete m_stateDB;
+		m_stateDB = 0;
+	}
 
 	for(int i = m_minNextlistRev; i <= m_maxNextlistRev; i++) {
 		m_nextlistRevs.erase(i);
@@ -319,6 +325,40 @@ void CSession::setProperty(string key, int val) {
 	string privKey = privatePropertyKey(key);
 	m_app->settings().setProptery(privKey, val);
 }
+
+
+bool CSession::operator==(const CSession& other) {
+
+	if(m_name.compare(other.m_name) != 0) return false;
+
+	if(m_minNextlistRev != other.m_minNextlistRev ) return false;
+	if(m_maxNextlistRev != other.m_maxNextlistRev ) return false;
+	if(m_minPlaylistRev != other.m_minPlaylistRev ) return false;
+	if(m_maxPlaylistRev != other.m_maxPlaylistRev ) return false;
+	if(m_minMediaColRev != other.m_minMediaColRev ) return false;
+	if(m_maxMediaColRev != other.m_maxMediaColRev ) return false;
+
+	for(int i = m_minNextlistRev; i <= m_maxNextlistRev; i++) {
+		CRootItem* nl = m_nextlistRevs.find(i)->second;
+		CRootItem* onl = other.m_nextlistRevs.find(i)->second;
+		if( *nl != *onl ) return false;
+	}
+
+	for(int i = m_minPlaylistRev; i <= m_maxPlaylistRev; i++) {
+		CRootItem* pl = m_playlistRevs.find(i)->second;
+		CRootItem* opl = other.m_playlistRevs.find(i)->second;
+		if( *pl != *opl ) return false;
+	}
+
+	for(int i = m_minMediaColRev; i <= m_maxMediaColRev; i++) {
+		CRootItem* mc = m_mediaColRevs.find(i)->second;
+		CRootItem* omc = other.m_mediaColRevs.find(i)->second;
+		if( *mc != *omc ) return false;
+	}
+
+	return true;
+}
+
 
 string CSession::privatePropertyKey(string key) {
 	string privKey = "session." + m_name + "." + key;

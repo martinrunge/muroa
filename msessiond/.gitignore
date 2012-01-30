@@ -1,0 +1,4 @@
+state.db
+TestDB.sqlite
+*.log
+*~

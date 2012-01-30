@@ -68,7 +68,7 @@ void CDataBaseTest::tearDown()
 
 }
 
-void CDataBaseTest::testDB()
+void CDataBaseTest::readMediaItem()
 {
 	int rc = 0;
 	m_stateDB->open();
@@ -80,22 +80,13 @@ void CDataBaseTest::testDB()
 	m_stateDB->updateMediaColTable(m_session);
 	m_stateDB->updatePlaylistRevsTable(m_session);
 
-	m_stateDB->getMediaItemByHash( 90039379 , 0);
-
-	m_stateDB->setValue("CollectionRevMin", colMinRevVal);
-	m_stateDB->setValue("CollectionRevMax", colMaxRevVal);
-
-	m_stateDB->setValue("PlaylistRevMin", plMinRevVal);
-	m_stateDB->setValue("PlaylistRevMax", plMaxRevVal);
-
-	m_stateDB->setValue("NextlistRevMin", nlMinRevVal);
-	m_stateDB->setValue("NextlistRevMax", nlMaxRevVal);
-
-
-	CMediaItem* writtenItem = reinterpret_cast<CMediaItem*>(m_session->getMediaCol(1)->getContentPtr(CItemType(CItemType::E_MEDIAITEM), hash));
-	CRootItem::iterator it = m_session->getMediaCol(1)->begin();
-	CMediaItem* readItem = reinterpret_cast<CMediaItem*>(*it);
+	CMediaItem* readItem = m_stateDB->getMediaItemByHash( m_testHash , 0);
 	CPPUNIT_ASSERT_MESSAGE( "Requested Collection Item (pos 1, rev 1) does not exist.", readItem != 0 );
+
+	CRootItem* tmpri = m_session->getMediaCol(1);
+	IContentItem* cptr = tmpri->getContentPtr(CItemType(CItemType::E_MEDIAITEM), m_testHash);
+	CMediaItem* writtenItem = reinterpret_cast<CMediaItem*>(cptr);
+	CPPUNIT_ASSERT_MESSAGE( "Requested Collection Item does not exist in session.", writtenItem != 0 );
 
 	cout << "Artist written/read  : " << writtenItem->getArtist() << " <-> " << readItem->getArtist() << endl;
 	cout << "Album  written/read  : " << writtenItem->getAlbum() << " <-> " << readItem->getAlbum() << endl;
@@ -104,6 +95,14 @@ void CDataBaseTest::testDB()
 	cout << "Duration written/read: " << writtenItem->getDuration() << " <-> " << readItem->getDuration() << endl;
 	cout << "Hash written/read    : " << writtenItem->getHash() << " <-> " << readItem->getHash() << endl;
 	if(writtenItem->getHash() != readItem->getHash() ) rc = 1;
+
+	CPPUNIT_ASSERT( writtenItem->getArtist().compare(readItem->getArtist()) == 0);
+	CPPUNIT_ASSERT( writtenItem->getAlbum().compare(readItem->getAlbum()) == 0);
+	CPPUNIT_ASSERT( writtenItem->getTitle().compare(readItem->getTitle()) == 0);
+	CPPUNIT_ASSERT( writtenItem->getYear() == readItem->getYear());
+	CPPUNIT_ASSERT( writtenItem->getDuration() == readItem->getDuration());
+	CPPUNIT_ASSERT( writtenItem->getHash() == readItem->getHash());
+	CPPUNIT_ASSERT( writtenItem->getHash() == readItem->getHash() );
 
 	m_stateDB->close();
 
@@ -114,30 +113,30 @@ void CDataBaseTest::testDB()
 void CDataBaseTest::readGeneral() {
 	m_stateDB->open();
 
-	m_stateDB->setValue("CollectionRevMin", colMinRevVal);
-	m_stateDB->setValue("CollectionRevMax", colMaxRevVal);
+	m_stateDB->setValue("MinMediaColRev", colMinRevVal);
+	m_stateDB->setValue("MaxMediaColRev", colMaxRevVal);
 
-	m_stateDB->setValue("PlaylistRevMin", plMinRevVal);
-	m_stateDB->setValue("PlaylistRevMax", plMaxRevVal);
+	m_stateDB->setValue("MinPlaylistRev", plMinRevVal);
+	m_stateDB->setValue("MaxPlaylistRev", plMaxRevVal);
 
-	m_stateDB->setValue("NextlistRevMin", nlMinRevVal);
-	m_stateDB->setValue("NextlistRevMax", nlMaxRevVal);
+	m_stateDB->setValue("MinNextlistRev", nlMinRevVal);
+	m_stateDB->setValue("MaxNextlistRev", nlMaxRevVal);
 
 	bool found;
 
-	std::string colMinRev = m_stateDB->getValue("CollectionRevMin", found);
+	std::string colMinRev = m_stateDB->getValue("MinMediaColRev", found);
 	CPPUNIT_ASSERT(found);
-	std::string colMaxRev = m_stateDB->getValue("CollectionRevMax", found);
-	CPPUNIT_ASSERT(found);
-
-	std::string plMinRev = m_stateDB->getValue("PlaylistRevMin", found);
-	CPPUNIT_ASSERT(found);
-	std::string plMaxRev = m_stateDB->getValue("PlaylistRevMax", found);
+	std::string colMaxRev = m_stateDB->getValue("MaxMediaColRev", found);
 	CPPUNIT_ASSERT(found);
 
-	std::string nlMinRev = m_stateDB->getValue("NextlistRevMin", found);
+	std::string plMinRev = m_stateDB->getValue("MinPlaylistRev", found);
 	CPPUNIT_ASSERT(found);
-	std::string nlMaxRev = m_stateDB->getValue("NextlistRevMax", found);
+	std::string plMaxRev = m_stateDB->getValue("MaxPlaylistRev", found);
+	CPPUNIT_ASSERT(found);
+
+	std::string nlMinRev = m_stateDB->getValue("MinNextlistRev", found);
+	CPPUNIT_ASSERT(found);
+	std::string nlMaxRev = m_stateDB->getValue("MaxNextlistRev", found);
 	CPPUNIT_ASSERT(found);
 
 	cout << "Collection revs: [" << colMinRev << ".." << colMaxRev << "]" << endl;
@@ -185,7 +184,7 @@ void CDataBaseTest::prepareSession() {
 	m_testHashPos = mItems->size() / 2;
 	m_testHash = mItems->at(m_testHashPos)->getHash();
 
-	m_session = new muroa::CSession("name");
+	m_session = new muroa::CSession("unittest");
 
 	m_categorizer = new muroa::CMediaItemCategorizer();
 
@@ -262,69 +261,8 @@ void CDataBaseTest::restoreSession() {
 	catch(...) {
 		ok = false;
 	}
+	if( *restoredSession != *m_session ) ok = false;
 
-	int reMinColRev = restoredSession->getMinMediaColRev();
-	int minColRev = m_session->getMinMediaColRev();
-	if(reMinColRev != minColRev) {
-		ok = false;
-		cout << "restored min Collection Revision does not match original one." << endl;
-	}
-
-	int reMaxColRev = restoredSession->getMaxMediaColRev();
-	int maxColRev = m_session->getMaxMediaColRev();
-	if(reMaxColRev != maxColRev) {
-		ok = false;
-		cout << "restored max Collection Revision does not match original one." << endl;
-	}
-
-	int reMinPlRev = restoredSession->getMinPlaylistRev();
-	int minPlRev = m_session->getMinPlaylistRev();
-	if(reMinPlRev != minPlRev) {
-		ok = false;
-		cout << "restored min Playlist Revision does not match original one." << endl;
-	}
-
-	int reMaxPlRev = restoredSession->getMaxPlaylistRev();
-	int maxPlRev = m_session->getMaxPlaylistRev();
-	if(reMaxPlRev != maxPlRev) {
-		ok = false;
-		cout << "restored max Playlist Revision does not match original one." << endl;
-	}
-
-	int reMinNlRev = restoredSession->getMinNextlistRev();
-	int minNlRev = m_session->getMinNextlistRev();
-	if(reMinNlRev != minNlRev) {
-		ok = false;
-		cout << "restored min Nextlist Revision does not match original one." << endl;
-	}
-
-	int reMaxNlRev = restoredSession->getMaxNextlistRev();
-	int maxNlRev = m_session->getMaxNextlistRev();
-	if(reMaxNlRev != maxNlRev) {
-		ok = false;
-		cout << "restored max Nextlist Revision does not match original one." << endl;
-	}
-
-	for(int colRev = minColRev; colRev <= maxColRev; colRev++ ) {
-		CRootItem* mediaCol = m_session->getMediaCol(colRev);
-		CRootItem* reCol = restoredSession->getMediaCol(colRev);
-
-		CPPUNIT_ASSERT( reCol != 0 );
-		CPPUNIT_ASSERT( mediaCol != 0 );
-
-		CPPUNIT_ASSERT(mediaCol == reCol);
-	}
-
-	for(int plRev = minPlRev; plRev < maxPlRev; plRev++ ) {
-		CRootItem* pl = m_session->getPlaylist(plRev);
-		CRootItem* rePl = restoredSession->getPlaylist(plRev);
-
-		CPPUNIT_ASSERT( pl != 0 );
-		CPPUNIT_ASSERT( rePl != 0 );
-
-		CPPUNIT_ASSERT( pl == rePl );
-	}
 	m_stateDB->close();
-
 	CPPUNIT_ASSERT( ok == true );
 }

@@ -56,6 +56,10 @@ public:
 	inline void setMinPlaylistRev( const unsigned min ) { m_minPlaylistRev = min; };
 	inline void setMinNextlistRev( const unsigned min ) { m_minNextlistRev = min; };
 
+	inline void setMaxMediaColRev( const unsigned max ) { m_maxMediaColRev = max; };
+	inline void setMaxPlaylistRev( const unsigned max ) { m_maxPlaylistRev = max; };
+	inline void setMaxNextlistRev( const unsigned max ) { m_maxNextlistRev = max; };
+
 
 	void addMediaColRev(CRootItem* ri);
 	void addMediaColRev(const std::string& mediaCol );
@@ -89,6 +93,10 @@ public:
 
 	int getProperty(std::string key, int defaultVal = 0);
 	void setProperty(std::string key, int val);
+
+	bool operator==(const CSession& other);
+	inline bool operator!=(const CSession& other) { return !operator==(other); }
+
 
 private:
 	bool hasConnection(CConnection* conn);

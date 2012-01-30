@@ -109,14 +109,16 @@ void CStateDB::updatePlaylistRevsTable(CSession const * const session, int minre
 	if(maxrev == -1) maxrev = session->getMaxPlaylistRev();
 
 	for(int rev = minrev; rev <= maxrev; rev++) {
-		CRootItem* playlist = session->getPlaylist(rev);
+		if(rev != 0) { // rev 0 is an empty dummy revision already created by c-tor.
+			CRootItem* playlist = session->getPlaylist(rev);
 
-		CRootItem::iterator it(playlist->begin());
-		for(int i=0; it != playlist->end(); it++, i++ ) {
-			CItemBase* item_b = *it;
-			if(item_b->type() == CItemType::E_PLAYLISTITEM) {
-                CPlaylistItem* item = reinterpret_cast<CPlaylistItem*>(item_b);
-                updatePlaylistItem(i, item, rev, 0);
+			CRootItem::iterator it(playlist->begin());
+			for(int i=0; it != playlist->end(); it++, i++ ) {
+				CItemBase* item_b = *it;
+				if(item_b->type() == CItemType::E_PLAYLISTITEM) {
+					CPlaylistItem* item = reinterpret_cast<CPlaylistItem*>(item_b);
+					updatePlaylistItem(i, item, rev, 0);
+				}
 			}
 		}
 	}
@@ -132,16 +134,19 @@ void CStateDB::restoreMediaCols(CSession * const session) {
 	if(m_db == 0) throw(CApiMisuseException("Calling restoreCollection(), but DB not opened."));
 	bool found;
 
-	int minRev =  getIntValue("CollectionRevMin", found);
+	int minRev =  getIntValue("MinMediaColRev", found);
 	assert(found);
-	int maxRev = getIntValue("CollectionRevMax", found);
+	int maxRev = getIntValue("MaxMediaColRev", found);
 	assert(found);
 
 	session->setMinMediaColRev( minRev );
+	session->setMaxMediaColRev( minRev );  // max rev will be reached by calling addMediaVolRev() several times.
 
 	for(int rev = minRev; rev <= maxRev; rev++) {
-		CRootItem* ri = getMediaColRev(rev);
-		session->addMediaColRev(ri);
+		if(rev != 0) {   // rev 0 is an empty dummy revision already created by c-tor.
+			CRootItem* ri = getMediaColRev(rev);
+			session->addMediaColRev(ri);
+		}
 	}
 }
 
@@ -180,15 +185,19 @@ void CStateDB::updateMediaColTable( CSession const * const session, int minrev, 
 	if(maxrev == -1) maxrev = session->getMaxMediaColRev();
 
 	for(int rev = minrev; rev <= maxrev; rev++) {
-		CRootItem* mediaCol = session->getMediaCol(rev);
+		if (rev != 0) {  // rev 0 is an empty dummy revision already created by c-tor.
+			CRootItem* mediaCol = session->getMediaCol(rev);
 
-		CRootItem::iterator it(mediaCol->begin());
+			CRootItem::iterator it(mediaCol->begin());
 
-		for(; it != mediaCol->end(); it++) {
-			CItemBase* item_b = *it;
-			if(item_b->type() == CItemType::E_MEDIAITEM) {
-                CMediaItem* item = reinterpret_cast<CMediaItem*>(item_b);
-                updateMediaItem( item );
+			for(int pos = 0; it != mediaCol->end(); it++, pos++) {
+				CItemBase* item_b = *it;
+				if(item_b->type() == CItemType::E_MEDIAITEM) {
+					CMediaItem* item = reinterpret_cast<CMediaItem*>(item_b);
+					updateMediaItem( item );
+
+					updateCollectionRevItem(pos, item->getHash(), rev );
+				}
 			}
 		}
 	}
@@ -199,27 +208,30 @@ void CStateDB::restorePlaylists(CSession * const session) {
 	if(m_db == 0) throw(CApiMisuseException("Calling restorePlaylists(), but DB not opened."));
 	bool found;
 
-	int minRev = getIntValue("PlaylistRevMin", found);
+	int minRev = getIntValue("MinPlaylistRev", found);
 	assert(found);
-	int maxRev = getIntValue("PlaylistRevMax", found);
+	int maxRev = getIntValue("MaxPlaylistRev", found);
 	assert(found);
 
 	session->setMinPlaylistRev( minRev );
+	session->setMaxPlaylistRev( minRev );  // max rev will be set by addPlaylistRev();
 
 	for(int rev = minRev; rev <= maxRev; rev++) {
-		CRootItem* playlist = new CRootItem();
+		if(rev != 0) { // rev 0 is an empty dummy revision already created by c-tor.
+			CRootItem* playlist = new CRootItem();
 
-		CPlaylistItem* item;
-		int pos = 0;
-		do {
-			item = getPlaylistItemByPos(pos, rev, playlist);
-			pos++;
-			if(item) {
-				CCategoryItem* parent = playlist->getItemPtr();
-				playlist->addContentItem(item, parent);
-			}
-		} while(item != 0);
-		session->addPlaylistRev(playlist);
+			CPlaylistItem* item;
+			int pos = 0;
+			do {
+				item = getPlaylistItemByPos(pos, rev, playlist);
+				pos++;
+				if(item) {
+					CCategoryItem* parent = playlist->getItemPtr();
+					playlist->addContentItem(item, parent);
+				}
+			} while(item != 0);
+			session->addPlaylistRev(playlist);
+		}
 	}
 }
 
@@ -227,27 +239,30 @@ void CStateDB::restoreNextlists(CSession * const session) {
 	if(m_db == 0) throw(CApiMisuseException("Calling restoreNextlists(), but DB not opened."));
 	bool found;
 
-	int minRev = getIntValue("NextlistRevMin", found);
+	int minRev = getIntValue("MinNextlistRev", found);
 	assert(found);
-	int maxRev = getIntValue("NextlistRevMax", found);
+	int maxRev = getIntValue("MaxNextlistRev", found);
 	assert(found);
 
 	session->setMinNextlistRev( minRev );
+	session->setMaxNextlistRev( minRev );  // max rev will be set by addNextlistRev();
 
 	for(int rev = minRev; rev < maxRev; rev++) {
-		CRootItem* nextlist = new CRootItem();
+		if(rev != 0) {  // rev 0 is an empty dummy revision already created by c-tor.
+			CRootItem* nextlist = new CRootItem();
 
-		CNextlistItem* item;
-		int pos = 0;
-		do {
-			item = getNextlistItemByPos(pos, rev, nextlist);
-			pos++;
-			if(item) {
-				CCategoryItem* parent = nextlist->getItemPtr();
-				nextlist->addContentItem(item, parent);
-			}
-		} while(item != 0);
-		session->addNextlistRev(nextlist);
+			CNextlistItem* item;
+			int pos = 0;
+			do {
+				item = getNextlistItemByPos(pos, rev, nextlist);
+				pos++;
+				if(item) {
+					CCategoryItem* parent = nextlist->getItemPtr();
+					nextlist->addContentItem(item, parent);
+				}
+			} while(item != 0);
+			session->addNextlistRev(nextlist);
+		}
 	}
 }
 

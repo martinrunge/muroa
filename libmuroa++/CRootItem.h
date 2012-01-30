@@ -59,6 +59,7 @@ public:
 	void patch(std::string diff) throw(std::invalid_argument, MalformedPatchEx);
 
 	bool operator==(const CRootItem& other);
+	inline bool operator!=(const CRootItem& other) { return !operator==(other); };
 
 	virtual bool beginInsertItems(const int pos, const int count, const CCategoryItem* parent);
 	virtual bool endInsertItems(void);
@@ -83,7 +84,7 @@ private:
 
 	CCategoryItem* m_base;
 
-	std::vector< std::map< uint32_t, IContentItem* > > m_content_maps;
+	std::vector< std::map< uint32_t, IContentItem* >* > m_content_maps;
 
 	std::string stripFirstSection(std::string& text);
 	CItemType getItemType(std::string& text);
