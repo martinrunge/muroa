@@ -276,34 +276,29 @@ void CSession::scanCollection(CConnection* initiator, uint32_t jobID) {
 	m_mediaScanner->sendMsg(sdmsg);
 	addOutstandingMsg(sdmsg);
 
-	setClientCmdIdBySubprocessCmdID(jobID, sdmsg->getID());
+	setClientCmdIdBySubprocessCmdID(sdmsg->getID(), initiator, jobID );
 }
 
 void CSession::scanProgress(uint32_t jobID, uint32_t progress) {
-	uint32_t clientCmdID;
+	client_job_t cljob;
 	try {
-		clientCmdID = getClientCmdIdBySubprocessCmdID(jobID, false);
+		cljob = getClientCmdIdBySubprocessCmdID(jobID, false);
 
-		map<uint32_t, CConnection*>::iterator it = m_job_initiators.find(clientCmdID);
-		if(it != m_job_initiators.end()) {
-			CmdProgress* progCmd = new CmdProgress(clientCmdID, progress);
-			it->second->sendCmd(progCmd);
-		}
+		CmdProgress* progCmd = new CmdProgress(cljob.second, progress);
+		cljob.first->sendCmd(progCmd);
 	}catch(InvalidMsgException ex) {
 
 	}
 }
 
 void CSession::jobFinished(uint32_t jobID) {
-	uint32_t clientCmdID;
+	client_job_t clientJob;
 	try {
-		clientCmdID = getClientCmdIdBySubprocessCmdID(jobID);
+		clientJob = getClientCmdIdBySubprocessCmdID(jobID);
 
-		map<uint32_t, CConnection*>::iterator it = m_job_initiators.find(clientCmdID);
-		if(it != m_job_initiators.end()) {
-			CmdFinished* finiCmd = new CmdFinished(clientCmdID);
-			it->second->sendCmd(finiCmd);
-		}
+		CmdFinished* finiCmd = new CmdFinished(clientJob.second);
+		clientJob.first->sendCmd(finiCmd);
+
 	}catch(InvalidMsgException ex) {
 		;
 	}
@@ -417,24 +412,26 @@ void CSession::delOutstandingMsg(uint32_t id) throw(InvalidMsgException) {
 	m_outstanding_msgs.erase(it);
 }
 
-uint32_t CSession::getClientCmdIdBySubprocessCmdID(uint32_t subprocess_cmd_id, bool delentry) throw(InvalidMsgException) {
-	map<uint32_t, uint32_t>::iterator it = m_subprocess_job_by_cmdID.find(subprocess_cmd_id);
+muroa::CSession::client_job_t CSession::getClientCmdIdBySubprocessCmdID(uint32_t subprocess_cmd_id, bool delentry) throw(InvalidMsgException) {
+	map<uint32_t, client_job_t>::iterator it = m_subprocess_job_by_cmdID.find(subprocess_cmd_id);
 	if(it == m_subprocess_job_by_cmdID.end()) {
 		ostringstream oss;
 		oss << "no client is waiting for an answer to subprocess command '" << subprocess_cmd_id << "'";
 		throw InvalidMsgException( oss.str() );
 	}
-	uint32_t retval = it->second;
+	client_job_t client = it->second;
 
 	if(delentry) {
 		m_subprocess_job_by_cmdID.erase(it);
 	}
 
-	return retval;
+	return client;
 }
 
-void CSession::setClientCmdIdBySubprocessCmdID(uint32_t client_cmd_id, uint32_t subprocess_cmd_id) {
-	m_subprocess_job_by_cmdID.insert(pair<uint32_t, uint32_t>(subprocess_cmd_id, client_cmd_id));
+void CSession::setClientCmdIdBySubprocessCmdID(uint32_t subprocess_cmd_id, CConnection* initiator, uint32_t client_cmd_id ) {
+	client_job_t client(initiator, client_cmd_id);
+	pair<uint32_t, client_job_t > entry(subprocess_cmd_id, client);
+	m_subprocess_job_by_cmdID.insert(entry);
 }
 
 } /* namespace muroa */

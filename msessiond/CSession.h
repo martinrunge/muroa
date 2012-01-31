@@ -101,6 +101,9 @@ public:
 
 
 private:
+
+	typedef std::pair<CConnection*, uint32_t> client_job_t;
+
 	bool hasConnection(CConnection* conn);
 
 	CRootItem* getRev(const std::map<unsigned, CRootItem*>& map,
@@ -114,10 +117,10 @@ private:
 
 	std::map<uint32_t, CConnection*> m_job_initiators;
 
-	uint32_t getClientCmdIdBySubprocessCmdID(uint32_t subprocess_cmd_id, bool delentry = true) throw(InvalidMsgException);
-	void setClientCmdIdBySubprocessCmdID(uint32_t client_cmd_id, uint32_t subprocess_cmd_id);
+	client_job_t getClientCmdIdBySubprocessCmdID(uint32_t subprocess_cmd_id, bool delentry = true) throw(InvalidMsgException);
+	void setClientCmdIdBySubprocessCmdID(uint32_t subprocess_cmd_id, CConnection* initiator, uint32_t client_cmd_id );
 
-	std::map<uint32_t, uint32_t> m_subprocess_job_by_cmdID;
+	std::map<uint32_t, std::pair<CConnection*, uint32_t> > m_subprocess_job_by_cmdID;
 
 
 
