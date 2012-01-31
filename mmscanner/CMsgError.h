@@ -14,11 +14,12 @@
 
 class CMsgError: public CMsgBase {
 public:
-	CMsgError(int32_t errorcode, std::string message);
+	CMsgError(uint32_t requestID, int32_t errorcode, std::string message);
 	CMsgError(char* buffer, int size);
 
 	virtual ~CMsgError();
 
+	uint32_t getRequestID() {return m_requestID; };
 	int32_t  getErrorCode() {return m_error_code; };
 	std::string getMessage() { return m_message; };
 
@@ -27,7 +28,8 @@ public:
 	char* serialize(int& size );
 
 private:
-	int32_t m_error_code;
+	uint32_t    m_requestID;
+	int32_t     m_error_code;
 	std::string m_message;
 
 

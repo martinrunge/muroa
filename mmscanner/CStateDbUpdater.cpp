@@ -21,9 +21,7 @@ CStateDbUpdater::~CStateDbUpdater() {
 
 int CStateDbUpdater::open() {
 	int rc = CStateDbBase::open();
-	if( rc == 0 ){
-
-	}
+	return rc;
 }
 
 int CStateDbUpdater::close() {

@@ -34,6 +34,7 @@ public:
     static const std::string prev;
     static const std::string scanCollection;
     static const std::string progress;
+    static const std::string finished;
     static const std::string stateChanged;
     static const std::string error;
     static const std::string XML_ver;
@@ -43,8 +44,6 @@ public:
     static const std::string editCollection;
     static const std::string editPlaylist;
     static const std::string editNextlist;
-
-
 
 };
 

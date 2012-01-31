@@ -8,6 +8,8 @@
 #include "CMediaScannerCtrl.h"
 
 #include "CSession.h"
+#include "sessionEx.h"
+
 
 #include <signal.h>
 #include <stdint.h>
@@ -43,16 +45,20 @@ CMediaScannerCtrl::~CMediaScannerCtrl() {
 }
 
 
-void CMediaScannerCtrl::start(uint32_t jobID) {
+void CMediaScannerCtrl::start() {
 
 	vector<string> args;
 
 	pid_t pid = CSubProcess::start("../mmscanner/build/mmscanner" , args ,0 ,0);
 
+	if(pid == -5) {
+		// already running, this is no error.
+		return;
+	}
+
 	if(pid < 0) {
 		cerr << "could not start mediascanner" << endl;
 	}
-	m_currentJobID = jobID;
 }
 
 void CMediaScannerCtrl::stop() {
@@ -204,5 +210,6 @@ bool CMediaScannerCtrl::handleMsg(CMsgBase* msg) {
 	}
 	return rc;
 }
+
 }
 

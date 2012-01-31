@@ -43,6 +43,9 @@ public:
 	virtual void progress(uint32_t jobID, int progress) = 0;
 	virtual void onProgress(uint32_t jobID, int progress) = 0;
 
+	virtual void finished(uint32_t jobID) = 0;
+	virtual void onFinished(uint32_t jobID) = 0;
+
 	virtual void error(uint32_t jobID, int errorCode, std::string description) = 0;
 	virtual void onError(uint32_t jobID, int errorCode, std::string description) = 0;
 

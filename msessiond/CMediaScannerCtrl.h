@@ -18,6 +18,7 @@
 #include "../mmscanner/CMsgFinished.h"
 #include "../mmscanner/CMsgCollectionChanged.h"
 
+
 #include <boost/array.hpp>
 #include <boost/bind.hpp>
 #include <boost/asio.hpp>
@@ -26,6 +27,8 @@
 #include <thread>
 #include <mutex>
 #include <condition_variable>
+
+class InvalidMsgException;
 
 namespace muroa {
 
@@ -37,7 +40,7 @@ public:
 	CMediaScannerCtrl(muroa::CSession *parent, boost::asio::io_service& io_service);
 	virtual ~CMediaScannerCtrl();
 
-	void start(uint32_t jobID);
+	void start();
 	void stop();
 	void terminate();
 
@@ -49,6 +52,7 @@ public:
 
 private:
 	bool handleMsg(CMsgBase* msg);
+
 
 //    std::mutex m_mutex;
 //    std::condition_variable m_cond_var;

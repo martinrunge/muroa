@@ -77,6 +77,10 @@ void CConnection::onProgress(uint32_t jobID, int progress)
 {
 }
 
+void CConnection::onFinished(uint32_t jobID) {
+
+}
+
 void CConnection::onError(uint32_t jobID, int errorCode, std::string description)
 {
 }

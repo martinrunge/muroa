@@ -100,6 +100,12 @@ void CMuroaXml::progress(uint32_t jobID, int progress) {
 	sendData(oss.str());
 }
 
+void CMuroaXml::finished(uint32_t jobID) {
+	ostringstream oss;
+	oss << "<" << xmlCommands::finished << " jobID=\"" << jobID << "\"/>" << endl;
+	sendData(oss.str());
+}
+
 void CMuroaXml::error(uint32_t jobID, int errorCode, std::string description) {
 	ostringstream oss;
 	oss << "<" << xmlCommands::error << " jobID=\"" << jobID << "\" errorCode=\"" << errorCode << "\">";

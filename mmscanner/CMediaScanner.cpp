@@ -20,6 +20,7 @@
 #include "CMsgProgress.h"
 #include "CMsgFinished.h"
 #include "CMsgResponse.h"
+#include "CMsgError.h"
 #include "CMsgCollectionChanged.h"
 
 using namespace std;
@@ -72,7 +73,15 @@ bool CMediaScanner::handleMsg(CMsgBase* msg) {
 				std::string path = openDbMsg->getDbPath();
 				m_dbg_file << "open db: " << path << endl;
 				m_stateDbUpdater = new CStateDbUpdater( openDbMsg->getDbPath() );
-				m_stateDbUpdater->open();
+				int rc = m_stateDbUpdater->open();
+				if(rc == 0) {
+					CMsgResponse *respMsg = new CMsgResponse( openDbMsg->getID(), rc, "successfully opened db " + openDbMsg->getDbPath());
+					postEvent(respMsg);
+				}
+				else {
+					CMsgError *errMsg = new CMsgError(openDbMsg->getID(), rc, "could not open db " + openDbMsg->getDbPath());
+					postEvent(errMsg);
+				}
 				break;
 			}
 			case E_MSG_SCAN_DIR:

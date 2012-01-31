@@ -38,6 +38,7 @@ public:
 	void stateChanged(int newState);
 	void scanCollection(uint32_t jobID);
 	void progress(uint32_t jobID, int progress);
+	void finished(uint32_t jobID);
 	void error(uint32_t jobID, int errorCode, std::string description);
 
 	void getCollection( unsigned knownRev = 0);

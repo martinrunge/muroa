@@ -17,6 +17,7 @@
 #include <cmds/SimpleCmds.h>
 #include <cmds/CmdError.h>
 #include <cmds/CmdProgress.h>
+#include <cmds/CmdFinished.h>
 #include <cmds/CmdColChanged.h>
 
 namespace muroa {
@@ -151,6 +152,8 @@ void CConnection::sendCmd( Cmd* cmd ) {
 	}
 	case Cmd::FINISHED:
 	{
+		CmdFinished* msg = reinterpret_cast<CmdFinished*>(cmd);
+		finished(msg);
 		break;
 	}
 	case Cmd::OPENDB:
@@ -188,7 +191,7 @@ void CConnection::progress(CmdProgress* progressMsg) {
 }
 
 void CConnection::finished(CmdFinished* finishedCmd) {
-//	m_rpc->finished(finishedCmd->getCorrespondingJonID());
+	m_rpc->finished(finishedCmd->getCorrespondingJobId());
 }
 
 void CConnection::collectionChanged(CmdColChanged* colChangedCmd) {

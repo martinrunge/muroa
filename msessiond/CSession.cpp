@@ -267,27 +267,48 @@ void CSession::scanCollection(CConnection* initiator, uint32_t jobID) {
 	// bookkeeping: remember, which connection ordered to scan the collection
 	m_job_initiators.insert(std::pair<uint32_t, CConnection*>(jobID, initiator));
 
-	m_mediaScanner->start(jobID);
+	m_mediaScanner->start();
 	CMsgOpenDb* dbmsg = new CMsgOpenDb( getProperty("stateDBfile", "state.db") );
 	m_mediaScanner->sendMsg(dbmsg);
+	addOutstandingMsg(dbmsg);
+
 	CMsgScanDir* sdmsg = new CMsgScanDir("/home/martin/Desktop");
 	m_mediaScanner->sendMsg(sdmsg);
+	addOutstandingMsg(sdmsg);
+
+	setClientCmdIdBySubprocessCmdID(jobID, sdmsg->getID());
 }
 
 void CSession::scanProgress(uint32_t jobID, uint32_t progress) {
-	map<uint32_t, CConnection*>::iterator it = m_job_initiators.find(jobID);
-	if(it != m_job_initiators.end()) {
-		CmdProgress* progCmd = new CmdProgress(jobID, progress);
-		it->second->sendCmd(progCmd);
+	uint32_t clientCmdID;
+	try {
+		clientCmdID = getClientCmdIdBySubprocessCmdID(jobID, false);
+
+		map<uint32_t, CConnection*>::iterator it = m_job_initiators.find(clientCmdID);
+		if(it != m_job_initiators.end()) {
+			CmdProgress* progCmd = new CmdProgress(clientCmdID, progress);
+			it->second->sendCmd(progCmd);
+		}
+	}catch(InvalidMsgException ex) {
+
 	}
 }
 
 void CSession::jobFinished(uint32_t jobID) {
-	map<uint32_t, CConnection*>::iterator it = m_job_initiators.find(jobID);
-	if(it != m_job_initiators.end()) {
-		CmdFinished* finiCmd = new CmdFinished(jobID);
-		it->second->sendCmd(finiCmd);
+	uint32_t clientCmdID;
+	try {
+		clientCmdID = getClientCmdIdBySubprocessCmdID(jobID);
+
+		map<uint32_t, CConnection*>::iterator it = m_job_initiators.find(clientCmdID);
+		if(it != m_job_initiators.end()) {
+			CmdFinished* finiCmd = new CmdFinished(clientCmdID);
+			it->second->sendCmd(finiCmd);
+		}
+	}catch(InvalidMsgException ex) {
+		;
 	}
+
+	delOutstandingMsg(jobID);
 }
 
 void CSession::collectionChanged(uint32_t newRev, uint32_t minRev, uint32_t maxRev) {
@@ -298,10 +319,12 @@ void CSession::collectionChanged(uint32_t newRev, uint32_t minRev, uint32_t maxR
 }
 
 void CSession::response(uint32_t requestID, int32_t returnCode, string message) {
+	delOutstandingMsg(requestID);
 
 }
 
 void CSession::reportError(uint32_t jobID, int32_t errCode, string message) {
+	delOutstandingMsg(jobID);
 
 }
 
@@ -375,5 +398,43 @@ string CSession::privatePropertyKey(string key) {
 	return privKey;
 }
 
+void CSession::addOutstandingMsg(CMsgBase* msg) {
+	pair<uint32_t, CMsgBase*> p(msg->getID(), msg);
+	m_outstanding_msgs.insert(p);
+}
+
+void CSession::delOutstandingMsg(uint32_t id) throw(InvalidMsgException) {
+	map<uint32_t, CMsgBase*>::iterator it = m_outstanding_msgs.find(id);
+	if(it == m_outstanding_msgs.end() ) {
+		ostringstream oss;
+		oss << "no command with id '" << id << "' to childprocess outstanding.";
+		throw InvalidMsgException(oss.str());
+	}
+	CMsgBase* msg = it->second;
+
+	// cancel timer here
+
+	m_outstanding_msgs.erase(it);
+}
+
+uint32_t CSession::getClientCmdIdBySubprocessCmdID(uint32_t subprocess_cmd_id, bool delentry) throw(InvalidMsgException) {
+	map<uint32_t, uint32_t>::iterator it = m_subprocess_job_by_cmdID.find(subprocess_cmd_id);
+	if(it == m_subprocess_job_by_cmdID.end()) {
+		ostringstream oss;
+		oss << "no client is waiting for an answer to subprocess command '" << subprocess_cmd_id << "'";
+		throw InvalidMsgException( oss.str() );
+	}
+	uint32_t retval = it->second;
+
+	if(delentry) {
+		m_subprocess_job_by_cmdID.erase(it);
+	}
+
+	return retval;
+}
+
+void CSession::setClientCmdIdBySubprocessCmdID(uint32_t client_cmd_id, uint32_t subprocess_cmd_id) {
+	m_subprocess_job_by_cmdID.insert(pair<uint32_t, uint32_t>(subprocess_cmd_id, client_cmd_id));
+}
 
 } /* namespace muroa */

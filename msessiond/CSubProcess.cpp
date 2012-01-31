@@ -38,7 +38,7 @@ pid_t CSubProcess::start(std::string executable, std::vector<std::string> args, 
 	if(m_running || m_pid != 0) {
 		// already running.
 		cerr << "CSubProcess::start(" << executable << ", "<<  ") failed: already running a subprocess." << endl;
-		return -1;
+		return -5;
 	}
 
 	// redirect stdin, stdout and stderr

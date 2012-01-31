@@ -75,6 +75,10 @@ CRpc::~CRpc() {
     {
     }
 
+	void CRpc::onFinished(uint32_t jobID) {
+	}
+
+
     void CRpc::onError(uint32_t jobID, int errorCode, std::string description)
     {
     }

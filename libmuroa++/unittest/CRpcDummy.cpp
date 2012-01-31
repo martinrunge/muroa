@@ -83,6 +83,12 @@ void CRpcDummy::onProgress(uint32_t jobID, int progress) {
 	m_last_cmd = oss.str();
 }
 
+void CRpcDummy::onFinished(uint32_t jobID) {
+	ostringstream oss;
+	oss << "finished(" << jobID << ")";
+	m_last_cmd = oss.str();
+}
+
 void CRpcDummy::onError(uint32_t jobID, int errorCode, std::string description) {
 	ostringstream oss;
 	oss << "error(" << jobID << "," << errorCode << ",\"" << description << "\")";

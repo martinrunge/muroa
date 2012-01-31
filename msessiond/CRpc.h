@@ -36,6 +36,7 @@ public:
 	void onScanCollection(uint32_t jobID);
 
 	void onProgress(uint32_t jobID, int progress);
+	void onFinished(uint32_t jobID);
 	void onError(uint32_t jobID, int errorCode, std::string description);
 
 	void onGetCollection( unsigned knownRev );

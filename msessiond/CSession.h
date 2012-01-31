@@ -17,6 +17,8 @@
 
 #include "sessionEx.h"
 
+class CMsgBase;
+
 namespace muroa {
 
 class Cmd;
@@ -105,11 +107,25 @@ private:
 			          const unsigned rev,
 			          const std::string& message) const throw(InvalidMsgException);
 
+
 	// CTcpServer* m_tcp_server;
 	std::string m_name;
 	std::set<CConnection*> m_connections;
 
 	std::map<uint32_t, CConnection*> m_job_initiators;
+
+	uint32_t getClientCmdIdBySubprocessCmdID(uint32_t subprocess_cmd_id, bool delentry = true) throw(InvalidMsgException);
+	void setClientCmdIdBySubprocessCmdID(uint32_t client_cmd_id, uint32_t subprocess_cmd_id);
+
+	std::map<uint32_t, uint32_t> m_subprocess_job_by_cmdID;
+
+
+
+	void addOutstandingMsg(CMsgBase* msg);
+	void delOutstandingMsg(uint32_t id) throw(InvalidMsgException);
+
+	std::map<uint32_t, CMsgBase*> m_outstanding_msgs;
+
 
 	std::map<unsigned, CRootItem*> m_mediaColRevs;
 	std::map<unsigned, CRootItem*> m_playlistRevs;
