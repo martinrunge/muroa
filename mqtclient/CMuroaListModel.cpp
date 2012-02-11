@@ -1,9 +1,9 @@
 /***************************************************************************
- *                                                                         *
- *   CMainWindow.h                                                         *
- *                                                                         *
- *   This file is part of libmuroa++                                       *
- *   Copyright (C) 2011 by Martin Runge <martin.runge@web.de>              *
+ *
+ *   CListModel.cpp
+ *
+ *   This file is part of playground                                  *
+ *   Copyright (C) 2011 by Martin Runge <martin.runge@web.de>           *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -21,42 +21,56 @@
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
 
-#ifndef MUROAGUI_H
-#define MUROAGUI_H
+#include "CMuroaListModel.h"
 
-#include <QtGui/QMainWindow>
-#include <QLabel>
-#include "CTreeModel.h"
-#include "CListModel.h"
-#include "ui_MainWindow.h"
+#include "CRootItem.h"
+#include "CCategoryItem.h"
+#include "CMediaItem.h"
+#include "CPlaylistItem.h"
+#include "CNextlistItem.h"
 
-class CMainWindow : public QMainWindow
-{
-    Q_OBJECT
+#include <iostream>
+#include <stack>
 
-public:
-    CMainWindow(QWidget *parent = 0);
-    ~CMainWindow();
+using namespace std;
 
-public slots:
-	void patchCollection(void);
-	void patchPlaylist(void);
-	void patchNextlist(void);
 
-private:
-    Ui::MainWindow ui;
+CMuroaListModel::CMuroaListModel() {
+	m_model_base = getBase();
+}
 
-    CMuroaTreeModel *m_leftTreeModel;
-    CMuroaTreeModel *m_rightTreeModel;
+CMuroaListModel::~CMuroaListModel() {
+	// TODO Auto-generated destructor stub
+}
 
-    CMuroaListModel *m_leftPlaylistModel;
-    CMuroaListModel *m_rightPlaylistModel;
+void CMuroaListModel::setBase(CCategoryItem* base) {
+	m_model_base = base;
+}
 
-    CMuroaListModel *m_leftNextlistModel;
-    CMuroaListModel *m_rightNextlistModel;
 
-    QLabel m_status_label;
+int CMuroaListModel::rowCount(const QModelIndex & index) const {
+	return m_model_base->getNumContentItems();
+}
 
-};
 
-#endif // MUROAGUI_H
+
+QVariant CMuroaListModel::data(const QModelIndex & index, int role) const {
+	if(role != Qt::DisplayRole)
+	{
+		return QVariant();
+	}
+
+	IContentItem* item = m_model_base->getContentItem( index.row() );
+	if(!item)
+		return QVariant();
+
+	return item->getHash();
+
+}
+
+
+
+QVariant CMuroaListModel::headerData(int section, Qt::Orientation orientation, int role) {
+
+}
+

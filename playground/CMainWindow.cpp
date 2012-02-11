@@ -48,10 +48,10 @@ CMainWindow::CMainWindow(QWidget *parent)
 	std::string modifiedCollection = CUtils::file2string( "testcases/modified.txt" );
 
 
-	m_leftTreeModel = new CTreeModel();
+	m_leftTreeModel = new CMuroaTreeModel();
 	m_leftTreeModel->deserialize(exampleCollection);
 
-	m_rightTreeModel = new CTreeModel();
+	m_rightTreeModel = new CMuroaTreeModel();
 	m_rightTreeModel->deserialize(modifiedCollection);
 
 	ui.leftTreeView->setModel(m_leftTreeModel);
@@ -60,11 +60,11 @@ CMainWindow::CMainWindow(QWidget *parent)
 
 	std::string examplePlaylist = CUtils::file2string( "testcases/playlist.txt" );
 
-	m_leftPlaylistModel = new CListModel();
+	m_leftPlaylistModel = new CMuroaListModel();
 	m_leftPlaylistModel->deserialize(examplePlaylist);
 	m_leftPlaylistModel->setBase( m_leftPlaylistModel->getItemPtr("/Playlist 1"));
 
-	m_rightPlaylistModel = new CListModel();
+	m_rightPlaylistModel = new CMuroaListModel();
 	m_rightPlaylistModel->deserialize(examplePlaylist);
 
 	ui.leftPlaylistView->setModel(m_leftPlaylistModel);

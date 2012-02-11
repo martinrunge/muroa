@@ -43,6 +43,7 @@ public:
 	    return new CConnection(io_service);
 	}
 
+	void onJoinSession(std::string name);
 	void joinSession(std::string name);
 
 	void sendLatestMediaColRev(unsigned knownRev = 0);

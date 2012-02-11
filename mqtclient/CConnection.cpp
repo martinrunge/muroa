@@ -5,11 +5,17 @@
 #include "cmds/CmdEditNextlist.h"
 #include "muroaConstants.h"
 
+#include "CSession.h"
+#include "CMuroaListModel.h"
+#include "CMuroaTreeModel.h"
+
+#include <MuroaExceptions.h>
+
 #include <QDebug>
 
 using namespace std;
 
-CConnection::CConnection() : m_sm(this) {
+CConnection::CConnection(CSession* const session) : m_sm(this), m_session(session) {
 	connect(&m_socket, SIGNAL(connected()), this, SLOT(connected()));
     connect(&m_socket, SIGNAL(disconnected()), this, SLOT(disconnected()));
     connect(&m_socket, SIGNAL(readyRead()), this, SLOT(readyRead()));
@@ -109,16 +115,25 @@ void CConnection::onNextlist(unsigned  diffFromRev, std::string nextlist)
 {
 }
 
-void CConnection::onEditCollection(unsigned  fromRev, std::string collectionDiff)
-{
+void CConnection::onEditCollection(unsigned  fromRev, std::string collectionDiff) {
+	if(fromRev == 0) {
+		m_session->getMediaColModel()->deserialize(collectionDiff);
+	}
+	else {
+		uint32_t knownRev = m_session->getMediaColRev();
+		if( knownRev != fromRev ) {
+			std::ostringstream oss;
+			oss << "editCollection: Error: got a diff based on rev " << fromRev << " but known rev is " << knownRev;
+			throw MalformedPatchEx(oss.str(), 0);
+		}
+		m_session->getMediaColModel()->patch(collectionDiff);
+	}
 }
 
-void CConnection::onEditPlaylist(unsigned  fromRev, std::string playlistDiff)
-{
+void CConnection::onEditPlaylist(unsigned  fromRev, std::string playlistDiff) {
 }
 
-void CConnection::onEditNextlist(unsigned  fromRev, std::string nextlistDiff)
-{
+void CConnection::onEditNextlist(unsigned  fromRev, std::string nextlistDiff) {
 }
 
 void CConnection::play()

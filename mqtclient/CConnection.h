@@ -10,16 +10,18 @@
 #include <muroaxml/CMuroaXml.h>
 #include <cmds/Cmd.h>
 
+class CSession;
+
 enum connectionState {
 	e_disconnected,
 	e_connected
 };
 
-class CConnection : public QObject, CMuroaXml
+class CConnection : public QObject, public CMuroaXml
 {
     Q_OBJECT;
 public:
-    CConnection();
+    CConnection(CSession* const session);
     ~CConnection();
 
     void onDataToSend(const char *data, int length);
@@ -92,6 +94,7 @@ private:
 
     QSettings m_settings;
 
+    CSession* const m_session;
 
 };
 

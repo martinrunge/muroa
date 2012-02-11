@@ -6,134 +6,104 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>935</width>
-    <height>426</height>
+    <width>1073</width>
+    <height>507</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Muroa Gui</string>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <widget class="QLabel" name="titleLabel">
-    <property name="geometry">
-     <rect>
-      <x>4</x>
-      <y>4</y>
-      <width>162</width>
-      <height>16</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>current artist - current title</string>
-    </property>
-   </widget>
-   <widget class="QToolButton" name="playBtn">
-    <property name="geometry">
-     <rect>
-      <x>170</x>
-      <y>4</y>
-      <width>26</width>
-      <height>25</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string/>
-    </property>
-    <property name="icon">
-     <iconset resource="mQtClient.qrc">
-      <normaloff>:/icons/icons/media-playback-start.png</normaloff>:/icons/icons/media-playback-start.png</iconset>
-    </property>
-    <property name="checkable">
-     <bool>false</bool>
-    </property>
-    <property name="checked">
-     <bool>false</bool>
-    </property>
-   </widget>
-   <widget class="QToolButton" name="stopBtn">
-    <property name="geometry">
-     <rect>
-      <x>200</x>
-      <y>4</y>
-      <width>26</width>
-      <height>25</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string/>
-    </property>
-    <property name="icon">
-     <iconset resource="mQtClient.qrc">
-      <normaloff>:/icons/icons/media-playback-stop.png</normaloff>:/icons/icons/media-playback-stop.png</iconset>
-    </property>
-   </widget>
-   <widget class="QToolButton" name="prevBtn">
-    <property name="geometry">
-     <rect>
-      <x>230</x>
-      <y>4</y>
-      <width>26</width>
-      <height>25</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string/>
-    </property>
-    <property name="icon">
-     <iconset resource="mQtClient.qrc">
-      <normaloff>:/icons/icons/media-skip-backward.png</normaloff>:/icons/icons/media-skip-backward.png</iconset>
-    </property>
-   </widget>
-   <widget class="QToolButton" name="nextBtn">
-    <property name="geometry">
-     <rect>
-      <x>260</x>
-      <y>4</y>
-      <width>26</width>
-      <height>25</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string/>
-    </property>
-    <property name="icon">
-     <iconset resource="mQtClient.qrc">
-      <normaloff>:/icons/icons/media-skip-forward.png</normaloff>:/icons/icons/media-skip-forward.png</iconset>
-    </property>
-   </widget>
-   <widget class="QLabel" name="progressLabel">
-    <property name="geometry">
-     <rect>
-      <x>858</x>
-      <y>4</y>
-      <width>73</width>
-      <height>16</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>00:00 / 00:00</string>
-    </property>
-   </widget>
-   <widget class="QSlider" name="posSlider">
-    <property name="geometry">
-     <rect>
-      <x>290</x>
-      <y>5</y>
-      <width>84</width>
-      <height>23</height>
-     </rect>
-    </property>
-    <property name="orientation">
-     <enum>Qt::Horizontal</enum>
-    </property>
-   </widget>
+   <layout class="QGridLayout" name="gridLayout">
+    <item row="0" column="0">
+     <widget class="QLabel" name="titleLabel">
+      <property name="text">
+       <string>current artist - current title</string>
+      </property>
+     </widget>
+    </item>
+    <item row="0" column="1">
+     <widget class="QToolButton" name="playBtn">
+      <property name="text">
+       <string/>
+      </property>
+      <property name="icon">
+       <iconset resource="mQtClient.qrc">
+        <normaloff>:/icons/icons/media-playback-start.png</normaloff>:/icons/icons/media-playback-start.png</iconset>
+      </property>
+      <property name="checkable">
+       <bool>false</bool>
+      </property>
+      <property name="checked">
+       <bool>false</bool>
+      </property>
+     </widget>
+    </item>
+    <item row="0" column="2">
+     <widget class="QToolButton" name="stopBtn">
+      <property name="text">
+       <string/>
+      </property>
+      <property name="icon">
+       <iconset resource="mQtClient.qrc">
+        <normaloff>:/icons/icons/media-playback-stop.png</normaloff>:/icons/icons/media-playback-stop.png</iconset>
+      </property>
+     </widget>
+    </item>
+    <item row="0" column="3">
+     <widget class="QToolButton" name="prevBtn">
+      <property name="text">
+       <string/>
+      </property>
+      <property name="icon">
+       <iconset resource="mQtClient.qrc">
+        <normaloff>:/icons/icons/media-skip-backward.png</normaloff>:/icons/icons/media-skip-backward.png</iconset>
+      </property>
+     </widget>
+    </item>
+    <item row="0" column="4">
+     <widget class="QToolButton" name="nextBtn">
+      <property name="text">
+       <string/>
+      </property>
+      <property name="icon">
+       <iconset resource="mQtClient.qrc">
+        <normaloff>:/icons/icons/media-skip-forward.png</normaloff>:/icons/icons/media-skip-forward.png</iconset>
+      </property>
+     </widget>
+    </item>
+    <item row="0" column="5">
+     <widget class="QSlider" name="posSlider">
+      <property name="orientation">
+       <enum>Qt::Horizontal</enum>
+      </property>
+     </widget>
+    </item>
+    <item row="0" column="6">
+     <widget class="QLabel" name="progressLabel">
+      <property name="text">
+       <string>00:00 / 00:00</string>
+      </property>
+     </widget>
+    </item>
+    <item row="1" column="0" colspan="7">
+     <widget class="QSplitter" name="splitter">
+      <property name="orientation">
+       <enum>Qt::Horizontal</enum>
+      </property>
+      <widget class="QTreeView" name="mediaColTreeView"/>
+      <widget class="QListView" name="playlistListView"/>
+      <widget class="QListView" name="nextlistListView"/>
+     </widget>
+    </item>
+   </layout>
   </widget>
   <widget class="QMenuBar" name="menubar">
    <property name="geometry">
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>935</width>
+     <width>1073</width>
      <height>21</height>
     </rect>
    </property>

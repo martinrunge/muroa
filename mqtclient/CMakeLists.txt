@@ -9,6 +9,7 @@ add_definitions( ${QT4_DEFINITIONS} )
 
 
 set( SRC           CQtClient.cpp
+                   CSession.cpp
                    CConnection.cpp
                    CSessionSM.cpp
                    CServiceBrowser.cpp
@@ -16,6 +17,8 @@ set( SRC           CQtClient.cpp
                    CDnsSdBase.cpp
                    CDnsSdServiceBrowserAvahi.cpp
                    CPreferencesDlg.cpp
+                   CMuroaListModel.cpp
+                   CMuroaTreeModel.cpp
                    
                    cmds/CmdBase.cpp
                    cmds/CmdGetMediaCol.cpp
@@ -30,6 +33,7 @@ set( SRC           CQtClient.cpp
                   
 
 set( MOC_H         CQtClient.h
+                   CSession.h
                    CConnection.h
                    CSessionSM.h
                    CServiceBrowser.h
@@ -37,6 +41,8 @@ set( MOC_H         CQtClient.h
                    CDnsSdBase.h
                    CDnsSdServiceBrowserAvahi.h
                    CPreferencesDlg.h
+                   CMuroaListModel.h
+                   CMuroaTreeModel.h
 
                    cmds/CmdBase.h
                    cmds/CmdGetMediaCol.h

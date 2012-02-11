@@ -35,26 +35,26 @@
 using namespace std;
 
 
-CListModel::CListModel() {
+CMuroaListModel::CMuroaListModel() {
 	m_model_base = getBase();
 }
 
-CListModel::~CListModel() {
+CMuroaListModel::~CMuroaListModel() {
 	// TODO Auto-generated destructor stub
 }
 
-void CListModel::setBase(CCategoryItem* base) {
+void CMuroaListModel::setBase(CCategoryItem* base) {
 	m_model_base = base;
 }
 
 
-int CListModel::rowCount(const QModelIndex & index) const {
+int CMuroaListModel::rowCount(const QModelIndex & index) const {
 	return m_model_base->getNumContentItems();
 }
 
 
 
-QVariant CListModel::data(const QModelIndex & index, int role) const {
+QVariant CMuroaListModel::data(const QModelIndex & index, int role) const {
 	if(role != Qt::DisplayRole)
 	{
 		return QVariant();
@@ -70,7 +70,7 @@ QVariant CListModel::data(const QModelIndex & index, int role) const {
 
 
 
-QVariant CListModel::headerData(int section, Qt::Orientation orientation, int role) {
+QVariant CMuroaListModel::headerData(int section, Qt::Orientation orientation, int role) {
 
 }
 

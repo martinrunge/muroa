@@ -2,6 +2,9 @@
 #include "CServiceBrowser.h"
 #include "CPreferencesDlg.h"
 
+#include "CMuroaTreeModel.h"
+#include "CMuroaListModel.h"
+
 
 CQtClient::CQtClient(QWidget *parent)
     : QMainWindow(parent) ,
@@ -9,34 +12,38 @@ CQtClient::CQtClient(QWidget *parent)
 {
 	ui.setupUi(this);
 
+	const CConnection* connPtr = m_session.getConnection();
+
 	ui.playBtn->setDefaultAction(ui.actionPlayPause);
 	ui.stopBtn->setDefaultAction(ui.actionStop);
 	ui.nextBtn->setDefaultAction(ui.actionNext);
 	ui.prevBtn->setDefaultAction(ui.actionPrevious);
 
-
 	connect(ui.actionExit, SIGNAL(triggered()), qApp, SLOT(quit()));
     connect(ui.actionOpen, SIGNAL(triggered()), this, SLOT(openConnection()));
-    connect(ui.actionClose, SIGNAL(triggered()), this, SLOT(closeConnection()));
+    connect(ui.actionClose, SIGNAL(triggered()), &m_session, SLOT(closeConnection()));
 
-    connect(ui.actionPlayPause, SIGNAL(triggered()), &m_connection, SLOT(play()));
-    connect(ui.actionStop, SIGNAL(triggered()), &m_connection, SLOT(stop()));
-    connect(ui.actionNext, SIGNAL(triggered()), &m_connection, SLOT(next()));
-    connect(ui.actionPrevious, SIGNAL(triggered()), &m_connection, SLOT(prev()));
+    connect(ui.actionPlayPause, SIGNAL(triggered()), connPtr, SLOT(play()));
+    connect(ui.actionStop, SIGNAL(triggered()), connPtr, SLOT(stop()));
+    connect(ui.actionNext, SIGNAL(triggered()), connPtr, SLOT(next()));
+    connect(ui.actionPrevious, SIGNAL(triggered()), connPtr, SLOT(prev()));
 
-    connect(ui.actionScanCollection, SIGNAL(triggered()), m_connection.getSessionSMPtr(), SLOT(scanCollection()));
+    connect(ui.actionScanCollection, SIGNAL(triggered()), &m_session, SLOT(scanCollection()));
 
     connect(ui.action_Preferences, SIGNAL(triggered()), this, SLOT(showPreferences()));
 
 	statusBar()->addWidget(&m_connection_status_label);
 
-	connect(&m_connection, SIGNAL(connectionStatusChanged(enum connectionState)), this, SLOT(connectionStatusChanged(enum connectionState)));
+	connect(connPtr, SIGNAL(connectionStatusChanged(enum connectionState)), this, SLOT(connectionStatusChanged(enum connectionState)));
 
 	setupServiceBrowser();
 
-
-	connect(&m_connection, SIGNAL(progressSig(int, int)), this, SLOT(progress(int,int)));
+	connect(connPtr, SIGNAL(progressSig(int, int)), this, SLOT(progress(int,int)));
 	connectionStatusChanged( e_disconnected );
+
+	ui.mediaColTreeView->setModel(m_session.getMediaColModel());
+	ui.playlistListView->setModel(m_session.getPlaylistModel());
+	ui.nextlistListView->setModel(m_session.getNextlistModel());
 }
 
 CQtClient::~CQtClient()
@@ -60,21 +67,8 @@ void CQtClient::openConnection() {
 
 	if(index != -1) {
 		CServiceDesc* sd = m_dnssd.getService(index);
-		openConnection(*sd);
+		m_session.openConnection(*sd);
 	}
-}
-
-void CQtClient::openConnection(const CServiceDesc &sd) {
-    m_connection.open(sd.getHostName(), sd.getPortNr());
-
-	QSettings settings;
-	settings.setValue("rejoin_service", sd.getServiceName());
-	settings.setValue("rejoin_host", sd.getHostName());
-	settings.setValue("rejoin_domain", sd.getDomainName());
-}
-
-void CQtClient::closeConnection() {
-    m_connection.close();
 }
 
 void CQtClient::connectionStatusChanged(enum connectionState status) {
@@ -86,9 +80,9 @@ void CQtClient::connectionStatusChanged(enum connectionState status) {
 		ui.actionClose->setEnabled(true);
 		ui.actionOpen->setEnabled( false );
 
-//		ui.collectionView->setEnabled( true );
-//		ui.playlistView->setEnabled( true );
-//		ui.nextToPlayView->setEnabled( true );
+		ui.mediaColTreeView->setEnabled( true );
+		ui.playlistListView->setEnabled( true );
+		ui.nextlistListView->setEnabled( true );
 
 	}
 	else {
@@ -98,9 +92,9 @@ void CQtClient::connectionStatusChanged(enum connectionState status) {
 		ui.actionClose->setEnabled(false);
 		ui.actionOpen->setEnabled( true );
 
-//		ui.collectionView->setEnabled( false );
-//		ui.playlistView->setEnabled( false );
-//		ui.nextToPlayView->setEnabled( false );
+		ui.mediaColTreeView->setEnabled( false );
+		ui.playlistListView->setEnabled( false );
+		ui.nextlistListView->setEnabled( false );
 
 	}
 	m_connection_status_label.setText(statusMsg);
@@ -137,5 +131,5 @@ void CQtClient::setupServiceBrowser()
 
 		m_dnssd.notifyOn( service, host, domain );
 	}
-	connect(&m_dnssd, SIGNAL(notifyService(const CServiceDesc&)), this, SLOT(openConnection(const CServiceDesc&)));
+	connect(&m_dnssd, SIGNAL(notifyService(const CServiceDesc&)), &m_session, SLOT(openConnection(const CServiceDesc&)));
 }

@@ -102,6 +102,7 @@ CSession::~CSession() {
 
 void CSession::addConnection(CConnection* ptr) {
 	m_connections.insert(ptr);
+	ptr->joinSession(m_name);
 }
 
 void CSession::removeConnection(CConnection* ptr) {

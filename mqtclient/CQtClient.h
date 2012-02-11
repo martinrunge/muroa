@@ -7,7 +7,7 @@
 #include "ui_mQtClient.h"
 
 #include "CDnsSdServiceBrowserAvahi.h"
-#include "CConnection.h"
+#include "CSession.h"
 
 
 class CServiceBrowser;
@@ -23,25 +23,18 @@ public:
 public slots:
 	void showPreferences();
     void openConnection();
-    void openConnection(const CServiceDesc& sd);
-    void closeConnection();
     void connectionStatusChanged(enum connectionState status);
-
     void progress(int done, int total);
     // void setCurrentTitle( );
-
 
 private:
     Ui::muroaguiClass ui;
 
+    CSession m_session;
+
     void setupServiceBrowser();
-
-    CConnection m_connection;
     CServiceBrowser* m_serviceBrowser;
-//    CDnsSdAvahiViaQtDBus m_dnssd;
     CDnsSdServiceBrowserAvahi m_dnssd;
-
-
 
     QLabel m_connection_status_label;
 

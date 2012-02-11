@@ -70,43 +70,80 @@ public:
 
 	void addConnection(CConnection* connection);
 
-public slots:
-	void play();
-	void stop();
-	void next();
-	void prev();
-
-	void connectionClosed(CConnection* conn);
-	void progress(int done, int total);
-
-	void scanProgress(int donw, int total);
-
-	void saveState();
-	void restoreState();
-
+public:
+    void play();
+    void stop();
+    void next();
+    void prev();
+    void connectionClosed(CConnection *conn);
+    void progress(int done, int total);
+    void scanProgress(int donw, int total);
+    void saveState();
+    void restoreState();
 private:
-	CStream m_stream;
+    CStream m_stream;
+    QMap<int,CCollection<CCollectionItem> *> m_collectionRevisions;
+    QMap<int,CCollection<CPlaylistItem> *> m_playlistRevisions;
+    QMap<int,CCollection<CPlaylistItem> *> m_nextlistRevisions;
+    QList<CConnection*> m_connections;
+    void setSong();
+    int m_latestCollectionRevision;
+    int m_latestPlaylistRevision;
+    int m_latestNextlistRevision;
+    int m_minCollectionRevision;
+    int m_minPlaylistRevision;
+    int m_minNextlistRevision;
+    int m_playlistPos;
+    CStateDB m_stateDB;
+    QString m_name;
+    CTreeModel *CSession::getMediaColModel() const
+    {
+        return m_mediaColModel;
+    }
 
-	QMap<int, CCollection<CCollectionItem>* > m_collectionRevisions;
-	QMap<int, CCollection<CPlaylistItem>* > m_playlistRevisions;
-	QMap<int, CCollection<CPlaylistItem>* > m_nextlistRevisions;
+    uint32_t CSession::getMediaColRev() const
+    {
+        return m_mediaColRev;
+    }
 
-	QList<CConnection*> m_connections;
+    uint32_t CSession::getNextlistRev() const
+    {
+        return m_nextlistRev;
+    }
 
-	void setSong();
+    uint32_t CSession::getPlaylistRev() const
+    {
+        return m_playlistRev;
+    }
 
-	int m_latestCollectionRevision;
-	int m_latestPlaylistRevision;
-	int m_latestNextlistRevision;
+    void CSession::setMediaColRev(uint32_t mediaColRev)
+    {
+        m_mediaColRev = mediaColRev;
+    }
 
-	int m_minCollectionRevision;
-	int m_minPlaylistRevision;
-	int m_minNextlistRevision;
+    void CSession::setNextlistRev(uint32_t nextlistRev)
+    {
+        m_nextlistRev = nextlistRev;
+    }
 
-	int m_playlistPos;
+    void CSession::setPlaylistRev(uint32_t playlistRev)
+    {
+        m_playlistRev = playlistRev;}
 
-	CStateDB m_stateDB;
-	QString m_name;
+    CListModel *CSession::getNextlistModel() const
+    {
+        return m_nextlistModel;
+    }
+
+    CListModel *CSession::getPlayistModel() const
+    {
+        return m_playistModel;
+    }
+
+    void CSession::setNextlistModel(CListModel *nextlistModel)
+    {
+        m_nextlistModel = nextlistModel;
+    }
 };
 
 #endif /* CSESSION_H_ */

@@ -35,7 +35,7 @@ CRpc::~CRpc() {
 	}
 
 	void CRpc::onJoinSession(string name) {
-		m_connection->joinSession(name);
+		m_connection->onJoinSession(name);
     }
 
     void CRpc::onLeaveSession()
