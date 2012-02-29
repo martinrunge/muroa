@@ -45,7 +45,7 @@ CCategoryItem::CCategoryItem(CRootItem *root_item, string text, CCategoryItem*  
 	if(m_parent) {
 		m_parent->addChild(this);
 	}
-	m_root_item->setItemPtr(m_path, this);
+	m_root_item->setCategoryPtr(m_path, this);
 }
 
 
@@ -59,7 +59,7 @@ CCategoryItem::~CCategoryItem() {
 	for(mit = m_content_items.begin(); mit != m_content_items.end(); mit++ ) {
 		delete *mit;
 	}
-	m_root_item->delItemPtr(m_path);
+	m_root_item->delCategoryPtr(m_path);
 }
 
 void CCategoryItem::addChild(CCategoryItem* newSubCategory) {
@@ -189,6 +189,8 @@ string CCategoryItem::serialize(bool asDiff) {
 	}
 	std::vector<IContentItem*>::iterator mit;
 	for(mit = m_content_items.begin(); mit != m_content_items.end(); mit++ ) {
+		result.append(m_path);
+		result.append("\t");
 		result.append((*mit)->serialize(asDiff));
 	}
 

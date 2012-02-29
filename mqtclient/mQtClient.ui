@@ -91,8 +91,8 @@
       <property name="orientation">
        <enum>Qt::Horizontal</enum>
       </property>
-      <widget class="QTreeView" name="mediaColTreeView"/>
-      <widget class="QListView" name="playlistListView"/>
+      <widget class="CMediaColView" name="mediaColTreeView"/>
+      <widget class="CPlaylistView" name="playlistListView"/>
       <widget class="QListView" name="nextlistListView"/>
      </widget>
     </item>
@@ -114,6 +114,7 @@
     <addaction name="actionGet_Revision_1"/>
     <addaction name="actionGet_next_Revision"/>
     <addaction name="actionScanCollection"/>
+    <addaction name="actionDump_to_stdout"/>
    </widget>
    <widget class="QMenu" name="menu_File">
     <property name="title">
@@ -231,7 +232,24 @@
     <string>&amp;Scan Collection</string>
    </property>
   </action>
+  <action name="actionDump_to_stdout">
+   <property name="text">
+    <string>Dump to stdout</string>
+   </property>
+  </action>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>CMediaColView</class>
+   <extends>QTreeView</extends>
+   <header>CMediaColView.h</header>
+  </customwidget>
+  <customwidget>
+   <class>CPlaylistView</class>
+   <extends>QListView</extends>
+   <header>CPlaylistView.h</header>
+  </customwidget>
+ </customwidgets>
  <resources>
   <include location="mQtClient.qrc"/>
  </resources>

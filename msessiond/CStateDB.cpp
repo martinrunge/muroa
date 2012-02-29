@@ -165,7 +165,7 @@ CRootItem* CStateDB::getMediaColRev(int rev) {
 
 			cerr << oss.str();
 
-			CCategoryItem* parent = mediaCol->getItemPtr(oss.str());
+			CCategoryItem* parent = mediaCol->getCategoryPtr(oss.str());
 			if(parent == 0) {
 				parent = mediaCol->mkPath(oss.str());
 			}
@@ -226,7 +226,7 @@ void CStateDB::restorePlaylists(CSession * const session) {
 				item = getPlaylistItemByPos(pos, rev, playlist);
 				pos++;
 				if(item) {
-					CCategoryItem* parent = playlist->getItemPtr();
+					CCategoryItem* parent = playlist->getCategoryPtr();
 					playlist->addContentItem(item, parent);
 				}
 			} while(item != 0);
@@ -257,7 +257,7 @@ void CStateDB::restoreNextlists(CSession * const session) {
 				item = getNextlistItemByPos(pos, rev, nextlist);
 				pos++;
 				if(item) {
-					CCategoryItem* parent = nextlist->getItemPtr();
+					CCategoryItem* parent = nextlist->getCategoryPtr();
 					nextlist->addContentItem(item, parent);
 				}
 			} while(item != 0);
@@ -281,7 +281,7 @@ void CStateDB::repairSession(CSession* session) {
 	for(; it != playlist->end(); it++) {
 
 		CCategoryItem* plci = (*it)->getParent();
-		CCategoryItem* nci = newPlaylist->getItemPtr( plci->getPath() );
+		CCategoryItem* nci = newPlaylist->getCategoryPtr( plci->getPath() );
 
 		CPlaylistItem* plItem = new CPlaylistItem(newPlaylist, nci );
 

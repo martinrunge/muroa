@@ -22,9 +22,9 @@
 
 using namespace std;
 
-CRootItem::CRootItem() {
+CRootItem::CRootItem(uint32_t rev) : m_revision(rev) {
 	m_base = new CCategoryItem(this, "", 0);
-	setItemPtr("/", m_base);
+	setCategoryPtr("/", m_base);
 	for(int i=0; i < CItemType::numTypes(); i++) {
 		m_content_maps.push_back( new map<uint32_t, IContentItem*>() );
 	}
@@ -105,7 +105,7 @@ IContentItem* CRootItem::addContentItem(string text, int posInParent) {
 	string path = stripFirstSection(text);
 	CItemType itemType = getItemType(text);
 
-	CCategoryItem* parent = getItemPtr(path);
+	CCategoryItem* parent = getCategoryPtr(path);
 	if(parent == 0) {
 		parent = mkPath(path);
 	}
@@ -210,7 +210,7 @@ void CRootItem::patch(std::string diff) throw(std::invalid_argument, MalformedPa
 		if( line.find("+++ ") == 0 ) {
 			// new or modified category
 			string path = line.substr(4, line.size() - 4);
-			parent = getItemPtr(path);
+			parent = getCategoryPtr(path);
 			if(parent == 0) {
 				parent = mkPath(path);
 			}
@@ -220,7 +220,7 @@ void CRootItem::patch(std::string diff) throw(std::invalid_argument, MalformedPa
 		else if(line.find("--- ") == 0) {
 			// remove a complete category
 			string path = line.substr(4, line.size() - 4);
-			CCategoryItem *categoryToRemove = getItemPtr(path);
+			CCategoryItem *categoryToRemove = getCategoryPtr(path);
 			if(categoryToRemove == 0) {
 				ostringstream oss;
 				oss << "CRootItem::patch (__FILE__:__LINE__): the category item to be removed was not be found in current collection(" << path << ").";
@@ -326,7 +326,7 @@ bool CRootItem::endRemoveItems(void) {
 	return true;
 }
 
-CCategoryItem* CRootItem::getItemPtr(std::string path) {
+CCategoryItem* CRootItem::getCategoryPtr(std::string path) {
 	std::map<std::string, CCategoryItem*>::iterator it;
 	it = m_category_map.find(path);
 	if(it == m_category_map.end()) {
@@ -337,7 +337,7 @@ CCategoryItem* CRootItem::getItemPtr(std::string path) {
 	}
 	}
 
-void CRootItem::setItemPtr(std::string path, CCategoryItem* itemPtr) {
+void CRootItem::setCategoryPtr(std::string path, CCategoryItem* itemPtr) {
 	std::pair<std::map<std::string, CCategoryItem*>::iterator,bool> ret;
 	ret = m_category_map.insert(std::pair<std::string,CCategoryItem*>(path, itemPtr));
 	if (ret.second==false)
@@ -347,7 +347,7 @@ void CRootItem::setItemPtr(std::string path, CCategoryItem* itemPtr) {
 	}
 }
 
-void CRootItem::delItemPtr(std::string path) {
+void CRootItem::delCategoryPtr(std::string path) {
 	m_category_map.erase(path);
 }
 
@@ -449,7 +449,7 @@ CCategoryItem* CRootItem::mkPath(string path) {
 		string catPath = path.substr(0, rpos);
 		string catName = path.substr(lpos , rpos - lpos);
 
-		CCategoryItem* cItem = getItemPtr(catPath);
+		CCategoryItem* cItem = getCategoryPtr(catPath);
 		if(cItem == 0) {
 			cItem = new CCategoryItem( this, catName, parent);
 			// setItemPtr(catPath, cItem);

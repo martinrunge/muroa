@@ -34,6 +34,7 @@ public slots:
     void openConnection(const CServiceDesc & sd);
     void closeConnection();
     void scanCollection();
+    void dumpCollection();
 
     uint32_t getMediaColRev() const;
     uint32_t getNextlistRev() const;

@@ -34,7 +34,7 @@ using namespace std;
 
 class CRootItem {
 public:
-	CRootItem();
+	CRootItem(uint32_t rev = 0);
 	virtual ~CRootItem();
 
 	typedef muroa::CRootItemIterator iterator;
@@ -69,15 +69,19 @@ public:
 	// implementation traverses object tree and compares names
 	//CCategoryItem* getItemPtr(std::string path);
 
-	CCategoryItem* getItemPtr(std::string path = "/");
-    void setItemPtr(std::string path, CCategoryItem* itemPtr);
-	void delItemPtr(std::string path);
+	CCategoryItem* getCategoryPtr(std::string path = "/");
+    void setCategoryPtr(std::string path, CCategoryItem* itemPtr);
+	void delCategoryPtr(std::string path);
 	CCategoryItem* mkPath(std::string path);
 
 
 	IContentItem* getContentPtr(const CItemType& type, const uint32_t hash);
 	void setContentPtr(const CItemType& type, IContentItem* ptr, const uint32_t hash);
 	void delContentPtr(const CItemType& type, const uint32_t hash);
+
+	inline uint32_t getRevision() const { return m_revision; };
+	inline void getRevision(const uint32_t  rev) { m_revision = rev; };
+
 private:
 
 	std::map<std::string, CCategoryItem*> m_category_map;
@@ -88,6 +92,8 @@ private:
 
 	std::string stripFirstSection(std::string& text);
 	CItemType getItemType(std::string& text);
+
+	uint32_t m_revision;
 };
 
 #endif /* CROOTITEM_H_ */

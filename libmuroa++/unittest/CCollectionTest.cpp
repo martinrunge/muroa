@@ -157,7 +157,7 @@ void CCollectionTest::serialize() {
 	string result = base->serialize();
 
 	stringstream ss;
-	ss << mItem->getText();
+	ss << item->getPath() << "\t" << mItem->getText();
 	string expected = ss.str();
 	CPPUNIT_ASSERT(result.compare(expected) == 0 );
 }

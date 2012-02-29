@@ -29,6 +29,7 @@ CQtClient::CQtClient(QWidget *parent)
     connect(ui.actionPrevious, SIGNAL(triggered()), connPtr, SLOT(prev()));
 
     connect(ui.actionScanCollection, SIGNAL(triggered()), &m_session, SLOT(scanCollection()));
+    connect(ui.actionDump_to_stdout, SIGNAL(triggered()), &m_session, SLOT(dumpCollection()));
 
     connect(ui.action_Preferences, SIGNAL(triggered()), this, SLOT(showPreferences()));
 

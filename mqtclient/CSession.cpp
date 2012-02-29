@@ -78,3 +78,9 @@ uint32_t CSession::getNextlistRev() const {
 void CSession::setNextlistRev(const uint32_t playlistRev) {
 	m_nextlistRev = playlistRev;
 }
+
+void CSession::dumpCollection() {
+	string mediaCol;
+	mediaCol = m_mediaColModel->serialize();
+	cout << mediaCol;
+}

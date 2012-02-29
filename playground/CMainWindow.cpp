@@ -62,7 +62,7 @@ CMainWindow::CMainWindow(QWidget *parent)
 
 	m_leftPlaylistModel = new CMuroaListModel();
 	m_leftPlaylistModel->deserialize(examplePlaylist);
-	m_leftPlaylistModel->setBase( m_leftPlaylistModel->getItemPtr("/Playlist 1"));
+	m_leftPlaylistModel->setBase( m_leftPlaylistModel->getCategoryPtr("/Playlist 1"));
 
 	m_rightPlaylistModel = new CMuroaListModel();
 	m_rightPlaylistModel->deserialize(examplePlaylist);

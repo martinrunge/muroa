@@ -19,6 +19,10 @@ set( SRC           CQtClient.cpp
                    CPreferencesDlg.cpp
                    CMuroaListModel.cpp
                    CMuroaTreeModel.cpp
+                   CMediaColView.cpp
+                   CPlaylistView.cpp
+                   CModelDiff.cpp
+                   CDiffBuilder.cpp
                    
                    cmds/CmdBase.cpp
                    cmds/CmdGetMediaCol.cpp
@@ -43,6 +47,10 @@ set( MOC_H         CQtClient.h
                    CPreferencesDlg.h
                    CMuroaListModel.h
                    CMuroaTreeModel.h
+                   CMediaColView.h
+                   CPlaylistView.h
+                   CModelDiff.h
+                   CDiffBuilder.h
 
                    cmds/CmdBase.h
                    cmds/CmdGetMediaCol.h
