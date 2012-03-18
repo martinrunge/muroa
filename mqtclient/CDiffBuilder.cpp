@@ -147,8 +147,8 @@ std::string CDiffBuilder::diff(CModelDiff md)
 	int numToInsert = md.getNumToInsert();
 	int numToRemove = md.getNumToRemove();
 
-	int rmFrom = md.getSelectedItems();
-	int rmTo = md.getSelectedItems().at( md.getNumSelected() - 1 );
+	int rmFrom = md.getSelectedItems().at(0).line;
+	int rmTo = md.getSelectedItems().at( md.getNumSelected() - 1 ).line;
 
 	int insTo = md.getInsertPos();
 
@@ -173,7 +173,7 @@ std::string CDiffBuilder::diff(CModelDiff md)
 			text.append( prepareDiffHeader(insTo, 0, insTo +1, numToInsert) );
 			for(int i = 0; i < numToInsert; i++)
 			{
-				int row = md.getSelectedIndexes().at(i);
+				int row = md.getSelectedItems().at(i).line;
 				text.append( "+" );
 				text.append( (this->*getItemToInsert)(row) );
 				text.append( "\n" );
@@ -186,7 +186,7 @@ std::string CDiffBuilder::diff(CModelDiff md)
 			text.append( prepareDiffHeader(rmFrom + 1, numToRemove, rmFrom + numToRemove, 0) );
 			for(int i = 0; i < numToRemove; i++)
 			{
-				int row = md.getSelectedIndexes().at(i);
+				int row = md.getSelectedItems().at(i).line;
 				text.append( "-" );
 				text.append( (this->*getItemToRemove)(row) );
 				text.append( "\n" );
@@ -203,7 +203,7 @@ std::string CDiffBuilder::diff(CModelDiff md)
 
 			for(int i = 0; i < numToRemove; i++)
 			{
-				int row = md.getSelectedIndexes().at(i);
+				int row = md.getSelectedItems().at(i).line;
 				text += "-";
                 text += (this->*getItemToRemove)(row);
                 text += "\n";
@@ -217,7 +217,7 @@ std::string CDiffBuilder::diff(CModelDiff md)
 			text.append( prepareDiffHeader(insTo, 0, insTo - numToInsert + 1, numToInsert) );
 			for(int i = 0; i < numToInsert; i++)
 			{
-				int row = md.getSelectedIndexes().at(i);
+				int row = md.getSelectedItems().at(i).line;
 				text += "+";
 				text += (this->*getItemToInsert)(row);
 				text += "\n";

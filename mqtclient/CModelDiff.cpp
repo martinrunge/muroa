@@ -9,7 +9,8 @@
 #include <QtAlgorithms>
 #include <QDebug>
 
-#include <CItemBase.h>
+#include <IContentItem.h>
+#include <CRootItem.h>
 
 using namespace std;
 
@@ -32,7 +33,7 @@ CModelDiff::CModelDiff(const CModelDiff& other)
 	m_numToRemove = other.getNumToRemove();
 }
 
-CModelDiff::CModelDiff(const QByteArray& ba, CRootItem* originRi, CRootItem* destinationRi)
+CModelDiff::CModelDiff(const QByteArray& ba)
 {
 	QDataStream ds( ba );
 	unsigned orig, dest, commandType;
@@ -46,22 +47,18 @@ CModelDiff::CModelDiff(const QByteArray& ba, CRootItem* originRi, CRootItem* des
 	ds >> m_insertPos;
 
 	int numItems;
-	ds << numItems;
+	ds >> numItems;
 	for(int i = 0; i < numItems; i++) {
-		int type;
-		ds >> type;
-		if(type != CItemType::E_CAT) {
-			string path;
-			ds >> QString(path.c_str());
-			CCategoryItem* catIt = originRi->getCategoryPtr(path);
-			m_selectedItems.push_back(catIt);
-		}
-		else {
-			uint32_t hash;
-			ds >> hash;
-			IContentItem* contentIt = originRi->getContentPtr(type, hash);
-			m_selectedItems.push_back(contentIt);
-		}
+		comb_hash_t combhash;
+		ds >> combhash.type;
+		ds >> combhash.hash;
+		quint32 pathsize;
+		char* data;
+		ds.readBytes(data, pathsize);
+		combhash.path = string(data, pathsize);
+		delete [] data;
+		ds >> combhash.line;
+		m_selectedItems.push_back(combhash);
 	}
 }
 
@@ -79,34 +76,30 @@ QByteArray CModelDiff::toQByteArray() const
 	ds << (unsigned)m_commandType;
 	ds << m_insertPos;
 
-	ds << m_selectedItems.size();
-	for(vector<CItemBase*>::iterator it = m_selectedItems.begin(); it != m_selectedItems.end(); it++ ) {
-		if((*it)->type() != CItemType::E_CAT ) {
-			IContentItem* contentIt = reinterpret_cast<IContentItem*>(*it);
-			ds << (*it)->type();
-			ds << contentIt->getHash();
-		}
-		else {
-			CCategoryItem* catIt = reinterpret_cast<CCategoryItem*>(*it);
-			ds << (*it)->type();
-			ds << catIt->getPath();
-		}
+	unsigned numSelectedItems = m_selectedItems.size();
+	ds << numSelectedItems;
+	for(vector<comb_hash_t>::const_iterator it = m_selectedItems.begin(); it != m_selectedItems.end(); it++ ) {
+		ds << it->type;
+		ds << it->hash;
+		uint32_t pathsize = it->path.size();
+		ds.writeBytes(it->path.data(), pathsize);
+		ds << it->line;
 	}
 	return ba;
 }
 
 void CModelDiff::sort()
 {
-	qSort(m_selectedIndexes.begin(), m_selectedIndexes.end());
+	// qSort(m_selectedIndexes.begin(), m_selectedIndexes.end());
 }
 
 
 void CModelDiff::dump() {
 	qDebug() << QString("##########  CModelDiff::dump  ###########");
 	qDebug() << QString(" %1 item from %2 to %3 pos %4").arg(m_numToRemove).arg(m_origin).arg(m_destination).arg(m_insertPos);
-	for(int i = 0; i < m_selectedIndexes.size(); i++)
+	for(int i = 0; i < m_selectedItems.size(); i++)
 	{
-		qDebug() << QString(" selected index: %1 ").arg(m_selectedIndexes.at(i));
+		qDebug() << QString(" selected hash: %1 ").arg(m_selectedItems[i].hash);
 	}
 	qDebug() << QString("##########  CModelDiff::dump  ###########");
 }

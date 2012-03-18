@@ -22,14 +22,23 @@ enum origin {
 	E_NONE
 };
 
-class CItemBase;
+class IContentItem;
 class CRootItem;
+
+struct comb_hash {
+	uint32_t type;
+	uint32_t hash;
+	std::string path;
+	uint32_t line;
+};
+
+typedef struct comb_hash comb_hash_t;
 
 class CModelDiff {
 public:
 	CModelDiff(enum origin orig = E_NONE);
 	CModelDiff(const CModelDiff& other);
-	CModelDiff(const QByteArray& ba, CRootItem* originRi, CRootItem* destinationRi);
+	CModelDiff(const QByteArray& ba);
 
 	virtual ~CModelDiff();
 
@@ -44,12 +53,6 @@ public:
 	enum origin getDestination() const { return m_destination; };
 	void setDestination(const enum origin dest) { m_destination = dest; };
 
-//	CRootItem* getOriginRoot(void) { return m_originRoot; };
-//	void setOriginRoot(const CRootItem* ri) { m_originRoot = ri; };
-//
-//	CRootItem* getDestinationRoot(void) {return m_destinationRoot; };
-//	void setDestinationRoot(CRootItem* ri) { m_destinationRoot = ri; };
-
 
 	enum origin getCommandType() const { return m_commandType; };
 	void setCommandType(const enum origin commandType) { m_commandType = commandType; };
@@ -63,12 +66,12 @@ public:
     void setNumToRemove(int numRem) { m_numToRemove = numRem; };
 
 
-    std::vector<CItemBase*> getSelectedItems() const { return m_selectedItems; }
-    void setSelectedItems(std::vector<CItemBase*> selectedItems) { m_selectedItems = selectedItems; }
+    std::vector<comb_hash_t> getSelectedItems() const { return m_selectedItems; }
+    void setSelectedItems(std::vector<comb_hash_t> selectedItems) { m_selectedItems = selectedItems; }
 
-    void appendToSelectedItems(CItemBase* itemPtr)
+    void appendToSelectedItems(comb_hash_t combhash)
     {
-    	m_selectedItems.push_back(itemPtr);
+    	m_selectedItems.push_back(combhash);
     }
 
     void dump();
@@ -76,7 +79,8 @@ public:
     void sort();
 
 private:
-	std::vector<CItemBase*> m_selectedItems;
+
+    std::vector<comb_hash_t> m_selectedItems;
 
 	int m_insertPos;
 

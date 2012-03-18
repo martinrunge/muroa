@@ -95,7 +95,7 @@ void CPlaylistView::dropEvent(QDropEvent *event)
         md.setInsertPos( insertPos );
         md.setDestination(m_role);
 
-        qDebug() << QString("CPlaylistView::dropEvent: Move [%1,%2] to %3").arg(md.getSelectedIndexes().at(0)).arg(md.getSelectedIndexes().at(md.getNumSelected() - 1 )).arg(md.getInsertPos());
+        qDebug() << QString("CPlaylistView::dropEvent: Move [%1,%2] to %3").arg(md.getSelectedItems().at(0).hash).arg(md.getSelectedItems().at(md.getNumSelected() - 1 ).hash).arg(md.getInsertPos());
         // plModel->makeDiff(&md);
         m_diffBuilder->diff(md);
     }
@@ -112,8 +112,10 @@ void CPlaylistView::performDrag()
 
     for(int i = 0; i < indexList.size(); i++)
     {
-    	int pos = indexList.at(i).row();
-    	md.appendToSelectedIndexes(pos);
+    	comb_hash_t combhash;
+    	combhash.line = indexList.at(i).row();
+
+    	md.appendToSelectedItems(combhash);
     }
 
     if (md.getNumSelected() > 0)

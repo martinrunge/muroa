@@ -88,7 +88,7 @@ void CMediaColView::dropEvent(QDropEvent *event)
         md.setInsertPos(currentIdx.row());
         md.setDestination(E_MEDIA_COL);
 
-        qDebug() << QString("Move [%1,%2] to %3").arg(md.getSelectedIndexes().at(0)).arg(md.getSelectedIndexes().at(md.getNumSelected() - 1 )).arg(md.getInsertPos());
+        qDebug() << QString("Move [%1,%2] to %3").arg(md.getSelectedItems().at(0).line).arg(md.getSelectedItems().at(md.getNumSelected() - 1 ).line).arg(md.getInsertPos());
 
         // plModel->makeDiff(&md);
         m_diffBuilder->diff(md);
@@ -105,25 +105,20 @@ void CMediaColView::performDrag()
     CModelDiff md(E_MEDIA_COL);
 
     // indexList contains all selected ModelIndexes, when a complete row is selected one per column.
-    QList<int> rowsSeen;
-
-    for(int i = 0; i < indexList.size(); i++)
-    {
-    	int pos = indexList.at(i).row();
-    	if( ! rowsSeen.contains(pos))
-    	{
-    		rowsSeen.append(pos);
-
-
-
-
-
-    		md.appendToSelectedIndexes(pos);
-    	}
-    	else {
-    		Debug() << QString("duplicate row %1").arg(pos);
-    	}
-    }
+//    QList<int> rowsSeen;
+//    for(int i = 0; i < indexList.size(); i++)
+//    {
+//    	int pos = indexList.at(i).row();
+//    	if( ! rowsSeen.contains(pos))
+//    	{
+//    		rowsSeen.append(pos);
+//
+//    		md.appendToSelectedIndexes(pos);
+//    	}
+//    	else {
+//    		Debug() << QString("duplicate row %1").arg(pos);
+//    	}
+//    }
 
     if (md.getNumSelected() > 0)
     {
