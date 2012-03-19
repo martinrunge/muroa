@@ -1,23 +1,23 @@
 /*
- * CmdColChanged.h
+ * CmdEditPlaylist.h
  *
  *  Created on: 28 Dec 2011
  *      Author: martin
  */
 
-#ifndef CMDCOLCHANGED_H_
-#define CMDCOLCHANGED_H_
+#ifndef CMD_EDIT_PLAYLIST_H_
+#define CMD_EDIT_PLAYLIST_H_
 
 #include "Cmd.h"
 #include <string>
 
 namespace muroa {
 
-class CmdColChanged: public muroa::Cmd {
+class CmdEditPlaylist: public muroa::Cmd {
 public:
-	CmdColChanged();
-    CmdColChanged(unsigned  fromRev, std::string diff);
-    virtual ~CmdColChanged();
+	CmdEditPlaylist();
+	CmdEditPlaylist(unsigned  fromRev, std::string diff);
+    virtual ~CmdEditPlaylist();
 
     std::string getDiff() const;
     void setDiff(std::string diff);
@@ -28,7 +28,8 @@ public:
 private:
     unsigned m_fromRev;
     std::string m_diff;
+
 };
 
 } /* namespace muroa */
-#endif /* CMDCOLCHANGED_H_ */
+#endif /* CMD_EDIT_PLAYLIST_H_ */

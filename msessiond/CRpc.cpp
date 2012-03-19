@@ -10,6 +10,16 @@
 #include "CSessionContainer.h"
 #include "CSession.h"
 
+// command handling might move to libmuroa++
+#include <cmds/Cmd.h>
+#include <cmds/SimpleCmds.h>
+#include <cmds/CmdError.h>
+#include <cmds/CmdProgress.h>
+#include <cmds/CmdFinished.h>
+#include <cmds/CmdEditMediaCol.h>
+#include <cmds/CmdEditPlaylist.h>
+
+
 #include <vector>
 #include <string>
 
@@ -95,27 +105,77 @@ CRpc::~CRpc() {
     	m_connection->sendLatestNextlistRev(knownRev);
     }
 
-    void CRpc::onCollection(unsigned  diffFromRev, std::string collection)
-    {
+    void CRpc::onCollection(unsigned  diffFromRev, std::string collection) {
     }
 
-    void CRpc::onPlaylist(unsigned  diffFromRev, std::string playlist)
-    {
+    void CRpc::onPlaylist(unsigned  diffFromRev, std::string playlist) {
     }
 
-    void CRpc::onNextlist(unsigned  diffFromRev, std::string nextlist)
-    {
+    void CRpc::onNextlist(unsigned  diffFromRev, std::string nextlist) {
     }
 
-    void CRpc::onEditCollection(unsigned  fromRev, std::string collectionDiff)
-    {
+    void CRpc::onEditCollection(unsigned  fromRev, std::string collectionDiff) {
     }
 
-    void CRpc::onEditPlaylist(unsigned  fromRev, std::string playlistDiff)
-    {
+    void CRpc::onEditPlaylist(unsigned  fromRev, std::string playlistDiff) {
+    	CmdEditPlaylist* ep = new CmdEditPlaylist(fromRev, playlistDiff);
+    	m_connection->incomingCmd(ep);
     }
 
-    void CRpc::onEditNextlist(unsigned  fromRev, std::string nextlistDiff)
-    {}
+    void CRpc::onEditNextlist(unsigned  fromRev, std::string nextlistDiff) {
+
+    }
+
+	void CRpc::sendCmd(muroa::Cmd* cmd) {
+		switch(cmd->type()) {
+		case Cmd::PLAY:
+		{
+			// CmdPlay* msg = reinterpret_cast<CmdPlay*>(cmd);
+			play();
+			break;
+		}
+		case Cmd::STOP:
+		{
+			// CmdStop* msg = reinterpret_cast<CmdStop*>(cmd);
+			stop();
+			break;
+		}
+		case Cmd::NEXT:
+		{
+			// CmdNext* msg = reinterpret_cast<CmdNext*>(cmd);
+			next();
+			break;
+		}
+		case Cmd::PREV:
+		{
+			// CmdPrev* msg = reinterpret_cast<CmdPrev*>(cmd);
+			prev();
+			break;
+		}
+		case Cmd::PROGRESS:
+		{
+			CmdProgress* msg = reinterpret_cast<CmdProgress*>(cmd);
+			progress(msg->getCorrespondingJobId(), msg->getProgress());
+			break;
+		}
+		case Cmd::FINISHED:
+		{
+			CmdFinished* msg = reinterpret_cast<CmdFinished*>(cmd);
+			finished(msg->getCorrespondingJobId());
+			break;
+		}
+		case Cmd::OPENDB:
+		{
+			break;
+		}
+		case Cmd::RESP:
+		{
+			break;
+		}
+		default:
+			break;
+		}
+	}
+
 
 } /* namespace muroa */

@@ -5,45 +5,45 @@
  *      Author: martin
  */
 
-#include "CmdColChanged.h"
+#include "CmdEditMediaCol.h"
 
 using namespace std;
 
 namespace muroa {
 
-CmdColChanged::CmdColChanged() : Cmd(Cmd::COLCHANGED) {
+CmdEditMediaCol::CmdEditMediaCol() : Cmd(Cmd::EDIT_MEDIACOL) {
 	// TODO Auto-generated constructor stub
 
 }
 
-CmdColChanged::CmdColChanged(unsigned  fromRev, std::string diff)
-                              : Cmd(Cmd::COLCHANGED),
+CmdEditMediaCol::CmdEditMediaCol(unsigned  fromRev, std::string diff)
+                              : Cmd(Cmd::EDIT_MEDIACOL),
                                 m_fromRev(fromRev),
                                 m_diff(diff)
 {
 
 }
 
-CmdColChanged::~CmdColChanged() {
+CmdEditMediaCol::~CmdEditMediaCol() {
 	// TODO Auto-generated destructor stub
 }
 
-    string CmdColChanged::getDiff() const
+    string CmdEditMediaCol::getDiff() const
     {
         return m_diff;
     }
 
-    void CmdColChanged::setDiff(string diff)
+    void CmdEditMediaCol::setDiff(string diff)
     {
         m_diff = diff;
     }
 
-    unsigned CmdColChanged::getFromRev() const
+    unsigned CmdEditMediaCol::getFromRev() const
     {
         return m_fromRev;
     }
 
-    void CmdColChanged::setFromRev(unsigned  fromRev)
+    void CmdEditMediaCol::setFromRev(unsigned  fromRev)
     {
         m_fromRev = fromRev;
     }

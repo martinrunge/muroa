@@ -18,11 +18,13 @@
 #include <cmds/CmdError.h>
 #include <cmds/CmdProgress.h>
 #include <cmds/CmdFinished.h>
-#include <cmds/CmdColChanged.h>
+#include <cmds/CmdEditMediaCol.h>
 
 namespace muroa {
 
-CConnection::CConnection(boost::asio::io_service& io_service) : CTcpConnection(io_service) , m_rpc(0) {
+unsigned CConnection::m_next_id(0);
+
+CConnection::CConnection(boost::asio::io_service& io_service) : CTcpConnection(io_service) , m_rpc(0), m_id(m_next_id++) {
 	m_session_container = CSessionContainer::getInstPtr();
 }
 
@@ -122,56 +124,12 @@ void CConnection::setSession(CSession *session) {
 	m_session = session;
 }
 
-void CConnection::sendCmd( Cmd* cmd ) {
-	switch(cmd->type()) {
-	case Cmd::PLAY:
-	{
-		CmdPlay* msg = reinterpret_cast<CmdPlay*>(cmd);
-		play(msg);
-		break;
-	}
-	case Cmd::STOP:
-	{
-		CmdStop* msg = reinterpret_cast<CmdStop*>(cmd);
-		stop(msg);
-		break;
-	}
-	case Cmd::NEXT:
-	{
-		CmdNext* msg = reinterpret_cast<CmdNext*>(cmd);
-		next(msg);
-		break;
-	}
-	case Cmd::PREV:
-	{
-		CmdPrev* msg = reinterpret_cast<CmdPrev*>(cmd);
-		prev(msg);
-		break;
-	}
-	case Cmd::PROGRESS:
-	{
-		CmdProgress* msg = reinterpret_cast<CmdProgress*>(cmd);
-		progress(msg);
-		break;
-	}
-	case Cmd::FINISHED:
-	{
-		CmdFinished* msg = reinterpret_cast<CmdFinished*>(cmd);
-		finished(msg);
-		break;
-	}
-	case Cmd::OPENDB:
-	{
-		break;
-	}
-	case Cmd::RESP:
-	{
-		break;
-	}
-	default:
-		break;
+void CConnection::incomingCmd( Cmd* cmd ) {
+	m_session->incomingCmd(cmd, this);
+}
 
-	}
+void CConnection::sendCmd( Cmd* cmd ) {
+	m_rpc->sendCmd(cmd);
 }
 
 void CConnection::play(CmdPlay* playCmd) {
@@ -198,7 +156,7 @@ void CConnection::finished(CmdFinished* finishedCmd) {
 	m_rpc->finished(finishedCmd->getCorrespondingJobId());
 }
 
-void CConnection::collectionChanged(CmdColChanged* colChangedCmd) {
+void CConnection::collectionChanged(CmdEditMediaCol* colChangedCmd) {
 	m_rpc->editCollection(colChangedCmd->getFromRev(), colChangedCmd->getDiff());
 }
 

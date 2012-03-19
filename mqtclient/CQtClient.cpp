@@ -5,6 +5,8 @@
 #include "CMuroaTreeModel.h"
 #include "CMuroaListModel.h"
 
+#include "CDiffBuilder.h"
+
 
 CQtClient::CQtClient(QWidget *parent)
     : QMainWindow(parent) ,
@@ -45,10 +47,18 @@ CQtClient::CQtClient(QWidget *parent)
 	ui.mediaColTreeView->setModel(m_session.getMediaColModel());
 	ui.playlistListView->setModel(m_session.getPlaylistModel());
 	ui.nextlistListView->setModel(m_session.getNextlistModel());
+
+	m_diffBuilder = new CDiffBuilder(m_session.getMediaColModel(), m_session.getPlaylistModel(), m_session.getNextlistModel());
+	ui.mediaColTreeView->setDiffBuilderPtr(m_diffBuilder);
+	ui.playlistListView->setDiffBuilderPtr(m_diffBuilder);
+	// ui.nextlistListView->setDiffBuilderPtr(m_diffBuilder);
+
+	connect(m_diffBuilder, SIGNAL(sendCommand(CmdBase*)), m_session.getConnection(), SLOT(sendCommand(CmdBase*)));
 }
 
 CQtClient::~CQtClient()
 {
+	delete m_diffBuilder;
 	delete m_serviceBrowser;
 }
 

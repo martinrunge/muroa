@@ -12,6 +12,7 @@
 #include "CMuroaListModel.h"
 #include "CMuroaTreeModel.h"
 #include <CMediaItem.h>
+#include <CItemType.h>
 
 #include "CModelDiff.h"
 #include "CDiffBuilder.h"
@@ -105,20 +106,39 @@ void CMediaColView::performDrag()
     CModelDiff md(E_MEDIA_COL);
 
     // indexList contains all selected ModelIndexes, when a complete row is selected one per column.
-//    QList<int> rowsSeen;
-//    for(int i = 0; i < indexList.size(); i++)
-//    {
-//    	int pos = indexList.at(i).row();
-//    	if( ! rowsSeen.contains(pos))
-//    	{
-//    		rowsSeen.append(pos);
-//
-//    		md.appendToSelectedIndexes(pos);
-//    	}
-//    	else {
-//    		Debug() << QString("duplicate row %1").arg(pos);
-//    	}
-//    }
+    QList<int> rowsSeen;
+    for(int i = 0; i < indexList.size(); i++)
+    {
+    	int pos = indexList.at(i).row();
+    	if( ! rowsSeen.contains(pos))
+    	{
+    		rowsSeen.append(pos);
+    		comb_hash_t combhash;
+    		CItemBase* item = mcModel->itemFromIndex(indexList.at(i));
+    		switch(item->type()) {
+    		case CItemType::E_ROOT:
+    			// add all
+    			break;
+    		case CItemType::E_CAT:
+    			// add whole Category
+    			break;
+
+    		case CItemType::E_INVAL:
+    			break;
+
+    		default:
+    			// derived from IContentitem
+        		IContentItem* citem = reinterpret_cast<IContentItem*>(item);
+    			combhash.type = citem->type();
+    			combhash.hash = citem->getHash();
+    			md.appendToSelectedItems(combhash);
+
+    		}
+    	}
+    	else {
+    		qDebug() << QString("duplicate row %1").arg(pos);
+    	}
+    }
 
     if (md.getNumSelected() > 0)
     {

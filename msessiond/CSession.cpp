@@ -16,6 +16,8 @@
 #include "CApp.h"
 #include "CStateDB.h"
 
+#include "CCmdDispatcher.h"
+
 #include "../mmscanner/CMsgScanDir.h"
 #include "../mmscanner/CMsgOpenDb.h"
 
@@ -48,6 +50,8 @@ CSession::CSession(string name, boost::asio::io_service& io_service) : m_name(na
 	m_mediaColRevs[m_maxMediaColRev] = new CRootItem();
 	m_playlistRevs[m_maxPlaylistRev] = new CRootItem();
 	m_nextlistRevs[m_maxNextlistRev] = new CRootItem();
+
+	m_cmdDispatcher = new CCmdDispatcher(this);
 
 	m_mediaScanner = new CMediaScannerCtrl(this, io_service);
 
@@ -97,6 +101,7 @@ CSession::~CSession() {
 	for(int i = m_minMediaColRev; i <= m_maxMediaColRev; i++) {
 		m_mediaColRevs.erase(i);
 	}
+	delete m_cmdDispatcher;
 
 }
 
@@ -322,6 +327,12 @@ void CSession::response(uint32_t requestID, int32_t returnCode, string message) 
 void CSession::reportError(uint32_t jobID, int32_t errCode, string message) {
 	delOutstandingMsg(jobID);
 
+}
+
+void CSession::incomingCmd(Cmd*  cmd, CConnection* initiator) {
+	assert(m_job_initiators.find(cmd->id()) == m_job_initiators.end());  // this job ID should be new
+	m_job_initiators[cmd->id()] = initiator;
+	m_cmdDispatcher->incomingCmd(cmd);
 }
 
 void CSession::toAll( Cmd* cmd ) {

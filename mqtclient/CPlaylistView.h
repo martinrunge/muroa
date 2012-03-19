@@ -31,6 +31,9 @@ public:
 	void setRole(enum origin role ) { m_role = role; };
 	enum origin getRole() { return m_role; };
 
+	inline void setDiffBuilder(CDiffBuilder* diffBuilderPtr) {m_diffBuilder = diffBuilderPtr; };
+	inline CDiffBuilder* getDiffBuilder(CDiffBuilder* diffBuilderPtr) {return m_diffBuilder; };
+
 protected:
     void mousePressEvent(QMouseEvent *event);
     void mouseMoveEvent(QMouseEvent *event);

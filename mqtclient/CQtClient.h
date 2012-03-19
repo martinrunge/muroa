@@ -9,6 +9,7 @@
 #include "CDnsSdServiceBrowserAvahi.h"
 #include "CSession.h"
 
+class CDiffBuilder;
 
 class CServiceBrowser;
 
@@ -31,6 +32,7 @@ private:
     Ui::muroaguiClass ui;
 
     CSession m_session;
+    CDiffBuilder* m_diffBuilder;
 
     void setupServiceBrowser();
     CServiceBrowser* m_serviceBrowser;

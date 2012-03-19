@@ -23,7 +23,8 @@ set( SRCS             sessionEx.cpp
                       CSubProcess.cpp
                       CStateDbBase.cpp
                       CStateDB.cpp
-                      CMediaItemCategorizer.cpp 
+                      CMediaItemCategorizer.cpp
+                      CCmdDispatcher.cpp 
                       
                       ../mmscanner/CMsgBase.cpp
                       ../mmscanner/CMsgError.cpp
@@ -47,6 +48,7 @@ set( HEADERS          sessionEx.h
                       CStateDbBase.h
                       CStateDB.h
                       CMediaItemCategorizer.h 
+                      CCmdDispatcher.h 
                        
                       ../mmscanner/CMsgBase.h
                       ../mmscanner/CMsgError.h

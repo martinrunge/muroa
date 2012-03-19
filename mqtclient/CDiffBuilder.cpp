@@ -173,9 +173,8 @@ std::string CDiffBuilder::diff(CModelDiff md)
 			text.append( prepareDiffHeader(insTo, 0, insTo +1, numToInsert) );
 			for(int i = 0; i < numToInsert; i++)
 			{
-				int row = md.getSelectedItems().at(i).line;
 				text.append( "+" );
-				text.append( (this->*getItemToInsert)(row) );
+				text.append( (this->*getItemToInsert)(md.getSelectedItems().at(i)) );
 				text.append( "\n" );
 			}
 		}
@@ -186,9 +185,8 @@ std::string CDiffBuilder::diff(CModelDiff md)
 			text.append( prepareDiffHeader(rmFrom + 1, numToRemove, rmFrom + numToRemove, 0) );
 			for(int i = 0; i < numToRemove; i++)
 			{
-				int row = md.getSelectedItems().at(i).line;
 				text.append( "-" );
-				text.append( (this->*getItemToRemove)(row) );
+				text.append( (this->*getItemToRemove)(md.getSelectedItems().at(i)) );
 				text.append( "\n" );
 			}
 		}
@@ -203,9 +201,8 @@ std::string CDiffBuilder::diff(CModelDiff md)
 
 			for(int i = 0; i < numToRemove; i++)
 			{
-				int row = md.getSelectedItems().at(i).line;
 				text += "-";
-                text += (this->*getItemToRemove)(row);
+                text += (this->*getItemToRemove)(md.getSelectedItems().at(i));
                 text += "\n";
 			}
 		}
@@ -217,9 +214,8 @@ std::string CDiffBuilder::diff(CModelDiff md)
 			text.append( prepareDiffHeader(insTo, 0, insTo - numToInsert + 1, numToInsert) );
 			for(int i = 0; i < numToInsert; i++)
 			{
-				int row = md.getSelectedItems().at(i).line;
 				text += "+";
-				text += (this->*getItemToInsert)(row);
+				text += (this->*getItemToInsert)(md.getSelectedItems().at(i));
 				text += "\n";
 			}
 		}
@@ -253,45 +249,53 @@ std::string CDiffBuilder::diff(CModelDiff md)
 }
 
 
-std::string CDiffBuilder::insertFromCollectionToCollection(int pos)
+std::string CDiffBuilder::insertFromCollectionToCollection(comb_hash_t combhash)
 {
 	return ""; // m_mediaColPtr->at(pos)->asString();
 }
 
 
-std::string CDiffBuilder::insertFromCollectionToPlaylist(int pos)
+std::string CDiffBuilder::insertFromCollectionToPlaylist(comb_hash_t combhash)
 {
-	return ""; //  std::string::number(m_mediaColPtr->at(pos)->getHash());
+	ostringstream oss;
+	oss << combhash.hash;
+	return oss.str();
 }
 
-std::string CDiffBuilder::insertFromPlaylist(int pos)
+std::string CDiffBuilder::insertFromPlaylist(comb_hash_t combhash)
 {
-	return ""; //  m_plPtr->at(pos)->asString();
+	ostringstream oss;
+	oss << combhash.hash;
+	return oss.str();
 }
 
-std::string CDiffBuilder::insertFromNextlist(int pos)
+std::string CDiffBuilder::insertFromNextlist(comb_hash_t combhash)
 {
 	return ""; //  m_nlPtr->at(pos)->asString();
 }
 
-std::string CDiffBuilder::removeFromCollection(int pos)
+std::string CDiffBuilder::removeFromCollection(comb_hash_t combhash)
 {
 	return ""; //  m_mediaColPtr->at(pos)->asString();
 }
 
-std::string CDiffBuilder::removeFromPlaylist(int pos)
+std::string CDiffBuilder::removeFromPlaylist(comb_hash_t combhash)
 {
-	return ""; //  m_plPtr->at(pos)->asString();
+	ostringstream oss;
+	oss << combhash.hash;
+	return oss.str();
 }
 
-std::string CDiffBuilder::removeFromNextlist(int pos)
+std::string CDiffBuilder::removeFromNextlist(comb_hash_t combhash)
 {
 	return ""; //  m_nlPtr->at(pos)->asString();
 }
 
-std::string CDiffBuilder::dummy(int pos)
+std::string CDiffBuilder::dummy(comb_hash_t combhash)
 {
-	return std::string();
+	ostringstream oss;
+	oss << combhash.hash;
+	return oss.str();
 }
 
 std::string CDiffBuilder::prepareDiffHeader(unsigned minusPos, unsigned minusNum, unsigned plusPos, unsigned plusNum) {

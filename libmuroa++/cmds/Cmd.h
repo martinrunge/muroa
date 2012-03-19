@@ -25,9 +25,9 @@ public:
 		PROGRESS,
 		OPENDB,
 		RESP,
-		COLCHANGED,
-		PLCHANGED,
-		NLCHANGED,
+		EDIT_MEDIACOL,
+		EDIT_PLAYLIST,
+		EDIT_NEXTLIST,
 	};
 	typedef enum type_t type_t;
 
@@ -43,6 +43,9 @@ public:
 
 	int id() { return m_id; };
 
+	inline unsigned getConnectionID() { return m_connection_id; };
+	inline void setConnectionID(unsigned connID) { m_connection_id = connID; };
+
 	virtual void timeout();
 	Cmd::type_t type() { return m_type; };
 
@@ -52,6 +55,10 @@ protected:
 
 	int m_known_rev;
 	type_t m_type;
+
+	// an id to keep track of the connection over which this command was originally received.
+	// useful to send error messages to sender only.
+	unsigned m_connection_id;
 
 private:
 	const long long m_id;

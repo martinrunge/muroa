@@ -27,7 +27,7 @@ class CmdNext;
 class CmdPrev;
 class CmdProgress;
 class CmdFinished;
-class CmdColChanged;
+class CmdEditMediaCol;
 class CmdResp;
 class CmdError;
 
@@ -36,6 +36,7 @@ class CConnection : public CTcpConnection {
 public:
 	virtual ~CConnection();
 
+	inline unsigned getID() { return m_id; };
 	void start();
 	void stop();
 
@@ -56,6 +57,7 @@ public:
     void setSession(CSession *session);
 
     void sendCmd( Cmd* cmd );
+    void incomingCmd( Cmd* cmd );
 
 private:
     CConnection(boost::asio::io_service& io_service);
@@ -64,6 +66,8 @@ private:
     CSession* m_session;
     CSessionContainer* m_session_container;
 
+    const uint32_t m_id;
+    static unsigned m_next_id;
 
     void play(CmdPlay* playCmd);
     void stop(CmdStop* stopCmd);
@@ -71,7 +75,7 @@ private:
     void prev(CmdPrev* prevCmd);
     void progress(CmdProgress* progressMsg);
     void finished(CmdFinished* finishedCmd);
-    void collectionChanged(CmdColChanged* colChangedCmd);
+    void collectionChanged(CmdEditMediaCol* colChangedCmd);
     void response(CmdResp* respCmd);
     void error(CmdError* errorMsg);
 };

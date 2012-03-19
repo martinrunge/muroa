@@ -14,6 +14,7 @@
 namespace muroa {
 
 class CConnection;
+class Cmd;
 
 class CRpc: public CMuroaXml {
 public:
@@ -54,6 +55,8 @@ public:
 	void onStartSession(){ };
 	void onEndSession(){ };
 	void onXmlVersion(){ };
+
+	void sendCmd(muroa::Cmd* cmd);
 
 private:
 	CConnection* m_connection;

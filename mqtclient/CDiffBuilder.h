@@ -37,7 +37,7 @@ private:
 	CRootItem* m_plPtr;
 	CRootItem* m_nlPtr;
 
-	typedef std::string (CDiffBuilder::*getItemPtr)(int);
+	typedef std::string (CDiffBuilder::*getItemPtr)(comb_hash_t);
 
 	CDiffBuilder::getItemPtr getItemToRemove;
 	CDiffBuilder::getItemPtr getItemToInsert;
@@ -48,17 +48,17 @@ private:
 	void prepareDiff(CModelDiff* md);
 	std::string prepareDiffHeader(unsigned minusPos, unsigned minusNum, unsigned plusPos, unsigned plusNum);
 
-	std::string insertFromCollectionToCollection(int pos);
-//	std::string insertToCollectionFromExtern(int pos);
-	std::string insertFromCollectionToPlaylist(int pos);
-	std::string insertFromPlaylist(int pos);
-	std::string insertFromNextlist(int pos);
+	std::string insertFromCollectionToCollection(comb_hash_t combhash);
+//	std::string insertToCollectionFromExtern(comb_hash_t combhash);
+	std::string insertFromCollectionToPlaylist(comb_hash_t combhash);
+	std::string insertFromPlaylist(comb_hash_t combhash);
+	std::string insertFromNextlist(comb_hash_t combhash);
 
-	std::string removeFromCollection(int pos);
-	std::string removeFromPlaylist(int pos);
-	std::string removeFromNextlist(int pos);
+	std::string removeFromCollection(comb_hash_t combhash);
+	std::string removeFromPlaylist(comb_hash_t combhash);
+	std::string removeFromNextlist(comb_hash_t combhash);
 
-	std::string dummy(int pos);
+	std::string dummy(comb_hash_t combhash);
 
 	int addFunc(int a, int b);
 

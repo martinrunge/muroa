@@ -18,6 +18,7 @@
 #include "sessionEx.h"
 
 class CMsgBase;
+class CCmdDispatcher;
 
 namespace muroa {
 
@@ -89,6 +90,8 @@ public:
 	void reportError(uint32_t jobID, int32_t errCode, std::string message);
 
 	void toAll( Cmd* cmd );
+	void sendToInitiator(Cmd* cmd, uint32_t connId);
+	void incomingCmd(Cmd*  cmd, CConnection* initiator);
 
 	std::string getProperty(std::string key, std::string defaultVal = "");
 	void setProperty(std::string key, std::string val);
@@ -106,7 +109,7 @@ private:
 
 	bool hasConnection(CConnection* conn);
 
-	CRootItem* getRev(const std::map<unsigned, CRootItem*>& map,
+	CRootItem* getRev(const std::map<unsigned, CRootItem*>& mabp,
 			          const unsigned rev,
 			          const std::string& message) const throw(InvalidMsgException);
 
@@ -121,8 +124,6 @@ private:
 	void setClientCmdIdBySubprocessCmdID(uint32_t subprocess_cmd_id, CConnection* initiator, uint32_t client_cmd_id );
 
 	std::map<uint32_t, std::pair<CConnection*, uint32_t> > m_subprocess_job_by_cmdID;
-
-
 
 	void addOutstandingMsg(CMsgBase* msg);
 	void delOutstandingMsg(uint32_t id) throw(InvalidMsgException);
@@ -149,6 +150,8 @@ private:
 
     // boost::asio::io_service& m_io_service;
     CMediaScannerCtrl* m_mediaScanner;
+
+    CCmdDispatcher* m_cmdDispatcher;
 
     CApp* m_app;
     std::string privatePropertyKey(std::string key);

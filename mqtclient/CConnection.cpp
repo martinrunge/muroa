@@ -224,7 +224,8 @@ void CConnection::sendCommand(CmdBase* cmd) {
 		break;
 		case CmdBase::EDIT_PLAYLIST:
 		{
-
+			CmdEditPlaylist* epl = static_cast<CmdEditPlaylist*>(cmd);
+			editPlaylist( epl->knownRev(), epl->data() );
 		}
 		break;
 		case CmdBase::EDIT_NEXTLIST:
@@ -234,19 +235,19 @@ void CConnection::sendCommand(CmdBase* cmd) {
 		break;
 		case CmdBase::PLAY:
 		{
-
+			play();
 		} break;
 		case CmdBase::PAUSE:
 		{
-
+			pause();
 		} break;
 		case CmdBase::NEXT:
 		{
-
+			next();
 		} break;
 		case CmdBase::PREV:
 		{
-
+			prev();
 		} break;
 		case CmdBase::SCAN_COLLECTION:
 		{

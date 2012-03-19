@@ -36,7 +36,8 @@ set( SRC           CRootItem.cpp
                    cmds/CmdError.cpp 
                    cmds/CmdProgress.cpp 
                    cmds/CmdFinished.cpp 
-                   cmds/CmdColChanged.cpp 
+                   cmds/CmdEditMediaCol.cpp 
+                   cmds/CmdEditPlaylist.cpp
                    )
                   
 
@@ -62,7 +63,8 @@ set( HEADERS       CRootItem.h
                    cmds/CmdError.h 
                    cmds/CmdProgress.h 
                    cmds/CmdFinished.h
-                   cmds/CmdColChanged.h 
+                   cmds/CmdEditMediaCol.h 
+                   cmds/CmdEditPlaylist.h
                    )
                    
 include_directories(${CMAKE_SOURCE_DIR} ${Boost_INCLUDE_DIRS} ${EXPAT_INCLUDE_DIRS})

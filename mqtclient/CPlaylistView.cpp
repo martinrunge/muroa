@@ -23,7 +23,6 @@ CPlaylistView::CPlaylistView(QWidget * parent ) : QListView( parent ),
 	setDropIndicatorShown(true);
 	setSelectionMode(QAbstractItemView::ExtendedSelection);
 	//setDragDropMode( QAbstractItemView::DragDrop );
-
 }
 
 CPlaylistView::~CPlaylistView() {
@@ -105,7 +104,7 @@ void CPlaylistView::performDrag()
 {
 	qDebug() << QString("performDrag");
 
-    //CPlaylistModel* plModel = reinterpret_cast<CPlaylistModel*>(model());
+    CMuroaListModel* plModel = reinterpret_cast<CMuroaListModel*>(model());
 
     QModelIndexList indexList = selectedIndexes();
     CModelDiff md(m_role);
@@ -113,6 +112,7 @@ void CPlaylistView::performDrag()
     for(int i = 0; i < indexList.size(); i++)
     {
     	comb_hash_t combhash;
+    	combhash.hash =
     	combhash.line = indexList.at(i).row();
 
     	md.appendToSelectedItems(combhash);
