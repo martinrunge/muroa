@@ -110,12 +110,15 @@ bool CMediaScanner::handleMsg(CMsgBase* msg) {
 					CMsgFinished *finiNotification = new CMsgFinished(jobID);
 					sendEvent(finiNotification);
 					m_dbg_file << "sent finished notification to parent: [jobID " <<  finiNotification->getJobID() << "]" << endl;
+					m_dbg_file << "scan collection: num changes: " <<  nrChanges << endl;
 
 					if( nrChanges > 0 ) {
 						bool found;
 						int minRev = m_stateDbUpdater->getIntValue("MinMediaColRev", found);
+						m_dbg_file << "MinMediaColRev found" << found << " :" << minRev <<endl;
 						assert(found);
-						int maxRev = m_stateDbUpdater->getIntValue("MaxmediaColRev", found);
+						int maxRev = m_stateDbUpdater->getIntValue("MaxMediaColRev", found);
+						m_dbg_file << "MaxMediaColRev found" << found << " :" << maxRev <<endl;
 						assert(found);
 						CMsgCollectionChanged* colChanged = new CMsgCollectionChanged( maxRev, minRev, maxRev );
 						sendEvent(colChanged);
