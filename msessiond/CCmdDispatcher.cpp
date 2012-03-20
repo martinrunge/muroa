@@ -11,6 +11,8 @@
 #include <cmds/Cmd.h>
 #include <cmds/SimpleCmds.h>
 #include <cmds/CmdError.h>
+#include <cmds/SimpleCmds.h>
+#include <cmds/CmdEditMediaCol.h>
 #include <cmds/CmdEditPlaylist.h>
 
 
@@ -65,16 +67,24 @@ void CCmdDispatcher::incomingCmd(muroa::Cmd* cmd) {
 	{
 		CmdEditMediaCol* cmd_em = reinterpret_cast<CmdEditMediaCol*>(cmd);
 		try {
-			m_session->addMediaColRevFromDiff(cmd_em->getDiff(), cmd_em->m_fromRev);
+			m_session->addMediaColRevFromDiff(cmd_em->getDiff(), cmd_em->getFromRev());
 		}
 		catch(InvalidMsgException ex) {
 			CmdError* errMsg = new CmdError(cmd_em->id(), 0, ex.reason());
-			m_session->sendToInitiator(cmd_em->id(), errMsg );
+			m_session->sendToInitiator(errMsg, cmd_em->getConnectionID() );
 		}
 		break;
 	}
 	case Cmd::EDIT_PLAYLIST:
 	{
+		CmdEditPlaylist* cmd_epl = reinterpret_cast<CmdEditPlaylist*>(cmd);
+		try {
+			m_session->addPlaylistRevFromDiff(cmd_epl->getDiff(), cmd_epl->getFromRev());
+		}
+		catch(InvalidMsgException ex) {
+			CmdError* errMsg = new CmdError(cmd_epl->id(), 0, ex.reason());
+			m_session->sendToInitiator(errMsg, cmd_epl->getConnectionID() );
+		}
 		break;
 	}
 	case Cmd::EDIT_NEXTLIST:

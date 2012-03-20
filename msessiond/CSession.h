@@ -90,7 +90,7 @@ public:
 	void reportError(uint32_t jobID, int32_t errCode, std::string message);
 
 	void toAll( Cmd* cmd );
-	void sendToInitiator(Cmd* cmd, uint32_t connId);
+	void sendToInitiator(Cmd* cmd, unsigned connId);
 	void incomingCmd(Cmd*  cmd, CConnection* initiator);
 
 	std::string getProperty(std::string key, std::string defaultVal = "");
@@ -117,6 +117,7 @@ private:
 	// CTcpServer* m_tcp_server;
 	std::string m_name;
 	std::set<CConnection*> m_connections;
+	std::map<unsigned, CConnection*> m_connections_by_id;
 
 	std::map<uint32_t, CConnection*> m_job_initiators;
 

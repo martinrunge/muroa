@@ -107,11 +107,13 @@ CSession::~CSession() {
 
 void CSession::addConnection(CConnection* ptr) {
 	m_connections.insert(ptr);
+	m_connections_by_id.insert(std::pair<unsigned, CConnection*>(ptr->getID(), ptr));
 	ptr->joinSession(m_name);
 }
 
 void CSession::removeConnection(CConnection* ptr) {
 	m_connections.erase(ptr);
+	// m_connections_by_id.
 }
 
 CRootItem*  CSession::getMediaCol(int revision) const {
@@ -333,6 +335,10 @@ void CSession::incomingCmd(Cmd*  cmd, CConnection* initiator) {
 	assert(m_job_initiators.find(cmd->id()) == m_job_initiators.end());  // this job ID should be new
 	m_job_initiators[cmd->id()] = initiator;
 	m_cmdDispatcher->incomingCmd(cmd);
+}
+
+void CSession::sendToInitiator(Cmd* cmd, unsigned connId) {
+
 }
 
 void CSession::toAll( Cmd* cmd ) {
