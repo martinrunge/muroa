@@ -38,6 +38,7 @@ void CMuroaXml::open() {
 
 void CMuroaXml::close() {
 	sendData(xmlCommands::close);
+	reset();
 }
 
 void CMuroaXml::listSessions(vector<string> sessionList) {

@@ -111,6 +111,8 @@ public:
 	virtual void onEndSession() = 0;
 	virtual void onXmlVersion() = 0;
 
+protected:
+    void reset();
 
 private:
 	std::string m_concatenate_dummy;

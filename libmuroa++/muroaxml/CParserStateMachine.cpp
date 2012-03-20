@@ -29,6 +29,10 @@ using namespace std;
 
 CParserStateMachine::CParserStateMachine()
 {
+	reset();
+}
+
+void CParserStateMachine::reset() {
 	m_concatenate_chars_state = false;
 	m_concatenate_dummy.erase();
 	// m_command_connection = parent;
@@ -39,9 +43,7 @@ CParserStateMachine::CParserStateMachine()
 	m_xml_tag_depth = 0;
 	m_tag_unknown_depth = 0;
 	m_in_unknown_tag = false;
-
 }
-
 
 CParserStateMachine::~CParserStateMachine()
 {

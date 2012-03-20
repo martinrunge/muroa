@@ -18,6 +18,7 @@
 #include <cmds/CmdFinished.h>
 #include <cmds/CmdEditMediaCol.h>
 #include <cmds/CmdEditPlaylist.h>
+#include <cmds/CmdEditNextlist.h>
 
 
 #include <vector>
@@ -170,6 +171,24 @@ CRpc::~CRpc() {
 		}
 		case Cmd::RESP:
 		{
+			break;
+		}
+		case Cmd::EDIT_MEDIACOL:
+		{
+			CmdEditMediaCol* cmd_emc = reinterpret_cast<CmdEditMediaCol*>(cmd);
+			editCollection(cmd_emc->getFromRev(), cmd_emc->getDiff());
+			break;
+		}
+		case Cmd::EDIT_PLAYLIST:
+		{
+			CmdEditPlaylist* cmd_epl = reinterpret_cast<CmdEditPlaylist*>(cmd);
+			editPlaylist(cmd_epl->getFromRev(), cmd_epl->getDiff());
+			break;
+		}
+		case Cmd::EDIT_NEXTLIST:
+		{
+			CmdEditNextlist* cmd_enl = reinterpret_cast<CmdEditNextlist*>(cmd);
+			editNextlist(cmd_enl->getFromRev(), cmd_enl->getDiff());
 			break;
 		}
 		default:

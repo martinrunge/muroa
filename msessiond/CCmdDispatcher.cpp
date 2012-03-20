@@ -68,9 +68,11 @@ void CCmdDispatcher::incomingCmd(muroa::Cmd* cmd) {
 		CmdEditMediaCol* cmd_em = reinterpret_cast<CmdEditMediaCol*>(cmd);
 		try {
 			m_session->addMediaColRevFromDiff(cmd_em->getDiff(), cmd_em->getFromRev());
+			// if there was no exception, the diff is ok, send it to all clients
+			m_session->toAll(cmd_em);
 		}
-		catch(InvalidMsgException ex) {
-			CmdError* errMsg = new CmdError(cmd_em->id(), 0, ex.reason());
+		catch(MalformedPatchEx ex) {
+			CmdError* errMsg = new CmdError(cmd_em->id(), 0, ex.getReason());
 			m_session->sendToInitiator(errMsg, cmd_em->getConnectionID() );
 		}
 		break;
@@ -80,9 +82,11 @@ void CCmdDispatcher::incomingCmd(muroa::Cmd* cmd) {
 		CmdEditPlaylist* cmd_epl = reinterpret_cast<CmdEditPlaylist*>(cmd);
 		try {
 			m_session->addPlaylistRevFromDiff(cmd_epl->getDiff(), cmd_epl->getFromRev());
+			// if there was no exception, the diff is ok, send it to all clients
+			m_session->toAll(cmd_epl);
 		}
-		catch(InvalidMsgException ex) {
-			CmdError* errMsg = new CmdError(cmd_epl->id(), 0, ex.reason());
+		catch(MalformedPatchEx ex) {
+			CmdError* errMsg = new CmdError(cmd_epl->id(), 0, ex.getReason());
 			m_session->sendToInitiator(errMsg, cmd_epl->getConnectionID() );
 		}
 		break;

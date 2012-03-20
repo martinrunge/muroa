@@ -131,9 +131,33 @@ void CConnection::onEditCollection(unsigned  fromRev, std::string collectionDiff
 }
 
 void CConnection::onEditPlaylist(unsigned  fromRev, std::string playlistDiff) {
+	if(fromRev == 0) {
+		m_session->getPlaylistModel()->deserialize(playlistDiff);
+	}
+	else {
+		uint32_t knownRev = m_session->getPlaylistRev();
+		if( knownRev != fromRev ) {
+			std::ostringstream oss;
+			oss << "editPlaylist: Error: got a diff based on rev " << fromRev << " but known rev is " << knownRev;
+			throw MalformedPatchEx(oss.str(), 0);
+		}
+		m_session->getPlaylistModel()->patch(playlistDiff);
+	}
 }
 
 void CConnection::onEditNextlist(unsigned  fromRev, std::string nextlistDiff) {
+	if(fromRev == 0) {
+		m_session->getNextlistModel()->deserialize(nextlistDiff);
+	}
+	else {
+		uint32_t knownRev = m_session->getNextlistRev();
+		if( knownRev != fromRev ) {
+			std::ostringstream oss;
+			oss << "editNextlist: Error: got a diff based on rev " << fromRev << " but known rev is " << knownRev;
+			throw MalformedPatchEx(oss.str(), 0);
+		}
+		m_session->getNextlistModel()->patch(nextlistDiff);
+	}
 }
 
 void CConnection::play()
@@ -184,6 +208,7 @@ void CConnection::connected() {
 }
 
 void CConnection::disconnected() {
+	CMuroaXml::close();
     emit connectionStatusChanged( e_disconnected );
 }
 

@@ -104,6 +104,9 @@ IContentItem* CRootItem::addContentItem(IContentItem* item, CCategoryItem* paren
 IContentItem* CRootItem::addContentItem(string text, int posInParent) {
 	string path = stripFirstSection(text);
 	CItemType itemType = getItemType(text);
+	if(itemType.getType() == CItemType::E_INVAL ) {
+		throw MalformedPatchEx("invalid item type", -1);
+	}
 
 	CCategoryItem* parent = getCategoryPtr(path);
 	if(parent == 0) {
@@ -161,12 +164,10 @@ void CRootItem::deserialize(std::string text) {
 		if(iss.bad()) {
 			cerr << "CRootItem::deserialize: Error reading lines." << endl;
 		}
+		if( strlen(cline) < 3)  continue;
 
 		IContentItem* contItem = addContentItem(cline);
 
-		continue;
-
-		if( strlen(cline) < 3)  continue;
 		// assert( cline[0] != 0 && cline[1] != 0 && cline[2] != 0 );
 
 	}
