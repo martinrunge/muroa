@@ -52,6 +52,8 @@ CQtClient::CQtClient(QWidget *parent)
 	ui.mediaColTreeView->setDiffBuilderPtr(m_diffBuilder);
 	ui.playlistListView->setDiffBuilderPtr(m_diffBuilder);
 	// ui.nextlistListView->setDiffBuilderPtr(m_diffBuilder);
+	connect(&m_dnssd, SIGNAL(notifyService( const CServiceDesc&)),
+			&m_session, SLOT(openConnection(const CServiceDesc&)));
 
 	connect(m_diffBuilder, SIGNAL(sendCommand(CmdBase*)), m_session.getConnection(), SLOT(sendCommand(CmdBase*)));
 }
