@@ -3,6 +3,7 @@
 	<name>mmscanner</name>
 	<comment></comment>
 	<projects>
+		<project>libmuroa++</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>
