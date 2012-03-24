@@ -16,9 +16,10 @@ CmdEditNextlist::CmdEditNextlist() : Cmd(Cmd::EDIT_NEXTLIST) {
 
 }
 
-CmdEditNextlist::CmdEditNextlist(unsigned  fromRev, std::string diff)
+CmdEditNextlist::CmdEditNextlist(unsigned  fromRev, unsigned toRev, std::string diff)
                               : Cmd(Cmd::EDIT_NEXTLIST),
                                 m_fromRev(fromRev),
+                                m_toRev(toRev),
                                 m_diff(diff)
 {
 
@@ -48,4 +49,13 @@ CmdEditNextlist::~CmdEditNextlist() {
         m_fromRev = fromRev;
     }
 
+    unsigned CmdEditNextlist::getToRev() const
+    {
+        return m_toRev;
+    }
+
+    void CmdEditNextlist::setToRev(unsigned  toRev)
+    {
+        m_toRev = toRev;
+    }
 } /* namespace muroa */

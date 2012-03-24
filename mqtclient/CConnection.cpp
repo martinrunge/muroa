@@ -115,9 +115,14 @@ void CConnection::onNextlist(unsigned  diffFromRev, std::string nextlist)
 {
 }
 
-void CConnection::onEditCollection(unsigned  fromRev, std::string collectionDiff) {
+void CConnection::onEditCollection(unsigned  fromRev, unsigned toRev, std::string collectionDiff) {
 	if(fromRev == 0) {
-		m_session->getMediaColModel()->deserialize(collectionDiff);
+		try {
+			m_session->getMediaColModel()->deserialize(collectionDiff);
+		}
+		catch(MalformedPatchEx ex) {
+			;
+		}
 	}
 	else {
 		uint32_t knownRev = m_session->getMediaColRev();
@@ -130,7 +135,7 @@ void CConnection::onEditCollection(unsigned  fromRev, std::string collectionDiff
 	}
 }
 
-void CConnection::onEditPlaylist(unsigned  fromRev, std::string playlistDiff) {
+void CConnection::onEditPlaylist(unsigned  fromRev, unsigned toRev, std::string playlistDiff) {
 	if(fromRev == 0) {
 		m_session->getPlaylistModel()->deserialize(playlistDiff);
 	}
@@ -145,7 +150,7 @@ void CConnection::onEditPlaylist(unsigned  fromRev, std::string playlistDiff) {
 	}
 }
 
-void CConnection::onEditNextlist(unsigned  fromRev, std::string nextlistDiff) {
+void CConnection::onEditNextlist(unsigned  fromRev, unsigned toRev, std::string nextlistDiff) {
 	if(fromRev == 0) {
 		m_session->getNextlistModel()->deserialize(nextlistDiff);
 	}
@@ -244,13 +249,13 @@ void CConnection::sendCommand(CmdBase* cmd) {
 		case CmdBase::EDIT_MEDIA_COL:
 		{
 			CmdEditMediaCol* emc = static_cast<CmdEditMediaCol*>(cmd);
-			editCollection( emc->knownRev(), emc->data() );
+			editCollection( emc->knownRev(), 0, emc->data() );
 		}
 		break;
 		case CmdBase::EDIT_PLAYLIST:
 		{
 			CmdEditPlaylist* epl = static_cast<CmdEditPlaylist*>(cmd);
-			editPlaylist( epl->knownRev(), epl->data() );
+			editPlaylist( epl->knownRev(), 0, epl->data() );
 		}
 		break;
 		case CmdBase::EDIT_NEXTLIST:

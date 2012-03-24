@@ -16,9 +16,10 @@ CmdEditMediaCol::CmdEditMediaCol() : Cmd(Cmd::EDIT_MEDIACOL) {
 
 }
 
-CmdEditMediaCol::CmdEditMediaCol(unsigned  fromRev, std::string diff)
+CmdEditMediaCol::CmdEditMediaCol(unsigned  fromRev, unsigned toRev, std::string diff)
                               : Cmd(Cmd::EDIT_MEDIACOL),
                                 m_fromRev(fromRev),
+                                m_toRev(toRev),
                                 m_diff(diff)
 {
 
@@ -48,4 +49,13 @@ CmdEditMediaCol::~CmdEditMediaCol() {
         m_fromRev = fromRev;
     }
 
+    unsigned CmdEditMediaCol::getToRev() const
+    {
+        return m_toRev;
+    }
+
+    void CmdEditMediaCol::setToRev(unsigned  toRev)
+    {
+        m_toRev = toRev;
+    }
 } /* namespace muroa */

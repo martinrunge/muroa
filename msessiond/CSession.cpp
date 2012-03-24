@@ -10,6 +10,7 @@
 #include <cmds/CmdProgress.h>
 #include <cmds/CmdFinished.h>
 #include <cmds/SimpleCmds.h>
+#include <cmds/CmdEditMediaCol.h>
 
 #include <CTcpServer.h>
 #include "CMediaScannerCtrl.h"
@@ -22,6 +23,7 @@
 #include "../mmscanner/CMsgOpenDb.h"
 
 #include <sstream>
+#include <string>
 
 
 using namespace std;
@@ -166,15 +168,14 @@ const string CSession::getNextlistDiff(unsigned fromRevision, int toRevision) co
 
 
 void CSession::addMediaColRev(CRootItem* ri) {
-	m_maxMediaColRev++;
-	m_mediaColRevs.insert(pair<unsigned, CRootItem*>(m_maxMediaColRev, ri));
+		m_maxMediaColRev++;
+		m_mediaColRevs.insert(pair<unsigned, CRootItem*>(m_maxMediaColRev, ri));
 }
 
 void CSession::addMediaColRev(const string& mediaCol ) {
-	m_maxMediaColRev++;
 	CRootItem* ri = new CRootItem();
 	ri->deserialize(mediaCol);
-	m_mediaColRevs.insert(pair<unsigned, CRootItem*>(m_maxMediaColRev, ri));
+	addMediaColRev(ri);
 }
 
 void CSession::addPlaylistRev(CRootItem* ri) {
@@ -183,10 +184,9 @@ void CSession::addPlaylistRev(CRootItem* ri) {
 }
 
 void CSession::addPlaylistRev(const string& playlist) {
-	m_maxPlaylistRev++;
 	CRootItem* ri = new CRootItem();
 	ri->deserialize(playlist);
-	m_playlistRevs.insert(pair<unsigned, CRootItem*>(m_maxPlaylistRev, ri));
+	addPlaylistRev(ri);
 }
 
 void CSession::addNextlistRev(CRootItem* ri) {
@@ -195,37 +195,33 @@ void CSession::addNextlistRev(CRootItem* ri) {
 }
 
 void CSession::addNextlistRev(const string& nextlist) {
-	m_maxNextlistRev++;
 	CRootItem* ri = new CRootItem();
 	ri->deserialize(nextlist);
-	m_nextlistRevs.insert(pair<unsigned, CRootItem*>(m_maxNextlistRev, ri));
+	addNextlistRev(ri);
 }
 
 int CSession::addMediaColRevFromDiff(const string& mediaColDiff, unsigned diffFromRev) throw(InvalidMsgException) {
 	CRootItem* base = getRev(m_mediaColRevs, diffFromRev, "Can't apply media collection diff based on revision # because that revision is unknown in session '");
 
-	m_maxMediaColRev++;
 	CRootItem* ri = new CRootItem(*base);
 	ri->patch(mediaColDiff);
-	m_mediaColRevs.insert(pair<unsigned, CRootItem*>(m_maxMediaColRev, ri));
+	addMediaColRev(ri);
 }
 
 int CSession::addPlaylistRevFromDiff(const string& playlistDiff, unsigned diffFromRev) throw(InvalidMsgException) {
 	CRootItem* base = getRev(m_playlistRevs, diffFromRev, "Can't apply playlist diff based on revision # because that revision is unknown in session '");
 
-	m_maxPlaylistRev++;
 	CRootItem* ri = new CRootItem(*base);
 	ri->patch(playlistDiff);
-	m_playlistRevs.insert(pair<unsigned, CRootItem*>(m_maxPlaylistRev, ri));
+	addPlaylistRev(ri);
 }
 
 int CSession::addNextlistRevFromDiff(const string& nextlistDiff, unsigned diffFromRev) throw(InvalidMsgException) {
 	CRootItem* base = getRev(m_nextlistRevs, diffFromRev, "Can't apply nextlist diff based on revision # because that revision is unknown in session '");
 
-	m_maxNextlistRev++;
 	CRootItem* ri = new CRootItem(*base);
 	ri->patch(nextlistDiff);
-	m_nextlistRevs.insert(pair<unsigned, CRootItem*>(m_maxNextlistRev, ri));
+	addNextlistRev(ri);
 }
 
 int CSession::addNextlistRevFromNextCmd() {
@@ -316,7 +312,22 @@ void CSession::jobFinished(uint32_t jobID) {
 
 void CSession::collectionChanged(uint32_t newRev, uint32_t minRev, uint32_t maxRev) {
 	CRootItem* newMediaColRev = m_stateDB->getMediaColRev(newRev);
+
+	unsigned currentRev = m_maxMediaColRev;
+	CRootItem* currentMediaCol = m_mediaColRevs[currentRev];
+
 	addMediaColRev(newMediaColRev);
+
+	string diff_or_serialisation;
+	if( currentRev == 0 ) {
+		diff_or_serialisation = newMediaColRev->serialize();
+	}
+	else {
+		diff_or_serialisation = currentMediaCol->diff(*newMediaColRev);
+	}
+
+	CmdEditMediaCol* cmd = new CmdEditMediaCol(currentRev, m_maxMediaColRev, diff_or_serialisation);
+	toAll(cmd);
 
 	assert(newRev == m_maxMediaColRev);
 }

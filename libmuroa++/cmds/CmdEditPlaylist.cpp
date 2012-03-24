@@ -16,9 +16,10 @@ CmdEditPlaylist::CmdEditPlaylist() : Cmd(Cmd::EDIT_PLAYLIST) {
 
 }
 
-CmdEditPlaylist::CmdEditPlaylist(unsigned  fromRev, std::string diff)
+CmdEditPlaylist::CmdEditPlaylist(unsigned  fromRev, unsigned toRev, std::string diff)
                               : Cmd(Cmd::EDIT_PLAYLIST),
                                 m_fromRev(fromRev),
+                                m_toRev(toRev),
                                 m_diff(diff)
 {
 
@@ -47,5 +48,16 @@ CmdEditPlaylist::~CmdEditPlaylist() {
     {
         m_fromRev = fromRev;
     }
+
+    unsigned CmdEditPlaylist::getToRev() const
+    {
+        return m_toRev;
+    }
+
+    void CmdEditPlaylist::setToRev(unsigned  toRev)
+    {
+        m_toRev = toRev;
+    }
+
 
 } /* namespace muroa */

@@ -74,7 +74,7 @@ void CConnection::sendLatestMediaColRev(unsigned knownRev) {
 		else {
 			diff = m_session->getMediaColDiff(knownRev);
 		}
-		m_rpc->editCollection(knownRev, diff);
+		m_rpc->editCollection(knownRev, m_session->getMaxMediaColRev(), diff);
 	}
 	catch(InvalidMsgException iex) {
 		m_rpc->error(0, 0, iex.what());
@@ -91,7 +91,7 @@ void CConnection::sendLatestPlaylistRev(unsigned knownRev) {
 		else {
 			diff = m_session->getPlaylistDiff(knownRev);
 		}
-		m_rpc->editPlaylist(knownRev, diff);
+		m_rpc->editPlaylist(knownRev, m_session->getMaxPlaylistRev(), diff);
 	}
 	catch(InvalidMsgException iex) {
 		m_rpc->error(0, 0, iex.what());
@@ -108,7 +108,7 @@ void CConnection::sendLatestNextlistRev(unsigned knownRev) {
 		else {
 			diff = m_session->getNextlistDiff(knownRev);
 		}
-		m_rpc->editNextlist(knownRev, diff);
+		m_rpc->editNextlist(knownRev, m_session->getMaxNextlistRev(), diff);
 	}
 	catch(InvalidMsgException iex) {
 		m_rpc->error(0, 0, iex.what());
@@ -157,7 +157,7 @@ void CConnection::finished(CmdFinished* finishedCmd) {
 }
 
 void CConnection::collectionChanged(CmdEditMediaCol* colChangedCmd) {
-	m_rpc->editCollection(colChangedCmd->getFromRev(), colChangedCmd->getDiff());
+	m_rpc->editCollection(colChangedCmd->getFromRev(), colChangedCmd->getToRev(), colChangedCmd->getDiff());
 }
 
 void CConnection::response(CmdResp* respCmd) {

@@ -132,19 +132,19 @@ void CRpcDummy::onNextlist(unsigned  diffFromRev, string nextlist) {
 	m_last_cmd = oss.str();
 }
 
-void CRpcDummy::onEditCollection(unsigned  fromRev, string collectionDiff) {
+void CRpcDummy::onEditCollection(unsigned  fromRev, unsigned toRev, string collectionDiff) {
 	ostringstream oss;
 	oss << "editCollection(" << fromRev << ")";
 	m_last_cmd = oss.str();
 }
 
-void CRpcDummy::onEditPlaylist(unsigned  fromRev, string playlistDiff) {
+void CRpcDummy::onEditPlaylist(unsigned  fromRev, unsigned toRev, string playlistDiff) {
 	ostringstream oss;
 	oss << "editPlaylist(" << fromRev << ")";
 	m_last_cmd = oss.str();
 }
 
-void CRpcDummy::onEditNextlist(unsigned  fromRev, string nextlistDiff) {
+void CRpcDummy::onEditNextlist(unsigned  fromRev, unsigned toRev, string nextlistDiff) {
 	ostringstream oss;
 	oss << "editNextlist(" << fromRev << ")";
 	m_last_cmd = oss.str();

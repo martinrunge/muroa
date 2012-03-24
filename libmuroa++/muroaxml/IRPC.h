@@ -53,9 +53,9 @@ public:
 	virtual void getPlaylist( unsigned knownRev ) = 0;
 	virtual void getNextlist( unsigned knownRev ) = 0;
 
-	virtual void editCollection( unsigned fromRev, std::string diff ) = 0;
-	virtual void editPlaylist( unsigned fromRev, std::string diff ) = 0;
-	virtual void editNextlist( unsigned fromRev, std::string diff ) = 0;
+	virtual void editCollection( unsigned fromRev, unsigned toRev, std::string diff ) = 0;
+	virtual void editPlaylist( unsigned fromRev, unsigned toRev, std::string diff ) = 0;
+	virtual void editNextlist( unsigned fromRev, unsigned toRev, std::string diff ) = 0;
 
 	virtual void onPlay() = 0;
 	virtual void onStop() = 0;
@@ -66,9 +66,9 @@ public:
 	virtual void onGetPlaylist( unsigned knownRev ) = 0;
 	virtual void onGetNextlist( unsigned knownRev ) = 0;
 
-	virtual void onEditCollection( unsigned fromRev, std::string collectionDiff) = 0;
-	virtual void onEditPlaylist( unsigned fromRev, std::string playlistDiff ) = 0;
-	virtual void onEditNextlist( unsigned fromRev, std::string nextlistDiff ) = 0;
+	virtual void onEditCollection( unsigned fromRev, unsigned toRev, std::string collectionDiff) = 0;
+	virtual void onEditPlaylist( unsigned fromRev, unsigned toRev, std::string playlistDiff ) = 0;
+	virtual void onEditNextlist( unsigned fromRev, unsigned toRev, std::string nextlistDiff ) = 0;
 
 	// onDataToSend:
 	// called when there are serialized command ready to be sent to receiver

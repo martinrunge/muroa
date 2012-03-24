@@ -103,9 +103,9 @@ public:
 	virtual void onPlaylist( unsigned knownRev, std::string playlist ) = 0;
 	virtual void onNextlist( unsigned knownRev, std::string nextlist ) = 0;
 
-	virtual void onEditCollection( unsigned fromRev, std::string editScript ) = 0;
-	virtual void onEditPlaylist( unsigned fromRev, std::string editScript ) = 0;
-	virtual void onEditNextlist( unsigned fromRev, std::string editScript ) = 0;
+	virtual void onEditCollection( unsigned fromRev, unsigned toRev, std::string editScript ) = 0;
+	virtual void onEditPlaylist( unsigned fromRev, unsigned toRev, std::string editScript ) = 0;
+	virtual void onEditNextlist( unsigned fromRev, unsigned toRev, std::string editScript ) = 0;
 
 	virtual void onStartSession() = 0;
 	virtual void onEndSession() = 0;
@@ -129,6 +129,7 @@ private:
 
 	unsigned m_knownRev;
 	unsigned m_fromRev;
+	unsigned m_toRev;
 	unsigned m_diffFromRev;
 
 	uint32_t m_jobID;
@@ -159,6 +160,7 @@ private:
 
     void parseKnownRev(const char** attrs);
     void parseFromRev(const char** attrs);
+    void parseToRev(const char** attrs);
     void parseDiffFromRev(const char** attrs);
 
 

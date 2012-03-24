@@ -45,9 +45,9 @@ public:
 	void getPlaylist( unsigned knownRev = 0);
 	void getNextlist( unsigned knownRev = 0);
 
-	void editCollection( unsigned fromRev, std::string diff );
-	void editPlaylist( unsigned fromRev, std::string diff );
-	void editNextlist( unsigned fromRev, std::string diff );
+	void editCollection( unsigned fromRev, unsigned toRev, std::string diff );
+	void editPlaylist( unsigned fromRev, unsigned toRev, std::string diff );
+	void editNextlist( unsigned fromRev, unsigned toRev, std::string diff );
 
 
 	void newData(const char* data, int len);

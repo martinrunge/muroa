@@ -244,14 +244,17 @@ int CParserStateMachine::sessionState(const action_flag& init_start_end, const s
 		else if (name.compare("editCollection") == 0) {
 			m_state.session_state = IN_EDIT_COLLECTION_STATE;
 			parseFromRev(attrs);   // init with attrs
+			parseToRev(attrs);   // init with attrs
 		}
 		else if (name.compare("editPlaylist") == 0) {
 			m_state.session_state = IN_EDIT_PLAYLIST_STATE;
 			parseFromRev(attrs);   // init with attrs
+			parseToRev(attrs);   // init with attrs
 		}
 		else if (name.compare("editNextlist") == 0) {
 			m_state.session_state = IN_EDIT_NEXTLIST_STATE;
 			parseFromRev(attrs);   // init with attrs
+			parseToRev(attrs);   // init with attrs
 		}
 		else if (name.compare("leave") == 0) {
 			onLeaveSession();
@@ -329,15 +332,15 @@ int CParserStateMachine::sessionState(const action_flag& init_start_end, const s
 
 		// edit
 		else if (name.compare("editCollection") == 0) {
-			onEditCollection(m_fromRev, m_edit_text);
+			onEditCollection(m_fromRev, m_toRev, m_edit_text);
 			m_edit_text = "";
 		}
 		else if (name.compare("editPlaylist") == 0) {
-			onEditPlaylist(m_fromRev, m_edit_text);
+			onEditPlaylist(m_fromRev, m_toRev, m_edit_text);
 			m_edit_text = "";
 		}
 		else if (name.compare("editNextlist") == 0) {
-			onEditNextlist(m_fromRev, m_edit_text);
+			onEditNextlist(m_fromRev, m_toRev, m_edit_text);
 			m_edit_text = "";
 		}
 		else if(m_tag_unknown_depth > 1) {
@@ -491,6 +494,19 @@ void CParserStateMachine::parseFromRev(const char** attrs) {
 		if(name.compare("fromRev") == 0) {
 			cerr << name << endl;
 			m_fromRev = CUtils::str2uint32(value);
+		}
+	}
+}
+
+void CParserStateMachine::parseToRev(const char** attrs) {
+	for(int i=0; attrs[i]; i+=2)
+	{
+		string name  = attrs[i];
+		string value = attrs[i + 1];
+
+		if(name.compare("toRev") == 0) {
+			cerr << name << endl;
+			m_toRev = CUtils::str2uint32(value);
 		}
 	}
 }

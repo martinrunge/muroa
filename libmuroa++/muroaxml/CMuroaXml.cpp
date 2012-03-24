@@ -133,25 +133,25 @@ void CMuroaXml::getNextlist(unsigned knownRev) {
 	sendData(oss.str());
 }
 
-void CMuroaXml::editCollection(unsigned fromRev, string diff ) {
+void CMuroaXml::editCollection(unsigned fromRev, unsigned toRev, string diff ) {
 	ostringstream oss;
-	oss << "<" << xmlCommands::editCollection << " fromRev=\"" << fromRev << "\">" << endl;
+	oss << "<" << xmlCommands::editCollection << " fromRev=\"" << fromRev << "\" toRev=\"" << toRev << "\">" << endl;
 	oss << diff << endl;
 	oss << "</" << xmlCommands::editCollection << ">" << endl;
 	sendData(oss.str());
 }
 
-void CMuroaXml::editPlaylist(unsigned fromRev, string diff ) {
+void CMuroaXml::editPlaylist(unsigned fromRev, unsigned toRev, string diff ) {
 	ostringstream oss;
-	oss << "<" << xmlCommands::editPlaylist << " fromRev=\"" << fromRev << "\">" << endl;
+	oss << "<" << xmlCommands::editPlaylist << " fromRev=\"" << fromRev << "\" toRev=\"" << toRev << "\">" << endl;
 	oss << diff << endl;
 	oss << "</" << xmlCommands::editPlaylist << ">" << endl;
 	sendData(oss.str());
 }
 
-void CMuroaXml::editNextlist(unsigned fromRev, string diff ) {
+void CMuroaXml::editNextlist(unsigned fromRev, unsigned toRev, string diff ) {
 	ostringstream oss;
-	oss << "<" << xmlCommands::editNextlist << " fromRev=\"" << fromRev << "\">" << endl;
+	oss << "<" << xmlCommands::editNextlist << " fromRev=\"" << fromRev << "\" toRev=\"" << toRev << "\">" << endl;
 	oss << diff << endl;
 	oss << "</" << xmlCommands::editNextlist << ">" << endl;
 	sendData(oss.str());

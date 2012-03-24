@@ -16,7 +16,7 @@ namespace muroa {
 class CmdEditMediaCol: public muroa::Cmd {
 public:
 	CmdEditMediaCol();
-    CmdEditMediaCol(unsigned  fromRev, std::string diff);
+    CmdEditMediaCol(unsigned  fromRev, unsigned toRev, std::string diff);
     virtual ~CmdEditMediaCol();
 
     std::string getDiff() const;
@@ -25,8 +25,12 @@ public:
     unsigned getFromRev() const;
     void setFromRev(unsigned  fromRev);
 
+    unsigned getToRev() const;
+    void setToRev(unsigned  fromRev);
+
 private:
     unsigned m_fromRev;
+    unsigned m_toRev;
     std::string m_diff;
 };
 

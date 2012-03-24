@@ -48,9 +48,9 @@ public:
 	void onPlaylist(unsigned  diffFromRev, std::string playlist);
 	void onNextlist(unsigned  diffFromRev, std::string nextlist);
 
-	void onEditCollection( unsigned fromRev, std::string collectionDiff );
-	void onEditPlaylist( unsigned fromRev, std::string playlistDiff );
-	void onEditNextlist( unsigned fromRev, std::string nextlistDiff );
+	void onEditCollection( unsigned fromRev, unsigned toRev, std::string collectionDiff );
+	void onEditPlaylist( unsigned fromRev, unsigned toRev, std::string playlistDiff );
+	void onEditNextlist( unsigned fromRev, unsigned toRev, std::string nextlistDiff );
 
 	void onStartSession(){ };
 	void onEndSession(){ };
