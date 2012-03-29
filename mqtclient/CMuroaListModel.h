@@ -41,6 +41,11 @@ public:
 	QVariant data(const QModelIndex& index, int role = Qt::DisplayRole ) const;
 	QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole );
 
+	bool beginInsertItems( const int pos, const int count, const CCategoryItem* parent );
+	bool endInsertItems( );
+	bool beginRemoveItems( const int pos, const int count, const CCategoryItem* parent );
+	bool endRemoveItems( );
+
 private:
 	CCategoryItem* m_model_base;
 };

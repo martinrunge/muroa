@@ -258,7 +258,7 @@ std::string CDiffBuilder::insertFromCollectionToCollection(comb_hash_t combhash)
 std::string CDiffBuilder::insertFromCollectionToPlaylist(comb_hash_t combhash)
 {
 	ostringstream oss;
-	oss << "/playlist\tP\t" << combhash.hash;
+	oss << "/\tP\t" << combhash.hash;
 	return oss.str();
 }
 
@@ -282,7 +282,7 @@ std::string CDiffBuilder::removeFromCollection(comb_hash_t combhash)
 std::string CDiffBuilder::removeFromPlaylist(comb_hash_t combhash)
 {
 	ostringstream oss;
-	oss << "/playlist\tP\t" << combhash.hash;
+	oss << "/\tP\t" << combhash.hash;
 	return oss.str();
 }
 

@@ -106,10 +106,10 @@ string CNextlistItem::serialize(bool asDiff) {
 void CNextlistItem::assembleText() {
 	stringstream ss;
 
-	if( m_parent ) {
-		ss << m_parent->getPath();
-	}
-	ss << "\tN\t" << m_playlistitem_hash << "\t" << m_hash;
+//	if( m_parent ) {
+//		ss << m_parent->getPath();
+//	}
+	ss << "N\t" << m_playlistitem_hash << "\t" << m_hash << endl;
 	m_text = ss.str();
 }
 

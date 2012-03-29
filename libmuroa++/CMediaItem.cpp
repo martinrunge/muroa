@@ -76,7 +76,7 @@ void CMediaItem::setParent(CRootItem *root_item, CCategoryItem*  parent, int pos
 	m_root_item = root_item;
 	m_parent = parent;
 
-	rehash();
+	// rehash();
 
 	if(m_parent) {
 		m_parent->addChild(this, posInParent);
@@ -133,10 +133,11 @@ void CMediaItem::setYear(int year)
 void CMediaItem::rehash() {
 	stringstream ss;
 
-	if( m_parent ) {
-		ss << m_parent->getPath();
-	}
-	ss << "\tM\t" << m_filename << "\t" << m_artist << "\t" << m_album << "\t" << m_title << "\t" << m_year << "\t" << m_duration_in_s;
+
+//	if( m_parent ) {
+//		ss << m_parent->getPath();
+//	}
+	ss << "M\t" << m_filename << "\t" << m_artist << "\t" << m_album << "\t" << m_title << "\t" << m_year << "\t" << m_duration_in_s;
 	//ss << "m\t" <<  m_filename << "\t" << m_artist << "\t" << m_album << "\t" << m_title << "\t" << m_year << "\t" << m_duration_in_s;
 
 	uint32_t oldhash = m_hash;

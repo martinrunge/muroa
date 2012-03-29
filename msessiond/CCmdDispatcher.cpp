@@ -81,8 +81,13 @@ void CCmdDispatcher::incomingCmd(muroa::Cmd* cmd) {
 	{
 		CmdEditPlaylist* cmd_epl = reinterpret_cast<CmdEditPlaylist*>(cmd);
 		try {
+			int current_playlist_rev = m_session->getMaxPlaylistRev();
 			m_session->addPlaylistRevFromDiff(cmd_epl->getDiff(), cmd_epl->getFromRev());
 			// if there was no exception, the diff is ok, send it to all clients
+			if( current_playlist_rev == 0 ) {
+				cmd_epl->setDiff(m_session->getPlaylist()->serialize());
+			}
+			cmd_epl->setToRev( m_session->getMaxPlaylistRev() );
 			m_session->toAll(cmd_epl);
 		}
 		catch(MalformedPatchEx ex) {

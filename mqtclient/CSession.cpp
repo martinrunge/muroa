@@ -30,11 +30,11 @@ CMuroaTreeModel* CSession::getMediaColModel() const {
 	return m_mediaColModel;
 }
 
-CMuroaListModel* CSession::getNextlistModel() const {
+CMuroaListModel* CSession::getPlaylistModel() const {
 	return m_playlistModel;
 }
 
-CMuroaListModel* CSession::getPlaylistModel() const {
+CMuroaListModel* CSession::getNextlistModel() const {
 	return m_nextlistModel;
 }
 
@@ -55,29 +55,29 @@ void CSession::scanCollection() {
     m_connection.scanCollection(0);
 }
 
-uint32_t CSession::getMediaColRev() const {
-	return m_mediaColRev;
-}
-
-void CSession::setMediaColRev(const uint32_t mediaColRev) {
-	m_mediaColRev = mediaColRev;
-}
-
-uint32_t CSession::getPlaylistRev() const {
-	return m_mediaColRev;
-}
-
-void CSession::setPlaylistRev(const uint32_t nextlistRev) {
-	m_playlistRev = nextlistRev;
-}
-
-uint32_t CSession::getNextlistRev() const {
-	return m_mediaColRev;
-}
-
-void CSession::setNextlistRev(const uint32_t playlistRev) {
-	m_nextlistRev = playlistRev;
-}
+//uint32_t CSession::getMediaColRev() const {
+//	return m_mediaColRev;
+//}
+//
+//void CSession::setMediaColRev(const uint32_t mediaColRev) {
+//	m_mediaColRev = mediaColRev;
+//}
+//
+//uint32_t CSession::getPlaylistRev() const {
+//	return m_mediaColRev;
+//}
+//
+//void CSession::setPlaylistRev(const uint32_t nextlistRev) {
+//	m_playlistRev = nextlistRev;
+//}
+//
+//uint32_t CSession::getNextlistRev() const {
+//	return m_mediaColRev;
+//}
+//
+//void CSession::setNextlistRev(const uint32_t playlistRev) {
+//	m_nextlistRev = playlistRev;
+//}
 
 void CSession::dumpCollection() {
 	string mediaCol;

@@ -127,10 +127,10 @@ string CPlaylistItem::serialize(bool asDiff) {
 void CPlaylistItem::assembleText() {
 	stringstream ss;
 
-	if( m_parent ) {
-		ss << m_parent->getPath();
-	}
-	ss << "\tP\t" << m_mediaitem_hash << "\t" << m_hash;
+//	if( m_parent ) {
+//		ss << m_parent->getPath();
+//	}
+	ss << "P\t" << m_mediaitem_hash << "\t" << m_hash << endl;
 
 	m_text = ss.str();
 

@@ -64,13 +64,37 @@ QVariant CMuroaListModel::data(const QModelIndex & index, int role) const {
 	if(!item)
 		return QVariant();
 
-	return item->getHash();
-
+	return QString("%1").arg(item->getHash());
 }
 
 
 
 QVariant CMuroaListModel::headerData(int section, Qt::Orientation orientation, int role) {
-
+	if(role != Qt::DisplayRole)
+	{
+		return QVariant();
+	}
+	return QString("Playlist");
 }
+
+bool CMuroaListModel::beginInsertItems( const int pos, const int count, const CCategoryItem* parent ) {
+	QAbstractListModel::beginInsertRows( QModelIndex(), pos, pos + count - 1);
+    return true;
+}
+
+bool CMuroaListModel::endInsertItems( ) {
+	QAbstractListModel::endInsertRows();
+	return true;
+}
+
+bool CMuroaListModel::beginRemoveItems( const int pos, const int count, const CCategoryItem* parent ) {
+	QAbstractListModel::beginRemoveRows(QModelIndex(), pos, pos + count - 1);
+	return true;
+}
+
+bool CMuroaListModel::endRemoveItems( ) {
+	QAbstractListModel::endRemoveRows();
+	return true;
+}
+
 

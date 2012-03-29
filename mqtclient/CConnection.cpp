@@ -125,7 +125,7 @@ void CConnection::onEditCollection(unsigned  fromRev, unsigned toRev, std::strin
 		}
 	}
 	else {
-		uint32_t knownRev = m_session->getMediaColRev();
+		uint32_t knownRev = m_session->getMediaColModel()->getRevision();
 		if( knownRev != fromRev ) {
 			std::ostringstream oss;
 			oss << "editCollection: Error: got a diff based on rev " << fromRev << " but known rev is " << knownRev;
@@ -133,6 +133,7 @@ void CConnection::onEditCollection(unsigned  fromRev, unsigned toRev, std::strin
 		}
 		m_session->getMediaColModel()->patch(collectionDiff);
 	}
+	m_session->getMediaColModel()->setRevision(toRev);
 }
 
 void CConnection::onEditPlaylist(unsigned  fromRev, unsigned toRev, std::string playlistDiff) {
@@ -140,7 +141,7 @@ void CConnection::onEditPlaylist(unsigned  fromRev, unsigned toRev, std::string 
 		m_session->getPlaylistModel()->deserialize(playlistDiff);
 	}
 	else {
-		uint32_t knownRev = m_session->getPlaylistRev();
+		uint32_t knownRev = m_session->getPlaylistModel()->getRevision();
 		if( knownRev != fromRev ) {
 			std::ostringstream oss;
 			oss << "editPlaylist: Error: got a diff based on rev " << fromRev << " but known rev is " << knownRev;
@@ -148,6 +149,7 @@ void CConnection::onEditPlaylist(unsigned  fromRev, unsigned toRev, std::string 
 		}
 		m_session->getPlaylistModel()->patch(playlistDiff);
 	}
+	m_session->getPlaylistModel()->setRevision(toRev);
 }
 
 void CConnection::onEditNextlist(unsigned  fromRev, unsigned toRev, std::string nextlistDiff) {
@@ -155,7 +157,7 @@ void CConnection::onEditNextlist(unsigned  fromRev, unsigned toRev, std::string 
 		m_session->getNextlistModel()->deserialize(nextlistDiff);
 	}
 	else {
-		uint32_t knownRev = m_session->getNextlistRev();
+		uint32_t knownRev = m_session->getNextlistModel()->getRevision();
 		if( knownRev != fromRev ) {
 			std::ostringstream oss;
 			oss << "editNextlist: Error: got a diff based on rev " << fromRev << " but known rev is " << knownRev;
@@ -163,6 +165,7 @@ void CConnection::onEditNextlist(unsigned  fromRev, unsigned toRev, std::string 
 		}
 		m_session->getNextlistModel()->patch(nextlistDiff);
 	}
+	m_session->getNextlistModel()->setRevision(toRev);
 }
 
 void CConnection::play()

@@ -80,7 +80,7 @@ public:
 	void delContentPtr(const CItemType& type, const uint32_t hash);
 
 	inline uint32_t getRevision() const { return m_revision; };
-	inline void getRevision(const uint32_t  rev) { m_revision = rev; };
+	inline void setRevision(const uint32_t  rev) { m_revision = rev; };
 
 private:
 

@@ -36,13 +36,13 @@ public slots:
     void scanCollection();
     void dumpCollection();
 
-    uint32_t getMediaColRev() const;
-    uint32_t getNextlistRev() const;
-    uint32_t getPlaylistRev() const;
-
-    void setMediaColRev(uint32_t mediaColRev);
-    void setNextlistRev(uint32_t nextlistRev);
-    void setPlaylistRev(uint32_t playlistRev);
+//    uint32_t getMediaColRev() const;
+//    uint32_t getNextlistRev() const;
+//    uint32_t getPlaylistRev() const;
+//
+//    void setMediaColRev(uint32_t mediaColRev);
+//    void setNextlistRev(uint32_t nextlistRev);
+//    void setPlaylistRev(uint32_t playlistRev);
 
 private:
     CConnection m_connection;
@@ -50,9 +50,9 @@ private:
     CMuroaListModel *m_playlistModel;
     CMuroaListModel *m_nextlistModel;
 
-    uint32_t m_mediaColRev;
-    uint32_t m_playlistRev;
-    uint32_t m_nextlistRev;
+//    uint32_t m_mediaColRev;
+//    uint32_t m_playlistRev;
+//    uint32_t m_nextlistRev;
 };
 
 #endif /* CSESSION_H_ */
