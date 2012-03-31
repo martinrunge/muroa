@@ -51,8 +51,10 @@ private:
 	std::string insertFromCollectionToCollection(comb_hash_t combhash);
 //	std::string insertToCollectionFromExtern(comb_hash_t combhash);
 	std::string insertFromCollectionToPlaylist(comb_hash_t combhash);
-	std::string insertFromPlaylist(comb_hash_t combhash);
-	std::string insertFromNextlist(comb_hash_t combhash);
+	std::string insertFromCollectionToNextlist(comb_hash_t combhash);
+	std::string insertFromPlaylistToPlaylist(comb_hash_t combhash);
+	std::string insertFromPlaylistToNextlist(comb_hash_t combhash);
+	std::string insertFromNextlistToNextlist(comb_hash_t combhash);
 
 	std::string removeFromCollection(comb_hash_t combhash);
 	std::string removeFromPlaylist(comb_hash_t combhash);

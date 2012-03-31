@@ -65,7 +65,7 @@ void CDiffBuilder::prepareDiff(CModelDiff* md)
 			// insert songs from collection into nextlist AND append to playlist
 			// insert songs into nextlist only, so they disappear after playing
 			numToInsert = md->getNumSelected();
-			getItemToInsert = &CDiffBuilder::insertFromCollectionToPlaylist;  // playlist is correct here as only a string with the hash from collection is returned
+			getItemToInsert = &CDiffBuilder::insertFromCollectionToNextlist;
 			break;
 
 		default:
@@ -81,7 +81,7 @@ void CDiffBuilder::prepareDiff(CModelDiff* md)
 			// remove songs from playlist
 			commandType = E_PLAYLIST;
 			numToRemove = md->getNumSelected();
-			getItemToInsert = &CDiffBuilder::dummy;
+			getItemToInsert = &CDiffBuilder::removeFromPlaylist;
 			break;
 
 		case E_PLAYLIST:
@@ -89,14 +89,14 @@ void CDiffBuilder::prepareDiff(CModelDiff* md)
 			commandType = E_PLAYLIST;
 			numToRemove = md->getNumSelected();
 			numToInsert = numToRemove;
-			getItemToInsert = &CDiffBuilder::insertFromPlaylist;
+			getItemToInsert = &CDiffBuilder::insertFromPlaylistToPlaylist;
 			break;
 
 		case E_NEXTLIST:
 			// insert songs from playlist into nextlist at drop position
 			commandType = E_NEXTLIST;
 			numToInsert = md->getNumSelected();
-			getItemToInsert = &CDiffBuilder::insertFromPlaylist;  // playlist is same as nectlist in this case
+			getItemToInsert = &CDiffBuilder::insertFromPlaylistToNextlist;
 			break;
 
 		default:
@@ -113,7 +113,7 @@ void CDiffBuilder::prepareDiff(CModelDiff* md)
 			// remove selected songs from nextlist
 			commandType = E_NEXTLIST;
 			numToRemove = md->getNumSelected();
-			getItemToInsert = &CDiffBuilder::dummy;
+			getItemToInsert = &CDiffBuilder::removeFromNextlist;
 			break;
 
 		case E_NEXTLIST:
@@ -121,7 +121,7 @@ void CDiffBuilder::prepareDiff(CModelDiff* md)
 			commandType = E_NEXTLIST;
 			numToInsert = md->getNumSelected();
 			numToRemove = numToInsert;
-			getItemToInsert = &CDiffBuilder::insertFromNextlist;
+			getItemToInsert = &CDiffBuilder::insertFromNextlistToNextlist;
 			break;
 
 		default:
@@ -262,16 +262,32 @@ std::string CDiffBuilder::insertFromCollectionToPlaylist(comb_hash_t combhash)
 	return oss.str();
 }
 
-std::string CDiffBuilder::insertFromPlaylist(comb_hash_t combhash)
+std::string CDiffBuilder::insertFromCollectionToNextlist(comb_hash_t combhash)
 {
 	ostringstream oss;
-	oss << combhash.hash;
+	oss << "/\tN\t" << combhash.hash;
 	return oss.str();
 }
 
-std::string CDiffBuilder::insertFromNextlist(comb_hash_t combhash)
+std::string CDiffBuilder::insertFromPlaylistToPlaylist(comb_hash_t combhash)
 {
-	return ""; //  m_nlPtr->at(pos)->asString();
+	ostringstream oss;
+	oss << "/\tP\t" << combhash.hash;
+	return oss.str();
+}
+
+std::string CDiffBuilder::insertFromPlaylistToNextlist(comb_hash_t combhash)
+{
+	ostringstream oss;
+	oss << "/\tN\t" << combhash.hash;
+	return oss.str();
+}
+
+std::string CDiffBuilder::insertFromNextlistToNextlist(comb_hash_t combhash)
+{
+	ostringstream oss;
+	oss << "/\tN\t" << combhash.hash;
+	return oss.str();
 }
 
 std::string CDiffBuilder::removeFromCollection(comb_hash_t combhash)

@@ -67,6 +67,11 @@ QVariant CMuroaListModel::data(const QModelIndex & index, int role) const {
 	return QString("%1").arg(item->getHash());
 }
 
+CItemBase* CMuroaListModel::itemFromIndex(QModelIndex index) {
+	CItemBase* item = m_model_base->getContentItem( index.row() );
+	return item;
+}
+
 
 
 QVariant CMuroaListModel::headerData(int section, Qt::Orientation orientation, int role) {

@@ -271,6 +271,14 @@ void CRootItem::patch(std::string diff) throw(std::invalid_argument, MalformedPa
 				}
 				case '-': //remove
 				{
+					string path = stripFirstSection(content);
+					parent = getCategoryPtr(path);
+					if(parent == 0) {
+						ostringstream oss;
+						oss << "error removing item: unknown parent category '" << path << "'";
+						throw MalformedPatchEx(oss.str(), patchLineNr);
+					}
+
 					IContentItem *contItem = parent->getContentItem(lineNr - 1);
 					string itemText = contItem->getText();
 					if(itemText.compare(0, itemText.size() - 1, content) != 0 )	// possible error:

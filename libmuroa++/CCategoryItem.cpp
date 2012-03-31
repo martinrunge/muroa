@@ -39,8 +39,8 @@ CCategoryItem::CCategoryItem(CRootItem *root_item, string text, CCategoryItem*  
 
 	if(m_parent) {
 		m_path = m_parent->getPath();
-		m_path.append("/");
 	}
+	m_path.append("/");
 	m_path.append(m_name);
 	if(m_parent) {
 		m_parent->addChild(this);

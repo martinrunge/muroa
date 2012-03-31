@@ -46,6 +46,8 @@ public:
 	bool beginRemoveItems( const int pos, const int count, const CCategoryItem* parent );
 	bool endRemoveItems( );
 
+	CItemBase* itemFromIndex(QModelIndex index);
+
 private:
 	CCategoryItem* m_model_base;
 };

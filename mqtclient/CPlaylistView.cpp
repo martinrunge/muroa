@@ -112,10 +112,25 @@ void CPlaylistView::performDrag()
     for(int i = 0; i < indexList.size(); i++)
     {
     	comb_hash_t combhash;
-    	combhash.hash =
-    	combhash.line = indexList.at(i).row();
+		CItemBase* item = plModel->itemFromIndex(indexList.at(i));
+		switch(item->type()) {
+		case CItemType::E_ROOT:
+			// add all
+			break;
+		case CItemType::E_CAT:
+			// add whole Category
+			break;
 
-    	md.appendToSelectedItems(combhash);
+		case CItemType::E_INVAL:
+			break;
+
+		default:
+			// derived from IContentitem
+    		IContentItem* citem = reinterpret_cast<IContentItem*>(item);
+			combhash.type = citem->type();
+			combhash.hash = citem->getHash();
+			md.appendToSelectedItems(combhash);
+		}
     }
 
     if (md.getNumSelected() > 0)
