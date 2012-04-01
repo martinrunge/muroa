@@ -263,7 +263,8 @@ void CConnection::sendCommand(CmdBase* cmd) {
 		break;
 		case CmdBase::EDIT_NEXTLIST:
 		{
-
+			CmdEditNextlist* enl = static_cast<CmdEditNextlist*>(cmd);
+			editNextlist( enl->knownRev(), 0, enl->data() );
 		}
 		break;
 		case CmdBase::PLAY:

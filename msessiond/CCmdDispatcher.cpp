@@ -14,6 +14,7 @@
 #include <cmds/SimpleCmds.h>
 #include <cmds/CmdEditMediaCol.h>
 #include <cmds/CmdEditPlaylist.h>
+#include <cmds/CmdEditNextlist.h>
 
 
 using namespace muroa;
@@ -98,6 +99,22 @@ void CCmdDispatcher::incomingCmd(muroa::Cmd* cmd) {
 	}
 	case Cmd::EDIT_NEXTLIST:
 	{
+		CmdEditNextlist* cmd_enl = reinterpret_cast<CmdEditNextlist*>(cmd);
+		try {
+			int current_nextlist_rev = m_session->getMaxNextlistRev();
+			m_session->addNextlistRevFromDiff(cmd_enl->getDiff(), cmd_enl->getFromRev());
+			// if there was no exception, the diff is ok, send it to all clients
+			if( current_nextlist_rev == 0 ) {
+				cmd_enl->setDiff(m_session->getNextlist()->serialize());
+			}
+			cmd_enl->setToRev( m_session->getMaxNextlistRev() );
+			m_session->toAll(cmd_enl);
+		}
+		//catch(MalformedPatchEx& ex) {
+		catch(...) {
+			CmdError* errMsg = new CmdError(cmd_enl->id(), 0, ""); //ex.getReason());
+			m_session->sendToInitiator(errMsg, cmd_enl->getConnectionID() );
+		}
 		break;
 	}
 	default:

@@ -21,6 +21,7 @@ set( SRC           CQtClient.cpp
                    CMuroaTreeModel.cpp
                    CMediaColView.cpp
                    CPlaylistView.cpp
+                   CNextlistView.cpp
                    CModelDiff.cpp
                    CDiffBuilder.cpp
                    
@@ -49,6 +50,7 @@ set( MOC_H         CQtClient.h
                    CMuroaTreeModel.h
                    CMediaColView.h
                    CPlaylistView.h
+                   CNextlistView.h
                    CModelDiff.h
                    CDiffBuilder.h
 

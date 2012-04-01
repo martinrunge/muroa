@@ -93,7 +93,7 @@
       </property>
       <widget class="CMediaColView" name="mediaColTreeView"/>
       <widget class="CPlaylistView" name="playlistListView"/>
-      <widget class="QListView" name="nextlistListView"/>
+      <widget class="CNextlistView" name="nextlistListView"/>
      </widget>
     </item>
    </layout>
@@ -104,7 +104,7 @@
      <x>0</x>
      <y>0</y>
      <width>1073</width>
-     <height>21</height>
+     <height>23</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuCo_llection">
@@ -248,6 +248,11 @@
    <class>CPlaylistView</class>
    <extends>QListView</extends>
    <header>CPlaylistView.h</header>
+  </customwidget>
+  <customwidget>
+   <class>CNextlistView</class>
+   <extends>QListView</extends>
+   <header>CNextlistView.h</header>
   </customwidget>
  </customwidgets>
  <resources>

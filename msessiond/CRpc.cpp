@@ -116,6 +116,8 @@ CRpc::~CRpc() {
     }
 
     void CRpc::onEditCollection(unsigned  fromRev, unsigned toRev, std::string collectionDiff) {
+    	CmdEditMediaCol* emc = new CmdEditMediaCol(fromRev, toRev, collectionDiff);
+    	m_connection->incomingCmd(emc);
     }
 
     void CRpc::onEditPlaylist(unsigned  fromRev, unsigned toRev, std::string playlistDiff) {
@@ -124,7 +126,8 @@ CRpc::~CRpc() {
     }
 
     void CRpc::onEditNextlist(unsigned  fromRev, unsigned toRev, std::string nextlistDiff) {
-
+    	CmdEditNextlist* en = new CmdEditNextlist(fromRev, toRev, nextlistDiff);
+    	m_connection->incomingCmd(en);
     }
 
 	void CRpc::sendCmd(muroa::Cmd* cmd) {
