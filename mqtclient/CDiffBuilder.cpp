@@ -182,7 +182,7 @@ std::string CDiffBuilder::diff(CModelDiff md)
 		// remove then
 		if(numToRemove > 0)
 		{
-			text.append( prepareDiffHeader(rmFrom + 1, numToRemove, rmFrom + numToRemove, 0) );
+			text.append( prepareDiffHeader(rmFrom + 1, numToRemove, rmFrom + numToInsert, 0) );
 			for(int i = 0; i < numToRemove; i++)
 			{
 				text.append( "-" );
@@ -211,7 +211,7 @@ std::string CDiffBuilder::diff(CModelDiff md)
 		if(numToInsert > 0)
 		{
 			// text.append( std::string("@@ -%1,%2 +%3,%4 @@\n").arg(insTo ).arg(0).arg(insTo - numToInsert + 1).arg(numToInsert) );
-			text.append( prepareDiffHeader(insTo, 0, insTo - numToInsert + 1, numToInsert) );
+			text.append( prepareDiffHeader(insTo, 0, insTo - numToRemove + 1, numToInsert) );
 			for(int i = 0; i < numToInsert; i++)
 			{
 				text += "+";

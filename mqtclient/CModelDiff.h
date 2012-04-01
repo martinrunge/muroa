@@ -25,11 +25,19 @@ enum origin {
 class IContentItem;
 class CRootItem;
 
-struct comb_hash {
+class comb_hash {
+public:
+	comb_hash() {
+		type = 0;
+		hash = 0;
+		path = "";
+		line = -1;
+	};
+
 	uint32_t type;
 	uint32_t hash;
 	std::string path;
-	uint32_t line;
+	int line;
 };
 
 typedef struct comb_hash comb_hash_t;

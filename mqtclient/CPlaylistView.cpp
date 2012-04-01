@@ -129,6 +129,7 @@ void CPlaylistView::performDrag()
     		IContentItem* citem = reinterpret_cast<IContentItem*>(item);
 			combhash.type = citem->type();
 			combhash.hash = citem->getHash();
+			combhash.line = indexList.at(i).row();
 			md.appendToSelectedItems(combhash);
 		}
     }
