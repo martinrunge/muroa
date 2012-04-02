@@ -218,10 +218,14 @@ int CSession::addPlaylistRevFromDiff(const string& playlistDiff, unsigned diffFr
 
 int CSession::addNextlistRevFromDiff(const string& nextlistDiff, unsigned diffFromRev) throw(InvalidMsgException) {
 	CRootItem* base = getRev(m_nextlistRevs, diffFromRev, "Can't apply nextlist diff based on revision # because that revision is unknown in session '");
-
-	CRootItem* ri = new CRootItem(*base);
-	ri->patch(nextlistDiff);
-	addNextlistRev(ri);
+	try {
+		CRootItem* ri = new CRootItem(*base);
+		ri->patch(nextlistDiff);
+		addNextlistRev(ri);
+	}
+	catch(MalformedPatchEx ex) {
+		cerr<< "MalformedPatchEx: " << ex.what() << endl;
+	}
 }
 
 int CSession::addNextlistRevFromNextCmd() {

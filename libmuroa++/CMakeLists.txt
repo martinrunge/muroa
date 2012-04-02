@@ -26,7 +26,7 @@ set( SRC           CRootItem.cpp
                    CDiff.cpp
                    MuroaExceptions.cpp
                    CUtils.cpp
-                   libmain.cpp
+                   # libmain.cpp
                    muroaxml/IRPC.cpp
                    muroaxml/CMuroaXml.cpp
                    muroaxml/xmlCommands.cpp
@@ -76,7 +76,8 @@ link_directories(  )
 add_library( muroa++ SHARED ${SRC} ${HEADERS} )
 target_link_libraries( muroa++  ${Boost_LIBRARIES} ${EXPAT_LIBRARIES})
 set_target_properties( muroa++  PROPERTIES  COMPILE_FLAGS "-std=gnu++0x" )
-
+SET_TARGET_PROPERTIES( muroa++ PROPERTIES  LINK_FLAGS -Wl,--eh-frame-hdr)
+SET_TARGET_PROPERTIES( muroa++ PROPERTIES  LINK_FLAGS -Wl,-shared-libgcc)
 ###################################################################################
 # This step merges a gdb_index section into the binary to speed up debugging.
 # Doing this by add_custom_command will become obsolete as soon as the linker does it. 

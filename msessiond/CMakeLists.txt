@@ -70,6 +70,8 @@ link_directories(${BINARY_DIR} ${SQLITE_LIBRARY_DIRS} "${CMAKE_SOURCE_DIR}/../li
 ADD_EXECUTABLE(msessiond main.cpp ${SRCS} ${HEADERS} )
 
 set_target_properties( msessiond PROPERTIES  COMPILE_FLAGS "-std=gnu++0x" ) 
+SET_TARGET_PROPERTIES( msessiond PROPERTIES  LINK_FLAGS -Wl,--eh-frame-hdr)
+SET_TARGET_PROPERTIES( msessiond PROPERTIES  LINK_FLAGS -Wl,-shared-libgcc)
 
 TARGET_LINK_LIBRARIES(msessiond    muroad
                                    muroa++

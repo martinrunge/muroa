@@ -305,7 +305,7 @@ std::string CDiffBuilder::removeFromPlaylist(comb_hash_t combhash)
 std::string CDiffBuilder::removeFromNextlist(comb_hash_t combhash)
 {
 	ostringstream oss;
-	oss << "/\tN\t" << combhash.hash;
+	oss << "/nextlist\tN\t" << combhash.hash;
 	return oss.str();
 }
 
