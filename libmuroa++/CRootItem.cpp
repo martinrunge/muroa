@@ -76,7 +76,8 @@ IContentItem* CRootItem::addEmptyContentItem(CItemType type, CCategoryItem* pare
 }
 
 
-IContentItem* CRootItem::addContentItem(string textWoPath, CCategoryItem* parent, int posInParent) {
+IContentItem* CRootItem::addContentItem(string textWoPath, CCategoryItem* parent, int posInParent) throw (MalformedPatchEx)
+{
 	CItemType itemType = getItemType(textWoPath);
 	if(posInParent == -1) {
 		posInParent = parent->numChildren();
@@ -87,7 +88,8 @@ IContentItem* CRootItem::addContentItem(string textWoPath, CCategoryItem* parent
 	return newItem;
 }
 
-IContentItem* CRootItem::addContentItem(IContentItem* item, CCategoryItem* parent, int posInParent) {
+IContentItem* CRootItem::addContentItem(IContentItem* item, CCategoryItem* parent, int posInParent)
+{
 	if(posInParent == -1) {
 		posInParent = parent->numChildren();
 	}
@@ -101,7 +103,8 @@ IContentItem* CRootItem::addContentItem(IContentItem* item, CCategoryItem* paren
 	return item;
 }
 
-IContentItem* CRootItem::addContentItem(string text, int posInParent) {
+IContentItem* CRootItem::addContentItem(string text, int posInParent) throw (MalformedPatchEx)
+{
 	string path = stripFirstSection(text);
 	CItemType itemType = getItemType(text);
 	if(itemType.getType() == CItemType::E_INVAL ) {
@@ -153,7 +156,7 @@ void CRootItem::delContentPtr(const CItemType& type, const uint32_t hash) {
 }
 
 
-void CRootItem::deserialize(std::string text) {
+void CRootItem::deserialize(std::string text) throw(MalformedPatchEx) {
 	istringstream iss(text);
 	char cline[4096];
 
@@ -184,7 +187,7 @@ string CRootItem::diff(const CRootItem& other) {
 	return m_base->diff(other.m_base);
 }
 
-void CRootItem::patch(std::string diff) throw(std::invalid_argument, MalformedPatchEx) {
+void CRootItem::patch(std::string diff) throw(MalformedPatchEx) {
 	istringstream iss(diff);
 
 	CCategoryItem* parent = 0;
@@ -201,6 +204,7 @@ void CRootItem::patch(std::string diff) throw(std::invalid_argument, MalformedPa
 	int chunkSizeSum = 0;
 
 	string line;
+
 	while(!iss.eof()) {
 		getline(iss, line);
 		if(iss.bad()) {
@@ -235,17 +239,24 @@ void CRootItem::patch(std::string diff) throw(std::invalid_argument, MalformedPa
 		} else if( line.find("@@") == 0 ) {
 			// diff chunk header
 			boost::cmatch res;
-		    boost::regex_search(line.c_str(), res, rx);
+			boost::regex_search(line.c_str(), res, rx);
 
-		    string oldStartStr = res[1];
+			string oldStartStr = res[1];
 			string oldLenStr = res[2];
 			string newStartStr = res[3];
 			string newLenStr = res[4];
 
-			oldStart = CUtils::str2long( oldStartStr );
-			oldLen = CUtils::str2long( oldLenStr );
-			newStart = CUtils::str2long( newStartStr );
-			newLen = CUtils::str2long( newLenStr );
+			try
+			{
+				oldStart = CUtils::str2long( oldStartStr );
+				oldLen = CUtils::str2long( oldLenStr );
+				newStart = CUtils::str2long( newStartStr );
+				newLen = CUtils::str2long( newLenStr );
+			}
+			catch(std::invalid_argument ex)
+			{
+				throw MalformedPatchEx(ex.what(), lineNr);
+			}
 
 			if(oldLen == 0) oldStart++;
 			lineNr = oldStart + chunkSizeSum;

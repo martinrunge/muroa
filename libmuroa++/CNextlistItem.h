@@ -25,13 +25,14 @@
 #define CNEXTLISTITEM_H_
 
 #include "IContentItem.h"
+#include "MuroaExceptions.h"
 
 class CPlaylistItem;
 
 class CNextlistItem: public IContentItem {
 public:
 	CNextlistItem(CRootItem *root_item, CCategoryItem*  parent, int posInParent = -1);
-	CNextlistItem(CRootItem *root_item, std::string text, CCategoryItem*  parent, int posInParent = -1);
+	CNextlistItem(CRootItem *root_item, std::string text, CCategoryItem*  parent, int posInParent = -1) throw(MalformedPatchEx);
 	virtual ~CNextlistItem();
 
 	inline uint32_t getPlaylistItemHash() { return m_playlistitem_hash; };
@@ -41,10 +42,13 @@ public:
 	bool operator==(const IContentItem& other);
 	inline bool operator!=(const IContentItem& other){ return !operator==(other); };
 
+	inline uint32_t getMediaItemHash() { return m_mediaitem_hash; };
+	void setMediaItemHash(uint32_t hash);
 	std::string serialize(bool asDiff = false);
 
 private:
 	uint32_t m_playlistitem_hash;
+	uint32_t m_mediaitem_hash;
 	static uint32_t m_next_free_id;
 
 	void assembleText();

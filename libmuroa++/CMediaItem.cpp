@@ -25,48 +25,99 @@ CMediaItem::CMediaItem(CRootItem *root_item, CCategoryItem*  parent, int posInPa
 	}
 }
 
-CMediaItem::CMediaItem(CRootItem *root_item, std::string text, CCategoryItem*  parent, int posInParent)
-   : IContentItem( root_item, parent, CItemType::E_MEDIAITEM ) {
+CMediaItem::CMediaItem(CRootItem *root_item, std::string text, CCategoryItem*  parent, int posInParent) throw(MalformedPatchEx)
+   : IContentItem( root_item, parent, CItemType::E_MEDIAITEM )   {
 
 	m_text = text;
 	// first section is handled by CItemBase
 	size_t lpos, rpos;
 	// lpos = m_text.find('\t', 1) + 1;
 	lpos = 0;
+	int num_tabs = 0;
+	int error_in_section = 0;
 
-	rpos = m_text.find('\t', lpos);
-	m_filename = text.substr(lpos, rpos - lpos);
-	lpos = rpos + 1;
+	try {
+		rpos = m_text.find('\t', lpos);
+		if( rpos != string::npos ) {
+			m_filename = text.substr(lpos, rpos - lpos);
+			lpos = rpos + 1;
+			num_tabs++;
+		}
+		else {
+			throw MalformedPatchEx("error parsing filename field, terminating tab char is missing.", -1);
+		}
 
-	rpos = m_text.find('\t', lpos);
-	m_artist = text.substr(lpos, rpos - lpos);
-	lpos = rpos + 1;
+		rpos = m_text.find('\t', lpos);
+		if( rpos != string::npos ) {
+			m_artist = text.substr(lpos, rpos - lpos);
+			lpos = rpos + 1;
+			num_tabs++;
+		}
+		else {
+			throw MalformedPatchEx("error parsing artist field, terminating tab char is missing.", -1);
+		}
 
-	rpos = m_text.find('\t', lpos);
-	m_album = text.substr(lpos, rpos - lpos);
-	lpos = rpos + 1;
+		rpos = m_text.find('\t', lpos);
+		if( rpos != string::npos ) {
+			m_album = text.substr(lpos, rpos - lpos);
+			lpos = rpos + 1;
+			num_tabs++;
+		}
+		else {
+			throw MalformedPatchEx("error parsing album field, terminating tab char is missing.", -1);
+		}
 
-	rpos = m_text.find('\t', lpos);
-	m_title = text.substr(lpos, rpos - lpos);
-	lpos = rpos + 1;
+		rpos = m_text.find('\t', lpos);
+		if( rpos != string::npos ) {
+			m_title = text.substr(lpos, rpos - lpos);
+			lpos = rpos + 1;
+			num_tabs++;
+		}
+		else {
+			throw MalformedPatchEx("error parsing title field, terminating tab char is missing.", -1);
+		}
 
-	rpos = m_text.find('\t', lpos);
-	string yearStr = text.substr(lpos, rpos - lpos);
-	m_year = CUtils::str2long(yearStr.c_str());
-	lpos = rpos + 1;
+		rpos = m_text.find('\t', lpos);
+		if( rpos != string::npos ) {
+			string yearStr = text.substr(lpos, rpos - lpos);
+			m_year = CUtils::str2long(yearStr.c_str());
+			lpos = rpos + 1;
+			num_tabs++;
+		}
+		else {
+			throw MalformedPatchEx("error parsing year field, terminating tab char is missing.", -1);
+		}
 
-	rpos = m_text.find('\t', lpos);
-	string durationStr = text.substr(lpos, rpos - lpos);
-	m_duration_in_s = CUtils::str2long(durationStr.c_str());
-	lpos = rpos + 1;
+		rpos = m_text.find('\t', lpos);
+		if( rpos != string::npos ) {
+			string durationStr = text.substr(lpos, rpos - lpos);
+			m_duration_in_s = CUtils::str2long(durationStr.c_str());
+			lpos = rpos + 1;
+			num_tabs++;
+		}
+		else {
+			throw MalformedPatchEx("error parsing duration field, terminating tab char is missing.", -1);
+		}
 
-	string hashStr = text.substr(lpos);
-	m_hash = CUtils::str2uint32(hashStr.c_str());
+		string hashStr;
+		rpos = m_text.find('\t', lpos);
+		if(rpos != string::npos ) {
+			string hashStr = text.substr(lpos, rpos - lpos);  // there may be extra data after this field as long as it is separated by a tab char.
+		}
+		else {
+			string hashStr = text.substr(lpos);
+		}
+		m_hash = CUtils::str2uint32(hashStr.c_str());
 
-	if(m_parent) {
-		m_parent->addChild(this, posInParent);
+		if(m_parent) {
+			m_parent->addChild(this, posInParent);
+		}
+		rehash();
 	}
-	rehash();
+	catch(std::invalid_argument& ex)
+	{
+		throw MalformedPatchEx(ex.what(), -1);
+	}
 }
 
 CMediaItem::CMediaItem(CRootItem *root_item ) : IContentItem( root_item, 0, CItemType::E_MEDIAITEM ) {

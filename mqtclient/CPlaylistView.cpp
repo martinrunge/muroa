@@ -114,23 +114,20 @@ void CPlaylistView::performDrag()
     	comb_hash_t combhash;
 		CItemBase* item = plModel->itemFromIndex(indexList.at(i));
 		switch(item->type()) {
-		case CItemType::E_ROOT:
-			// add all
-			break;
-		case CItemType::E_CAT:
-			// add whole Category
-			break;
 
-		case CItemType::E_INVAL:
-			break;
-
-		default:
-			// derived from IContentitem
-    		IContentItem* citem = reinterpret_cast<IContentItem*>(item);
-			combhash.type = citem->type();
-			combhash.hash = citem->getHash();
-			combhash.line = indexList.at(i).row();
-			md.appendToSelectedItems(combhash);
+			case CItemType::E_PLAYLISTITEM:
+			{
+				CPlaylistItem* plitem = reinterpret_cast<CPlaylistItem*>(item);
+				combhash.type = plitem->type();
+				combhash.hash = plitem->getMediaItemHash();
+				combhash.pl_id = plitem->getHash();
+				combhash.line = indexList.at(i).row();
+				md.appendToSelectedItems(combhash);
+				break;
+			}
+			default:
+				// error, there should only be playlist items in the playlist.
+				break;
 		}
     }
 

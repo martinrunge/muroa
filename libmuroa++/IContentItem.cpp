@@ -22,7 +22,11 @@ IContentItem::~IContentItem() {
 
 }
 
-IContentItem* IContentItem::itemFactory(const CItemType itemType, CRootItem *root_item, CCategoryItem *parent, const unsigned posInParent) {
+IContentItem* IContentItem::itemFactory(const CItemType itemType,
+		                                CRootItem *root_item,
+		                                CCategoryItem *parent,
+		                                const unsigned posInParent)
+{
 	const CItemType::item_type_t type_enum = itemType.getType();
 	switch(type_enum) {
 	case CItemType::E_ROOT:
@@ -46,7 +50,12 @@ IContentItem* IContentItem::itemFactory(const CItemType itemType, CRootItem *roo
 	}
 }
 
-IContentItem* IContentItem::itemFactory(const CItemType itemType, CRootItem *root_item, std::string text, CCategoryItem *parent, const unsigned posInParent) {
+IContentItem* IContentItem::itemFactory(const CItemType itemType,
+		                                CRootItem *root_item,
+		                                std::string text,
+		                                CCategoryItem *parent,
+		                                const unsigned posInParent) throw(MalformedPatchEx)
+{
 	const CItemType::item_type_t type_enum = itemType.getType();
 	switch(type_enum) {
 	case CItemType::E_ROOT:
@@ -70,7 +79,11 @@ IContentItem* IContentItem::itemFactory(const CItemType itemType, CRootItem *roo
 	}
 }
 
-IContentItem* IContentItem::itemFactory(CMediaItem* item, CRootItem *root_item, CCategoryItem *parent, const unsigned posInParent) {
+IContentItem* IContentItem::itemFactory(CMediaItem* item,
+		                                CRootItem *root_item,
+		                                CCategoryItem *parent,
+		                                const unsigned posInParent)
+{
 		 CMediaItem* newItem = new CMediaItem(root_item, parent, posInParent);
          newItem->setArtist(item->getArtist());
 		 newItem->setAlbum(item->getAlbum());

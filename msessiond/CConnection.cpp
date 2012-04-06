@@ -125,6 +125,7 @@ void CConnection::setSession(CSession *session) {
 }
 
 void CConnection::incomingCmd( Cmd* cmd ) {
+	cmd->setConnectionID(m_id);
 	m_session->incomingCmd(cmd, this);
 }
 

@@ -61,17 +61,19 @@ long CUtils::str2long(std::string str) throw(std::invalid_argument) {
 	char* endptr;
 	long iVal = strtol( str.c_str(), &endptr, 10);
 	if (errno != 0 || *endptr != '\0' ) {
+		ostringstream oss;
 		switch (errno) {
 		case ERANGE:
-			throw invalid_argument("convert string to int (out of range)");
+			oss << "Could not convert string '" << str << "' to int (out of range).";
 			break;
 		case EINVAL:
-			throw invalid_argument("convert string to int");
+			oss << "Could not convert string '" << str << "' to int.";
 			break;
 		default:
-			throw invalid_argument("convert string to int");
+			oss << "Could not convert string '" << str << "' to int.";
 			break;
 		}
+		throw invalid_argument(oss.str());
 	}
 	return iVal;
 }

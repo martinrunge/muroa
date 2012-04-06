@@ -52,6 +52,7 @@ CModelDiff::CModelDiff(const QByteArray& ba)
 		comb_hash_t combhash;
 		ds >> combhash.type;
 		ds >> combhash.hash;
+		ds >> combhash.pl_id;
 		quint32 pathsize;
 		char* data;
 		ds.readBytes(data, pathsize);
@@ -81,6 +82,7 @@ QByteArray CModelDiff::toQByteArray() const
 	for(vector<comb_hash_t>::const_iterator it = m_selectedItems.begin(); it != m_selectedItems.end(); it++ ) {
 		ds << it->type;
 		ds << it->hash;
+		ds << it->pl_id;
 		uint32_t pathsize = it->path.size();
 		ds.writeBytes(it->path.data(), pathsize);
 		ds << it->line;

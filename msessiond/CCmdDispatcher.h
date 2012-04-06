@@ -8,11 +8,14 @@
 #ifndef CCMDDISPATCHER_H_
 #define CCMDDISPATCHER_H_
 
+#include <MuroaExceptions.h>
 
 namespace muroa {
 	class Cmd;
 	class CSession;
+	class CmdEditPlaylist;
 };
+
 
 class CCmdDispatcher {
 public:
@@ -20,6 +23,8 @@ public:
 	virtual ~CCmdDispatcher();
 
 	void incomingCmd(muroa::Cmd* cmd);
+	void addIdToPlaylistDiff(muroa::CmdEditPlaylist* epl_cmd) throw(MalformedPatchEx);
+
 private:
 	muroa::CSession* m_session;
 };

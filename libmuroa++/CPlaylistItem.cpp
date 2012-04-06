@@ -29,7 +29,7 @@
 #include <sstream>
 using namespace std;
 
-uint32_t CPlaylistItem::m_next_free_id = 0;
+uint32_t CPlaylistItem::m_next_free_id = 1;   // 0 is reserved
 
 CPlaylistItem::CPlaylistItem(CRootItem *root_item, CCategoryItem*  parent, int posInParent) :
                IContentItem( root_item, parent, CItemType::E_PLAYLISTITEM )
@@ -39,8 +39,8 @@ CPlaylistItem::CPlaylistItem(CRootItem *root_item, CCategoryItem*  parent, int p
 	assembleText();
 }
 
-CPlaylistItem::CPlaylistItem(CRootItem *root_item, std::string text, CCategoryItem*  parent, int posInParent) :
-		       IContentItem( root_item, parent, CItemType::E_PLAYLISTITEM )
+CPlaylistItem::CPlaylistItem(CRootItem *root_item, std::string text, CCategoryItem*  parent, int posInParent) throw(MalformedPatchEx)
+: IContentItem( root_item, parent, CItemType::E_PLAYLISTITEM )
 {
 
 	m_text = text;
@@ -49,25 +49,43 @@ CPlaylistItem::CPlaylistItem(CRootItem *root_item, std::string text, CCategoryIt
 	// lpos = m_text.find('\t', 1) + 1;
 	lpos = 0;
 
-	rpos = m_text.find('\t', lpos);
-	string mediaitemHashStr = text.substr(lpos, rpos - lpos);
-	m_mediaitem_hash = CUtils::str2uint32(mediaitemHashStr.c_str());
-	lpos = rpos + 1;
+	try {
+		rpos = m_text.find('\t', lpos);
+		if( rpos != string::npos ) {
+			string mediaitemHashStr = text.substr(lpos, rpos - lpos);
+			m_mediaitem_hash = CUtils::str2uint32(mediaitemHashStr.c_str());
+			lpos = rpos + 1;
+		}
+		else {
+			throw MalformedPatchEx("error parsing 'media item hash' field, terminating tab char is missing." ,-1);
+		}
 
-	rpos = m_text.find('\t', lpos);
-	string hashStr = text.substr(lpos, rpos - lpos);
-	m_hash = CUtils::str2uint32(hashStr.c_str());
-	lpos = rpos + 1;
+		string hashStr;
+		rpos = m_text.find('\t', lpos);
+		if( rpos != string::npos ) {
+			hashStr = text.substr(lpos, rpos - lpos);
+			lpos = rpos + 1;
+		}
+		else {
+			hashStr = text.substr(lpos);
+		}
+		m_hash = CUtils::str2uint32(hashStr.c_str());
+		if(m_hash == 0){
+			m_hash = m_next_free_id++;
+		}
 
-	assembleText();
+		assembleText();
+		if(m_parent) {
+			m_parent->addChild(this, posInParent);
+		}
 
-	if(m_parent) {
-		m_parent->addChild(this, posInParent);
+		// for CPlaylistItem, m_hash is an index number that never changes during
+		// livetime of an object.
+		m_root_item->setContentPtr(CItemType(CItemType::E_PLAYLISTITEM), this, m_hash );
 	}
-
-	// for CPlaylistItem, m_hash is an index number that never changes during
-	// livetime of an object.
-	m_root_item->setContentPtr(CItemType(CItemType::E_PLAYLISTITEM), this, m_hash );
+	catch(std::invalid_argument& ex) {
+		throw MalformedPatchEx(ex.what(), -1);
+	}
 }
 
 CPlaylistItem::CPlaylistItem(uint32_t mediaItemHash) : IContentItem(0, 0, CItemType::E_PLAYLISTITEM),  m_mediaitem_hash(mediaItemHash) {
@@ -135,4 +153,3 @@ void CPlaylistItem::assembleText() {
 	m_text = ss.str();
 
 }
-

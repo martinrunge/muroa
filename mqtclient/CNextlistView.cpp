@@ -1,4 +1,4 @@
-/*
+/*1
  * CNextlistView.cpp
  *
  *  Created on: 6 Jan 2010
@@ -11,6 +11,7 @@
 #include "CNextlistView.h"
 #include "CMuroaListModel.h"
 #include "CPlaylistItem.h"
+#include "CNextlistItem.h"
 
 #include "CDiffBuilder.h"
 
@@ -117,20 +118,18 @@ void CNextlistView::performDrag()
 		case CItemType::E_ROOT:
 			// add all
 			break;
-		case CItemType::E_CAT:
-			// add whole Category
-			break;
 
-		case CItemType::E_INVAL:
-			break;
-
-		default:
-			// derived from IContentitem
-    		IContentItem* citem = reinterpret_cast<IContentItem*>(item);
-			combhash.type = citem->type();
-			combhash.hash = citem->getHash();
+		case CItemType::E_NEXTLISTITEM:
+		{
+    		CNextlistItem* nlitem = reinterpret_cast<CNextlistItem*>(item);
+			combhash.type = nlitem->type();
+			combhash.hash = nlitem->getMediaItemHash();
+			combhash.pl_id = nlitem->getPlaylistItemHash();
 			combhash.line = indexList.at(i).row();
 			md.appendToSelectedItems(combhash);
+		}
+		default:
+			break;
 		}
     }
 

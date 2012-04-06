@@ -10,6 +10,7 @@
 
 #include "CItemBase.h"
 #include <stdexcept>
+#include "MuroaExceptions.h"
 
 class CRootItem;
 class CCategoryItem;
@@ -18,14 +19,24 @@ class CMediaItem;
 class IContentItem : public CItemBase {
 public:
 	IContentItem(CRootItem *root_item, CCategoryItem*  parent, const item_type_t type);
-	IContentItem(CRootItem *root_item, std::string text, CCategoryItem*  parent, const item_type_t type, int posInParent = -1);
+	IContentItem(CRootItem *root_item, std::string text, CCategoryItem*  parent, const item_type_t type, int posInParent = -1) throw(MalformedPatchEx);
 	virtual ~IContentItem();
 
 	virtual std::string serialize(bool asDiff = false) = 0;
 
-	static IContentItem* itemFactory(const CItemType itemType, CRootItem *root_item, CCategoryItem *parent, const unsigned posInParent = -1);
-	static IContentItem* itemFactory(const CItemType itemType, CRootItem *root_item, std::string text, CCategoryItem *parent, const unsigned posInParent = -1);
-	static IContentItem* itemFactory(CMediaItem* item, CRootItem *root_item, CCategoryItem *parent, const unsigned posInParent);
+	static IContentItem* itemFactory(const CItemType itemType,
+			                         CRootItem *root_item,
+			                         CCategoryItem *parent,
+			                         const unsigned posInParent = -1);
+	static IContentItem* itemFactory(const CItemType itemType,
+			                         CRootItem *root_item,
+			                         std::string text,
+			                         CCategoryItem *parent,
+			                         const unsigned posInParent = -1) throw(MalformedPatchEx);
+	static IContentItem* itemFactory(CMediaItem* item,
+			                         CRootItem *root_item,
+			                         CCategoryItem *parent,
+			                         const unsigned posInParent);
 
 	bool operator==(const IContentItem& other);
 	inline bool operator!=(const IContentItem& other){ return !operator==(other); };

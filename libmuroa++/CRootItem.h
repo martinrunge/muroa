@@ -45,18 +45,18 @@ public:
 
 //	IContentItem* addContentItem(CCategoryItem* parent = 0, int posInParent = -1);
 	IContentItem* addEmptyContentItem(CItemType type, CCategoryItem* parent, int posInParent = -1);
-	IContentItem* addContentItem(std::string textWoPath, CCategoryItem* parent, int posInParent = -1);
-	IContentItem* addContentItem(std::string text, int posInParent = -1);
+	IContentItem* addContentItem(std::string textWoPath, CCategoryItem* parent, int posInParent = -1) throw (MalformedPatchEx);
+	IContentItem* addContentItem(std::string text, int posInParent = -1) throw (MalformedPatchEx);
 
 	IContentItem* addContentItem(IContentItem* item, CCategoryItem* parent, int posInParent = -1);
 
 	CCategoryItem* getBase() const { return m_base; };
 
 	std::string serialize();
-	void deserialize(std::string text);
+	void deserialize(std::string text) throw(MalformedPatchEx);
 
 	std::string diff(const CRootItem& other);
-	void patch(std::string diff) throw(std::invalid_argument, MalformedPatchEx);
+	void patch(std::string diff) throw(MalformedPatchEx);
 
 	bool operator==(const CRootItem& other);
 	inline bool operator!=(const CRootItem& other) { return !operator==(other); };

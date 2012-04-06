@@ -200,15 +200,22 @@ void CSession::addNextlistRev(const string& nextlist) {
 	addNextlistRev(ri);
 }
 
-int CSession::addMediaColRevFromDiff(const string& mediaColDiff, unsigned diffFromRev) throw(InvalidMsgException) {
-	CRootItem* base = getRev(m_mediaColRevs, diffFromRev, "Can't apply media collection diff based on revision # because that revision is unknown in session '");
+int CSession::addMediaColRevFromDiff(const string& mediaColDiff, unsigned diffFromRev) throw(MalformedPatchEx) {
+	CRootItem* ri = 0;
+	try {
+		CRootItem* base = getRev(m_mediaColRevs, diffFromRev, "Can't apply media collection diff based on revision # because that revision is unknown in session '");
 
-	CRootItem* ri = new CRootItem(*base);
-	ri->patch(mediaColDiff);
-	addMediaColRev(ri);
+		ri = new CRootItem(*base);
+		ri->patch(mediaColDiff);
+		addMediaColRev(ri);
+	}
+	catch(MalformedPatchEx& ex) {
+		if(ri != 0) delete ri;
+
+	}
 }
 
-int CSession::addPlaylistRevFromDiff(const string& playlistDiff, unsigned diffFromRev) throw(InvalidMsgException) {
+int CSession::addPlaylistRevFromDiff(const string& playlistDiff, unsigned diffFromRev) throw(MalformedPatchEx) {
 	CRootItem* base = getRev(m_playlistRevs, diffFromRev, "Can't apply playlist diff based on revision # because that revision is unknown in session '");
 
 	CRootItem* ri = new CRootItem(*base);
@@ -216,7 +223,7 @@ int CSession::addPlaylistRevFromDiff(const string& playlistDiff, unsigned diffFr
 	addPlaylistRev(ri);
 }
 
-int CSession::addNextlistRevFromDiff(const string& nextlistDiff, unsigned diffFromRev) throw(InvalidMsgException) {
+int CSession::addNextlistRevFromDiff(const string& nextlistDiff, unsigned diffFromRev) throw(MalformedPatchEx) {
 	CRootItem* base = getRev(m_nextlistRevs, diffFromRev, "Can't apply nextlist diff based on revision # because that revision is unknown in session '");
 	try {
 		CRootItem* ri = new CRootItem(*base);
@@ -353,7 +360,11 @@ void CSession::incomingCmd(Cmd*  cmd, CConnection* initiator) {
 }
 
 void CSession::sendToInitiator(Cmd* cmd, unsigned connId) {
-
+	map<unsigned, CConnection*>::iterator it = m_connections_by_id.find(connId);
+	if ( it != m_connections_by_id.end() ) {
+		CConnection* ini_conn = it->second;
+		ini_conn->sendCmd(cmd);
+	}
 }
 
 void CSession::toAll( Cmd* cmd ) {

@@ -63,8 +63,14 @@ QVariant CMuroaListModel::data(const QModelIndex & index, int role) const {
 	IContentItem* item = m_model_base->getContentItem( index.row() );
 	if(!item)
 		return QVariant();
-
-	return QString("%1").arg(item->getHash());
+	if(item->type() ==  CItemType::E_PLAYLISTITEM ) {
+		CPlaylistItem* plItem = reinterpret_cast<CPlaylistItem*>(item);
+		return QString("%1 <- %2").arg(plItem->getMediaItemHash()).arg(plItem->getHash());
+	}
+	else {
+		CNextlistItem* nlItem = reinterpret_cast<CNextlistItem*>(item);
+		return QString("%1 <- %2").arg(nlItem->getPlaylistItemHash()).arg(nlItem->getHash());
+	}
 }
 
 CItemBase* CMuroaListModel::itemFromIndex(QModelIndex index) {

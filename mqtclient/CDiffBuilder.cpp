@@ -258,35 +258,35 @@ std::string CDiffBuilder::insertFromCollectionToCollection(comb_hash_t combhash)
 std::string CDiffBuilder::insertFromCollectionToPlaylist(comb_hash_t combhash)
 {
 	ostringstream oss;
-	oss << "/\tP\t" << combhash.hash;
+	oss << "/\tP\t" << combhash.hash << "\t0";
 	return oss.str();
 }
 
 std::string CDiffBuilder::insertFromCollectionToNextlist(comb_hash_t combhash)
 {
 	ostringstream oss;
-	oss << "/\tN\t" << combhash.hash;
+	oss << "/\tN\t" << combhash.hash << "\t0";
 	return oss.str();
 }
 
 std::string CDiffBuilder::insertFromPlaylistToPlaylist(comb_hash_t combhash)
 {
 	ostringstream oss;
-	oss << "/\tP\t" << combhash.hash;
+	oss << "/\tP\t" << combhash.hash << "\t" << combhash.pl_id;
 	return oss.str();
 }
 
 std::string CDiffBuilder::insertFromPlaylistToNextlist(comb_hash_t combhash)
 {
 	ostringstream oss;
-	oss << "/\tN\t" << combhash.hash;
+	oss << "/\tN\t" << combhash.hash << "\t" << combhash.pl_id;
 	return oss.str();
 }
 
 std::string CDiffBuilder::insertFromNextlistToNextlist(comb_hash_t combhash)
 {
 	ostringstream oss;
-	oss << "/\tN\t" << combhash.hash;
+	oss << "/\tN\t" << combhash.hash << "\t" << combhash.pl_id;
 	return oss.str();
 }
 
@@ -298,14 +298,14 @@ std::string CDiffBuilder::removeFromCollection(comb_hash_t combhash)
 std::string CDiffBuilder::removeFromPlaylist(comb_hash_t combhash)
 {
 	ostringstream oss;
-	oss << "/\tP\t" << combhash.hash;
+	oss << "/\tP\t" << combhash.hash << "\t" << combhash.pl_id;
 	return oss.str();
 }
 
 std::string CDiffBuilder::removeFromNextlist(comb_hash_t combhash)
 {
 	ostringstream oss;
-	oss << "/nextlist\tN\t" << combhash.hash;
+	oss << "/\tN\t" << combhash.hash << "\t" << combhash.pl_id;
 	return oss.str();
 }
 

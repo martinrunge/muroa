@@ -176,6 +176,12 @@ CRpc::~CRpc() {
 		{
 			break;
 		}
+		case Cmd::ERROR:
+		{
+			CmdError* err = reinterpret_cast<CmdError*>(cmd);
+			error(err->getCorrespondingJobID(), err->getErrorCode(), err->getDescription());
+			break;
+		}
 		case Cmd::EDIT_MEDIACOL:
 		{
 			CmdEditMediaCol* cmd_emc = reinterpret_cast<CmdEditMediaCol*>(cmd);

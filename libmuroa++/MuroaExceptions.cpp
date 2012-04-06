@@ -23,3 +23,49 @@
 
 #include "MuroaExceptions.h"
 
+MalformedPatchEx::MalformedPatchEx(std::string reason, int line_nr) : m_reason(reason), m_linr_nr(line_nr)
+{
+
+}
+
+MalformedPatchEx::~MalformedPatchEx() throw ()
+{
+
+}
+
+std::string MalformedPatchEx::getReason()
+{
+	return m_reason;
+}
+
+int MalformedPatchEx::getLineNr()
+{
+	return m_linr_nr;
+}
+
+const char* MalformedPatchEx::what() const throw()
+{
+	return m_reason.c_str();
+}
+
+
+rpcError::rpcError(std::string reason) : m_reason(reason)
+{
+
+};
+
+rpcError::~rpcError() throw ()
+{
+
+};
+
+std::string rpcError::getReason()
+{
+	return m_reason;
+}
+
+const char* rpcError::what() const throw()
+{
+	return m_reason.c_str();
+}
+

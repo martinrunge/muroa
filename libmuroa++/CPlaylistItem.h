@@ -25,6 +25,7 @@
 #define CPLAYLISTITEM_H_
 
 #include "IContentItem.h"
+#include "MuroaExceptions.h"
 
 class CMediaItem;
 
@@ -32,7 +33,7 @@ class CPlaylistItem: public IContentItem {
 public:
 	CPlaylistItem(uint32_t mediaItemHash);
 	CPlaylistItem(CRootItem *root_item, CCategoryItem*  parent, int posInParent = -1);
-	CPlaylistItem(CRootItem *root_item, std::string text, CCategoryItem*  parent, int posInParent = -1);
+	CPlaylistItem(CRootItem *root_item, std::string text, CCategoryItem*  parent, int posInParent = -1) throw(MalformedPatchEx);
 	virtual ~CPlaylistItem();
 
 	void setParent(CRootItem *root_item, CCategoryItem*  parent, int posInParent = -1);
@@ -43,10 +44,8 @@ public:
 	std::string serialize(bool asDiff = false);
 
 	inline uint32_t getMediaItemHash() { return m_mediaitem_hash; };
-
 	void setMediaItemHash(uint32_t hash);
 	void setMediaItem(CMediaItem* mediaitem);
-
 
 private:
 	uint32_t m_mediaitem_hash;

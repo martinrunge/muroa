@@ -153,19 +153,25 @@ void CConnection::onEditPlaylist(unsigned  fromRev, unsigned toRev, std::string 
 }
 
 void CConnection::onEditNextlist(unsigned  fromRev, unsigned toRev, std::string nextlistDiff) {
-	if(fromRev == 0) {
-		m_session->getNextlistModel()->deserialize(nextlistDiff);
-	}
-	else {
-		uint32_t knownRev = m_session->getNextlistModel()->getRevision();
-		if( knownRev != fromRev ) {
-			std::ostringstream oss;
-			oss << "editNextlist: Error: got a diff based on rev " << fromRev << " but known rev is " << knownRev;
-			throw MalformedPatchEx(oss.str(), 0);
+	try {
+		if(fromRev == 0) {
+			m_session->getNextlistModel()->deserialize(nextlistDiff);
 		}
-		m_session->getNextlistModel()->patch(nextlistDiff);
+		else {
+			uint32_t knownRev = m_session->getNextlistModel()->getRevision();
+			if( knownRev != fromRev ) {
+				std::ostringstream oss;
+				oss << "editNextlist: Error: got a diff based on rev " << fromRev << " but known rev is " << knownRev;
+				throw MalformedPatchEx(oss.str(), 0);
+			}
+			m_session->getNextlistModel()->patch(nextlistDiff);
+		}
+		m_session->getNextlistModel()->setRevision(toRev);
 	}
-	m_session->getNextlistModel()->setRevision(toRev);
+	catch(MalformedPatchEx& ex)
+	{
+
+	}
 }
 
 void CConnection::play()

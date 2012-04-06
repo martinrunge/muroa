@@ -30,12 +30,14 @@ public:
 	comb_hash() {
 		type = 0;
 		hash = 0;
+		pl_id = 0;
 		path = "";
 		line = -1;
 	};
 
 	uint32_t type;
 	uint32_t hash;
+	uint32_t pl_id;
 	std::string path;
 	int line;
 };

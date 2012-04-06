@@ -71,9 +71,9 @@ public:
 	void addNextlistRev(CRootItem* ri);
 	void addNextlistRev(const std::string& nextlist);
 
-	int addMediaColRevFromDiff(const std::string& mediaColDiff, unsigned diffFromRev) throw(InvalidMsgException);
-	int addPlaylistRevFromDiff(const std::string& playlistDiff, unsigned diffFromRev) throw(InvalidMsgException);
-	int addNextlistRevFromDiff(const std::string& nextlistDiff, unsigned diffFromRev) throw(InvalidMsgException);
+	int addMediaColRevFromDiff(const std::string& mediaColDiff, unsigned diffFromRev) throw(MalformedPatchEx);
+	int addPlaylistRevFromDiff(const std::string& playlistDiff, unsigned diffFromRev) throw(MalformedPatchEx);
+	int addNextlistRevFromDiff(const std::string& nextlistDiff, unsigned diffFromRev) throw(MalformedPatchEx);
 
 	int addNextlistRevFromNextCmd();
 	int addNextlistRevFromPrevCmd();

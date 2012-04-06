@@ -29,13 +29,13 @@
 
 class MalformedPatchEx: public std::exception {
 public:
-	MalformedPatchEx(std::string reason, int line_nr) {};
-	virtual ~MalformedPatchEx() throw () {};
+	MalformedPatchEx(std::string reason, int line_nr);
+	virtual ~MalformedPatchEx() throw ();
 
-	std::string getReason() { return m_reason; };
-	int getLineNr() { return m_linr_nr; };
+	std::string getReason();
+	int getLineNr();
 
-	const char* what() { return m_reason.c_str(); }
+	const char* what() const throw();
 
 private:
 	int m_linr_nr;
@@ -44,12 +44,12 @@ private:
 
 class rpcError: public std::exception {
 public:
-	rpcError(std::string reason) {};
-	virtual ~rpcError() throw () {};
+	rpcError(std::string reason);
+	virtual ~rpcError() throw ();
 
-	std::string getReason() { return m_reason; };
+	std::string getReason();
 
-	const char* what() { return m_reason.c_str(); }
+	const char* what() const throw();
 
 private:
 	std::string m_reason;

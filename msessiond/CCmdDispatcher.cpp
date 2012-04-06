@@ -16,6 +16,12 @@
 #include <cmds/CmdEditPlaylist.h>
 #include <cmds/CmdEditNextlist.h>
 
+#include <CPlaylistItem.h>
+#include <CNextlistItem.h>
+
+#include <CUtils.h>
+
+#include <boost/regex.hpp>
 
 using namespace muroa;
 
@@ -72,7 +78,7 @@ void CCmdDispatcher::incomingCmd(muroa::Cmd* cmd) {
 			// if there was no exception, the diff is ok, send it to all clients
 			m_session->toAll(cmd_em);
 		}
-		catch(MalformedPatchEx ex) {
+		catch(MalformedPatchEx& ex) {
 			CmdError* errMsg = new CmdError(cmd_em->id(), 0, ex.getReason());
 			m_session->sendToInitiator(errMsg, cmd_em->getConnectionID() );
 		}
@@ -85,13 +91,17 @@ void CCmdDispatcher::incomingCmd(muroa::Cmd* cmd) {
 			int current_playlist_rev = m_session->getMaxPlaylistRev();
 			m_session->addPlaylistRevFromDiff(cmd_epl->getDiff(), cmd_epl->getFromRev());
 			// if there was no exception, the diff is ok, send it to all clients
+
+			cmd_epl->setToRev( m_session->getMaxPlaylistRev() );
 			if( current_playlist_rev == 0 ) {
 				cmd_epl->setDiff(m_session->getPlaylist()->serialize());
 			}
-			cmd_epl->setToRev( m_session->getMaxPlaylistRev() );
+			else {
+				addIdToPlaylistDiff(cmd_epl);
+			}
 			m_session->toAll(cmd_epl);
 		}
-		catch(MalformedPatchEx ex) {
+		catch(MalformedPatchEx& ex) {
 			CmdError* errMsg = new CmdError(cmd_epl->id(), 0, ex.getReason());
 			m_session->sendToInitiator(errMsg, cmd_epl->getConnectionID() );
 		}
@@ -110,9 +120,8 @@ void CCmdDispatcher::incomingCmd(muroa::Cmd* cmd) {
 			cmd_enl->setToRev( m_session->getMaxNextlistRev() );
 			m_session->toAll(cmd_enl);
 		}
-		//catch(MalformedPatchEx& ex) {
-		catch(...) {
-			CmdError* errMsg = new CmdError(cmd_enl->id(), 0, ""); //ex.getReason());
+		catch(MalformedPatchEx& ex) {
+			CmdError* errMsg = new CmdError(cmd_enl->id(), 0, ex.getReason());
 			m_session->sendToInitiator(errMsg, cmd_enl->getConnectionID() );
 		}
 		break;
@@ -121,4 +130,86 @@ void CCmdDispatcher::incomingCmd(muroa::Cmd* cmd) {
 
 		break;
 	}
+}
+
+void CCmdDispatcher::addIdToPlaylistDiff(muroa::CmdEditPlaylist* epl_cmd) throw(MalformedPatchEx) {
+	string diff = epl_cmd->getDiff();
+	string output;
+	output.reserve(2 * diff.size());
+
+	istringstream iss(diff);
+
+	CCategoryItem* parent = 0;
+
+	bool new_category = true;
+    boost::regex rx("^@@ -(\\d+),(\\d+)\\s+\\+(\\d+),(\\d+)\\s*@@$");
+    int oldStart(0);
+	int oldLen(0);
+	int newStart(0);
+	int newLen(0);
+
+	int lineNr = 0;
+	int patchLineNr = 0;
+	int chunkSizeSum = 0;
+
+	string line;
+
+	while(!iss.eof()) {
+		getline(iss, line);
+		if(iss.bad()) {
+			cerr << "CRootItem::patch: Error reading lines." << endl;
+		}
+		patchLineNr++;
+
+	    if( line.find("@@") == 0 ) {
+			// diff chunk header
+			boost::cmatch res;
+			boost::regex_search(line.c_str(), res, rx);
+
+			string oldStartStr = res[1];
+			string oldLenStr = res[2];
+			string newStartStr = res[3];
+			string newLenStr = res[4];
+
+			try
+			{
+				oldStart = CUtils::str2long( oldStartStr );
+				oldLen = CUtils::str2long( oldLenStr );
+				newStart = CUtils::str2long( newStartStr );
+				newLen = CUtils::str2long( newLenStr );
+			}
+			catch(std::invalid_argument ex)
+			{
+				throw MalformedPatchEx(ex.what(), lineNr);
+			}
+
+			if(oldLen == 0) oldStart++;
+			lineNr = oldStart + chunkSizeSum;
+
+			chunkSizeSum += newLen - oldLen;
+			output += line + "\n";
+
+		}
+		else if( line.size() > 0 ) {
+			char sign = line[0];
+			string content = line.substr(1, line.size() - 1);
+
+			switch(sign){
+				case '+': //only new lines need attention here.
+				{
+					CRootItem* ri = m_session->getPlaylist();
+					CPlaylistItem* newItem = reinterpret_cast<CPlaylistItem*>(ri->getBase()->getContentItem(lineNr - 1));
+					output += "+/\t";
+					output += newItem->serialize();
+					break;
+				}
+				default:
+					output += line + "\n";
+					break;
+			}
+			lineNr++;
+		}
+	}
+
+	epl_cmd->setDiff(output);
 }
