@@ -216,22 +216,30 @@ int CSession::addMediaColRevFromDiff(const string& mediaColDiff, unsigned diffFr
 }
 
 int CSession::addPlaylistRevFromDiff(const string& playlistDiff, unsigned diffFromRev) throw(MalformedPatchEx) {
+	uint32_t oldrev = getMaxPlaylistRev();
 	CRootItem* base = getRev(m_playlistRevs, diffFromRev, "Can't apply playlist diff based on revision # because that revision is unknown in session '");
 
 	CRootItem* ri = new CRootItem(*base);
 	ri->patch(playlistDiff);
 	addPlaylistRev(ri);
+	uint32_t newrev = getMaxPlaylistRev();
+
+	if(newrev - oldrev == 1) {
+		m_stateDB->updatePlaylistRevsTable(this, oldrev, newrev);
+	}
 }
 
 int CSession::addNextlistRevFromDiff(const string& nextlistDiff, unsigned diffFromRev) throw(MalformedPatchEx) {
+	uint32_t oldrev = getMaxNextlistRev();
 	CRootItem* base = getRev(m_nextlistRevs, diffFromRev, "Can't apply nextlist diff based on revision # because that revision is unknown in session '");
-	try {
-		CRootItem* ri = new CRootItem(*base);
-		ri->patch(nextlistDiff);
-		addNextlistRev(ri);
-	}
-	catch(MalformedPatchEx ex) {
-		cerr<< "MalformedPatchEx: " << ex.what() << endl;
+
+	CRootItem* ri = new CRootItem(*base);
+	ri->patch(nextlistDiff);
+	addNextlistRev(ri);
+
+	uint32_t newrev = getMaxNextlistRev();
+	if(newrev - oldrev == 1) {
+		m_stateDB->updateNextlistRevsTable(this, oldrev, newrev);
 	}
 }
 

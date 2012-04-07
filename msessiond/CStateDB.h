@@ -57,12 +57,13 @@ private:
     void updateMediaItem( CMediaItem* item );
 
     void updatePlaylistItem( int plPos, CPlaylistItem* item, int plRev, int colRev );
-    void updateNextlistItem( int nlPos, CPlaylistItem* item, int nlRev, int plRev );
+    void updateNextlistItem( int nlPos, CNextlistItem* item, int nlRev, int plRev, int colRev );
 
     void createPlaylistRevisionsTable();
     void createNextlistRevisionsTable();
 
     int rowIDofPlRevEntry(int plPos, int colHash, int plRev, int ColRev);
+    int rowIDofNlRevEntry(int nlPos, int colHash, int plHash, int nlRev, int plRev, int ColRev);
     void repairSession(CSession* session);
 
 	sqlite3_stmt *m_updateMediaItemStmt;

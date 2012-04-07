@@ -100,13 +100,18 @@ void CStateDB::saveSession(CSession const * const session) {
 void CStateDB::restoreSession(CSession * const session) {
 	restoreMediaCols(session);
 	restorePlaylists(session);
-	//restoreNextlists(session);
-	repairSession(session);
+	restoreNextlists(session);
+	// repairSession(session);
 }
 
 void CStateDB::updatePlaylistRevsTable(CSession const * const session, int minrev, int maxrev ) {
 	if(minrev == -1) minrev = session->getMinPlaylistRev();
 	if(maxrev == -1) maxrev = session->getMaxPlaylistRev();
+
+	bool found = false;
+	uint32_t maxPlRev = getIntValue("MaxPlaylistRev", found);
+	assert(found);
+
 
 	for(int rev = minrev; rev <= maxrev; rev++) {
 		if(rev != 0) { // rev 0 is an empty dummy revision already created by c-tor.
@@ -122,10 +127,40 @@ void CStateDB::updatePlaylistRevsTable(CSession const * const session, int minre
 			}
 		}
 	}
+
+	if(maxrev > maxPlRev) {
+		setValue("MaxPlaylistRev", maxrev);
+	}
+
 }
 
 void CStateDB::updateNextlistRevsTable(CSession const * const session, int minrev, int maxrev ) {
+	if(minrev == -1) minrev = session->getMinNextlistRev();
+	if(maxrev == -1) maxrev = session->getMaxNextlistRev();
 
+	bool found = false;
+	uint32_t maxNlRev = getIntValue("MaxNextlistRev", found);
+	assert(found);
+
+
+	for(int rev = minrev; rev <= maxrev; rev++) {
+		if(rev != 0) { // rev 0 is an empty dummy revision already created by c-tor.
+			CRootItem* nextlist = session->getNextlist(rev);
+
+			CRootItem::iterator it(nextlist->begin());
+			for(int i=0; it != nextlist->end(); it++, i++ ) {
+				CItemBase* item_b = *it;
+				if(item_b->type() == CItemType::E_NEXTLISTITEM) {
+					CNextlistItem* item = reinterpret_cast<CNextlistItem*>(item_b);
+					updateNextlistItem(i, item, rev, 0, 0);
+				}
+			}
+		}
+	}
+
+	if(maxrev > maxNlRev) {
+		setValue("MaxNextlistRev", maxrev);
+	}
 }
 
 
@@ -279,11 +314,8 @@ void CStateDB::repairSession(CSession* session) {
 
 	CRootItem::iterator it(playlist->begin());
 	for(; it != playlist->end(); it++) {
-
-		CCategoryItem* plci = (*it)->getParent();
-		CCategoryItem* nci = newPlaylist->getCategoryPtr( plci->getPath() );
-
-		CPlaylistItem* plItem = new CPlaylistItem(newPlaylist, nci );
+		CCategoryItem* base = newPlaylist->getBase();
+		CPlaylistItem* plItem = new CPlaylistItem(newPlaylist, base );
 
 		unsigned hash = plItem->getMediaItemHash();
 		CItemBase* item_b = mediaCol->getContentPtr(CItemType::E_MEDIAITEM, hash);
@@ -292,7 +324,7 @@ void CStateDB::repairSession(CSession* session) {
 			unknownItemInPlaylist = true;
 		}
 		else {
-			newPlaylist->addContentItem(plItem, nci);
+			newPlaylist->addContentItem(plItem, base);
 		}
 	}
 
@@ -517,8 +549,51 @@ void CStateDB::updatePlaylistItem( int plPos, CPlaylistItem* item, int plRev, in
 	}
 }
 
-void CStateDB::updateNextlistItem( int nlPos, CPlaylistItem* item, int nlRev, int plRev ) {
+void CStateDB::updateNextlistItem( int nlPos, CNextlistItem* item, int nlRev, int plRev, int colRev ) {
+	int rowid = rowIDofNlRevEntry(nlPos, item->getMediaItemHash(), item->getPlaylistItemHash(), nlRev, plRev, colRev);
+	if(rowid == 0) {  // this entry does not exist yet
+		int retval = sqlite3_bind_int(m_updateNextlistItemStmt, 1, nlPos);
+		if(retval != SQLITE_OK) {
+			cerr << "Error binding value 'plPos' to m_updateNextlistItemStmt statement: " << sqlite3_errmsg(m_db) << endl;
+		}
 
+		retval = sqlite3_bind_int(m_updateNextlistItemStmt, 2, item->getMediaItemHash());
+		if(retval != SQLITE_OK) {
+			cerr << "Error binding value 'mediaItemHash' to m_updateNextlistItemStmt statement: " << sqlite3_errmsg(m_db) << endl;
+		}
+
+		retval = sqlite3_bind_int(m_updateNextlistItemStmt, 3, item->getPlaylistItemHash());
+		if(retval != SQLITE_OK) {
+			cerr << "Error binding value 'playlistItemHash' to m_updateNextlistItemStmt statement: " << sqlite3_errmsg(m_db) << endl;
+		}
+
+		retval = sqlite3_bind_int(m_updateNextlistItemStmt, 4, nlRev);
+		if(retval != SQLITE_OK) {
+			cerr << "Error binding value 'nlRev' to m_updateNextlistItemStmt statement: " << sqlite3_errmsg(m_db) << endl;
+		}
+
+		retval = sqlite3_bind_int(m_updateNextlistItemStmt, 5, plRev);
+		if(retval != SQLITE_OK) {
+			cerr << "Error binding value 'plRev' to m_updateNextlistItemStmt statement: " << sqlite3_errmsg(m_db) << endl;
+		}
+
+		retval = sqlite3_bind_int(m_updateNextlistItemStmt, 6, colRev);
+		if(retval != SQLITE_OK) {
+			cerr << "Error binding value 'colRev' to m_updateNextlistItemStmt statement: " << sqlite3_errmsg(m_db) << endl;
+		}
+
+		do {
+			retval = sqlite3_step( m_updateNextlistItemStmt );
+		}while (retval == SQLITE_ROW);
+
+		if(retval != SQLITE_DONE) {
+			cerr << "Error stepping m_updateNextlistItemStmt: " << sqlite3_errmsg(m_db);
+		}
+		retval = sqlite3_reset( m_updateNextlistItemStmt );
+		if(retval != SQLITE_OK) {
+			cerr << "Error resetting m_updatePlaylistItemStmt statement: " << sqlite3_errmsg(m_db);
+		}
+	}
 }
 
 int CStateDB::rowIDofPlRevEntry(int plPos, int colHash, int plRev, int colRev) {
@@ -570,6 +645,9 @@ int CStateDB::rowIDofPlRevEntry(int plPos, int colHash, int plRev, int colRev) {
 	return rowid;
 }
 
+int CStateDB::rowIDofNlRevEntry(int nlPos, int colHash, int plHash, int nlRev, int plRev, int ColRev) {
+
+}
 
 CPlaylistItem* CStateDB::getPlaylistItemFromStmt(sqlite3_stmt *pStmt, CRootItem* ri) {
 	unsigned hash = sqlite3_column_int(pStmt, 0);
