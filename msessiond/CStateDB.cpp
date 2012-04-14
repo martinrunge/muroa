@@ -651,7 +651,8 @@ int CStateDB::rowIDofNlRevEntry(int nlPos, int colHash, int plHash, int nlRev, i
 
 CPlaylistItem* CStateDB::getPlaylistItemFromStmt(sqlite3_stmt *pStmt, CRootItem* ri) {
 	unsigned hash = sqlite3_column_int(pStmt, 0);
-	CPlaylistItem* item = new CPlaylistItem( hash );
+	unsigned plID = sqlite3_column_int(pStmt, 1);
+	CPlaylistItem* item = new CPlaylistItem( hash, plID );
 	return item;
 }
 
@@ -707,20 +708,23 @@ CNextlistItem* CStateDB::getNextlistItemByPos(int pos, int rev, CRootItem* ri) {
 
 
 void CStateDB::createPlaylistRevisionsTable() {
-	createTable("playlistRevs","(entry_id INTEGER PRIMARY KEY AUTOINCREMENT, plPos INTEGER, colHash INTEGER, plRev INTEGER, ColRev INTEGER, FOREIGN KEY(colHash) REFERENCES collection(hash))");
+	createTable("playlistRevs","(entry_id INTEGER PRIMARY KEY AUTOINCREMENT, plPos INTEGER, colHash INTEGER, plID INTEGER, plRev INTEGER, ColRev INTEGER, FOREIGN KEY(colHash) REFERENCES collection(hash))");
 }
 
 void CStateDB::createNextlistRevisionsTable() {
-	createTable("nextlistRevs","(entry_id INTEGER PRIMARY KEY AUTOINCREMENT, nlPos INTEGER, plPos INTEGER, nlRev INTEGER, plRev INTEGER)");
+	createTable("nextlistRevs","(entry_id INTEGER PRIMARY KEY AUTOINCREMENT, nlPos INTEGER, colHash INTEGER, plID INTEGER, nlRev INTEGER, plRev INTEGER, ColRev INTEGER)");
 }
 
+void CStateDB::createRevisionMatchTable() {
+	createTable("revMatch","(entry_id INTEGER PRIMARY KEY AUTOINCREMENT, colRev INTEGER, plRev INTEGER, nlRev INTEGER)");
+}
 
 
 void CStateDB::prepareUpdatePlaylistItemStmt() {
 	prepareStmt(&m_updatePlaylistItemStmt, "INSERT OR REPLACE INTO playlistRevs " \
-			"( plPos, colHash, plRev, colRev) " \
+			"( plPos, colHash, plID, plRev, colRev) " \
 			" VALUES " \
-		    "(?,?,?,?)");
+		    "(?,?,?,?,?)");
 }
 
 void CStateDB::prepareUpdateMediaItemStmt() {
@@ -756,7 +760,7 @@ void CStateDB::finalizeUpdatePlaylistItemStmt() {
 }
 
 void CStateDB::prepareSelectPlaylistRevStmt() {
-	prepareStmt(&m_selectPlaylistRevStmt, "SELECT rowid FROM playlistRevs WHERE plPos=? AND colHash=? AND plRev=? AND colRev=?");
+	prepareStmt(&m_selectPlaylistRevStmt, "SELECT rowid FROM playlistRevs WHERE plPos=? AND colHash=? AND plID=? AND plRev=? AND colRev=?");
 }
 
 void CStateDB::finalizeSelectPlaylistRevStmt() {
@@ -764,7 +768,7 @@ void CStateDB::finalizeSelectPlaylistRevStmt() {
 }
 
 void CStateDB::prepareSelectPlaylistItemStmt() {
-	prepareStmt(&m_selectPlaylistItemStmt, "SELECT colHash FROM playlistRevs WHERE plPos=? AND plRev=? AND colRev=?");
+	prepareStmt(&m_selectPlaylistItemStmt, "SELECT colHash, plID FROM playlistRevs WHERE plPos=? AND plRev=? AND colRev=?");
 }
 
 void CStateDB::finalizeSelectPlaylistItemStmt() {
@@ -794,5 +798,79 @@ void CStateDB::prepareSelectNextlistRevStmt() {
 void CStateDB::finalizeSelectNextlistRevStmt() {
 	finalizeStmt( &m_selectNextlistRevStmt );
 }
+
+void CStateDB::prepareUpdateRevMatchStmt() {
+	prepareStmt(&m_updateRevMatchStmt, "INSERT OR REPLACE INTO revMatch " \
+			"(colRev, plRev, nlRev) " \
+			"VALUES "\
+			"(?,?,?)");
+}
+
+void CStateDB::finalizeUpdateRevMatchStmt() {
+	finalizeStmt( &m_updateRevMatchStmt );
+}
+
+void CStateDB::prepareColRevForPlRevStmt() {
+	prepareStmt(&m_colRevForPlRevStmt, "SELECT colRev FROM revMatch WHERE plRev=?");
+}
+
+void CStateDB::finmalizeColRevForPlRevStmt() {
+	finalizeStmt(&m_colRevForPlRevStmt);
+}
+
+
+unsigned CStateDB::getColRevForPlRev(unsigned plRev) {
+	int retval;
+	unsigned colRev = 0;
+	retval = sqlite3_bind_int(m_colRevForPlRevStmt, 1, plRev);
+	if(retval != SQLITE_OK) {
+		cerr << "Error binding value 'plRev' to m_colRevForPlRevStmt: " << sqlite3_errmsg(m_db) << endl;
+	}
+
+	int rowid = 0;
+	int num_found = 0;
+	do {
+		retval = sqlite3_step( m_colRevForPlRevStmt );
+		switch(retval) {
+		case SQLITE_ROW:
+			colRev = sqlite3_column_int(m_colRevForPlRevStmt, 1);
+			num_found++;
+ 			break;
+
+		case SQLITE_DONE:
+			// no more rows match search
+			break;
+
+		default:
+			cerr << "Error during step command: " << sqlite3_errmsg(m_db) << endl;
+			break;
+		}
+	}while (retval == SQLITE_ROW);
+
+	if(retval != SQLITE_DONE) {
+		cerr << "Error stepping : getColRevForPlRev" << sqlite3_errmsg(m_db);
+		found = false;
+		hash = 0;
+	}
+
+	retval = sqlite3_reset(m_colRevForPlRevStmt);
+	if(retval != SQLITE_OK) {
+		cerr << "Error resetting m_colRevForPlRevStmt: " << sqlite3_errmsg(m_db);
+	}
+	if (num_found > 0) {
+		found = true;
+		if(num_found > 1) {
+			cerr << "CStateDbBase::getColRevForPlRev ( plRev = " << plRev
+				 << ") found more than once (" << num_found
+				 << ") in state DB." << endl;
+		}
+	}
+	return colRev;
+}
+
+unsigned CStateDB::getColRevForNlRev(unsigned nlRev) {
+
+}
+
 
 }

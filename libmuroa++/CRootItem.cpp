@@ -14,6 +14,7 @@
 
 #include <iostream>
 #include <sstream>
+#include <fstream>
 
 #include <boost/regex.hpp>
 
@@ -168,16 +169,67 @@ void CRootItem::deserialize(std::string text) throw(MalformedPatchEx) {
 			cerr << "CRootItem::deserialize: Error reading lines." << endl;
 		}
 		if( strlen(cline) < 3)  continue;
-
 		IContentItem* contItem = addContentItem(cline);
-
-		// assert( cline[0] != 0 && cline[1] != 0 && cline[2] != 0 );
-
 	}
 }
 
-std::string CRootItem::serialize() {
-	return m_base->serialize();
+void CRootItem::fromFile(std::string filename) throw(MalformedPatchEx) {
+	ifstream ifs(filename);
+	char cline[4096];
+	int lineNr = 0;
+
+	CItemBase* currentCategory = 0;
+
+	while(!ifs.eof()) {
+		ifs.getline(cline, 4096);
+		lineNr++;
+		if(ifs.bad()) {
+			throw MalformedPatchEx("CRootItem::fromFile: Error reading lines.", lineNr);
+		}
+		if(lineNr < 3) {
+			string line(cline);
+			int pos = line.find("=");
+			line = line.substr(pos+1, line.size() - pos - 1);
+			try {
+				uint32_t value = CUtils::str2uint32(line);
+
+				switch(lineNr) {
+				case 1:
+					m_revision= value;
+					break;
+				case 2:
+					m_referenced_mediaCol_rev= value;
+					break;
+				case 3:
+					m_referenced_playlist_rev = value;
+					break;
+				default:
+					break;
+				}
+			}
+			catch(std::invalid_argument ex) {
+				throw MalformedPatchEx(ex.what(), lineNr);
+			}
+
+		}
+		else {
+			if( strlen(cline) < 3)  continue;
+			IContentItem* contItem = addContentItem(cline);
+		}
+	}
+}
+
+std::string CRootItem::serialize(string filename ) {
+	string serialisation = m_base->serialize();
+	if(! filename.empty()) {
+		ofstream ofs(filename);
+		ofs << "revision=" << m_revision << endl;
+		ofs << "referencedMediaColRev=" << m_referenced_mediaCol_rev << endl;
+		ofs << "referencedPlaylistRev=" << m_referenced_playlist_rev << endl;
+		ofs << serialisation;
+		ofs.close();
+	}
+	return serialisation;
 }
 
 string CRootItem::diff(const CRootItem& other) {

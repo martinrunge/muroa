@@ -211,7 +211,6 @@ int CSession::addMediaColRevFromDiff(const string& mediaColDiff, unsigned diffFr
 	}
 	catch(MalformedPatchEx& ex) {
 		if(ri != 0) delete ri;
-
 	}
 }
 

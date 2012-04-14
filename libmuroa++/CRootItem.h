@@ -52,7 +52,8 @@ public:
 
 	CCategoryItem* getBase() const { return m_base; };
 
-	std::string serialize();
+	void fromFile(std::string filename) throw(MalformedPatchEx);
+	std::string serialize(std::string filename = "");
 	void deserialize(std::string text) throw(MalformedPatchEx);
 
 	std::string diff(const CRootItem& other);
@@ -82,6 +83,12 @@ public:
 	inline uint32_t getRevision() const { return m_revision; };
 	inline void setRevision(const uint32_t  rev) { m_revision = rev; };
 
+    uint32_t getReferencedMediaColRev() { return m_referenced_mediaCol_rev; };
+    void setReferencedMediaColRev(uint32_t rev) { m_referenced_mediaCol_rev = rev; };
+
+    uint32_t getReferencedPlaylistRev() { return m_referenced_playlist_rev; };
+    void setReferencedPlaylistRev(uint32_t rev) { m_referenced_playlist_rev = rev; };
+
 private:
 
 	std::map<std::string, CCategoryItem*> m_category_map;
@@ -94,6 +101,8 @@ private:
 	CItemType getItemType(std::string& text);
 
 	uint32_t m_revision;
+    uint32_t m_referenced_mediaCol_rev;
+    uint32_t m_referenced_playlist_rev;
 };
 
 #endif /* CROOTITEM_H_ */

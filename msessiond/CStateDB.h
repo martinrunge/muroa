@@ -62,6 +62,8 @@ private:
     void createPlaylistRevisionsTable();
     void createNextlistRevisionsTable();
 
+    void createRevisionMatchTable();
+
     int rowIDofPlRevEntry(int plPos, int colHash, int plRev, int ColRev);
     int rowIDofNlRevEntry(int nlPos, int colHash, int plHash, int nlRev, int plRev, int ColRev);
     void repairSession(CSession* session);
@@ -101,6 +103,18 @@ private:
 	sqlite3_stmt *m_selectNextlistRevStmt;
 	void prepareSelectNextlistRevStmt();
 	void finalizeSelectNextlistRevStmt();
+
+	sqlite3_stmt *m_updateRevMatchStmt;
+	void prepareUpdateRevMatchStmt();
+	void finalizeUpdateRevMatchStmt();
+
+	sqlite3_stmt *m_colRevForPlRevStmt;
+	void prepareColRevForPlRevStmt();
+	void finmalizeColRevForPlRevStmt();
+	unsigned getColRevForPlRev(unsigned plRev);
+
+	sqlite3_stmt *m_colRevForNlRevStmt;
+	unsigned getColRevForNlRev(unsigned nlRev);
 };
 
 }

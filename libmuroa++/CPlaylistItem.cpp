@@ -88,8 +88,18 @@ CPlaylistItem::CPlaylistItem(CRootItem *root_item, std::string text, CCategoryIt
 	}
 }
 
-CPlaylistItem::CPlaylistItem(uint32_t mediaItemHash) : IContentItem(0, 0, CItemType::E_PLAYLISTITEM),  m_mediaitem_hash(mediaItemHash) {
-	m_hash = m_next_free_id++;
+CPlaylistItem::CPlaylistItem(uint32_t mediaItemHash, uint32_t plID )
+              :IContentItem(0, 0, CItemType::E_PLAYLISTITEM),  m_mediaitem_hash(mediaItemHash)
+{
+	if(plID == 0) {
+		m_hash = m_next_free_id++;
+	}
+	else {
+		m_hash = plID;
+		if( m_next_free_id <= m_hash) {
+			m_next_free_id = m_hash + 1;
+		}
+	}
 	assembleText();
 }
 
