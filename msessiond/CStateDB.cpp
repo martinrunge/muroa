@@ -100,7 +100,7 @@ void CStateDB::saveSession(CSession const * const session) {
 void CStateDB::restoreSession(CSession * const session) {
 	restoreMediaCols(session);
 	restorePlaylists(session);
-	restoreNextlists(session);
+	// restoreNextlists(session);
 	// repairSession(session);
 }
 
@@ -821,6 +821,8 @@ void CStateDB::finmalizeColRevForPlRevStmt() {
 
 unsigned CStateDB::getColRevForPlRev(unsigned plRev) {
 	int retval;
+	bool found = false;
+	uint32_t hash;
 	unsigned colRev = 0;
 	retval = sqlite3_bind_int(m_colRevForPlRevStmt, 1, plRev);
 	if(retval != SQLITE_OK) {

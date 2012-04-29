@@ -19,6 +19,7 @@
 
 class CMsgBase;
 class CCmdDispatcher;
+class CSessionStorage;
 
 namespace muroa {
 
@@ -148,6 +149,8 @@ private:
 
     std::string m_stateDBFilename;
     CStateDB* m_stateDB;
+
+	CSessionStorage* m_sessionStorage;
 
     // boost::asio::io_service& m_io_service;
     CMediaScannerCtrl* m_mediaScanner;

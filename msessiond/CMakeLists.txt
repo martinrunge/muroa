@@ -17,6 +17,7 @@ add_definitions(-D__STDC_CONSTANT_MACROS)
 set( SRCS             sessionEx.cpp
                       CSessionContainer.cpp
                       CSession.cpp
+                      CSessionStorage.cpp
                       CConnection.cpp
                       CRpc.cpp
                       CMediaScannerCtrl.cpp 
@@ -41,6 +42,7 @@ set( SRCS             sessionEx.cpp
 set( HEADERS          sessionEx.h
                       CSessionContainer.h
                       CSession.h
+                      CSessionStorage.h
                       CConnection.h
                       CRpc.h
                       CMediaScannerCtrl.h 

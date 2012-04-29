@@ -186,7 +186,7 @@ void CRootItem::fromFile(std::string filename) throw(MalformedPatchEx) {
 		if(ifs.bad()) {
 			throw MalformedPatchEx("CRootItem::fromFile: Error reading lines.", lineNr);
 		}
-		if(lineNr < 3) {
+		if(lineNr <= 3) {
 			string line(cline);
 			int pos = line.find("=");
 			line = line.substr(pos+1, line.size() - pos - 1);

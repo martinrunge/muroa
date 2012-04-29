@@ -16,6 +16,7 @@
 #include "CMediaScannerCtrl.h"
 #include "CApp.h"
 #include "CStateDB.h"
+#include "CSessionStorage.h"
 
 #include "CCmdDispatcher.h"
 
@@ -45,6 +46,7 @@ CSession::CSession(string name, boost::asio::io_service& io_service) : m_name(na
                                                                       m_minPlaylistRev(0),
                                                                       m_minNextlistRev(0),
                                                                       m_playlistPos(0),
+                                                                      m_sessionStorage(0),
                                                                       m_stateDBFilename("state.db"),
                                                                       m_app(CApp::getInstPtr()){
 
@@ -57,9 +59,13 @@ CSession::CSession(string name, boost::asio::io_service& io_service) : m_name(na
 
 	m_mediaScanner = new CMediaScannerCtrl(this, io_service);
 
-	m_stateDB = new CStateDB(m_stateDBFilename);
-	m_stateDB->open();
-	m_stateDB->restoreSession(this);
+	m_sessionStorage = new CSessionStorage(this);
+	m_sessionStorage->restore();
+
+//	m_stateDB = new CStateDB(m_stateDBFilename);
+//	m_stateDB->open();
+//	m_stateDB->restoreSession(this);
+
 }
 
 
@@ -73,6 +79,7 @@ CSession::CSession( std::string name ) :    m_name(name),
 											m_minNextlistRev(0),
 											m_playlistPos(0),
 											m_stateDB(0),
+											m_sessionStorage(0),
 											m_stateDBFilename("unittest_state.db"),
 											m_app(CApp::getInstPtr()) {
 
@@ -90,6 +97,11 @@ CSession::~CSession() {
 		m_stateDB->close();
 		delete m_stateDB;
 		m_stateDB = 0;
+	}
+
+	if(m_sessionStorage != 0) {
+		delete m_sessionStorage;
+		m_sessionStorage = 0;
 	}
 
 	for(int i = m_minNextlistRev; i <= m_maxNextlistRev; i++) {
@@ -169,7 +181,9 @@ const string CSession::getNextlistDiff(unsigned fromRevision, int toRevision) co
 
 void CSession::addMediaColRev(CRootItem* ri) {
 		m_maxMediaColRev++;
+		ri->setRevision(m_maxMediaColRev);
 		m_mediaColRevs.insert(pair<unsigned, CRootItem*>(m_maxMediaColRev, ri));
+		m_sessionStorage->saveMediaColRevs(m_maxMediaColRev, m_maxMediaColRev);
 }
 
 void CSession::addMediaColRev(const string& mediaCol ) {
@@ -180,7 +194,9 @@ void CSession::addMediaColRev(const string& mediaCol ) {
 
 void CSession::addPlaylistRev(CRootItem* ri) {
 	m_maxPlaylistRev++;
+	ri->setRevision(m_maxPlaylistRev);
 	m_playlistRevs.insert(pair<unsigned, CRootItem*>(m_maxPlaylistRev, ri));
+	m_sessionStorage->savePlaylistRevs(m_maxPlaylistRev, m_maxPlaylistRev);
 }
 
 void CSession::addPlaylistRev(const string& playlist) {
@@ -191,7 +207,9 @@ void CSession::addPlaylistRev(const string& playlist) {
 
 void CSession::addNextlistRev(CRootItem* ri) {
 	m_maxNextlistRev++;
+	ri->setRevision(m_maxNextlistRev);
 	m_nextlistRevs.insert(pair<unsigned, CRootItem*>(m_maxNextlistRev, ri));
+	m_sessionStorage->saveNextlistRevs(m_maxNextlistRev, m_maxNextlistRev);
 }
 
 void CSession::addNextlistRev(const string& nextlist) {
@@ -221,11 +239,11 @@ int CSession::addPlaylistRevFromDiff(const string& playlistDiff, unsigned diffFr
 	CRootItem* ri = new CRootItem(*base);
 	ri->patch(playlistDiff);
 	addPlaylistRev(ri);
-	uint32_t newrev = getMaxPlaylistRev();
-
-	if(newrev - oldrev == 1) {
-		m_stateDB->updatePlaylistRevsTable(this, oldrev, newrev);
-	}
+//	uint32_t newrev = getMaxPlaylistRev();
+//
+//	if(newrev - oldrev == 1) {
+//		m_stateDB->updatePlaylistRevsTable(this, oldrev, newrev);
+//	}
 }
 
 int CSession::addNextlistRevFromDiff(const string& nextlistDiff, unsigned diffFromRev) throw(MalformedPatchEx) {
@@ -235,11 +253,12 @@ int CSession::addNextlistRevFromDiff(const string& nextlistDiff, unsigned diffFr
 	CRootItem* ri = new CRootItem(*base);
 	ri->patch(nextlistDiff);
 	addNextlistRev(ri);
-
-	uint32_t newrev = getMaxNextlistRev();
-	if(newrev - oldrev == 1) {
-		m_stateDB->updateNextlistRevsTable(this, oldrev, newrev);
-	}
+//
+//	uint32_t newrev = getMaxNextlistRev();
+//	if(newrev - oldrev == 1) {
+//		m_stateDB->updateNextlistRevsTable(this, oldrev, newrev);
+//		m_sessionStorage->save();
+//	}
 }
 
 int CSession::addNextlistRevFromNextCmd() {
