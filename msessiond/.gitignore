@@ -2,4 +2,5 @@ state.db
 TestDB.sqlite
 *.log
 *~
+*.mcrev
 /mmscannerin.bin
