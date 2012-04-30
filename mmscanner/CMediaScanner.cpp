@@ -9,6 +9,7 @@
 
 #include "CFsScanner.h"
 #include "CStateDbUpdater.h"
+#include "CMediaColUpdater.h"
 #include <signal.h>
 
 #include <sys/types.h>
@@ -25,7 +26,7 @@
 
 using namespace std;
 
-CMediaScanner::CMediaScanner() : CEventLoop(), m_fs_scanner(0), m_stateDbUpdater(0), m_progress(-1)
+CMediaScanner::CMediaScanner() : CEventLoop(), m_fs_scanner(0), m_stateDbUpdater(0), m_mediaColUpdater(0), m_progress(-1)
 {
 	  m_dbg_file.open("mediascanner.log");
 
@@ -41,6 +42,10 @@ CMediaScanner::~CMediaScanner() {
 	if(m_stateDbUpdater != 0) {
 		delete m_stateDbUpdater;
 		m_stateDbUpdater = 0;
+	}
+	if(m_mediaColUpdater != 0) {
+		delete m_mediaColUpdater;
+		m_mediaColUpdater = 0;
 	}
 	delete m_fs_scanner;
 	m_dbg_file.close();
@@ -66,24 +71,43 @@ bool CMediaScanner::handleMsg(CMsgBase* msg) {
 				m_dbg_file << "other message." << endl;
 				// exit(1);
 				break;
-
+			// new method: text file in a directory
 			case E_MSG_OPEN_DB:
 			{
 				CMsgOpenDb* openDbMsg = reinterpret_cast<CMsgOpenDb*>(msg);
 				std::string path = openDbMsg->getDbPath();
-				m_dbg_file << "open db: " << path << endl;
-				m_stateDbUpdater = new CStateDbUpdater( openDbMsg->getDbPath() );
-				int rc = m_stateDbUpdater->open();
-				if(rc == 0) {
+				m_dbg_file << "open mediaColDir: " << path << endl;
+				try {
+					m_mediaColUpdater = new CMediaColUpdater( openDbMsg->getDbPath() );
+
 					CMsgResponse *respMsg = new CMsgResponse( openDbMsg->getID(), rc, "successfully opened db " + openDbMsg->getDbPath());
 					postEvent(respMsg);
 				}
-				else {
+				catch(string errmsg) {
 					CMsgError *errMsg = new CMsgError(openDbMsg->getID(), rc, "could not open db " + openDbMsg->getDbPath());
 					postEvent(errMsg);
 				}
 				break;
 			}
+
+// old method: use sqlite DB
+//			case E_MSG_OPEN_DB:
+//			{
+//				CMsgOpenDb* openDbMsg = reinterpret_cast<CMsgOpenDb*>(msg);
+//				std::string path = openDbMsg->getDbPath();
+//				m_dbg_file << "open db: " << path << endl;
+//				m_stateDbUpdater = new CStateDbUpdater( openDbMsg->getDbPath() );
+//				int rc = m_stateDbUpdater->open();
+//				if(rc == 0) {
+//					CMsgResponse *respMsg = new CMsgResponse( openDbMsg->getID(), rc, "successfully opened db " + openDbMsg->getDbPath());
+//					postEvent(respMsg);
+//				}
+//				else {
+//					CMsgError *errMsg = new CMsgError(openDbMsg->getID(), rc, "could not open db " + openDbMsg->getDbPath());
+//					postEvent(errMsg);
+//				}
+//				break;
+//			}
 			case E_MSG_SCAN_DIR:
 			{
 				if(m_stateDbUpdater == 0) {
@@ -106,7 +130,8 @@ bool CMediaScanner::handleMsg(CMsgBase* msg) {
 				if( jobID == m_fs_scanner->getJobID()) {     // make sure scandir job finished
 
 					std::vector<CMediaItem*>* collection = m_fs_scanner->finishScan();
-					int nrChanges = m_stateDbUpdater->appendCollectionRev(collection);
+					// int nrChanges = m_stateDbUpdater->appendCollectionRev(collection);
+					int nrChanges = m_mediaColUpdater->update(collection);
 					CMsgFinished *finiNotification = new CMsgFinished(jobID);
 					sendEvent(finiNotification);
 					m_dbg_file << "sent finished notification to parent: [jobID " <<  finiNotification->getJobID() << "]" << endl;

@@ -24,7 +24,6 @@ set( SRCS             sessionEx.cpp
                       CSubProcess.cpp
                       CStateDbBase.cpp
                       CStateDB.cpp
-                      CMediaItemCategorizer.cpp
                       CCmdDispatcher.cpp 
                       
                       ../mmscanner/CMsgBase.cpp
@@ -49,7 +48,6 @@ set( HEADERS          sessionEx.h
                       CSubProcess.h
                       CStateDbBase.h
                       CStateDB.h
-                      CMediaItemCategorizer.h 
                       CCmdDispatcher.h 
                        
                       ../mmscanner/CMsgBase.h
@@ -106,7 +104,6 @@ include ( ${QT_USE_FILE} )
 set(unittests_SRCS     unittest/SessionTest.cpp
                        unittest/CFakeMediaCollection.cpp 
                        unittest/CDecoderTest.cpp 
-                       unittest/CCategorizerTest.cpp
                        # unittest/CMediaFileTest.cpp 
                        unittest/CDataBaseTest.cpp
                        # unittest/CTimeTest.cpp
@@ -116,13 +113,14 @@ set(unittests_SRCS     unittest/SessionTest.cpp
                        ../mmscanner/CFsScanner.cpp
                        ../mmscanner/CMediaScanner.cpp
                        ../mmscanner/CEventLoop.cpp
+                       ../mmscanner/CMediaItemCategorizer.cpp
                        )
 
 set(unittests_HEADERS  unittest/CFakeMediaCollection.h 
                        unittest/CDecoderTest.h
                        # unittest/CMediaFileTest.h 
                        unittest/CDataBaseTest.h
-                       unittest/CCategorizerTest.h
+                       
                        # unittest/CTimeTest.h
                        # unittest/CSubProcessTest.h
                        # unittest/CMediaScannerTest.h
@@ -130,6 +128,7 @@ set(unittests_HEADERS  unittest/CFakeMediaCollection.h
                        ../mmscanner/CFsScanner.h
                        ../mmscanner/CMediaScanner.h
                        ../mmscanner/CEventLoop.h
+                       ../mmscanner/CMediaItemCategorizer.h
                        )
                                    
 ADD_EXECUTABLE(msessiondtest ${unittests_SRCS} ${unittests_HEADERS} ${SRCS} ${HEADERS} )

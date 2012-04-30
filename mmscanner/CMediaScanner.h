@@ -21,6 +21,7 @@
 class CMsgBase;
 class CFsScanner;
 class CStateDbUpdater;
+class CMediaColUpdater;
 
 class CMediaScanner : public CEventLoop {
 	friend class CMediaScannerTest;
@@ -35,6 +36,7 @@ private:
 
 	CFsScanner* m_fs_scanner;
 	CStateDbUpdater* m_stateDbUpdater;
+	CMediaColUpdater* m_mediaColUpdater;
 //	std::ofstream m_dbg_file;
 
 	int m_progress;

@@ -11,8 +11,8 @@
 #include "../../mmscanner/CStateDbUpdater.h"
 #include "../../mmscanner/CFsScanner.h"
 #include "../../mmscanner/CMediaScanner.h"
+#include "../../mmscanner/CMediaItemCategorizer.h"
 #include <CSession.h>
-#include <CMediaItemCategorizer.h>
 #include <CRootItem.h>
 #include <CMediaItem.h>
 
