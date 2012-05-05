@@ -141,10 +141,11 @@ void CSessionStorage::restoreRootItemRevs( string subdir_name ) {
 			try {
 				string revNrStr = dir_it->path().stem().string();
 				unsigned long revNr = CUtils::str2uint32(revNrStr);
-				maxRev = (revNr > maxRev) ? revNr : maxRev;
-				minRev = (revNr < minRev) ? revNr : minRev;
-
-				filenames.insert( pair<unsigned long, string>(revNr, dir_it->path().string()));
+				if(revNr != 0) { // 0 is empty dummy revision, do not load or save it!
+					maxRev = (revNr > maxRev) ? revNr : maxRev;
+					minRev = (revNr < minRev) ? revNr : minRev;
+					filenames.insert( pair<unsigned long, string>(revNr, dir_it->path().string()));
+				}
 			}
 			catch(invalid_argument& ex) {
 
@@ -153,13 +154,18 @@ void CSessionStorage::restoreRootItemRevs( string subdir_name ) {
 		dir_it++;
 	}
 
-	// only use continous ranges. If there are gaps, we use revisions from the upper most gap
+	// only use continuous ranges. If there are gaps, we use revisions from the upper most gap
 	// to maxRev.
 	unsigned long usableMin = maxRev;
 
 	// find upper most gap
 	for(unsigned long i = maxRev; i >= minRev && filenames.find(i) != filenames.end(); i--) {
 		usableMin = i;
+	}
+
+	if(usableMin == 0 && maxRev == 0) {
+		// if no saved revision were found, exit here. Do no try to load revision 0.
+		return;
 	}
 
 	if(subdir_name.compare(mediaColSubdir) == 0) {

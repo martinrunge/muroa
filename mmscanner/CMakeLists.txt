@@ -18,6 +18,7 @@ set(SRCS     mediascanner.cpp
              CFsScanner.cpp
              CStateDbUpdater.cpp
              CMediaColUpdater.cpp
+             CMediaItemCategorizer.cpp
              # CMediaItem.cpp 
              CMsgBase.cpp
              CMsgError.cpp
@@ -38,6 +39,7 @@ set( HEADER  CMediaScanner.h
              CFsScanner.h
              CStateDbUpdater.h
              CMediaColUpdater.h
+             CMediaItemCategorizer.h
              # CMediaItem.h 
              CMsgBase.h
              CMsgError.h

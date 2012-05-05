@@ -15,13 +15,12 @@ class CRootItem;
 
 namespace muroa {
 
-
 class CMediaItemCategorizer {
 public:
 	CMediaItemCategorizer();
 	virtual ~CMediaItemCategorizer();
 
-	CRootItem* categorize(std::vector<CMediaItem*> *mItems );
+	static CRootItem* categorize(std::vector<CMediaItem*> *mItems );
 };
 
 } /* namespace muroa */

@@ -110,6 +110,7 @@ set(unittests_SRCS     unittest/SessionTest.cpp
                        # unittest/CSubProcessTest.cpp
                        # unittest/CMediaScannerTest.cpp
                        ../mmscanner/CStateDbUpdater.cpp
+                       ../mmscanner/CMediaColUpdater.cpp
                        ../mmscanner/CFsScanner.cpp
                        ../mmscanner/CMediaScanner.cpp
                        ../mmscanner/CEventLoop.cpp
@@ -125,6 +126,7 @@ set(unittests_HEADERS  unittest/CFakeMediaCollection.h
                        # unittest/CSubProcessTest.h
                        # unittest/CMediaScannerTest.h
                        ../mmscanner/CStateDbUpdater.h
+                       ../mmscanner/CMediaColUpdater.h
                        ../mmscanner/CFsScanner.h
                        ../mmscanner/CMediaScanner.h
                        ../mmscanner/CEventLoop.h

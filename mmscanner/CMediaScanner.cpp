@@ -131,13 +131,13 @@ bool CMediaScanner::handleMsg(CMsgBase* msg) {
 
 					std::vector<CMediaItem*>* collection = m_fs_scanner->finishScan();
 					// int nrChanges = m_stateDbUpdater->appendCollectionRev(collection);
-					int nrChanges = m_mediaColUpdater->update(collection);
+					unsigned newRev = m_mediaColUpdater->update(collection);
 					CMsgFinished *finiNotification = new CMsgFinished(jobID);
 					sendEvent(finiNotification);
 					m_dbg_file << "sent finished notification to parent: [jobID " <<  finiNotification->getJobID() << "]" << endl;
-					m_dbg_file << "scan collection: num changes: " <<  nrChanges << endl;
+					m_dbg_file << "scan collection: new revision: " <<  newRev << endl;
 
-					if( nrChanges > 0 ) {
+					if( newRev > 0 ) {
 						bool found;
 						int minRev = m_stateDbUpdater->getIntValue("MinMediaColRev", found);
 						m_dbg_file << "MinMediaColRev found" << found << " :" << minRev <<endl;

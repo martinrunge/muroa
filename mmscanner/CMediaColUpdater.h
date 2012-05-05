@@ -11,6 +11,8 @@
 #include <string>
 #include <vector>
 
+#include "boost/filesystem/path.hpp"
+
 class CMediaItem;
 
 class CMediaColUpdater {
@@ -22,6 +24,10 @@ public:
 
 private:
 	std::string m_mediaColDir;
+	boost::filesystem::path m_mediaColPath;
+
+	static const std::string mcrev_file_extension;
+
 };
 
 #endif /* CMEDIACOLUPDATER_H_ */
