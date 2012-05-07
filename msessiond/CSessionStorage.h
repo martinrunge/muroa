@@ -32,6 +32,9 @@ public:
 
 	void cleanup();
 
+	boost::filesystem::path getMediaColPath();
+	static std::string getMcrevFileExtension() { return mcrev_file_extension; };
+
 private:
 	muroa::CApp* m_app;
 	muroa::CSession* m_session;

@@ -56,8 +56,9 @@ int CMediaColUpdater::update(vector<CMediaItem*>* newCol) {
 	}
 	ostringstream maxRevFnOss;
 	maxRevFnOss << maxRev << mcrev_file_extension;
+	path maxRevPath = m_mediaColPath/maxRevFnOss.str();
 	CRootItem* maxRevRi = new CRootItem();
-	maxRevRi->fromFile( maxRevFnOss.str() );
+	maxRevRi->fromFile( maxRevPath.string());
 
 	unsigned newRev = maxRev + 1;
 	ri->setRevision(maxRev);
@@ -72,7 +73,8 @@ int CMediaColUpdater::update(vector<CMediaItem*>* newCol) {
 
 	ostringstream oss;
 	oss << newRev << mcrev_file_extension;
-	ri->deserialize(oss.str());
+	path newRevPath = m_mediaColPath/oss.str();
+	ri->serialize(newRevPath.string());
 	delete maxRevRi;
 	delete ri;
 

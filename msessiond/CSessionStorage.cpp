@@ -125,6 +125,10 @@ void CSessionStorage::cleanup() {
 
 }
 
+path CSessionStorage::getMediaColPath() {
+	return m_storage_path/mediaColSubdir;
+}
+
 void CSessionStorage::restoreRootItemRevs( string subdir_name ) {
 
 	unsigned long minRev = ULONG_MAX;

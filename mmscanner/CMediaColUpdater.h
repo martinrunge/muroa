@@ -21,6 +21,7 @@ public:
 	virtual ~CMediaColUpdater();
 
 	int update(std::vector<CMediaItem*>* newCol);
+	boost::filesystem::path getMediaColPath() { return m_mediaColPath; };
 
 private:
 	std::string m_mediaColDir;

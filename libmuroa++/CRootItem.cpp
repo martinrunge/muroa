@@ -146,8 +146,8 @@ void CRootItem::setContentPtr(const CItemType& type, IContentItem* ptr, const ui
 	ret = content_map->insert(pair<uint32_t, IContentItem*>(hash, ptr));
 	if (ret.second==false)
 	{
-	    std::cout << "element 'z' already existed";
-	    std::cout << " with a value of " << ret.first->second << std::endl;
+	    std::cerr << "element 'z' already existed";
+	    std::cerr << " with a value of " << ret.first->second << std::endl;
 	}
 }
 
@@ -163,10 +163,11 @@ void CRootItem::deserialize(std::string text) throw(MalformedPatchEx) {
 
 	CItemBase* currentCategory = 0;
 
-	while(!iss.eof()) {
+	while(!iss.eof() && !iss.fail()) {
 		iss.getline(cline, 4096);
-		if(iss.bad()) {
+		if(iss.fail()) {
 			cerr << "CRootItem::deserialize: Error reading lines." << endl;
+			return;
 		}
 		if( strlen(cline) < 3)  continue;
 		IContentItem* contItem = addContentItem(cline);
@@ -180,12 +181,9 @@ void CRootItem::fromFile(std::string filename) throw(MalformedPatchEx) {
 
 	CItemBase* currentCategory = 0;
 
-	while(!ifs.eof()) {
+	while(!ifs.eof() && !ifs.fail()) {
 		ifs.getline(cline, 4096);
 		lineNr++;
-		if(ifs.bad()) {
-			throw MalformedPatchEx("CRootItem::fromFile: Error reading lines.", lineNr);
-		}
 		if(lineNr <= 3) {
 			string line(cline);
 			int pos = line.find("=");
@@ -414,8 +412,8 @@ void CRootItem::setCategoryPtr(std::string path, CCategoryItem* itemPtr) {
 	ret = m_category_map.insert(std::pair<std::string,CCategoryItem*>(path, itemPtr));
 	if (ret.second==false)
 	{
-	    std::cout << "element 'z' already existed";
-	    std::cout << " with a value of " << ret.first->second << std::endl;
+	    std::cerr << "element 'z' already existed";
+	    std::cerr << " with a value of " << ret.first->second << std::endl;
 	}
 }
 

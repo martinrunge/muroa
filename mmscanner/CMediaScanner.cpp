@@ -110,7 +110,7 @@ bool CMediaScanner::handleMsg(CMsgBase* msg) {
 //			}
 			case E_MSG_SCAN_DIR:
 			{
-				if(m_stateDbUpdater == 0) {
+				if(m_mediaColUpdater == 0) {
 					// no MsgOpenDB received yet -> scan not possible
 					throw CApiMisuseException("State DB not opened yet.");
 				}
@@ -139,13 +139,7 @@ bool CMediaScanner::handleMsg(CMsgBase* msg) {
 
 					if( newRev > 0 ) {
 						bool found;
-						int minRev = m_stateDbUpdater->getIntValue("MinMediaColRev", found);
-						m_dbg_file << "MinMediaColRev found" << found << " :" << minRev <<endl;
-						assert(found);
-						int maxRev = m_stateDbUpdater->getIntValue("MaxMediaColRev", found);
-						m_dbg_file << "MaxMediaColRev found" << found << " :" << maxRev <<endl;
-						assert(found);
-						CMsgCollectionChanged* colChanged = new CMsgCollectionChanged( maxRev, minRev, maxRev );
+						CMsgCollectionChanged* colChanged = new CMsgCollectionChanged( newRev );
 						sendEvent(colChanged);
 						m_dbg_file << "sent collectionChanged notification to parent." << endl;
 					}

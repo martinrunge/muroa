@@ -309,7 +309,7 @@ void CSession::scanCollection(CConnection* initiator, uint32_t jobID) {
 	m_job_initiators.insert(std::pair<uint32_t, CConnection*>(jobID, initiator));
 
 	m_mediaScanner->start();
-	CMsgOpenDb* dbmsg = new CMsgOpenDb( getProperty("stateDBfile", "state.db") );
+	CMsgOpenDb* dbmsg = new CMsgOpenDb( getProperty("sessions_storage_dir", "./") + getName() + "/mediacol" );
 	m_mediaScanner->sendMsg(dbmsg);
 	addOutstandingMsg(dbmsg);
 
@@ -348,7 +348,12 @@ void CSession::jobFinished(uint32_t jobID) {
 }
 
 void CSession::collectionChanged(uint32_t newRev, uint32_t minRev, uint32_t maxRev) {
-	CRootItem* newMediaColRev = m_stateDB->getMediaColRev(newRev);
+	ostringstream oss;
+
+	oss << m_sessionStorage->getMediaColPath().string() << "/" << newRev << m_sessionStorage->getMcrevFileExtension();
+	// CRootItem* newMediaColRev = m_stateDB->getMediaColRev(newRev);
+	CRootItem* newMediaColRev = new CRootItem();
+	newMediaColRev->fromFile(oss.str());
 
 	unsigned currentRev = m_maxMediaColRev;
 	CRootItem* currentMediaCol = m_mediaColRevs[currentRev];
