@@ -18,6 +18,11 @@ public:
 	virtual ~CmdPlay();
 };
 
+class CmdPause : public Cmd {
+public:
+	CmdPause();
+	virtual ~CmdPause();
+};
 
 
 class CmdStop : public Cmd {

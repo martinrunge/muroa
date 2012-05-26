@@ -17,6 +17,7 @@ public:
 
 	enum type_t {
 		PLAY,
+		PAUSE,
 		STOP,
 		NEXT,
 		PREV,

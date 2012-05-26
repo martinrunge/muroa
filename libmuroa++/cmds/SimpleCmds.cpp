@@ -18,6 +18,13 @@ CmdPlay::~CmdPlay() {
 	// TODO Auto-generated destructor stub
 }
 
+CmdPause::CmdPause() : Cmd(Cmd::PAUSE) {
+	// TODO Auto-generated constructor stub
+}
+
+CmdPause::~CmdPause() {
+	// TODO Auto-generated destructor stub
+}
 
 
 CmdStop::CmdStop() : Cmd(Cmd::STOP) {

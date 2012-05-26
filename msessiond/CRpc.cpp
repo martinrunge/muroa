@@ -55,22 +55,32 @@ CRpc::~CRpc() {
 
     void CRpc::onPlay()
     {
+    	CmdPlay* cmd = new CmdPlay();
+    	m_connection->incomingCmd(cmd);
     }
 
     void CRpc::onPause()
     {
+    	CmdPause* cmd = new CmdPause();
+    	m_connection->incomingCmd(cmd);
     }
 
     void CRpc::onStop()
     {
+    	CmdStop* cmd = new CmdStop();
+    	m_connection->incomingCmd(cmd);
     }
 
     void CRpc::onNext()
     {
+    	CmdNext* cmd = new CmdNext();
+    	m_connection->incomingCmd(cmd);
     }
 
     void CRpc::onPrev()
     {
+    	CmdPrev* cmd = new CmdPrev();
+    	m_connection->incomingCmd(cmd);
     }
 
     void CRpc::onStateChanged(int newState)
