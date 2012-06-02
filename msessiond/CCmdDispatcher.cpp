@@ -36,18 +36,27 @@ void CCmdDispatcher::incomingCmd(muroa::Cmd* cmd) {
 
 	case Cmd::PLAY:
 	{
+		m_session->play();
+		break;
+	}
+	case Cmd::PAUSE:
+	{
+		m_session->pause();
 		break;
 	}
 	case Cmd::STOP:
 	{
+		m_session->stop();
 		break;
 	}
 	case Cmd::NEXT:
 	{
+		m_session->addNextlistRevFromNextCmd();
 		break;
 	}
 	case Cmd::PREV:
 	{
+		m_session->addNextlistRevFromPrevCmd();
 		break;
 	}
 	case Cmd::ERROR:

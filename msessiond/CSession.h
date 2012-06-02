@@ -12,14 +12,22 @@
 #include <vector>
 #include <set>
 #include <map>
+#include <queue>
 #include <CConnection.h>
 #include <CRootItem.h>
+
+#include <mediaprocessing/CStream.h>
+
+#include <boost/asio.hpp>
 
 #include "sessionEx.h"
 
 class CMsgBase;
 class CCmdDispatcher;
 class CSessionStorage;
+
+class CPlaylistItem;
+class CNextlistItem;
 
 namespace muroa {
 
@@ -29,13 +37,21 @@ class CMediaScannerCtrl;
 class CApp;
 class CStateDB;
 
+
 class CSession : boost::noncopyable {
 public:
 	CSession(std::string name, boost::asio::io_service& io_service);
- 	CSession( std::string name );
+ 	//CSession( std::string name );
 	virtual ~CSession();
 
+	inline boost::asio::io_service& getIoService() {return m_io_service; };
 	std::string getName() { return m_name; };
+
+	void play();
+	void pause();
+	void stop();
+
+	CMediaItem* getCurrentMediaItem() throw(InvalidMsgException);
 
 	void addConnection(CConnection* ptr);
 	void removeConnection(CConnection* ptr);
@@ -93,6 +109,7 @@ public:
 	void toAll( Cmd* cmd );
 	void sendToInitiator(Cmd* cmd, unsigned connId);
 	void incomingCmd(Cmd*  cmd, CConnection* initiator);
+	void postIncomingCmd(Cmd* cmd);
 
 	std::string getProperty(std::string key, std::string defaultVal = "");
 	void setProperty(std::string key, std::string val);
@@ -114,6 +131,7 @@ private:
 			          const unsigned rev,
 			          const std::string& message) const throw(InvalidMsgException);
 
+	boost::asio::io_service& m_io_service;
 
 	// CTcpServer* m_tcp_server;
 	std::string m_name;
@@ -150,6 +168,8 @@ private:
     std::string m_stateDBFilename;
     CStateDB* m_stateDB;
 
+    CStream m_stream;
+
 	CSessionStorage* m_sessionStorage;
 
     // boost::asio::io_service& m_io_service;
@@ -159,6 +179,11 @@ private:
 
     CApp* m_app;
     std::string privatePropertyKey(std::string key);
+
+    void dequeueCmd();
+    std::queue<Cmd*> m_cmd_queue;
+
+    void dumpLookupErrorToLog(std::string descr, CPlaylistItem* plItem, CNextlistItem* nlItem);
 };
 
 } /* namespace muroa */

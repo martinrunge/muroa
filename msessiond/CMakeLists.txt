@@ -4,11 +4,16 @@ set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake" ${CMAKE_MODULE_PATH})
 
 set(VERBOSE 1)
 
+find_package(PkgConfig)
+
+
 set(Boost_USE_STATIC_LIBS   ON )
 set(Boost_USE_MULTITHREADED ON )
 find_package( Boost 1.36.0 COMPONENTS filesystem system regex REQUIRED )
 find_package( Sqlite REQUIRED )
 find_package( TagLib REQUIRED )
+find_package ( ALSA REQUIRED )
+
 
 # add_subdirectory(unittest)
 
@@ -35,9 +40,14 @@ set( SRCS             sessionEx.cpp
                       ../mmscanner/CMsgOpenDb.cpp
                       ../mmscanner/CMsgScanDir.cpp
                       ../mmscanner/CMsgCollectionChanged.cpp
-              
-                      )
-                    
+                      
+                      mediaprocessing/IAudioIO.cpp
+                      mediaprocessing/CAudioIOAlsa.cpp
+                      mediaprocessing/CAudioIOlibao.cpp
+                      mediaprocessing/CDecoder.cpp
+                      mediaprocessing/CStream.cpp  ) 
+                  
+
 set( HEADERS          sessionEx.h
                       CSessionContainer.h
                       CSession.h
@@ -59,8 +69,14 @@ set( HEADERS          sessionEx.h
                       ../mmscanner/CMsgOpenDb.h
                       ../mmscanner/CMsgScanDir.h
                       ../mmscanner/CMsgCollectionChanged.h
+                      
+                      mediaprocessing/IAudioIO.h
+                      mediaprocessing/CAudioIOAlsa.h
+                      mediaprocessing/CAudioIOlibao.h
+                      mediaprocessing/CDecoder.h
+                      mediaprocessing/CStream.h
                       )                    
-  
+
 
 include_directories(${SOURCE_DIR} ${Boost_INCLUDE_DIRS} ${SQLITE_INCLUDE_DIR} 
                     ${CMAKE_SOURCE_DIR} ${CMAKE_SOURCE_DIR}/../libmuroad ${CMAKE_SOURCE_DIR}/../libmuroa++) 
@@ -77,6 +93,11 @@ TARGET_LINK_LIBRARIES(msessiond    muroad
                                    muroa++
                                    ${Boost_LIBRARIES} 
                                    ${SQLITE_LIBRARIES}
+                                   avformat
+                                   avcodec
+                                   avutil 
+                                   ${ALSA_LIBRARY}
+                                   ao
                                    xdiff
                                    log4cplus
                                    )
@@ -150,7 +171,8 @@ TARGET_LINK_LIBRARIES(msessiondtest  cppunit
                                      avahi-qt4
                                      avformat
                                      avcodec
-                                     avutil  
+                                     avutil 
+                                     ao 
                                      qxcppunitd 
                                      qxrunnerd
                                      )

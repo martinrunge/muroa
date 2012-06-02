@@ -9,6 +9,7 @@
 #define CDATABASETEST_H_
 
 #include <cppunit/extensions/HelperMacros.h>
+#include <boost/asio.hpp>
 
 namespace muroa {
 class CStateDB;
@@ -67,6 +68,8 @@ private:
 	void prepareSession();
 	void preparePlaylist();
 	void prepareNextlist();
+
+	boost::asio::io_service m_io_service;
 
 	static muroa::CSession* m_session;
 	static unsigned m_testHash;

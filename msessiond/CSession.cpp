@@ -12,6 +12,10 @@
 #include <cmds/SimpleCmds.h>
 #include <cmds/CmdEditMediaCol.h>
 
+#include <IContentItem.h>
+#include <CNextlistItem.h>
+#include <CPlaylistItem.h>
+
 #include <CTcpServer.h>
 #include "CMediaScannerCtrl.h"
 #include "CApp.h"
@@ -38,17 +42,19 @@ namespace muroa {
  * All connections that belong to a session \b must use the same io_service!!!
  *
  */
-CSession::CSession(string name, boost::asio::io_service& io_service) : m_name(name),
-                                                                      m_maxMediaColRev(0),
-                                                                      m_maxPlaylistRev(0),
-                                                                      m_maxNextlistRev(0),
-                                                                      m_minMediaColRev(0),
-                                                                      m_minPlaylistRev(0),
-                                                                      m_minNextlistRev(0),
-                                                                      m_playlistPos(0),
-                                                                      m_sessionStorage(0),
-                                                                      m_stateDBFilename("state.db"),
-                                                                      m_app(CApp::getInstPtr()){
+CSession::CSession(string name, boost::asio::io_service& io_service) : m_io_service(io_service),
+		                                                               m_name(name),
+                                                                       m_maxMediaColRev(0),
+                                                                       m_maxPlaylistRev(0),
+                                                                       m_maxNextlistRev(0),
+                                                                       m_minMediaColRev(0),
+                                                                       m_minPlaylistRev(0),
+                                                                       m_minNextlistRev(0),
+                                                                       m_playlistPos(0),
+                                                                       m_sessionStorage(0),
+                                                                       m_stateDBFilename("state.db"),
+                                                                       m_stream(this),
+                                                                       m_app(CApp::getInstPtr()) {
 
 	// all thee collection have an empty revision 0!
 	m_mediaColRevs[m_maxMediaColRev] = new CRootItem();
@@ -70,7 +76,8 @@ CSession::CSession(string name, boost::asio::io_service& io_service) : m_name(na
 
 
 // this c-tor is intended for unittest only
-CSession::CSession( std::string name ) :    m_name(name),
+/*CSession::CSession( std::string name ) :
+		                                    m_name(name),
 											m_maxMediaColRev(0),
 											m_maxPlaylistRev(0),
 											m_maxNextlistRev(0),
@@ -88,7 +95,7 @@ CSession::CSession( std::string name ) :    m_name(name),
 	m_playlistRevs[m_maxPlaylistRev] = new CRootItem();
 	m_nextlistRevs[m_maxNextlistRev] = new CRootItem();
 
-}
+} */
 
 CSession::~CSession() {
 
@@ -118,6 +125,49 @@ CSession::~CSession() {
 	delete m_cmdDispatcher;
 
 }
+
+void CSession::play()
+{
+	m_stream.play();
+}
+
+void CSession::pause()
+{
+	m_stream.pause();
+}
+
+void CSession::stop()
+{
+	m_stream.stop();
+}
+
+CMediaItem* CSession::getCurrentMediaItem() throw(InvalidMsgException)
+{
+	CRootItem* curNextlist = getNextlist();
+	IContentItem* citem1 = curNextlist->getBase()->getContentItem(0);  // first element always there
+	if(!citem1) {
+		throw InvalidMsgException("Nextlist is empty. At least current playlist position must be in there. Playlist empty?");
+	}
+	else {
+		assert(citem1->type() == CItemType::E_NEXTLISTITEM);
+		CNextlistItem* nlItem = reinterpret_cast<CNextlistItem*>(citem1);
+		// nlItem->getPlaylistItemHash() nlItem->getHash();
+
+		CRootItem* curMediaCol = getMediaCol();
+		IContentItem* citem2 = curMediaCol->getContentPtr(CItemType::E_MEDIAITEM, nlItem->getMediaItemHash());
+		if(!citem2) {
+			dumpLookupErrorToLog( "Error looking up MediaItem in media collection by hash provided by nextlistItem.", 0, nlItem );
+			throw InvalidMsgException("Error: Selected Song not found in media collection");
+		}
+		else {
+			assert(citem2->type() == CItemType::E_MEDIAITEM);
+			CMediaItem* mItem = reinterpret_cast<CMediaItem*>(citem2);
+			return mItem;
+		}
+	}
+	return 0;
+}
+
 
 void CSession::addConnection(CConnection* ptr) {
 	m_connections.insert(ptr);
@@ -385,9 +435,22 @@ void CSession::reportError(uint32_t jobID, int32_t errCode, string message) {
 }
 
 void CSession::incomingCmd(Cmd*  cmd, CConnection* initiator) {
-	assert(m_job_initiators.find(cmd->id()) == m_job_initiators.end());  // this job ID should be new
-	m_job_initiators[cmd->id()] = initiator;
+	if(initiator != 0) {
+		assert(m_job_initiators.find(cmd->id()) == m_job_initiators.end());  // this job ID should be new
+		m_job_initiators[cmd->id()] = initiator;
+	}
 	m_cmdDispatcher->incomingCmd(cmd);
+}
+
+void CSession::postIncomingCmd(Cmd* cmd) {
+	m_cmd_queue.push(cmd);
+	m_io_service.post( boost::bind(&CSession::dequeueCmd, this) );
+}
+
+void CSession::dequeueCmd() {
+	Cmd* cmd = m_cmd_queue.front();
+	m_cmd_queue.pop();
+	incomingCmd(cmd, 0);
 }
 
 void CSession::sendToInitiator(Cmd* cmd, unsigned connId) {
@@ -507,6 +570,20 @@ void CSession::setClientCmdIdBySubprocessCmdID(uint32_t subprocess_cmd_id, CConn
 	client_job_t client(initiator, client_cmd_id);
 	pair<uint32_t, client_job_t > entry(subprocess_cmd_id, client);
 	m_subprocess_job_by_cmdID.insert(entry);
+}
+
+void CSession::dumpLookupErrorToLog(std::string descr, CPlaylistItem* plItem, CNextlistItem* nlItem) {
+	ostringstream oss;
+
+	oss << "CSession::dumpLookupErrorToLog: " << descr << endl;
+	if(nlItem) {
+		oss << "NextlistItem: " << nlItem->serialize() << endl;
+	}
+	if(plItem) {
+		oss << "PlaylistItem: " << plItem->serialize() << endl;
+	}
+	oss << "MediaCol: " << getMediaCol()->serialize() << endl;
+	LOG4CPLUS_ERROR(CApp::getInstPtr()->logger(), oss.str());
 }
 
 } /* namespace muroa */

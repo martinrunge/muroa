@@ -55,7 +55,6 @@ void CDataBaseTest::setUp()
 	m_stateDbUpdater = new CStateDbUpdater( dbname );
     m_fsScanner = new CFsScanner( m_mediaScanner );
     m_fakeCollection = new CFakeMediaCollection(".");
-
 }
 
 void CDataBaseTest::tearDown()
@@ -65,7 +64,6 @@ void CDataBaseTest::tearDown()
 	delete m_stateDbUpdater;
 	delete m_stateDB;
     delete m_mediaScanner;
-
 }
 
 void CDataBaseTest::readMediaItem()
@@ -184,7 +182,7 @@ void CDataBaseTest::prepareSession() {
 	m_testHashPos = mItems->size() / 2;
 	m_testHash = mItems->at(m_testHashPos)->getHash();
 
-	m_session = new muroa::CSession("unittest");
+	m_session = new muroa::CSession("unittest", m_io_service);
 
 	m_categorizer = new muroa::CMediaItemCategorizer();
 
@@ -255,7 +253,7 @@ void CDataBaseTest::restoreSession() {
 	muroa::CSession* restoredSession;
 	m_stateDB->open();
 	try {
-		restoredSession = new muroa::CSession("unittest");
+		restoredSession = new muroa::CSession("unittest", m_io_service);
 		m_stateDB->restoreSession(restoredSession);
 	}
 	catch(...) {
