@@ -175,6 +175,7 @@ TARGET_LINK_LIBRARIES(msessiondtest  cppunit
                                      ao 
                                      qxcppunitd 
                                      qxrunnerd
+                                     log4cplus
                                      )
                                      
 ################################################################################

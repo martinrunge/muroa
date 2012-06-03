@@ -55,6 +55,9 @@ void CStream::operator()()
 			m_decoder.close();
 
 			// next song here or leave thread loop and reopen completely for next song?
+
+		    CMediaItem *item = m_session->getCurrentMediaItem();
+			m_decoder.open(item->getFilename());
 		}
 	}
 }
