@@ -11,6 +11,7 @@
 #include <cmds/CmdFinished.h>
 #include <cmds/SimpleCmds.h>
 #include <cmds/CmdEditMediaCol.h>
+#include <cmds/CmdEditNextlist.h>
 
 #include <IContentItem.h>
 #include <CNextlistItem.h>
@@ -139,6 +140,20 @@ void CSession::pause()
 void CSession::stop()
 {
 	m_stream.stop();
+}
+
+void CSession::prev()
+{
+	m_stream.stop();
+	addNextlistRevFromPrevCmd();
+	m_stream.play();
+}
+
+void CSession::next()
+{
+	m_stream.stop();
+	addNextlistRevFromNextCmd();
+	m_stream.play();
 }
 
 CMediaItem* CSession::getCurrentMediaItem() throw(InvalidMsgException)
@@ -312,7 +327,52 @@ int CSession::addNextlistRevFromDiff(const string& nextlistDiff, unsigned diffFr
 }
 
 int CSession::addNextlistRevFromNextCmd() {
+	CRootItem *oldNextlist = getNextlist();
+	CRootItem* newNextlist = new CRootItem( getMaxNextlistRev() + 1 );
 
+	CCategoryItem* onlBase = oldNextlist->getBase();
+	int numEntries = onlBase->getNumContentItems();
+
+	ostringstream oss;
+
+	if(numEntries <= 1)   // next would make nextlist be empty -> get next item from playlist
+	{
+		IContentItem* ci = onlBase->getContentItem(0);
+		assert(ci->type() == CItemType::E_NEXTLISTITEM );
+		CNextlistItem* curNlItem = reinterpret_cast<CNextlistItem*>(ci);
+
+		CRootItem* playlist = getPlaylist();
+		CCategoryItem* plBase = playlist->getBase();
+		ci = playlist->getContentPtr(CItemType(CItemType::E_PLAYLISTITEM), curNlItem->getPlaylistItemHash() );
+		ci = plBase->getSuccessorOf(ci);
+		assert(ci->type() == CItemType::E_PLAYLISTITEM);
+		CPlaylistItem* nextPlItem = reinterpret_cast<CPlaylistItem*>(ci);
+
+		CNextlistItem* newNlItem = new CNextlistItem(newNextlist, newNextlist->getBase());
+		newNlItem->setMediaItemHash(nextPlItem->getMediaItemHash());
+		newNlItem->setPlaylistItem(nextPlItem);
+		newNextlist->addContentItem(newNlItem, newNextlist->getBase());
+
+		oss << "@@ -1,1 +1,1 @@" << endl;
+		oss << "-" << newNextlist->getBase()->getPath() << "\t" << onlBase->getContentItem(0)->serialize();
+		oss << "+" << newNextlist->getBase()->getPath() << "\t" << newNlItem->serialize();
+	}
+	else
+	{
+		for(int i = 1; i < onlBase->getNumContentItems(); i++) {
+			IContentItem* ci = onlBase->getContentItem(i);
+			assert(ci->type() == CItemType::E_NEXTLISTITEM );
+			newNextlist->addContentItem(ci, newNextlist->getBase());
+		}
+		oss << "@@ -1,1 +0,0 @@" << endl;
+		oss << "-" << newNextlist->getBase()->getPath() << "\t" << onlBase->getContentItem(0)->serialize();
+	}
+	int oldNlRev = getMaxNextlistRev();
+
+	addNextlistRev(newNextlist);
+
+	CmdEditNextlist *cmdEdNl = new CmdEditNextlist(oldNlRev, getMaxNextlistRev(), oss.str() );
+	toAll(cmdEdNl);
 }
 
 int CSession::addNextlistRevFromPrevCmd() {

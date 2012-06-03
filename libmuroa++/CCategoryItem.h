@@ -76,6 +76,9 @@ public:
 	int getNumContentItems();
 	int getNumCategories();
 
+	IContentItem* getPredecessorOf(IContentItem* ci);
+	IContentItem* getSuccessorOf(IContentItem* ci);
+
 	void delContentItem(int pos);
 	void delCategory(CCategoryItem* categoryItem);
 

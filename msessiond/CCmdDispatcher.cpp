@@ -51,12 +51,12 @@ void CCmdDispatcher::incomingCmd(muroa::Cmd* cmd) {
 	}
 	case Cmd::NEXT:
 	{
-		m_session->addNextlistRevFromNextCmd();
+		m_session->next();
 		break;
 	}
 	case Cmd::PREV:
 	{
-		m_session->addNextlistRevFromPrevCmd();
+		m_session->prev();
 		break;
 	}
 	case Cmd::ERROR:

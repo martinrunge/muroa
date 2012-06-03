@@ -50,6 +50,8 @@ public:
 	void play();
 	void pause();
 	void stop();
+	void prev();
+	void next();
 
 	CMediaItem* getCurrentMediaItem() throw(InvalidMsgException);
 

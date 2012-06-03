@@ -153,6 +153,35 @@ int CCategoryItem::numChildren() {
 	return num;
 }
 
+IContentItem* CCategoryItem::getPredecessorOf(IContentItem* ci) {
+	vector<IContentItem*>::iterator it;
+	IContentItem* result = 0;
+	for( it = m_content_items.begin(); it != m_content_items.end(); it++ )
+	{
+		if( *it == ci ) {
+			return result;
+		}
+		result = *it;
+	}
+	return 0;
+}
+
+IContentItem* CCategoryItem::getSuccessorOf(IContentItem* ci) {
+	vector<IContentItem*>::iterator it;
+	for( it = m_content_items.begin(); it != m_content_items.end(); it++ )
+	{
+		if( *it == ci ) {
+			if(++it != m_content_items.end() ) {
+				return *it;
+			}
+			else {
+				return 0;
+			}
+		}
+	}
+	return 0;
+}
+
 
 void CCategoryItem::delContentItem(int pos) {
 	m_content_items.erase(m_content_items.begin() + pos);
