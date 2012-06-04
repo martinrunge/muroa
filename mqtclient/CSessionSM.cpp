@@ -5,6 +5,7 @@
  *      Author: martin
  */
 
+#include "CSession.h"
 #include "CSessionSM.h"
 #include "CConnection.h"
 #include "cmds/CmdGetMediaCol.h"
@@ -15,50 +16,38 @@
 #include "cmds/CmdEditNextlist.h"
 #include "cmds/CmdScanCollection.h"
 
-CSessionSM::CSessionSM(CConnection* connection, QObject* parent) : m_connection(connection),
-                                                                   m_knownMediaColRev(0),
-                                                                   m_knownPlaylistRev(0),
-                                                                   m_knownNextlistRev(0)
+CSessionSM::CSessionSM(CConnection* connection, QObject* parent) : m_connection(connection)
 {
 
 }
 
-CSessionSM::~CSessionSM() {
+CSessionSM::~CSessionSM()
+{
 
 }
 
 void CSessionSM::getLatestMediaCol() {
-	CmdGetMediaCol* cmd = new CmdGetMediaCol(getKnownMediaColRev());
+	unsigned knownMediaColRev = m_connection->getSession()->getMediaColRev();
+	CmdGetMediaCol* cmd = new CmdGetMediaCol(knownMediaColRev);
 	m_connection->sendCommand(cmd);
 }
 
 void CSessionSM::getLatestPlaylist() {
-	CmdGetPlaylist* cmd = new CmdGetPlaylist(getKnownPlaylistRev());
+	unsigned knownPlaylistRev = m_connection->getSession()->getPlaylistRev();
+	CmdGetPlaylist* cmd = new CmdGetPlaylist(knownPlaylistRev);
 	m_connection->sendCommand(cmd);
 }
 
 void CSessionSM::getLatestNextlist() {
-	CmdGetNextlist* cmd = new CmdGetNextlist(getKnownNextlistRev());
+	unsigned knownNextlistRev = m_connection->getSession()->getNextlistRev();
+	CmdGetNextlist* cmd = new CmdGetNextlist(knownNextlistRev);
 	m_connection->sendCommand(cmd);
 }
 
-unsigned CSessionSM::getKnownMediaColRev() const
-{
-    return m_knownMediaColRev;
-}
-
-unsigned CSessionSM::getKnownNextlistRev() const
-{
-    return m_knownNextlistRev;
-}
-
-unsigned CSessionSM::getKnownPlaylistRev() const
-{
-    return m_knownPlaylistRev;
-}
 
 void CSessionSM::scanCollection() {
-	CmdScanCollection* cmd = new CmdScanCollection(m_knownMediaColRev);
+	unsigned knownMediaColRev = m_connection->getSession()->getMediaColRev();
+	CmdScanCollection* cmd = new CmdScanCollection(knownMediaColRev);
 
     m_connection->sendCommand(cmd);
 

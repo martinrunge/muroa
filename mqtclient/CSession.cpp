@@ -12,6 +12,8 @@
 #include <CRootItem.h>
 
 #include <QSettings>
+#include <QDesktopServices>
+#include <QDir>
 
 using namespace std;
 
@@ -19,6 +21,12 @@ CSession::CSession() : QObject(), m_connection(this) {
 	m_mediaColModel = new CMuroaTreeModel();
 	m_playlistModel = new CMuroaListModel();
 	m_nextlistModel = new CMuroaListModel();
+
+	m_storeageLoc = QDesktopServices::storageLocation(QDesktopServices::DataLocation);
+	#ifdef Q_WS_MAC
+		m_storeageLoc.insert(m_storeageLoc.count() - QCoreApplication::applicationName().count(),
+	                    QCoreApplication::organizationName() + "/");
+	#endif
 }
 
 CSession::~CSession() {
@@ -55,29 +63,35 @@ void CSession::scanCollection() {
     m_connection.scanCollection(0);
 }
 
-//uint32_t CSession::getMediaColRev() const {
-//	return m_mediaColRev;
-//}
-//
-//void CSession::setMediaColRev(const uint32_t mediaColRev) {
-//	m_mediaColRev = mediaColRev;
-//}
-//
-//uint32_t CSession::getPlaylistRev() const {
-//	return m_mediaColRev;
-//}
-//
-//void CSession::setPlaylistRev(const uint32_t nextlistRev) {
-//	m_playlistRev = nextlistRev;
-//}
-//
-//uint32_t CSession::getNextlistRev() const {
-//	return m_mediaColRev;
-//}
-//
-//void CSession::setNextlistRev(const uint32_t playlistRev) {
-//	m_nextlistRev = playlistRev;
-//}
+void CSession::save()
+{
+	QDir sdir(m_storeageLoc);
+	if(!sdir.exists()) {
+		sdir.mkpath(m_storeageLoc);
+	}
+	string mediaColFile = QString("%1/%2").arg(m_storeageLoc).arg("mediacol.mcrev").toUtf8().data();
+	m_mediaColModel->serialize(mediaColFile);
+	string playlistFile = QString("%1/%2").arg(m_storeageLoc).arg("playlist.mcrev").toUtf8().data();
+	m_playlistModel->serialize(playlistFile);
+	string nextlistFile = QString("%1/%2").arg(m_storeageLoc).arg("nextlist.mcrev").toUtf8().data();
+	m_nextlistModel->serialize(nextlistFile);
+}
+
+void CSession::restore()
+{
+	try {
+		string mediaColFile = QString("%1/%2").arg(m_storeageLoc).arg("mediacol.mcrev").toUtf8().data();
+		m_mediaColModel->fromFile(mediaColFile);
+		string playlistFile = QString("%1/%2").arg(m_storeageLoc).arg("playlist.mcrev").toUtf8().data();
+		m_playlistModel->fromFile(playlistFile);
+		string nextlistFile = QString("%1/%2").arg(m_storeageLoc).arg("nextlist.mcrev").toUtf8().data();
+		m_nextlistModel->fromFile(nextlistFile);
+	}
+	catch(MalformedPatchEx ex) {
+
+	}
+}
+
 
 void CSession::dumpCollection() {
 	string mediaCol;

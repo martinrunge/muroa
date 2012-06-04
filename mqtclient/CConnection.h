@@ -59,6 +59,7 @@ public:
 	void onXmlVersion(){ };
 
 	inline CSessionSM* getSessionSMPtr() { return &m_sm; };
+	inline CSession* getSession() {return m_session; };
 
 signals:
     void connectionStatusChanged(enum connectionState state);

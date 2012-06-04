@@ -44,6 +44,8 @@ CQtClient::CQtClient(QWidget *parent)
 	connect(connPtr, SIGNAL(progressSig(int, int)), this, SLOT(progress(int,int)));
 	connectionStatusChanged( e_disconnected );
 
+	m_session.restore();
+
 	ui.mediaColTreeView->setModel(m_session.getMediaColModel());
 	ui.playlistListView->setModel(m_session.getPlaylistModel());
 	ui.nextlistListView->setModel(m_session.getNextlistModel());
@@ -61,6 +63,8 @@ CQtClient::CQtClient(QWidget *parent)
 
 CQtClient::~CQtClient()
 {
+	m_session.save();
+
 	delete m_diffBuilder;
 	delete m_serviceBrowser;
 }

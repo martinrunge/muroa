@@ -116,40 +116,52 @@ void CConnection::onNextlist(unsigned  diffFromRev, std::string nextlist)
 }
 
 void CConnection::onEditCollection(unsigned  fromRev, unsigned toRev, std::string collectionDiff) {
-	if(fromRev == 0) {
-		try {
-			m_session->getMediaColModel()->deserialize(collectionDiff);
+	try {
+		if(fromRev == 0) {
+			try {
+				m_session->getMediaColModel()->deserialize(collectionDiff);
+			}
+			catch(MalformedPatchEx ex) {
+				;
+			}
 		}
-		catch(MalformedPatchEx ex) {
-			;
+		else {
+			uint32_t knownRev = m_session->getMediaColModel()->getRevision();
+			if( knownRev != fromRev ) {
+				std::ostringstream oss;
+				oss << "editCollection: Error: got a diff based on rev " << fromRev << " but known rev is " << knownRev;
+				throw MalformedPatchEx(oss.str(), 0);
+			}
+			m_session->getMediaColModel()->patch(collectionDiff);
 		}
+		m_session->getMediaColModel()->setRevision(toRev);
 	}
-	else {
-		uint32_t knownRev = m_session->getMediaColModel()->getRevision();
-		if( knownRev != fromRev ) {
-			std::ostringstream oss;
-			oss << "editCollection: Error: got a diff based on rev " << fromRev << " but known rev is " << knownRev;
-			throw MalformedPatchEx(oss.str(), 0);
-		}
-		m_session->getMediaColModel()->patch(collectionDiff);
+	catch(MalformedPatchEx& ex)
+	{
+
 	}
-	m_session->getMediaColModel()->setRevision(toRev);
 }
 
 void CConnection::onEditPlaylist(unsigned  fromRev, unsigned toRev, std::string playlistDiff) {
-	if(fromRev == 0) {
-		m_session->getPlaylistModel()->deserialize(playlistDiff);
-	}
-	else {
-		uint32_t knownRev = m_session->getPlaylistModel()->getRevision();
-		if( knownRev != fromRev ) {
-			std::ostringstream oss;
-			oss << "editPlaylist: Error: got a diff based on rev " << fromRev << " but known rev is " << knownRev;
-			throw MalformedPatchEx(oss.str(), 0);
+	try {
+		if(fromRev == 0) {
+			m_session->getPlaylistModel()->deserialize(playlistDiff);
 		}
-		m_session->getPlaylistModel()->patch(playlistDiff);
+		else {
+			uint32_t knownRev = m_session->getPlaylistModel()->getRevision();
+			if( knownRev != fromRev ) {
+				std::ostringstream oss;
+				oss << "editPlaylist: Error: got a diff based on rev " << fromRev << " but known rev is " << knownRev;
+				throw MalformedPatchEx(oss.str(), 0);
+			}
+			m_session->getPlaylistModel()->patch(playlistDiff);
+		}
+		m_session->getPlaylistModel()->setRevision(toRev);
 	}
-	m_session->getPlaylistModel()->setRevision(toRev);
+	catch(MalformedPatchEx& ex)
+	{
+
+	}
 }
 
 void CConnection::onEditNextlist(unsigned  fromRev, unsigned toRev, std::string nextlistDiff) {
