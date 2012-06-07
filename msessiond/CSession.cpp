@@ -345,17 +345,19 @@ int CSession::addNextlistRevFromNextCmd() {
 		CCategoryItem* plBase = playlist->getBase();
 		ci = playlist->getContentPtr(CItemType(CItemType::E_PLAYLISTITEM), curNlItem->getPlaylistItemHash() );
 		ci = plBase->getSuccessorOf(ci);
-		assert(ci->type() == CItemType::E_PLAYLISTITEM);
-		CPlaylistItem* nextPlItem = reinterpret_cast<CPlaylistItem*>(ci);
+		if(ci != 0) {
+			assert(ci->type() == CItemType::E_PLAYLISTITEM);
+			CPlaylistItem* nextPlItem = reinterpret_cast<CPlaylistItem*>(ci);
 
-		CNextlistItem* newNlItem = new CNextlistItem(newNextlist, newNextlist->getBase());
-		newNlItem->setMediaItemHash(nextPlItem->getMediaItemHash());
-		newNlItem->setPlaylistItem(nextPlItem);
-		newNextlist->addContentItem(newNlItem, newNextlist->getBase());
+			CNextlistItem* newNlItem = new CNextlistItem(newNextlist, newNextlist->getBase());
+			newNlItem->setMediaItemHash(nextPlItem->getMediaItemHash());
+			newNlItem->setPlaylistItem(nextPlItem);
+			newNextlist->addContentItem(newNlItem, newNextlist->getBase());
 
-		oss << "@@ -1,1 +1,1 @@" << endl;
-		oss << "-" << newNextlist->getBase()->getPath() << "\t" << onlBase->getContentItem(0)->serialize();
-		oss << "+" << newNextlist->getBase()->getPath() << "\t" << newNlItem->serialize();
+			oss << "@@ -1,1 +1,1 @@" << endl;
+			oss << "-" << newNextlist->getBase()->getPath() << "\t" << onlBase->getContentItem(0)->serialize();
+			oss << "+" << newNextlist->getBase()->getPath() << "\t" << newNlItem->serialize();
+		}
 	}
 	else
 	{

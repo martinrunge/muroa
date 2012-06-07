@@ -24,6 +24,14 @@
 using namespace std;
 
 CRootItem::CRootItem(uint32_t rev) : m_revision(rev) {
+	init();
+}
+
+CRootItem::~CRootItem() {
+	clear();
+}
+
+void CRootItem::init() {
 	m_base = new CCategoryItem(this, "", 0);
 	setCategoryPtr("/", m_base);
 	for(int i=0; i < CItemType::numTypes(); i++) {
@@ -31,13 +39,11 @@ CRootItem::CRootItem(uint32_t rev) : m_revision(rev) {
 	}
 }
 
-CRootItem::~CRootItem() {
+void CRootItem::clear() {
 	delete m_base;
-
-	for(int i=0; i < CItemType::numTypes(); i++) {
-		delete m_content_maps[i];
-	}
+	m_content_maps.clear();
 }
+
 
 CCategoryItem* CRootItem::addCategory(string name, CCategoryItem* parent) {
 	CCategoryItem* newItem;
@@ -161,6 +167,9 @@ void CRootItem::deserialize(std::string text) throw(MalformedPatchEx) {
 	istringstream iss(text);
 	char cline[4096];
 
+	clear();
+	init();
+
 	CItemBase* currentCategory = 0;
 
 	while(!iss.eof() && !iss.fail()) {
@@ -178,6 +187,9 @@ void CRootItem::fromFile(std::string filename) throw(MalformedPatchEx) {
 	ifstream ifs(filename);
 	char cline[4096];
 	int lineNr = 0;
+
+	clear();
+	init();
 
 	CItemBase* currentCategory = 0;
 

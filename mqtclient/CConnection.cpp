@@ -138,7 +138,8 @@ void CConnection::onEditCollection(unsigned  fromRev, unsigned toRev, std::strin
 	}
 	catch(MalformedPatchEx& ex)
 	{
-
+		// if diff did not work, try to get whole media collection
+		getCollection();
 	}
 }
 
@@ -160,7 +161,8 @@ void CConnection::onEditPlaylist(unsigned  fromRev, unsigned toRev, std::string 
 	}
 	catch(MalformedPatchEx& ex)
 	{
-
+		// if diff did not work, try to get whole playlist (no diff)
+		getPlaylist();
 	}
 }
 
@@ -182,7 +184,8 @@ void CConnection::onEditNextlist(unsigned  fromRev, unsigned toRev, std::string 
 	}
 	catch(MalformedPatchEx& ex)
 	{
-
+		// if diff did not work, try to get whole nextlist (no diff)
+		getNextlist();
 	}
 }
 

@@ -86,6 +86,7 @@ void CCategoryItem::addChild(IContentItem*  newMediaItem, int pos) {
 }
 
 IContentItem* CCategoryItem::getContentItem(unsigned pos) {
+	if(m_content_items.size() <= pos ) return 0;
 	return m_content_items[pos];
 }
 

@@ -90,6 +90,8 @@ public:
     void setReferencedPlaylistRev(uint32_t rev) { m_referenced_playlist_rev = rev; };
 
 private:
+    void init();
+    void clear();
 
 	std::map<std::string, CCategoryItem*> m_category_map;
 
