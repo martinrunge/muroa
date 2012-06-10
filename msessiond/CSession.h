@@ -58,9 +58,9 @@ public:
 	void addConnection(CConnection* ptr);
 	void removeConnection(CConnection* ptr);
 
-	CRootItem*  getMediaCol(int revision = -1) const;
-	CRootItem*  getPlaylist(int revision = -1) const;
-	CRootItem*  getNextlist(int revision = -1) const;
+	CRootItem*  getMediaCol(int revision = -1) const throw(InvalidMsgException);
+	CRootItem*  getPlaylist(int revision = -1) const throw(InvalidMsgException);
+	CRootItem*  getNextlist(int revision = -1) const throw(InvalidMsgException);
 
 	const std::string getMediaColDiff(unsigned fromRevision, int toRevision = -1) const;
 	const std::string getPlaylistDiff(unsigned fromRevision, int toRevision = -1) const;

@@ -195,19 +195,19 @@ void CSession::removeConnection(CConnection* ptr) {
 	// m_connections_by_id.
 }
 
-CRootItem*  CSession::getMediaCol(int revision) const {
+CRootItem*  CSession::getMediaCol(int revision) const throw(InvalidMsgException) {
 	unsigned rev = (revision < 0)?m_maxMediaColRev:revision;
 	CRootItem* ri = getRev(m_mediaColRevs, rev, string("Media collection revision # not known in session "));
 	return ri;
 }
 
-CRootItem*  CSession::getPlaylist(int revision) const {
+CRootItem*  CSession::getPlaylist(int revision) const throw(InvalidMsgException) {
 	unsigned rev = (revision < 0)?m_maxPlaylistRev:revision;
 	CRootItem* ri = getRev(m_playlistRevs, rev, "Playlist revision # not known in session ");
 	return ri;
 }
 
-CRootItem*  CSession::getNextlist(int revision) const {
+CRootItem*  CSession::getNextlist(int revision) const throw(InvalidMsgException) {
 	unsigned rev = (revision < 0)?m_maxNextlistRev:revision;
 	CRootItem* ri = getRev(m_nextlistRevs, rev, "Nextlist revision # not known in session ");
 	return ri;
