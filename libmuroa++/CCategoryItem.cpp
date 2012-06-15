@@ -54,11 +54,13 @@ CCategoryItem::~CCategoryItem() {
 	for(cit = m_sub_categories.begin(); cit != m_sub_categories.end(); cit++ ) {
 		delete *cit;
 	}
+	m_sub_categories.clear();
 
 	std::vector<IContentItem*>::iterator mit;
 	for(mit = m_content_items.begin(); mit != m_content_items.end(); mit++ ) {
 		delete *mit;
 	}
+	m_content_items.clear();
 	m_root_item->delCategoryPtr(m_path);
 }
 
