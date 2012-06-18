@@ -32,7 +32,7 @@ class CPlaylistItem;
 class CNextlistItem: public IContentItem {
 public:
 	CNextlistItem(CRootItem *root_item, CCategoryItem*  parent, int posInParent = -1);
-	CNextlistItem(CRootItem *root_item, std::string text, CCategoryItem*  parent, int posInParent = -1) throw(MalformedPatchEx);
+	CNextlistItem(CRootItem *root_item, std::string text, CCategoryItem*  parent, int posInParent = -1) throw(ExMalformedPatch);
 	virtual ~CNextlistItem();
 
 	inline uint32_t getPlaylistItemHash() { return m_playlistitem_hash; };

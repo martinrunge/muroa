@@ -38,7 +38,7 @@ CNextlistItem::CNextlistItem(CRootItem *root_item, CCategoryItem*  parent, int p
 	m_root_item->setContentPtr(CItemType(CItemType::E_PLAYLISTITEM), this, m_hash );
 }
 
-CNextlistItem::CNextlistItem(CRootItem *root_item, std::string text, CCategoryItem*  parent, int posInParent) throw(MalformedPatchEx)
+CNextlistItem::CNextlistItem(CRootItem *root_item, std::string text, CCategoryItem*  parent, int posInParent) throw(ExMalformedPatch)
 : IContentItem( root_item, parent, CItemType::E_NEXTLISTITEM )
 {
 	m_text = text;
@@ -55,7 +55,7 @@ CNextlistItem::CNextlistItem(CRootItem *root_item, std::string text, CCategoryIt
 			lpos = rpos + 1;
 		}
 		else {
-			throw MalformedPatchEx("error parsing 'media item hash' field, terminating tab char is missing.", -1);
+			throw ExMalformedPatch("error parsing 'media item hash' field, terminating tab char is missing.", -1);
 		}
 
 		string playlistIdStr;
@@ -78,7 +78,7 @@ CNextlistItem::CNextlistItem(CRootItem *root_item, std::string text, CCategoryIt
 	}
 	catch(std::invalid_argument& ex)
 	{
-		throw MalformedPatchEx(ex.what(), -1);
+		throw ExMalformedPatch(ex.what(), -1);
 	}
 }
 

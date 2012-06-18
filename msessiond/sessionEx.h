@@ -35,16 +35,6 @@ private:
 	std::string m_reason;
 };
 
-class InvalidMsgException: public std::exception {
-public:
-	InvalidMsgException(std::string reason) throw ();
-	virtual ~InvalidMsgException() throw ();
-
-	const char* what() const throw ();
-	const std::string reason() const throw ();
-private:
-	std::string m_reason;
-};
 
 class NeedMoreDataException: public std::exception {
 public:

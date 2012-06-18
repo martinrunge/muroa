@@ -76,7 +76,7 @@ void CConnection::sendLatestMediaColRev(unsigned knownRev) {
 		}
 		m_rpc->editCollection(knownRev, m_session->getMaxMediaColRev(), diff);
 	}
-	catch(InvalidMsgException iex) {
+	catch(ExInvMsg iex) {
 		m_rpc->error(0, 0, iex.what());
 	}
 }
@@ -93,7 +93,7 @@ void CConnection::sendLatestPlaylistRev(unsigned knownRev) {
 		}
 		m_rpc->editPlaylist(knownRev, m_session->getMaxPlaylistRev(), diff);
 	}
-	catch(InvalidMsgException iex) {
+	catch(ExInvMsg iex) {
 		m_rpc->error(0, 0, iex.what());
 	}
 }
@@ -110,7 +110,7 @@ void CConnection::sendLatestNextlistRev(unsigned knownRev) {
 		}
 		m_rpc->editNextlist(knownRev, m_session->getMaxNextlistRev(), diff);
 	}
-	catch(InvalidMsgException iex) {
+	catch(ExInvMsg iex) {
 		m_rpc->error(0, 0, iex.what());
 	}
 }
@@ -126,7 +126,14 @@ void CConnection::setSession(CSession *session) {
 
 void CConnection::incomingCmd( Cmd* cmd ) {
 	cmd->setConnectionID(m_id);
-	m_session->incomingCmd(cmd, this);
+	try {
+		m_session->incomingCmd(cmd, this);
+	}
+	catch(ExInvMsg invmex)
+	{
+		CmdError *cmdErr = new CmdError(cmd->id(), 0, invmex.what());
+		error(cmdErr);
+	}
 }
 
 void CConnection::sendCmd( Cmd* cmd ) {

@@ -17,7 +17,7 @@ class CMediaItem : public IContentItem {
 public:
 	CMediaItem(CRootItem *root_item = 0);
 	CMediaItem(CRootItem *root_item, CCategoryItem*  parent, int posInParent = -1);
-	CMediaItem(CRootItem *root_item, std::string text, CCategoryItem*  parent, int posInParent = -1) throw(MalformedPatchEx);
+	CMediaItem(CRootItem *root_item, std::string text, CCategoryItem*  parent, int posInParent = -1) throw(ExMalformedPatch);
 	virtual ~CMediaItem();
 
 	void setParent(CRootItem *root_item, CCategoryItem*  parent, int posInParent = -1);

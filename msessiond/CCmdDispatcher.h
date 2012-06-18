@@ -23,7 +23,7 @@ public:
 	virtual ~CCmdDispatcher();
 
 	void incomingCmd(muroa::Cmd* cmd);
-	void addIdToPlaylistDiff(muroa::CmdEditPlaylist* epl_cmd) throw(MalformedPatchEx);
+	void addIdToPlaylistDiff(muroa::CmdEditPlaylist* epl_cmd) throw(ExMalformedPatch);
 
 private:
 	muroa::CSession* m_session;

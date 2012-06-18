@@ -6,6 +6,7 @@
  */
 
 #include "CMsgBase.h"
+#include <MuroaExceptions.h>
 #include <sessionEx.h>
 #include <sstream>
 
@@ -102,7 +103,7 @@ CMsgBase* CMsgBase::msgFactory(char*& buffer, int& size) {
 		{
 			stringstream ss;
 			ss << "unknown message type: " << type;
-			throw(InvalidMsgException(ss.str()));
+			throw(ExInvMsg(ss.str()));
 		}
 	}
 	msgSize = basePtr->getSize();
@@ -123,7 +124,7 @@ uint32_t CMsgBase::checkHeader(char* buffer, int size, enum msg_types type) {
 	if(type != typeInHeader) {
 		stringstream ss;
 		ss << "CMsgBase::checkHeader ( id=" << msgID << ")type is " << typeInHeader << " but expected " << type;
-		throw InvalidMsgException(ss.str());
+		throw ExInvMsg(ss.str());
 	}
 	// reallocSerialisationBuffer(m_payloadSize);
 	return msgID;

@@ -45,19 +45,19 @@ public:
 
 //	IContentItem* addContentItem(CCategoryItem* parent = 0, int posInParent = -1);
 	IContentItem* addEmptyContentItem(CItemType type, CCategoryItem* parent, int posInParent = -1);
-	IContentItem* addContentItem(std::string textWoPath, CCategoryItem* parent, int posInParent = -1) throw (MalformedPatchEx);
-	IContentItem* addContentItem(std::string text, int posInParent = -1) throw (MalformedPatchEx);
+	IContentItem* addContentItem(std::string textWoPath, CCategoryItem* parent, int posInParent = -1) throw (ExMalformedPatch);
+	IContentItem* addContentItem(std::string text, int posInParent = -1) throw (ExMalformedPatch);
 
 	IContentItem* addContentItem(IContentItem* item, CCategoryItem* parent, int posInParent = -1);
 
 	CCategoryItem* getBase() const { return m_base; };
 
-	void fromFile(std::string filename) throw(MalformedPatchEx);
+	void fromFile(std::string filename) throw(ExMalformedPatch);
 	std::string serialize(std::string filename = "");
-	void deserialize(std::string text) throw(MalformedPatchEx);
+	void deserialize(std::string text) throw(ExMalformedPatch);
 
 	std::string diff(const CRootItem& other);
-	void patch(std::string diff) throw(MalformedPatchEx);
+	void patch(std::string diff) throw(ExMalformedPatch);
 
 	bool operator==(const CRootItem& other);
 	inline bool operator!=(const CRootItem& other) { return !operator==(other); };

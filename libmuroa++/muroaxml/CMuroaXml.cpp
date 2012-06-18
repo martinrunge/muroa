@@ -13,12 +13,12 @@
 
 using namespace std;
 
-CMuroaXml::CMuroaXml() throw (rpcError)
+CMuroaXml::CMuroaXml() throw (ExRpcError)
 {
 	m_parser = XML_ParserCreate(NULL);
 	if (!m_parser) {
 		// fprintf(stderr, "Couldn't allocate memory for parser\n");
-		rpcError ex("no parser");
+		ExRpcError ex("no parser");
 		throw ex;
 	}
 

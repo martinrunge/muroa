@@ -87,8 +87,8 @@ void CCmdDispatcher::incomingCmd(muroa::Cmd* cmd) {
 			// if there was no exception, the diff is ok, send it to all clients
 			m_session->toAll(cmd_em);
 		}
-		catch(MalformedPatchEx& ex) {
-			CmdError* errMsg = new CmdError(cmd_em->id(), 0, ex.getReason());
+		catch(ExMalformedPatch& ex) {
+			CmdError* errMsg = new CmdError(cmd_em->id(), 0, ex.reason());
 			m_session->sendToInitiator(errMsg, cmd_em->getConnectionID() );
 		}
 		break;
@@ -110,8 +110,8 @@ void CCmdDispatcher::incomingCmd(muroa::Cmd* cmd) {
 			}
 			m_session->toAll(cmd_epl);
 		}
-		catch(MalformedPatchEx& ex) {
-			CmdError* errMsg = new CmdError(cmd_epl->id(), 0, ex.getReason());
+		catch(ExMalformedPatch& ex) {
+			CmdError* errMsg = new CmdError(cmd_epl->id(), 0, ex.reason());
 			m_session->sendToInitiator(errMsg, cmd_epl->getConnectionID() );
 		}
 		break;
@@ -129,8 +129,8 @@ void CCmdDispatcher::incomingCmd(muroa::Cmd* cmd) {
 			cmd_enl->setToRev( m_session->getMaxNextlistRev() );
 			m_session->toAll(cmd_enl);
 		}
-		catch(MalformedPatchEx& ex) {
-			CmdError* errMsg = new CmdError(cmd_enl->id(), 0, ex.getReason());
+		catch(ExMalformedPatch& ex) {
+			CmdError* errMsg = new CmdError(cmd_enl->id(), 0, ex.reason());
 			m_session->sendToInitiator(errMsg, cmd_enl->getConnectionID() );
 		}
 		break;
@@ -141,7 +141,7 @@ void CCmdDispatcher::incomingCmd(muroa::Cmd* cmd) {
 	}
 }
 
-void CCmdDispatcher::addIdToPlaylistDiff(muroa::CmdEditPlaylist* epl_cmd) throw(MalformedPatchEx) {
+void CCmdDispatcher::addIdToPlaylistDiff(muroa::CmdEditPlaylist* epl_cmd) throw(ExMalformedPatch) {
 	string diff = epl_cmd->getDiff();
 	string output;
 	output.reserve(2 * diff.size());
@@ -189,7 +189,7 @@ void CCmdDispatcher::addIdToPlaylistDiff(muroa::CmdEditPlaylist* epl_cmd) throw(
 			}
 			catch(std::invalid_argument ex)
 			{
-				throw MalformedPatchEx(ex.what(), lineNr);
+				throw ExMalformedPatch(ex.what(), lineNr);
 			}
 
 			if(oldLen == 0) oldStart++;

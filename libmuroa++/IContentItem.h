@@ -19,7 +19,7 @@ class CMediaItem;
 class IContentItem : public CItemBase {
 public:
 	IContentItem(CRootItem *root_item, CCategoryItem*  parent, const item_type_t type);
-	IContentItem(CRootItem *root_item, std::string text, CCategoryItem*  parent, const item_type_t type, int posInParent = -1) throw(MalformedPatchEx);
+	IContentItem(CRootItem *root_item, std::string text, CCategoryItem*  parent, const item_type_t type, int posInParent = -1) throw(ExMalformedPatch);
 	virtual ~IContentItem();
 
 	virtual std::string serialize(bool asDiff = false) = 0;
@@ -32,7 +32,7 @@ public:
 			                         CRootItem *root_item,
 			                         std::string text,
 			                         CCategoryItem *parent,
-			                         const unsigned posInParent = -1) throw(MalformedPatchEx);
+			                         const unsigned posInParent = -1) throw(ExMalformedPatch);
 	static IContentItem* itemFactory(CMediaItem* item,
 			                         CRootItem *root_item,
 			                         CCategoryItem *parent,

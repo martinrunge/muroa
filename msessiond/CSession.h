@@ -15,6 +15,7 @@
 #include <queue>
 #include <CConnection.h>
 #include <CRootItem.h>
+#include <MuroaExceptions.h>
 
 #include <mediaprocessing/CStream.h>
 
@@ -53,14 +54,14 @@ public:
 	void prev();
 	void next();
 
-	CMediaItem* getCurrentMediaItem() throw(InvalidMsgException);
+	CMediaItem* getCurrentMediaItem() throw(ExInvMsg);
 
 	void addConnection(CConnection* ptr);
 	void removeConnection(CConnection* ptr);
 
-	CRootItem*  getMediaCol(int revision = -1) const throw(InvalidMsgException);
-	CRootItem*  getPlaylist(int revision = -1) const throw(InvalidMsgException);
-	CRootItem*  getNextlist(int revision = -1) const throw(InvalidMsgException);
+	CRootItem*  getMediaCol(int revision = -1) const throw(ExInvMsg);
+	CRootItem*  getPlaylist(int revision = -1) const throw(ExInvMsg);
+	CRootItem*  getNextlist(int revision = -1) const throw(ExInvMsg);
 
 	const std::string getMediaColDiff(unsigned fromRevision, int toRevision = -1) const;
 	const std::string getPlaylistDiff(unsigned fromRevision, int toRevision = -1) const;
@@ -90,9 +91,9 @@ public:
 	void addNextlistRev(CRootItem* ri);
 	void addNextlistRev(const std::string& nextlist);
 
-	int addMediaColRevFromDiff(const std::string& mediaColDiff, unsigned diffFromRev) throw(MalformedPatchEx);
-	int addPlaylistRevFromDiff(const std::string& playlistDiff, unsigned diffFromRev) throw(MalformedPatchEx);
-	int addNextlistRevFromDiff(const std::string& nextlistDiff, unsigned diffFromRev) throw(MalformedPatchEx);
+	int addMediaColRevFromDiff(const std::string& mediaColDiff, unsigned diffFromRev) throw(ExInvMsg);
+	int addPlaylistRevFromDiff(const std::string& playlistDiff, unsigned diffFromRev) throw(ExInvMsg);
+	int addNextlistRevFromDiff(const std::string& nextlistDiff, unsigned diffFromRev) throw(ExInvMsg);
 
 	int addNextlistRevFromNextCmd();
 	int addNextlistRevFromPrevCmd();
@@ -131,7 +132,7 @@ private:
 
 	CRootItem* getRev(const std::map<unsigned, CRootItem*>& mabp,
 			          const unsigned rev,
-			          const std::string& message) const throw(InvalidMsgException);
+			          const std::string& message) const throw(ExInvRev);
 
 	boost::asio::io_service& m_io_service;
 
@@ -142,13 +143,13 @@ private:
 
 	std::map<uint32_t, CConnection*> m_job_initiators;
 
-	client_job_t getClientCmdIdBySubprocessCmdID(uint32_t subprocess_cmd_id, bool delentry = true) throw(InvalidMsgException);
+	client_job_t getClientCmdIdBySubprocessCmdID(uint32_t subprocess_cmd_id, bool delentry = true) throw(ExInvMsg);
 	void setClientCmdIdBySubprocessCmdID(uint32_t subprocess_cmd_id, CConnection* initiator, uint32_t client_cmd_id );
 
 	std::map<uint32_t, std::pair<CConnection*, uint32_t> > m_subprocess_job_by_cmdID;
 
 	void addOutstandingMsg(CMsgBase* msg);
-	void delOutstandingMsg(uint32_t id) throw(InvalidMsgException);
+	void delOutstandingMsg(uint32_t id) throw(ExInvMsg);
 
 	std::map<uint32_t, CMsgBase*> m_outstanding_msgs;
 

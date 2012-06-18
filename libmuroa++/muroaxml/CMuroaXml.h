@@ -17,7 +17,7 @@
 
 class CMuroaXml: public IRPC , public CParserStateMachine {
 public:
-	CMuroaXml() throw(rpcError);
+	CMuroaXml() throw(ExRpcError);
 	~CMuroaXml();
 
 	void open();

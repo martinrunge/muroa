@@ -24,7 +24,6 @@ set( SRC           CRootItem.cpp
                    CPlaylistItem.cpp
                    CNextlistItem.cpp
                    CDiff.cpp
-                   MuroaExceptions.cpp
                    CUtils.cpp
                    # libmain.cpp
                    muroaxml/IRPC.cpp

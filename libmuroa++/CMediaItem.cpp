@@ -25,7 +25,7 @@ CMediaItem::CMediaItem(CRootItem *root_item, CCategoryItem*  parent, int posInPa
 	}
 }
 
-CMediaItem::CMediaItem(CRootItem *root_item, std::string text, CCategoryItem*  parent, int posInParent) throw(MalformedPatchEx)
+CMediaItem::CMediaItem(CRootItem *root_item, std::string text, CCategoryItem*  parent, int posInParent) throw(ExMalformedPatch)
    : IContentItem( root_item, parent, CItemType::E_MEDIAITEM )   {
 
 	m_text = text;
@@ -44,7 +44,7 @@ CMediaItem::CMediaItem(CRootItem *root_item, std::string text, CCategoryItem*  p
 			num_tabs++;
 		}
 		else {
-			throw MalformedPatchEx("error parsing filename field, terminating tab char is missing.", -1);
+			throw ExMalformedPatch("error parsing filename field, terminating tab char is missing.", -1);
 		}
 
 		rpos = m_text.find('\t', lpos);
@@ -54,7 +54,7 @@ CMediaItem::CMediaItem(CRootItem *root_item, std::string text, CCategoryItem*  p
 			num_tabs++;
 		}
 		else {
-			throw MalformedPatchEx("error parsing artist field, terminating tab char is missing.", -1);
+			throw ExMalformedPatch("error parsing artist field, terminating tab char is missing.", -1);
 		}
 
 		rpos = m_text.find('\t', lpos);
@@ -64,7 +64,7 @@ CMediaItem::CMediaItem(CRootItem *root_item, std::string text, CCategoryItem*  p
 			num_tabs++;
 		}
 		else {
-			throw MalformedPatchEx("error parsing album field, terminating tab char is missing.", -1);
+			throw ExMalformedPatch("error parsing album field, terminating tab char is missing.", -1);
 		}
 
 		rpos = m_text.find('\t', lpos);
@@ -74,7 +74,7 @@ CMediaItem::CMediaItem(CRootItem *root_item, std::string text, CCategoryItem*  p
 			num_tabs++;
 		}
 		else {
-			throw MalformedPatchEx("error parsing title field, terminating tab char is missing.", -1);
+			throw ExMalformedPatch("error parsing title field, terminating tab char is missing.", -1);
 		}
 
 		rpos = m_text.find('\t', lpos);
@@ -85,7 +85,7 @@ CMediaItem::CMediaItem(CRootItem *root_item, std::string text, CCategoryItem*  p
 			num_tabs++;
 		}
 		else {
-			throw MalformedPatchEx("error parsing year field, terminating tab char is missing.", -1);
+			throw ExMalformedPatch("error parsing year field, terminating tab char is missing.", -1);
 		}
 
 		rpos = m_text.find('\t', lpos);
@@ -96,7 +96,7 @@ CMediaItem::CMediaItem(CRootItem *root_item, std::string text, CCategoryItem*  p
 			num_tabs++;
 		}
 		else {
-			throw MalformedPatchEx("error parsing duration field, terminating tab char is missing.", -1);
+			throw ExMalformedPatch("error parsing duration field, terminating tab char is missing.", -1);
 		}
 
 		string hashStr;
@@ -116,7 +116,7 @@ CMediaItem::CMediaItem(CRootItem *root_item, std::string text, CCategoryItem*  p
 	}
 	catch(std::invalid_argument& ex)
 	{
-		throw MalformedPatchEx(ex.what(), -1);
+		throw ExMalformedPatch(ex.what(), -1);
 	}
 }
 

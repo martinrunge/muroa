@@ -39,20 +39,6 @@ const std::string CApiMisuseException::reason() const throw () {
 	return m_reason;
 }
 
-InvalidMsgException::InvalidMsgException(std::string reason) throw () {
-	m_reason = reason;
-}
-
-InvalidMsgException::~InvalidMsgException() throw () {
-}
-
-const char* InvalidMsgException::what() const throw () {
-	return m_reason.c_str();
-}
-
-const std::string InvalidMsgException::reason() const throw () {
-	return m_reason;
-}
 
 NeedMoreDataException::NeedMoreDataException(std::string reason, int code) throw () {
 	m_reason = reason;

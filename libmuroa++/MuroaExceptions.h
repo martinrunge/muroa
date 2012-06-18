@@ -27,33 +27,115 @@
 #include <exception>
 #include <string>
 
-class MalformedPatchEx: public std::exception {
+// namespace muroa {  // activate later on
+
+/*! \class ExInvMsg
+ *  \extends std::exception
+ *  \brief general error in a received message and base for more detailed exceptions
+ *
+ *  Intended as a base for more detailed exceptions. It spans
+ *  all errors that can happen during message processing in client and server
+ */
+class ExInvMsg: public std::exception {
 public:
-	MalformedPatchEx(std::string reason, int line_nr);
-	virtual ~MalformedPatchEx() throw ();
+	ExInvMsg(std::string reason) throw (): m_reason(reason)
+    {};
+	virtual ~ExInvMsg() throw ()
+    {};
 
-	std::string getReason();
-	int getLineNr();
+    inline const char* what() const throw ()
+    {
+    	return m_reason.c_str();
+    };
 
-	const char* what() const throw();
+    inline const std::string reason() const throw ()
+    {
+    	return m_reason;
+    };
+
+private:
+	std::string m_reason;
+};
+
+/*! \class ExMalformedPatch
+ *  \extends ExInvMsg
+ *  \brief Some error within a patch
+ *
+ *  The patch is somehow malformed and could not be parsed or
+ *  the patch could not be applied for some other reasons, e.g.
+ *  mismatching base. The case of a mismatching base should be
+ *  caught before by an \see ExInvRev during normal operations.
+ */
+class ExMalformedPatch: public ExInvMsg {
+public:
+	ExMalformedPatch(std::string reason, int line_nr): ExInvMsg(reason), m_linr_nr(line_nr)
+	{
+	};
+	virtual ~ExMalformedPatch() throw ()
+	{
+	};
+
+	inline int getLineNr()
+	{
+		return m_linr_nr;
+	};
 
 private:
 	int m_linr_nr;
-	std::string m_reason;
 };
 
-class rpcError: public std::exception {
+/*! \class ExInvRev
+ *  \extends ExInvMsg
+ *  \brief Exception to report invalid revision number
+ *
+ *  can be unknown or just wrong revision number and also
+ *  revision numbers that have been valid in the past, but
+ *  have been cleaned up in between, so they are not known
+ *  any more.
+ */
+class ExInvRev: public ExInvMsg {
 public:
-	rpcError(std::string reason);
-	virtual ~rpcError() throw ();
+	ExInvRev(std::string reason, int revNr) : ExInvMsg(reason), m_rev_nr(revNr)
+	{
+	};
+	virtual ~ExInvRev() throw ()
+	{
+	};
 
-	std::string getReason();
+	inline int getLineNr()
+	{
+		return m_rev_nr;
+	};
 
-	const char* what() const throw();
+private:
+	int m_rev_nr;
+};
+
+
+
+class ExRpcError: public std::exception {
+public:
+	ExRpcError(std::string reason) : m_reason(reason)
+	{
+	};
+	virtual ~ExRpcError() throw ()
+	{
+	};
+
+	inline const std::string getReason() const throw()
+	{
+		return m_reason;
+	};
+
+	inline const char* what() const throw()
+	{
+		return m_reason.c_str();
+	};
 
 private:
 	std::string m_reason;
 };
 
+// } // namespace muroa  // activate later on
 
 #endif /* MUROAEXCEPTIONS_H_ */

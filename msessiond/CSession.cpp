@@ -156,12 +156,12 @@ void CSession::next()
 	m_stream.play();
 }
 
-CMediaItem* CSession::getCurrentMediaItem() throw(InvalidMsgException)
+CMediaItem* CSession::getCurrentMediaItem() throw(ExInvMsg)
 {
 	CRootItem* curNextlist = getNextlist();
 	IContentItem* citem1 = curNextlist->getBase()->getContentItem(0);  // first element always there
 	if(!citem1) {
-		throw InvalidMsgException("Nextlist is empty. At least current playlist position must be in there. Playlist empty?");
+		throw ExInvMsg("Nextlist is empty. At least current playlist position must be in there. Playlist empty?");
 	}
 	else {
 		assert(citem1->type() == CItemType::E_NEXTLISTITEM);
@@ -172,7 +172,7 @@ CMediaItem* CSession::getCurrentMediaItem() throw(InvalidMsgException)
 		IContentItem* citem2 = curMediaCol->getContentPtr(CItemType::E_MEDIAITEM, nlItem->getMediaItemHash());
 		if(!citem2) {
 			dumpLookupErrorToLog( "Error looking up MediaItem in media collection by hash provided by nextlistItem.", 0, nlItem );
-			throw InvalidMsgException("Error: Selected Song not found in media collection");
+			throw ExInvMsg("Error: Selected Song not found in media collection");
 		}
 		else {
 			assert(citem2->type() == CItemType::E_MEDIAITEM);
@@ -195,19 +195,19 @@ void CSession::removeConnection(CConnection* ptr) {
 	// m_connections_by_id.
 }
 
-CRootItem*  CSession::getMediaCol(int revision) const throw(InvalidMsgException) {
+CRootItem*  CSession::getMediaCol(int revision) const throw(ExInvMsg) {
 	unsigned rev = (revision < 0)?m_maxMediaColRev:revision;
 	CRootItem* ri = getRev(m_mediaColRevs, rev, string("Media collection revision # not known in session "));
 	return ri;
 }
 
-CRootItem*  CSession::getPlaylist(int revision) const throw(InvalidMsgException) {
+CRootItem*  CSession::getPlaylist(int revision) const throw(ExInvMsg) {
 	unsigned rev = (revision < 0)?m_maxPlaylistRev:revision;
 	CRootItem* ri = getRev(m_playlistRevs, rev, "Playlist revision # not known in session ");
 	return ri;
 }
 
-CRootItem*  CSession::getNextlist(int revision) const throw(InvalidMsgException) {
+CRootItem*  CSession::getNextlist(int revision) const throw(ExInvMsg) {
 	unsigned rev = (revision < 0)?m_maxNextlistRev:revision;
 	CRootItem* ri = getRev(m_nextlistRevs, rev, "Nextlist revision # not known in session ");
 	return ri;
@@ -283,7 +283,7 @@ void CSession::addNextlistRev(const string& nextlist) {
 	addNextlistRev(ri);
 }
 
-int CSession::addMediaColRevFromDiff(const string& mediaColDiff, unsigned diffFromRev) throw(MalformedPatchEx) {
+int CSession::addMediaColRevFromDiff(const string& mediaColDiff, unsigned diffFromRev) throw(ExInvMsg) {
 	CRootItem* ri = 0;
 	try {
 		CRootItem* base = getRev(m_mediaColRevs, diffFromRev, "Can't apply media collection diff based on revision # because that revision is unknown in session '");
@@ -292,12 +292,12 @@ int CSession::addMediaColRevFromDiff(const string& mediaColDiff, unsigned diffFr
 		ri->patch(mediaColDiff);
 		addMediaColRev(ri);
 	}
-	catch(MalformedPatchEx& ex) {
+	catch(ExMalformedPatch& ex) {
 		if(ri != 0) delete ri;
 	}
 }
 
-int CSession::addPlaylistRevFromDiff(const string& playlistDiff, unsigned diffFromRev) throw(MalformedPatchEx) {
+int CSession::addPlaylistRevFromDiff(const string& playlistDiff, unsigned diffFromRev) throw(ExInvMsg) {
 	uint32_t oldrev = getMaxPlaylistRev();
 	CRootItem* base = getRev(m_playlistRevs, diffFromRev, "Can't apply playlist diff based on revision # because that revision is unknown in session '");
 
@@ -311,7 +311,7 @@ int CSession::addPlaylistRevFromDiff(const string& playlistDiff, unsigned diffFr
 //	}
 }
 
-int CSession::addNextlistRevFromDiff(const string& nextlistDiff, unsigned diffFromRev) throw(MalformedPatchEx) {
+int CSession::addNextlistRevFromDiff(const string& nextlistDiff, unsigned diffFromRev) throw(ExInvMsg) {
 	uint32_t oldrev = getMaxNextlistRev();
 	CRootItem* base = getRev(m_nextlistRevs, diffFromRev, "Can't apply nextlist diff based on revision # because that revision is unknown in session '");
 
@@ -397,7 +397,7 @@ void CSession::setMinNextlistRevision(int rev) throw() {
 
 CRootItem*  CSession::getRev(const map<unsigned, CRootItem*>& collection,
 		                     const unsigned rev,
-		                     const string& message) const throw(InvalidMsgException)
+		                     const string& message) const throw(ExInvRev)
 {
 	map<unsigned, CRootItem*>::const_iterator it;
 	it = collection.find(rev);
@@ -407,10 +407,10 @@ CRootItem*  CSession::getRev(const map<unsigned, CRootItem*>& collection,
 		if( hashpos != string::npos ) {
 			ostringstream oss;
 			oss << message.substr(0, hashpos) << rev << message.substr( hashpos + 1, message.size() - hashpos - 1 ) << m_name << "'.";
-			throw InvalidMsgException(oss.str());
+			throw ExInvRev(oss.str(), rev);
 		}
 		else {
-			throw InvalidMsgException(message + " '" + m_name + "'.");
+			throw ExInvRev(message + " '" + m_name + "'.", rev);
 		}
 	}
 	return it->second;
@@ -439,7 +439,7 @@ void CSession::scanProgress(uint32_t jobID, uint32_t progress) {
 
 		CmdProgress* progCmd = new CmdProgress(cljob.second, progress);
 		cljob.first->sendCmd(progCmd);
-	}catch(InvalidMsgException ex) {
+	}catch(ExInvMsg ex) {
 
 	}
 }
@@ -452,7 +452,7 @@ void CSession::jobFinished(uint32_t jobID) {
 		CmdFinished* finiCmd = new CmdFinished(clientJob.second);
 		clientJob.first->sendCmd(finiCmd);
 
-	}catch(InvalidMsgException ex) {
+	}catch(ExInvMsg ex) {
 		;
 	}
 
@@ -598,12 +598,12 @@ void CSession::addOutstandingMsg(CMsgBase* msg) {
 	m_outstanding_msgs.insert(p);
 }
 
-void CSession::delOutstandingMsg(uint32_t id) throw(InvalidMsgException) {
+void CSession::delOutstandingMsg(uint32_t id) throw(ExInvMsg) {
 	map<uint32_t, CMsgBase*>::iterator it = m_outstanding_msgs.find(id);
 	if(it == m_outstanding_msgs.end() ) {
 		ostringstream oss;
 		oss << "no command with id '" << id << "' to childprocess outstanding.";
-		throw InvalidMsgException(oss.str());
+		throw ExInvMsg(oss.str());
 	}
 	CMsgBase* msg = it->second;
 
@@ -612,12 +612,12 @@ void CSession::delOutstandingMsg(uint32_t id) throw(InvalidMsgException) {
 	m_outstanding_msgs.erase(it);
 }
 
-muroa::CSession::client_job_t CSession::getClientCmdIdBySubprocessCmdID(uint32_t subprocess_cmd_id, bool delentry) throw(InvalidMsgException) {
+muroa::CSession::client_job_t CSession::getClientCmdIdBySubprocessCmdID(uint32_t subprocess_cmd_id, bool delentry) throw(ExInvMsg) {
 	map<uint32_t, client_job_t>::iterator it = m_subprocess_job_by_cmdID.find(subprocess_cmd_id);
 	if(it == m_subprocess_job_by_cmdID.end()) {
 		ostringstream oss;
 		oss << "no client is waiting for an answer to subprocess command '" << subprocess_cmd_id << "'";
-		throw InvalidMsgException( oss.str() );
+		throw ExInvMsg( oss.str() );
 	}
 	client_job_t client = it->second;
 

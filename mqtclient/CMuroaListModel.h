@@ -37,6 +37,11 @@ public:
 
 	void setBase(CCategoryItem* base);
 
+	inline void setMediaCol(CRootItem* ri) { m_mediaCol = ri; };
+	inline CRootItem* getMediaCol() { return m_mediaCol; };
+	inline void setPlaylist(CRootItem* ri) { m_playlist = ri; };
+	inline CRootItem* getPlaylist() { return m_playlist; };
+
 	int rowCount(const QModelIndex& index) const;
 	QVariant data(const QModelIndex& index, int role = Qt::DisplayRole ) const;
 	QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole );
@@ -50,6 +55,9 @@ public:
 
 private:
 	CCategoryItem* m_model_base;
+
+	CRootItem* m_mediaCol;
+	CRootItem* m_playlist;
 };
 
 #endif /* CLISTMODEL_H_ */

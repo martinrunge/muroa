@@ -33,7 +33,7 @@ class CPlaylistItem: public IContentItem {
 public:
 	CPlaylistItem(uint32_t mediaItemHash, uint32_t plID = 0);
 	CPlaylistItem(CRootItem *root_item, CCategoryItem*  parent, int posInParent = -1);
-	CPlaylistItem(CRootItem *root_item, std::string text, CCategoryItem*  parent, int posInParent = -1) throw(MalformedPatchEx);
+	CPlaylistItem(CRootItem *root_item, std::string text, CCategoryItem*  parent, int posInParent = -1) throw(ExMalformedPatch);
 	virtual ~CPlaylistItem();
 
 	void setParent(CRootItem *root_item, CCategoryItem*  parent, int posInParent = -1);

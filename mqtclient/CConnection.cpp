@@ -121,7 +121,7 @@ void CConnection::onEditCollection(unsigned  fromRev, unsigned toRev, std::strin
 			try {
 				m_session->getMediaColModel()->deserialize(collectionDiff);
 			}
-			catch(MalformedPatchEx ex) {
+			catch(ExMalformedPatch ex) {
 				;
 			}
 		}
@@ -130,13 +130,13 @@ void CConnection::onEditCollection(unsigned  fromRev, unsigned toRev, std::strin
 			if( knownRev != fromRev ) {
 				std::ostringstream oss;
 				oss << "editCollection: Error: got a diff based on rev " << fromRev << " but known rev is " << knownRev;
-				throw MalformedPatchEx(oss.str(), 0);
+				throw ExMalformedPatch(oss.str(), 0);
 			}
 			m_session->getMediaColModel()->patch(collectionDiff);
 		}
 		m_session->getMediaColModel()->setRevision(toRev);
 	}
-	catch(MalformedPatchEx& ex)
+	catch(ExMalformedPatch& ex)
 	{
 		// if diff did not work, try to get whole media collection
 		getCollection();
@@ -153,13 +153,13 @@ void CConnection::onEditPlaylist(unsigned  fromRev, unsigned toRev, std::string 
 			if( knownRev != fromRev ) {
 				std::ostringstream oss;
 				oss << "editPlaylist: Error: got a diff based on rev " << fromRev << " but known rev is " << knownRev;
-				throw MalformedPatchEx(oss.str(), 0);
+				throw ExMalformedPatch(oss.str(), 0);
 			}
 			m_session->getPlaylistModel()->patch(playlistDiff);
 		}
 		m_session->getPlaylistModel()->setRevision(toRev);
 	}
-	catch(MalformedPatchEx& ex)
+	catch(ExMalformedPatch& ex)
 	{
 		// if diff did not work, try to get whole playlist (no diff)
 		getPlaylist();
@@ -176,13 +176,13 @@ void CConnection::onEditNextlist(unsigned  fromRev, unsigned toRev, std::string 
 			if( knownRev != fromRev ) {
 				std::ostringstream oss;
 				oss << "editNextlist: Error: got a diff based on rev " << fromRev << " but known rev is " << knownRev;
-				throw MalformedPatchEx(oss.str(), 0);
+				throw ExMalformedPatch(oss.str(), 0);
 			}
 			m_session->getNextlistModel()->patch(nextlistDiff);
 		}
 		m_session->getNextlistModel()->setRevision(toRev);
 	}
-	catch(MalformedPatchEx& ex)
+	catch(ExMalformedPatch& ex)
 	{
 		// if diff did not work, try to get whole nextlist (no diff)
 		getNextlist();

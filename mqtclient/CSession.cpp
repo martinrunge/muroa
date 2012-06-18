@@ -87,7 +87,7 @@ void CSession::restore()
 		string nextlistFile = QString("%1/%2").arg(m_storeageLoc).arg("nextlist.mcrev").toUtf8().data();
 		m_nextlistModel->fromFile(nextlistFile);
 	}
-	catch(MalformedPatchEx ex) {
+	catch(ExMalformedPatch ex) {
 
 	}
 }

@@ -35,7 +35,7 @@
 using namespace std;
 
 
-CMuroaListModel::CMuroaListModel() {
+CMuroaListModel::CMuroaListModel(): m_mediaCol(0), m_playlist(0) {
 	m_model_base = getBase();
 }
 
@@ -55,21 +55,47 @@ int CMuroaListModel::rowCount(const QModelIndex & index) const {
 
 
 QVariant CMuroaListModel::data(const QModelIndex & index, int role) const {
-	if(role != Qt::DisplayRole)
+	if(role == Qt::ToolTipRole)
+	{
+		IContentItem* item = m_model_base->getContentItem( index.row() );
+		if(!item)
+			return QVariant();
+		if(item->type() ==  CItemType::E_PLAYLISTITEM ) {
+			CPlaylistItem* plItem = reinterpret_cast<CPlaylistItem*>(item);
+			return QString("%1 <- %2").arg(plItem->getMediaItemHash()).arg(plItem->getHash());
+		}
+		else {
+			CNextlistItem* nlItem = reinterpret_cast<CNextlistItem*>(item);
+			return QString("%1 <- %2").arg(nlItem->getPlaylistItemHash()).arg(nlItem->getHash());
+		}
+	}
+	else if(role == Qt::DisplayRole)
+	{
+		CMediaItem* mItem(0);
+		IContentItem* ci(0);
+		IContentItem* item = m_model_base->getContentItem( index.row() );
+		if(!item || m_mediaCol == 0) {
+			return QVariant();
+		}
+		if(item->type() ==  CItemType::E_PLAYLISTITEM ) {
+			CPlaylistItem* plItem = reinterpret_cast<CPlaylistItem*>(item);
+			ci = m_mediaCol->getContentPtr(CItemType(CItemType::E_MEDIAITEM), plItem->getMediaItemHash() );
+		}
+		else {
+			CNextlistItem* nlItem = reinterpret_cast<CNextlistItem*>(item);
+			ci = m_mediaCol->getContentPtr(CItemType(CItemType::E_MEDIAITEM), nlItem->getMediaItemHash() );
+		}
+		if(ci == 0) {
+			return QVariant();
+		}
+		mItem = reinterpret_cast<CMediaItem*>(ci);
+		QString entry = QString("%1 %2").arg(QString::fromUtf8(mItem->getArtist().c_str()))
+				                        .arg(QString::fromUtf8(mItem->getTitle().c_str()));
+		return entry;
+	}
+	else
 	{
 		return QVariant();
-	}
-
-	IContentItem* item = m_model_base->getContentItem( index.row() );
-	if(!item)
-		return QVariant();
-	if(item->type() ==  CItemType::E_PLAYLISTITEM ) {
-		CPlaylistItem* plItem = reinterpret_cast<CPlaylistItem*>(item);
-		return QString("%1 <- %2").arg(plItem->getMediaItemHash()).arg(plItem->getHash());
-	}
-	else {
-		CNextlistItem* nlItem = reinterpret_cast<CNextlistItem*>(item);
-		return QString("%1 <- %2").arg(nlItem->getPlaylistItemHash()).arg(nlItem->getHash());
 	}
 }
 

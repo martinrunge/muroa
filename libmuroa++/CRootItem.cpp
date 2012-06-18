@@ -83,7 +83,7 @@ IContentItem* CRootItem::addEmptyContentItem(CItemType type, CCategoryItem* pare
 }
 
 
-IContentItem* CRootItem::addContentItem(string textWoPath, CCategoryItem* parent, int posInParent) throw (MalformedPatchEx)
+IContentItem* CRootItem::addContentItem(string textWoPath, CCategoryItem* parent, int posInParent) throw (ExMalformedPatch)
 {
 	CItemType itemType = getItemType(textWoPath);
 	if(posInParent == -1) {
@@ -110,12 +110,12 @@ IContentItem* CRootItem::addContentItem(IContentItem* item, CCategoryItem* paren
 	return item;
 }
 
-IContentItem* CRootItem::addContentItem(string text, int posInParent) throw (MalformedPatchEx)
+IContentItem* CRootItem::addContentItem(string text, int posInParent) throw (ExMalformedPatch)
 {
 	string path = stripFirstSection(text);
 	CItemType itemType = getItemType(text);
 	if(itemType.getType() == CItemType::E_INVAL ) {
-		throw MalformedPatchEx("invalid item type", -1);
+		throw ExMalformedPatch("invalid item type", -1);
 	}
 
 	CCategoryItem* parent = getCategoryPtr(path);
@@ -163,7 +163,7 @@ void CRootItem::delContentPtr(const CItemType& type, const uint32_t hash) {
 }
 
 
-void CRootItem::deserialize(std::string text) throw(MalformedPatchEx) {
+void CRootItem::deserialize(std::string text) throw(ExMalformedPatch) {
 	istringstream iss(text);
 	char cline[4096];
 
@@ -183,7 +183,7 @@ void CRootItem::deserialize(std::string text) throw(MalformedPatchEx) {
 	}
 }
 
-void CRootItem::fromFile(std::string filename) throw(MalformedPatchEx) {
+void CRootItem::fromFile(std::string filename) throw(ExMalformedPatch) {
 	ifstream ifs(filename);
 	char cline[4096];
 	int lineNr = 0;
@@ -218,7 +218,7 @@ void CRootItem::fromFile(std::string filename) throw(MalformedPatchEx) {
 				}
 			}
 			catch(std::invalid_argument ex) {
-				throw MalformedPatchEx(ex.what(), lineNr);
+				throw ExMalformedPatch(ex.what(), lineNr);
 			}
 
 		}
@@ -249,7 +249,7 @@ string CRootItem::diff(const CRootItem& other) {
 	return m_base->diff(other.m_base);
 }
 
-void CRootItem::patch(std::string diff) throw(MalformedPatchEx) {
+void CRootItem::patch(std::string diff) throw(ExMalformedPatch) {
 	istringstream iss(diff);
 
 	CCategoryItem* parent = 0;
@@ -291,7 +291,7 @@ void CRootItem::patch(std::string diff) throw(MalformedPatchEx) {
 			if(categoryToRemove == 0) {
 				ostringstream oss;
 				oss << "CRootItem::patch (__FILE__:__LINE__): the category item to be removed was not be found in current collection(" << path << ").";
-				throw MalformedPatchEx(oss.str(), patchLineNr);
+				throw ExMalformedPatch(oss.str(), patchLineNr);
 			}
 			CCategoryItem* parent = categoryToRemove->getParent();
 			parent->delCategory(categoryToRemove);
@@ -317,7 +317,7 @@ void CRootItem::patch(std::string diff) throw(MalformedPatchEx) {
 			}
 			catch(std::invalid_argument ex)
 			{
-				throw MalformedPatchEx(ex.what(), lineNr);
+				throw ExMalformedPatch(ex.what(), lineNr);
 			}
 
 			if(oldLen == 0) oldStart++;
@@ -349,7 +349,7 @@ void CRootItem::patch(std::string diff) throw(MalformedPatchEx) {
 					if(parent == 0) {
 						ostringstream oss;
 						oss << "error removing item: unknown parent category '" << path << "'";
-						throw MalformedPatchEx(oss.str(), patchLineNr);
+						throw ExMalformedPatch(oss.str(), patchLineNr);
 					}
 
 					IContentItem *contItem = parent->getContentItem(lineNr - 1);

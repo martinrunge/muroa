@@ -28,7 +28,7 @@
 #include <mutex>
 #include <condition_variable>
 
-class InvalidMsgException;
+class ExInvMsg;
 
 namespace muroa {
 

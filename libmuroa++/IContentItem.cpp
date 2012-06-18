@@ -54,7 +54,7 @@ IContentItem* IContentItem::itemFactory(const CItemType itemType,
 		                                CRootItem *root_item,
 		                                std::string text,
 		                                CCategoryItem *parent,
-		                                const unsigned posInParent) throw(MalformedPatchEx)
+		                                const unsigned posInParent) throw(ExMalformedPatch)
 {
 	const CItemType::item_type_t type_enum = itemType.getType();
 	switch(type_enum) {
