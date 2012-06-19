@@ -58,20 +58,20 @@ void CConnection::onJoinSession(string sessionName) {
 void CConnection::onLeaveSession() {
 }
 
-void CConnection::onPlay() {
+void CConnection::onPlay(uint32_t jobID) {
 }
 
-void CConnection::onPause() {
+void CConnection::onPause(uint32_t jobID) {
 }
 
-void CConnection::onStop() {
+void CConnection::onStop(uint32_t jobID) {
 }
 
-void CConnection::onNext()
+void CConnection::onNext(uint32_t jobID)
 {
 }
 
-void CConnection::onPrev()
+void CConnection::onPrev(uint32_t jobID)
 {
 }
 
@@ -91,31 +91,31 @@ void CConnection::onError(uint32_t jobID, int errorCode, std::string description
 {
 }
 
-void CConnection::onGetCollection(unsigned  knownRev)
+void CConnection::onGetCollection(uint32_t jobID, unsigned  knownRev)
 {
 }
 
-void CConnection::onGetPlaylist(unsigned  knownRev)
+void CConnection::onGetPlaylist(uint32_t jobID, unsigned  knownRev)
 {
 }
 
-void CConnection::onGetNextlist(unsigned  knownRev)
+void CConnection::onGetNextlist(uint32_t jobID, unsigned  knownRev)
 {
 }
 
-void CConnection::onCollection(unsigned  diffFromRev, std::string collection)
+void CConnection::onCollection(uint32_t jobID, unsigned  diffFromRev, std::string collection)
 {
 }
 
-void CConnection::onPlaylist(unsigned  diffFromRev, std::string playlist)
+void CConnection::onPlaylist(uint32_t jobID, unsigned  diffFromRev, std::string playlist)
 {
 }
 
-void CConnection::onNextlist(unsigned  diffFromRev, std::string nextlist)
+void CConnection::onNextlist(uint32_t jobID, unsigned  diffFromRev, std::string nextlist)
 {
 }
 
-void CConnection::onEditCollection(unsigned  fromRev, unsigned toRev, std::string collectionDiff) {
+void CConnection::onEditCollection(uint32_t jobID, unsigned  fromRev, unsigned toRev, std::string collectionDiff) {
 	try {
 		if(fromRev == 0) {
 			try {
@@ -139,11 +139,11 @@ void CConnection::onEditCollection(unsigned  fromRev, unsigned toRev, std::strin
 	catch(ExMalformedPatch& ex)
 	{
 		// if diff did not work, try to get whole media collection
-		getCollection();
+		getCollection(0);
 	}
 }
 
-void CConnection::onEditPlaylist(unsigned  fromRev, unsigned toRev, std::string playlistDiff) {
+void CConnection::onEditPlaylist(uint32_t jobID, unsigned  fromRev, unsigned toRev, std::string playlistDiff) {
 	try {
 		if(fromRev == 0) {
 			m_session->getPlaylistModel()->deserialize(playlistDiff);
@@ -162,11 +162,11 @@ void CConnection::onEditPlaylist(unsigned  fromRev, unsigned toRev, std::string 
 	catch(ExMalformedPatch& ex)
 	{
 		// if diff did not work, try to get whole playlist (no diff)
-		getPlaylist();
+		getPlaylist(0);
 	}
 }
 
-void CConnection::onEditNextlist(unsigned  fromRev, unsigned toRev, std::string nextlistDiff) {
+void CConnection::onEditNextlist(uint32_t jobID, unsigned  fromRev, unsigned toRev, std::string nextlistDiff) {
 	try {
 		if(fromRev == 0) {
 			m_session->getNextlistModel()->deserialize(nextlistDiff);
@@ -185,26 +185,26 @@ void CConnection::onEditNextlist(unsigned  fromRev, unsigned toRev, std::string 
 	catch(ExMalformedPatch& ex)
 	{
 		// if diff did not work, try to get whole nextlist (no diff)
-		getNextlist();
+		getNextlist(0);
 	}
 }
 
-void CConnection::play()
+void CConnection::play(uint32_t jobID)
 {
-	CMuroaXml::play();
+	CMuroaXml::play(jobID);
 }
 
-void CConnection::stop()
+void CConnection::stop(uint32_t jobID)
 {
-	CMuroaXml::stop();
+	CMuroaXml::stop(jobID);
 }
 
-void CConnection::next() {
-	CMuroaXml::next();
+void CConnection::next(uint32_t jobID) {
+	CMuroaXml::next(jobID);
 }
 
-void CConnection::prev() {
-	CMuroaXml::prev();
+void CConnection::prev(uint32_t jobID) {
+	CMuroaXml::prev(jobID);
 }
 
 
@@ -273,36 +273,36 @@ void CConnection::sendCommand(CmdBase* cmd) {
 		case CmdBase::EDIT_MEDIA_COL:
 		{
 			CmdEditMediaCol* emc = static_cast<CmdEditMediaCol*>(cmd);
-			editCollection( emc->knownRev(), 0, emc->data() );
+			editCollection( emc->id(), emc->knownRev(), 0, emc->data() );
 		}
 		break;
 		case CmdBase::EDIT_PLAYLIST:
 		{
 			CmdEditPlaylist* epl = static_cast<CmdEditPlaylist*>(cmd);
-			editPlaylist( epl->knownRev(), 0, epl->data() );
+			editPlaylist( epl->id(),  epl->knownRev(), 0, epl->data() );
 		}
 		break;
 		case CmdBase::EDIT_NEXTLIST:
 		{
 			CmdEditNextlist* enl = static_cast<CmdEditNextlist*>(cmd);
-			editNextlist( enl->knownRev(), 0, enl->data() );
+			editNextlist( enl->id(), enl->knownRev(), 0, enl->data() );
 		}
 		break;
 		case CmdBase::PLAY:
 		{
-			play();
+			play(cmd->id());
 		} break;
 		case CmdBase::PAUSE:
 		{
-			pause();
+			pause(cmd->id());
 		} break;
 		case CmdBase::NEXT:
 		{
-			next();
+			next(cmd->id());
 		} break;
 		case CmdBase::PREV:
 		{
-			prev();
+			prev(cmd->id());
 		} break;
 		case CmdBase::SCAN_COLLECTION:
 		{

@@ -275,19 +275,24 @@ int CParserStateMachine::sessionState(const action_flag& init_start_end, const s
 			onLeaveSession();
 		}
 		else if(name.compare("next") == 0) {
-			onNext();
+			onNext(m_jobID);
+			m_jobID = 0;
 		}
 		else if(name.compare("prev") == 0) {
-			onPrev();
+			onPrev(m_jobID);
+			m_jobID = 0;
 		}
 		else if(name.compare("play") == 0) {
-			onPlay();
+			onPlay(m_jobID);
+			m_jobID = 0;
 		}
 		else if(name.compare("pause") == 0) {
-			onPause();
+			onPause(m_jobID);
+			m_jobID = 0;
 		}
 		else if(name.compare("stop") == 0) {
-			onStop();
+			onStop(m_jobID);
+			m_jobID =0;
 		}
 		else if (name.compare(xmlCommands::scanCollection) == 0) {
 			onScanCollection(m_jobID);
@@ -307,40 +312,49 @@ int CParserStateMachine::sessionState(const action_flag& init_start_end, const s
 		// get
 		else if (name.compare("getCollection") == 0) {
 			// got collection
-			onGetCollection(m_knownRev);
+			onGetCollection(m_jobID, m_knownRev);
+			m_jobID= 0;
 		}
 		else if (name.compare("getPlaylist") == 0) {
-			onGetPlaylist(m_knownRev);
+			onGetPlaylist(m_jobID, m_knownRev);
+			m_jobID= 0;
 		}
 		else if (name.compare("getNextlist") == 0) {
-			onGetNextlist(m_knownRev);
+			onGetNextlist(m_jobID, m_knownRev);
+			m_jobID= 0;
 		}
 
 		// response to get
 		else if (name.compare("collection") == 0) {
-			onCollection(m_diffFromRev, m_get_text);
+			onCollection(m_jobID, m_diffFromRev, m_get_text);
+			m_jobID = 0;
 			m_get_text = "";
 		}
 		else if (name.compare("playlist") == 0) {
-			onPlaylist(m_diffFromRev, m_get_text);
+			onPlaylist(m_jobID, m_diffFromRev, m_get_text);
+			m_jobID = 0;
 			m_get_text = "";
 		}
 		else if (name.compare("nextlist") == 0) {
-			onNextlist(m_diffFromRev, m_get_text);
+			onNextlist(m_jobID, m_diffFromRev, m_get_text);
+			m_jobID = 0;
 			m_get_text = "";
 		}
 
 		// edit
 		else if (name.compare("editCollection") == 0) {
-			onEditCollection(m_fromRev, m_toRev, m_edit_text);
+			onEditCollection(m_jobID, m_fromRev, m_toRev, m_edit_text);
+			m_jobID = 0;
 			m_edit_text = "";
 		}
 		else if (name.compare("editPlaylist") == 0) {
-			onEditPlaylist(m_fromRev, m_toRev, m_edit_text);
+			onEditPlaylist(m_jobID, m_fromRev, m_toRev, m_edit_text);
+			m_jobID = 0;
 			m_edit_text = "";
 		}
 		else if (name.compare("editNextlist") == 0) {
-			onEditNextlist(m_fromRev, m_toRev, m_edit_text);
+			onEditNextlist(m_jobID, m_fromRev, m_toRev, m_edit_text);
+			m_jobID = 0;
 			m_edit_text = "";
 		}
 		else if(m_tag_unknown_depth > 1) {

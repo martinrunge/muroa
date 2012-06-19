@@ -64,54 +64,59 @@ void CConnection::joinSession(std::string name) {
 	m_rpc->joinSession(name);
 }
 
-void CConnection::sendLatestMediaColRev(unsigned knownRev) {
+void CConnection::sendLatestMediaColRev(uint32_t jobID, unsigned knownRev) {
 	std::string diff;
 	try {
-		if(knownRev == 0) {
+		if( m_session->hasMediaColRev( knownRev ))
+		{
+			diff = m_session->getMediaColDiff(knownRev);
+		}
+		else
+		{
 			CRootItem* ri = m_session->getMediaCol();  // get latest rev
 			diff = ri->serialize();
 		}
-		else {
-			diff = m_session->getMediaColDiff(knownRev);
-		}
-		m_rpc->editCollection(knownRev, m_session->getMaxMediaColRev(), diff);
+		m_rpc->editCollection( jobID, knownRev, m_session->getMaxMediaColRev(), diff);
 	}
 	catch(ExInvMsg iex) {
-		m_rpc->error(0, 0, iex.what());
+		m_rpc->error(jobID, 0, iex.what());
 	}
 }
 
-void CConnection::sendLatestPlaylistRev(unsigned knownRev) {
+void CConnection::sendLatestPlaylistRev(uint32_t jobID, unsigned knownRev) {
 	std::string diff;
 	try {
-		if(knownRev == 0) {
-			CRootItem* ri = m_session->getPlaylist();  // get latest rev
-			diff = ri->serialize();
+		if( m_session->hasPlaylistRev( knownRev))
+		{
+            diff = m_session->getPlaylistDiff(knownRev);
 		}
-		else {
-			diff = m_session->getPlaylistDiff(knownRev);
+		else
+		{
+            CRootItem* ri = m_session->getPlaylist();  // get latest rev
+            diff = ri->serialize();
 		}
-		m_rpc->editPlaylist(knownRev, m_session->getMaxPlaylistRev(), diff);
+		m_rpc->editPlaylist(jobID, knownRev, m_session->getMaxPlaylistRev(), diff);
 	}
 	catch(ExInvMsg iex) {
-		m_rpc->error(0, 0, iex.what());
+		m_rpc->error(jobID, 0, iex.what());
 	}
 }
 
-void CConnection::sendLatestNextlistRev(unsigned knownRev) {
+void CConnection::sendLatestNextlistRev(uint32_t jobID, unsigned knownRev) {
 	std::string diff;
 	try {
-		if(knownRev == 0) {
-			CRootItem* ri = m_session->getNextlist();  // get latest rev
-			diff = ri->serialize();
+		if( m_session->hasNextlistRev( knownRev )) {
+            diff = m_session->getNextlistDiff(knownRev);
 		}
-		else {
-			diff = m_session->getNextlistDiff(knownRev);
+		else
+		{
+            CRootItem* ri = m_session->getNextlist();  // get latest rev
+            diff = ri->serialize();
 		}
-		m_rpc->editNextlist(knownRev, m_session->getMaxNextlistRev(), diff);
+		m_rpc->editNextlist(jobID, knownRev, m_session->getMaxNextlistRev(), diff);
 	}
 	catch(ExInvMsg iex) {
-		m_rpc->error(0, 0, iex.what());
+		m_rpc->error(jobID, 0, iex.what());
 	}
 }
 
@@ -141,19 +146,19 @@ void CConnection::sendCmd( Cmd* cmd ) {
 }
 
 void CConnection::play(CmdPlay* playCmd) {
-	m_rpc->play();
+	m_rpc->play(playCmd->id());
 }
 
 void CConnection::stop(CmdStop* stopCmd) {
-	m_rpc->stop();
+	m_rpc->stop(stopCmd->id());
 }
 
 void CConnection::next(CmdNext* nextCmd) {
-	m_rpc->next();
+	m_rpc->next(nextCmd->id());
 }
 
 void CConnection::prev(CmdPrev* prevCmd) {
-	m_rpc->prev();
+	m_rpc->prev(prevCmd->id());
 }
 
 void CConnection::progress(CmdProgress* progressMsg) {
@@ -165,7 +170,7 @@ void CConnection::finished(CmdFinished* finishedCmd) {
 }
 
 void CConnection::collectionChanged(CmdEditMediaCol* colChangedCmd) {
-	m_rpc->editCollection(colChangedCmd->getFromRev(), colChangedCmd->getToRev(), colChangedCmd->getDiff());
+	m_rpc->editCollection(colChangedCmd->id(), colChangedCmd->getFromRev(), colChangedCmd->getToRev(), colChangedCmd->getDiff());
 }
 
 void CConnection::response(CmdResp* respCmd) {

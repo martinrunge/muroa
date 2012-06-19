@@ -84,28 +84,28 @@ public:
 	virtual void onJoinSession(std::string sessionName) = 0;
 	virtual void onLeaveSession() = 0;
 
-	virtual void onPlay() = 0;
-	virtual void onStop() = 0;
-	virtual void onPause() = 0;
-	virtual void onNext() = 0;
-	virtual void onPrev() = 0;
+	virtual void onPlay(uint32_t jobID) = 0;
+	virtual void onStop(uint32_t jobID) = 0;
+	virtual void onPause(uint32_t jobID) = 0;
+	virtual void onNext(uint32_t jobID) = 0;
+	virtual void onPrev(uint32_t jobID) = 0;
 
 	virtual void onStateChanged(int newState) = 0;
 	virtual void onScanCollection(uint32_t jobID) = 0;
 	virtual void onProgress(uint32_t jobID, int progress) = 0;
 	virtual void onError(uint32_t jobID, int errorCode, std::string description) = 0;
 
-	virtual void onGetCollection( unsigned knownRev ) = 0;
-	virtual void onGetPlaylist( unsigned knownRev ) = 0;
-	virtual void onGetNextlist( unsigned knownRev ) = 0;
+	virtual void onGetCollection( uint32_t jobID, unsigned knownRev ) = 0;
+	virtual void onGetPlaylist( uint32_t jobID, unsigned knownRev ) = 0;
+	virtual void onGetNextlist( uint32_t jobID, unsigned knownRev ) = 0;
 
-	virtual void onCollection( unsigned knownRev, std::string collection ) = 0;
-	virtual void onPlaylist( unsigned knownRev, std::string playlist ) = 0;
-	virtual void onNextlist( unsigned knownRev, std::string nextlist ) = 0;
+	virtual void onCollection( uint32_t jobID, unsigned knownRev, std::string collection ) = 0;
+	virtual void onPlaylist( uint32_t jobID, unsigned knownRev, std::string playlist ) = 0;
+	virtual void onNextlist( uint32_t jobID, unsigned knownRev, std::string nextlist ) = 0;
 
-	virtual void onEditCollection( unsigned fromRev, unsigned toRev, std::string editScript ) = 0;
-	virtual void onEditPlaylist( unsigned fromRev, unsigned toRev, std::string editScript ) = 0;
-	virtual void onEditNextlist( unsigned fromRev, unsigned toRev, std::string editScript ) = 0;
+	virtual void onEditCollection( uint32_t jobID, unsigned fromRev, unsigned toRev, std::string editScript ) = 0;
+	virtual void onEditPlaylist( uint32_t jobID, unsigned fromRev, unsigned toRev, std::string editScript ) = 0;
+	virtual void onEditNextlist( uint32_t jobID, unsigned fromRev, unsigned toRev, std::string editScript ) = 0;
 
 	virtual void onStartSession() = 0;
 	virtual void onEndSession() = 0;

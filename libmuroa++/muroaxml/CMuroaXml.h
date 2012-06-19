@@ -29,11 +29,11 @@ public:
 
 	void leaveSession();
 
-	void play();
-	void pause();
-	void stop();
-	void next();
-	void prev();
+	void play(uint32_t jobID);
+	void pause(uint32_t jobID);
+	void stop(uint32_t jobID);
+	void next(uint32_t jobID);
+	void prev(uint32_t jobID);
 
 	void stateChanged(int newState);
 	void scanCollection(uint32_t jobID);
@@ -41,13 +41,13 @@ public:
 	void finished(uint32_t jobID);
 	void error(uint32_t jobID, int errorCode, std::string description);
 
-	void getCollection( unsigned knownRev = 0);
-	void getPlaylist( unsigned knownRev = 0);
-	void getNextlist( unsigned knownRev = 0);
+	void getCollection(uint32_t jobID, unsigned knownRev = 0);
+	void getPlaylist(uint32_t jobID, unsigned knownRev = 0);
+	void getNextlist(uint32_t jobID, unsigned knownRev = 0);
 
-	void editCollection( unsigned fromRev, unsigned toRev, std::string diff );
-	void editPlaylist( unsigned fromRev, unsigned toRev, std::string diff );
-	void editNextlist( unsigned fromRev, unsigned toRev, std::string diff );
+	void editCollection(uint32_t jobID, unsigned fromRev, unsigned toRev, std::string diff );
+	void editPlaylist(uint32_t jobID, unsigned fromRev, unsigned toRev, std::string diff );
+	void editNextlist(uint32_t jobID, unsigned fromRev, unsigned toRev, std::string diff );
 
 
 	void newData(const char* data, int len);

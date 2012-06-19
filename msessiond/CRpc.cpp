@@ -53,31 +53,31 @@ CRpc::~CRpc() {
     {
     }
 
-    void CRpc::onPlay()
+    void CRpc::onPlay(uint32_t jobID)
     {
     	CmdPlay* cmd = new CmdPlay();
     	m_connection->incomingCmd(cmd);
     }
 
-    void CRpc::onPause()
+    void CRpc::onPause(uint32_t jobID)
     {
     	CmdPause* cmd = new CmdPause();
     	m_connection->incomingCmd(cmd);
     }
 
-    void CRpc::onStop()
+    void CRpc::onStop(uint32_t jobID)
     {
     	CmdStop* cmd = new CmdStop();
     	m_connection->incomingCmd(cmd);
     }
 
-    void CRpc::onNext()
+    void CRpc::onNext(uint32_t jobID)
     {
     	CmdNext* cmd = new CmdNext();
     	m_connection->incomingCmd(cmd);
     }
 
-    void CRpc::onPrev()
+    void CRpc::onPrev(uint32_t jobID)
     {
     	CmdPrev* cmd = new CmdPrev();
     	m_connection->incomingCmd(cmd);
@@ -104,38 +104,38 @@ CRpc::~CRpc() {
     {
     }
 
-    void CRpc::onGetCollection(unsigned  knownRev) {
-    	m_connection->sendLatestMediaColRev(knownRev);
+    void CRpc::onGetCollection(uint32_t jobID, unsigned  knownRev) {
+    	m_connection->sendLatestMediaColRev(jobID, knownRev);
     }
 
-    void CRpc::onGetPlaylist(unsigned  knownRev) {
-    	m_connection->sendLatestPlaylistRev(knownRev);
+    void CRpc::onGetPlaylist(uint32_t jobID, unsigned  knownRev) {
+    	m_connection->sendLatestPlaylistRev(jobID, knownRev);
     }
 
-    void CRpc::onGetNextlist(unsigned  knownRev) {
-    	m_connection->sendLatestNextlistRev(knownRev);
+    void CRpc::onGetNextlist(uint32_t jobID, unsigned  knownRev) {
+    	m_connection->sendLatestNextlistRev(jobID, knownRev);
     }
 
-    void CRpc::onCollection(unsigned  diffFromRev, std::string collection) {
+    void CRpc::onCollection(uint32_t jobID, unsigned  diffFromRev, std::string collection) {
     }
 
-    void CRpc::onPlaylist(unsigned  diffFromRev, std::string playlist) {
+    void CRpc::onPlaylist(uint32_t jobID, unsigned  diffFromRev, std::string playlist) {
     }
 
-    void CRpc::onNextlist(unsigned  diffFromRev, std::string nextlist) {
+    void CRpc::onNextlist(uint32_t jobID, unsigned  diffFromRev, std::string nextlist) {
     }
 
-    void CRpc::onEditCollection(unsigned  fromRev, unsigned toRev, std::string collectionDiff) {
+    void CRpc::onEditCollection(uint32_t jobID, unsigned  fromRev, unsigned toRev, std::string collectionDiff) {
     	CmdEditMediaCol* emc = new CmdEditMediaCol(fromRev, toRev, collectionDiff);
     	m_connection->incomingCmd(emc);
     }
 
-    void CRpc::onEditPlaylist(unsigned  fromRev, unsigned toRev, std::string playlistDiff) {
+    void CRpc::onEditPlaylist(uint32_t jobID, unsigned  fromRev, unsigned toRev, std::string playlistDiff) {
     	CmdEditPlaylist* ep = new CmdEditPlaylist(fromRev, toRev, playlistDiff);
     	m_connection->incomingCmd(ep);
     }
 
-    void CRpc::onEditNextlist(unsigned  fromRev, unsigned toRev, std::string nextlistDiff) {
+    void CRpc::onEditNextlist(uint32_t jobID, unsigned  fromRev, unsigned toRev, std::string nextlistDiff) {
     	CmdEditNextlist* en = new CmdEditNextlist(fromRev, toRev, nextlistDiff);
     	m_connection->incomingCmd(en);
     }
@@ -145,25 +145,25 @@ CRpc::~CRpc() {
 		case Cmd::PLAY:
 		{
 			// CmdPlay* msg = reinterpret_cast<CmdPlay*>(cmd);
-			play();
+			play(cmd->id());
 			break;
 		}
 		case Cmd::STOP:
 		{
 			// CmdStop* msg = reinterpret_cast<CmdStop*>(cmd);
-			stop();
+			stop(cmd->id());
 			break;
 		}
 		case Cmd::NEXT:
 		{
 			// CmdNext* msg = reinterpret_cast<CmdNext*>(cmd);
-			next();
+			next(cmd->id());
 			break;
 		}
 		case Cmd::PREV:
 		{
 			// CmdPrev* msg = reinterpret_cast<CmdPrev*>(cmd);
-			prev();
+			prev(cmd->id());
 			break;
 		}
 		case Cmd::PROGRESS:
@@ -195,19 +195,19 @@ CRpc::~CRpc() {
 		case Cmd::EDIT_MEDIACOL:
 		{
 			CmdEditMediaCol* cmd_emc = reinterpret_cast<CmdEditMediaCol*>(cmd);
-			editCollection(cmd_emc->getFromRev(), cmd_emc->getToRev(), cmd_emc->getDiff());
+			editCollection(cmd_emc->id(), cmd_emc->getFromRev(), cmd_emc->getToRev(), cmd_emc->getDiff());
 			break;
 		}
 		case Cmd::EDIT_PLAYLIST:
 		{
 			CmdEditPlaylist* cmd_epl = reinterpret_cast<CmdEditPlaylist*>(cmd);
-			editPlaylist(cmd_epl->getFromRev(), cmd_epl->getToRev(), cmd_epl->getDiff());
+			editPlaylist(cmd_epl->id(), cmd_epl->getFromRev(), cmd_epl->getToRev(), cmd_epl->getDiff());
 			break;
 		}
 		case Cmd::EDIT_NEXTLIST:
 		{
 			CmdEditNextlist* cmd_enl = reinterpret_cast<CmdEditNextlist*>(cmd);
-			editNextlist(cmd_enl->getFromRev(), cmd_enl->getToRev(), cmd_enl->getDiff());
+			editNextlist(cmd_enl->id(), cmd_enl->getFromRev(), cmd_enl->getToRev(), cmd_enl->getDiff());
 			break;
 		}
 		default:

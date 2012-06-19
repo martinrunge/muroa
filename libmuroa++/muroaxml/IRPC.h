@@ -29,10 +29,10 @@ public:
 	virtual void leaveSession() = 0;
 	virtual void onLeaveSession() = 0;
 
-	virtual void play() = 0;
-	virtual void stop() = 0;
-	virtual void next() = 0;
-	virtual void prev() = 0;
+	virtual void play(uint32_t jobID) = 0;
+	virtual void stop(uint32_t jobID) = 0;
+	virtual void next(uint32_t jobID) = 0;
+	virtual void prev(uint32_t jobID) = 0;
 
 	virtual void stateChanged(int newState) = 0;
 	virtual void onStateChanged(int newState) = 0;
@@ -49,26 +49,26 @@ public:
 	virtual void error(uint32_t jobID, int errorCode, std::string description) = 0;
 	virtual void onError(uint32_t jobID, int errorCode, std::string description) = 0;
 
-	virtual void getCollection( unsigned knownRev ) = 0;
-	virtual void getPlaylist( unsigned knownRev ) = 0;
-	virtual void getNextlist( unsigned knownRev ) = 0;
+	virtual void getCollection(uint32_t jobID, unsigned knownRev ) = 0;
+	virtual void getPlaylist(uint32_t jobID, unsigned knownRev ) = 0;
+	virtual void getNextlist(uint32_t jobID, unsigned knownRev ) = 0;
 
-	virtual void editCollection( unsigned fromRev, unsigned toRev, std::string diff ) = 0;
-	virtual void editPlaylist( unsigned fromRev, unsigned toRev, std::string diff ) = 0;
-	virtual void editNextlist( unsigned fromRev, unsigned toRev, std::string diff ) = 0;
+	virtual void editCollection(uint32_t jobID, unsigned fromRev, unsigned toRev, std::string diff ) = 0;
+	virtual void editPlaylist(uint32_t jobID, unsigned fromRev, unsigned toRev, std::string diff ) = 0;
+	virtual void editNextlist(uint32_t jobID, unsigned fromRev, unsigned toRev, std::string diff ) = 0;
 
-	virtual void onPlay() = 0;
-	virtual void onStop() = 0;
-	virtual void onNext() = 0;
-	virtual void onPrev() = 0;
+	virtual void onPlay(uint32_t jobID = 0) = 0;
+	virtual void onStop(uint32_t jobID = 0) = 0;
+	virtual void onNext(uint32_t jobID = 0) = 0;
+	virtual void onPrev(uint32_t jobID = 0) = 0;
 
-	virtual void onGetCollection( unsigned knownRev ) = 0;
-	virtual void onGetPlaylist( unsigned knownRev ) = 0;
-	virtual void onGetNextlist( unsigned knownRev ) = 0;
+	virtual void onGetCollection(uint32_t jobID, unsigned knownRev ) = 0;
+	virtual void onGetPlaylist(uint32_t jobID, unsigned knownRev ) = 0;
+	virtual void onGetNextlist(uint32_t jobID, unsigned knownRev ) = 0;
 
-	virtual void onEditCollection( unsigned fromRev, unsigned toRev, std::string collectionDiff) = 0;
-	virtual void onEditPlaylist( unsigned fromRev, unsigned toRev, std::string playlistDiff ) = 0;
-	virtual void onEditNextlist( unsigned fromRev, unsigned toRev, std::string nextlistDiff ) = 0;
+	virtual void onEditCollection(uint32_t jobID, unsigned fromRev, unsigned toRev, std::string collectionDiff) = 0;
+	virtual void onEditPlaylist(uint32_t jobID, unsigned fromRev, unsigned toRev, std::string playlistDiff ) = 0;
+	virtual void onEditNextlist(uint32_t jobID, unsigned fromRev, unsigned toRev, std::string nextlistDiff ) = 0;
 
 	// onDataToSend:
 	// called when there are serialized command ready to be sent to receiver

@@ -54,7 +54,7 @@ void CMuroaXmlRpcTest::joinSession() {
 
 void CMuroaXmlRpcTest::play() {
 	m_rpc_out->joinSession(m_sessionName);
-	m_rpc_out->play();
+	m_rpc_out->play(1);
 	string last_cmd = m_rpc_in->getLastCmd();
 
 	CPPUNIT_ASSERT(last_cmd.compare("play") == 0);
@@ -62,7 +62,7 @@ void CMuroaXmlRpcTest::play() {
 
 void CMuroaXmlRpcTest::pause() {
 	m_rpc_out->joinSession(m_sessionName);
-	m_rpc_out->pause();
+	m_rpc_out->pause(2);
 	string last_cmd = m_rpc_in->getLastCmd();
 
 	CPPUNIT_ASSERT(last_cmd.compare("pause") == 0);
@@ -70,7 +70,7 @@ void CMuroaXmlRpcTest::pause() {
 
 void CMuroaXmlRpcTest::stop() {
 	m_rpc_out->joinSession(m_sessionName);
-	m_rpc_out->stop();
+	m_rpc_out->stop(3);
 	string last_cmd = m_rpc_in->getLastCmd();
 
 	CPPUNIT_ASSERT(last_cmd.compare("stop") == 0);
@@ -78,7 +78,7 @@ void CMuroaXmlRpcTest::stop() {
 
 void CMuroaXmlRpcTest::prev() {
 	m_rpc_out->joinSession(m_sessionName);
-	m_rpc_out->prev();
+	m_rpc_out->prev(4);
 	string last_cmd = m_rpc_in->getLastCmd();
 
 	CPPUNIT_ASSERT(last_cmd.compare("prev") == 0);
@@ -86,7 +86,7 @@ void CMuroaXmlRpcTest::prev() {
 
 void CMuroaXmlRpcTest::next() {
 	m_rpc_out->joinSession(m_sessionName);
-	m_rpc_out->next();
+	m_rpc_out->next(5);
 	string last_cmd = m_rpc_in->getLastCmd();
 
 	CPPUNIT_ASSERT(last_cmd.compare("next") == 0);
@@ -119,12 +119,12 @@ void CMuroaXmlRpcTest::error() {
 
 void CMuroaXmlRpcTest::getCollection() {
 	m_rpc_out->joinSession(m_sessionName);
-	m_rpc_out->getCollection();
+	m_rpc_out->getCollection(7);
 	string last_cmd = m_rpc_in->getLastCmd();
 
 	CPPUNIT_ASSERT(last_cmd.compare("getCollection(0)") == 0);
 
-	m_rpc_out->getCollection(17);
+	m_rpc_out->getCollection(8, 17);
 	last_cmd = m_rpc_in->getLastCmd();
 
 	CPPUNIT_ASSERT(last_cmd.compare("getCollection(17)") == 0);
@@ -132,12 +132,12 @@ void CMuroaXmlRpcTest::getCollection() {
 
 void CMuroaXmlRpcTest::getPlaylist() {
 	m_rpc_out->joinSession(m_sessionName);
-	m_rpc_out->getPlaylist();
+	m_rpc_out->getPlaylist(9);
 	string last_cmd = m_rpc_in->getLastCmd();
 
 	CPPUNIT_ASSERT(last_cmd.compare("getPlaylist(0)") == 0);
 
-	m_rpc_out->getPlaylist(17);
+	m_rpc_out->getPlaylist(10, 17);
 	last_cmd = m_rpc_in->getLastCmd();
 
 	CPPUNIT_ASSERT(last_cmd.compare("getPlaylist(17)") == 0);
@@ -145,12 +145,12 @@ void CMuroaXmlRpcTest::getPlaylist() {
 
 void CMuroaXmlRpcTest::getNextlist() {
 	m_rpc_out->joinSession(m_sessionName);
-	m_rpc_out->getNextlist();
+	m_rpc_out->getNextlist(11);
 	string last_cmd = m_rpc_in->getLastCmd();
 
 	CPPUNIT_ASSERT(last_cmd.compare("getNextlist(0)") == 0);
 
-	m_rpc_out->getNextlist(17);
+	m_rpc_out->getNextlist(12, 17);
 	last_cmd = m_rpc_in->getLastCmd();
 
 	CPPUNIT_ASSERT(last_cmd.compare("getNextlist(17)") == 0);

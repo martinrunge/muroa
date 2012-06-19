@@ -45,23 +45,23 @@ void CRpcDummy::onDataToSend(const char* data, int length) {
 	m_receiver->newData(data, length);
 }
 
-void CRpcDummy::onPlay() {
+void CRpcDummy::onPlay(uint32_t jobID) {
 	m_last_cmd = "play";
 }
 
-void CRpcDummy::onPause() {
+void CRpcDummy::onPause(uint32_t jobID) {
 	m_last_cmd = "pause";
 }
 
-void CRpcDummy::onStop() {
+void CRpcDummy::onStop(uint32_t jobID) {
 	m_last_cmd = "stop";
 }
 
-void CRpcDummy::onNext() {
+void CRpcDummy::onNext(uint32_t jobID) {
 	m_last_cmd = "next";
 }
 
-void CRpcDummy::onPrev() {
+void CRpcDummy::onPrev(uint32_t jobID) {
 	m_last_cmd = "prev";
 }
 
@@ -96,55 +96,55 @@ void CRpcDummy::onError(uint32_t jobID, int errorCode, std::string description) 
 
 }
 
-void CRpcDummy::onGetCollection(unsigned  knownRev) {
+void CRpcDummy::onGetCollection(uint32_t jobID, unsigned  knownRev) {
 	ostringstream oss;
 	oss << "getCollection(" << knownRev << ")";
 	m_last_cmd = oss.str();
 }
 
-void CRpcDummy::onGetPlaylist(unsigned  knownRev) {
+void CRpcDummy::onGetPlaylist(uint32_t jobID, unsigned  knownRev) {
 	ostringstream oss;
 	oss << "getPlaylist(" << knownRev << ")";
 	m_last_cmd = oss.str();
 }
 
-void CRpcDummy::onGetNextlist(unsigned  knownRev) {
+void CRpcDummy::onGetNextlist(uint32_t jobID, unsigned  knownRev) {
 	ostringstream oss;
 	oss << "getNextlist(" << knownRev << ")";
 	m_last_cmd = oss.str();
 }
 
-void CRpcDummy::onCollection(unsigned  diffFromRev, string collection) {
+void CRpcDummy::onCollection(uint32_t jobID, unsigned  diffFromRev, string collection) {
 	ostringstream oss;
 	oss << "collection(" << diffFromRev << ")";
 	m_last_cmd = oss.str();
 }
 
-void CRpcDummy::onPlaylist(unsigned  diffFromRev, string playlist) {
+void CRpcDummy::onPlaylist(uint32_t jobID, unsigned  diffFromRev, string playlist) {
 	ostringstream oss;
 	oss << "playlist(" << diffFromRev << ")";
 	m_last_cmd = oss.str();
 }
 
-void CRpcDummy::onNextlist(unsigned  diffFromRev, string nextlist) {
+void CRpcDummy::onNextlist(uint32_t jobID, unsigned  diffFromRev, string nextlist) {
 	ostringstream oss;
 	oss << "nextlist(" << diffFromRev << ")";
 	m_last_cmd = oss.str();
 }
 
-void CRpcDummy::onEditCollection(unsigned  fromRev, unsigned toRev, string collectionDiff) {
+void CRpcDummy::onEditCollection(uint32_t jobID, unsigned  fromRev, unsigned toRev, string collectionDiff) {
 	ostringstream oss;
 	oss << "editCollection(" << fromRev << ")";
 	m_last_cmd = oss.str();
 }
 
-void CRpcDummy::onEditPlaylist(unsigned  fromRev, unsigned toRev, string playlistDiff) {
+void CRpcDummy::onEditPlaylist(uint32_t jobID, unsigned  fromRev, unsigned toRev, string playlistDiff) {
 	ostringstream oss;
 	oss << "editPlaylist(" << fromRev << ")";
 	m_last_cmd = oss.str();
 }
 
-void CRpcDummy::onEditNextlist(unsigned  fromRev, unsigned toRev, string nextlistDiff) {
+void CRpcDummy::onEditNextlist(uint32_t jobID, unsigned  fromRev, unsigned toRev, string nextlistDiff) {
 	ostringstream oss;
 	oss << "editNextlist(" << fromRev << ")";
 	m_last_cmd = oss.str();

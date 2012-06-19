@@ -27,30 +27,30 @@ public:
 	void onJoinSession(std::string name);
 	void onLeaveSession();
 
-	void onPlay();
-	void onPause();
-	void onStop();
-	void onNext();
-	void onPrev();
+	void onPlay(uint32_t jobID);
+	void onPause(uint32_t jobID);
+	void onStop(uint32_t jobID);
+	void onNext(uint32_t jobID);
+	void onPrev(uint32_t jobID);
 
 	void onStateChanged(int newState);
-	void onScanCollection(uint32_t jobID);
+	void onScanCollection( uint32_t jobID);
 
-	void onProgress(uint32_t jobID, int progress);
-	void onFinished(uint32_t jobID);
-	void onError(uint32_t jobID, int errorCode, std::string description);
+	void onProgress( uint32_t jobID, int progress);
+	void onFinished( uint32_t jobID);
+	void onError( uint32_t jobID, int errorCode, std::string description);
 
-	void onGetCollection( unsigned knownRev );
-	void onGetPlaylist( unsigned knownRev );
-	void onGetNextlist( unsigned knownRev );
+	void onGetCollection( uint32_t jobID, unsigned knownRev );
+	void onGetPlaylist( uint32_t jobID, unsigned knownRev );
+	void onGetNextlist( uint32_t jobID, unsigned knownRev );
 
-	void onCollection(unsigned  diffFromRev, std::string collection);
-	void onPlaylist(unsigned  diffFromRev, std::string playlist);
-	void onNextlist(unsigned  diffFromRev, std::string nextlist);
+	void onCollection( uint32_t jobID, unsigned  diffFromRev, std::string collection);
+	void onPlaylist( uint32_t jobID, unsigned  diffFromRev, std::string playlist);
+	void onNextlist( uint32_t jobID, unsigned  diffFromRev, std::string nextlist);
 
-	void onEditCollection( unsigned fromRev, unsigned toRev, std::string collectionDiff );
-	void onEditPlaylist( unsigned fromRev, unsigned toRev, std::string playlistDiff );
-	void onEditNextlist( unsigned fromRev, unsigned toRev, std::string nextlistDiff );
+	void onEditCollection( uint32_t jobID, unsigned fromRev, unsigned toRev, std::string collectionDiff );
+	void onEditPlaylist( uint32_t jobID, unsigned fromRev, unsigned toRev, std::string playlistDiff );
+	void onEditNextlist( uint32_t jobID, unsigned fromRev, unsigned toRev, std::string nextlistDiff );
 
 	void onStartSession(){ };
 	void onEndSession(){ };

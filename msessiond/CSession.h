@@ -75,6 +75,21 @@ public:
 	inline int getMinPlaylistRev() const { return m_minPlaylistRev; };
 	inline int getMinNextlistRev() const { return m_minNextlistRev; };
 
+	inline bool hasMediaColRev(unsigned rev) const
+	{
+		return (rev != 0 && rev <= m_maxMediaColRev && rev >= m_minMediaColRev);
+	};
+
+	inline bool hasPlaylistRev(unsigned rev) const
+	{
+		return (rev != 0 && rev <= m_maxPlaylistRev && rev >= m_minPlaylistRev);
+	};
+
+	inline bool hasNextlistRev(unsigned rev) const
+	{
+		return (rev != 0 && rev <= m_maxNextlistRev && rev >= m_minNextlistRev);
+	};
+
 	inline void setMinMediaColRev( const unsigned min ) { m_minMediaColRev = min; };
 	inline void setMinPlaylistRev( const unsigned min ) { m_minPlaylistRev = min; };
 	inline void setMinNextlistRev( const unsigned min ) { m_minNextlistRev = min; };

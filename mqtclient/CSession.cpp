@@ -22,6 +22,9 @@ CSession::CSession() : QObject(), m_connection(this) {
 	m_playlistModel = new CMuroaListModel();
 	m_nextlistModel = new CMuroaListModel();
 
+	m_playlistModel->setMediaCol(m_mediaColModel);
+	m_nextlistModel->setMediaCol(m_mediaColModel);
+
 	m_storeageLoc = QDesktopServices::storageLocation(QDesktopServices::DataLocation);
 	#ifdef Q_WS_MAC
 		m_storeageLoc.insert(m_storeageLoc.count() - QCoreApplication::applicationName().count(),
