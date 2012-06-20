@@ -55,6 +55,8 @@ public:
   virtual void start();
   virtual void stop();
 
+  virtual void onClose();
+
   tcp::endpoint remoteEndpoint();
   std::string remoteEndpointStr();
 

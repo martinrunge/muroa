@@ -11,7 +11,7 @@ add_definitions( ${QT4_DEFINITIONS} )
 set( SRC           CQtClient.cpp
                    CSession.cpp
                    CConnection.cpp
-                   CSessionSM.cpp
+                   CClientSM.cpp
                    CServiceBrowser.cpp
                    CServiceDesc.cpp
                    CDnsSdBase.cpp
@@ -40,7 +40,7 @@ set( SRC           CQtClient.cpp
 set( MOC_H         CQtClient.h
                    CSession.h
                    CConnection.h
-                   CSessionSM.h
+                   CClientSM.h
                    CServiceBrowser.h
                    CServiceDesc.h
                    CDnsSdBase.h

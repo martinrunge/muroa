@@ -5,7 +5,7 @@
 #include <QTcpSocket>
 #include <QSettings>
 
-#include "CSessionSM.h"
+#include "CClientSM.h"
 
 #include <muroaxml/CMuroaXml.h>
 #include <cmds/Cmd.h>
@@ -58,7 +58,7 @@ public:
 	void onEndSession(){ };
 	void onXmlVersion(){ };
 
-	inline CSessionSM* getSessionSMPtr() { return &m_sm; };
+	inline CClientSM* getSessionSMPtr() { return &m_sm; };
 	inline CSession* getSession() {return m_session; };
 
 signals:
@@ -73,10 +73,10 @@ public slots:
     void disconnected();
     void error();
 
-    void play(uint32_t jobID);
-    void stop(uint32_t jobID);
-    void next(uint32_t jobID);
-    void prev(uint32_t jobID);
+    void play(uint32_t jobID = 0);
+    void stop(uint32_t jobID = 0);
+    void next(uint32_t jobID = 0);
+    void prev(uint32_t jobID = 0);
 
     void sendCommand(CmdBase* cmd);
 
@@ -88,7 +88,7 @@ private:
     void doJoinSession(std::string name);
 
     QTcpSocket m_socket;
-    CSessionSM m_sm;
+    CClientSM m_sm;
 
     int m_state;
     int m_xml_depth;

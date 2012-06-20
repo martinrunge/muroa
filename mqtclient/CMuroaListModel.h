@@ -58,6 +58,9 @@ private:
 
 	CRootItem* m_mediaCol;
 	CRootItem* m_playlist;
+
+    void init();
+    void clear();
 };
 
 #endif /* CLISTMODEL_H_ */

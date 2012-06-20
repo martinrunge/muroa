@@ -48,6 +48,10 @@ void CTcpConnection::stop() {
 	m_socket.close();
 }
 
+void CTcpConnection::onClose() {
+
+}
+
 tcp::endpoint CTcpConnection::remoteEndpoint() {
 	return m_socket.remote_endpoint();
 }
@@ -92,6 +96,11 @@ void CTcpConnection::handle_read(const boost::system::error_code& error, size_t 
     	start_read();
     }
     else {
+    	if(error == boost::asio::error::eof ) {
+    		// connection was closed
+    		onClose();
+
+    	}
     	LOG4CPLUS_ERROR(m_logger, "error in handle_read:  " << error.message());
     	// delete this;
     }

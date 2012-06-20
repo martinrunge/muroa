@@ -5,8 +5,8 @@
  *      Author: martin
  */
 
-#ifndef CSESSIONSM_H_
-#define CSESSIONSM_H_
+#ifndef CCLIENTSM_H_
+#define CCLIENTSM_H_
 
 #include <map>
 #include <QObject>
@@ -14,11 +14,11 @@
 class CConnection;
 class CmdBase;
 
-class CSessionSM : public QObject {
+class CClientSM : public QObject {
 	Q_OBJECT
 public:
-	CSessionSM(CConnection* connection, QObject* parent = 0);
-	virtual ~CSessionSM();
+	CClientSM(CConnection* connection, QObject* parent = 0);
+	virtual ~CClientSM();
 
     void getLatestMediaCol();
     void getLatestPlaylist();
@@ -34,4 +34,4 @@ private:
     std::map<unsigned, CmdBase*> m_open_cmds;
 };
 
-#endif /* CSESSIONSM_H_ */
+#endif /* CCLIENTSM_H_ */

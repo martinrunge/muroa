@@ -134,4 +134,19 @@ bool CMuroaListModel::endRemoveItems( ) {
 	return true;
 }
 
+void CMuroaListModel::init()
+{
+	CRootItem::init();
+}
+
+void CMuroaListModel::clear()
+{
+	beginResetModel();
+	CRootItem::clear();
+	setBase(CRootItem::getBase());
+	endResetModel();
+}
+
+
+
 

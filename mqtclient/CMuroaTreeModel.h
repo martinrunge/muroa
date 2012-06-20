@@ -61,6 +61,10 @@ private:
     QVariant dataFromColumn(CItemBase* item, int column) const;
     QModelIndex indexFromItem(const CItemBase* item) const;
 
+    void init();
+    void clear();
+
+
     // CRootItem *m_rootItem;
 
     static int m_num_columns;

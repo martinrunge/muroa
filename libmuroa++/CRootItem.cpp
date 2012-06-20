@@ -40,6 +40,7 @@ void CRootItem::init() {
 }
 
 void CRootItem::clear() {
+	beginRemoveItems(0, m_base->getNumCategories() + m_base->getNumContentItems(), m_base);
 	delete m_base;
 	m_content_maps.clear();
 }
@@ -217,7 +218,7 @@ void CRootItem::fromFile(std::string filename) throw(ExMalformedPatch) {
 					break;
 				}
 			}
-			catch(std::invalid_argument ex) {
+			catch(std::invalid_argument& ex) {
 				throw ExMalformedPatch(ex.what(), lineNr);
 			}
 
@@ -315,7 +316,7 @@ void CRootItem::patch(std::string diff) throw(ExMalformedPatch) {
 				newStart = CUtils::str2long( newStartStr );
 				newLen = CUtils::str2long( newLenStr );
 			}
-			catch(std::invalid_argument ex)
+			catch(std::invalid_argument& ex)
 			{
 				throw ExMalformedPatch(ex.what(), lineNr);
 			}

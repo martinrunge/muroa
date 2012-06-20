@@ -6,7 +6,7 @@
  */
 
 #include "CSession.h"
-#include "CSessionSM.h"
+#include "CClientSM.h"
 #include "CConnection.h"
 #include "cmds/CmdGetMediaCol.h"
 #include "cmds/CmdGetPlaylist.h"
@@ -16,36 +16,36 @@
 #include "cmds/CmdEditNextlist.h"
 #include "cmds/CmdScanCollection.h"
 
-CSessionSM::CSessionSM(CConnection* connection, QObject* parent) : m_connection(connection)
+CClientSM::CClientSM(CConnection* connection, QObject* parent) : m_connection(connection)
 {
 
 }
 
-CSessionSM::~CSessionSM()
+CClientSM::~CClientSM()
 {
 
 }
 
-void CSessionSM::getLatestMediaCol() {
+void CClientSM::getLatestMediaCol() {
 	unsigned knownMediaColRev = m_connection->getSession()->getMediaColRev();
 	CmdGetMediaCol* cmd = new CmdGetMediaCol(knownMediaColRev);
 	m_connection->sendCommand(cmd);
 }
 
-void CSessionSM::getLatestPlaylist() {
+void CClientSM::getLatestPlaylist() {
 	unsigned knownPlaylistRev = m_connection->getSession()->getPlaylistRev();
 	CmdGetPlaylist* cmd = new CmdGetPlaylist(knownPlaylistRev);
 	m_connection->sendCommand(cmd);
 }
 
-void CSessionSM::getLatestNextlist() {
+void CClientSM::getLatestNextlist() {
 	unsigned knownNextlistRev = m_connection->getSession()->getNextlistRev();
 	CmdGetNextlist* cmd = new CmdGetNextlist(knownNextlistRev);
 	m_connection->sendCommand(cmd);
 }
 
 
-void CSessionSM::scanCollection() {
+void CClientSM::scanCollection() {
 	unsigned knownMediaColRev = m_connection->getSession()->getMediaColRev();
 	CmdScanCollection* cmd = new CmdScanCollection(knownMediaColRev);
 

@@ -89,10 +89,11 @@ public:
     uint32_t getReferencedPlaylistRev() { return m_referenced_playlist_rev; };
     void setReferencedPlaylistRev(uint32_t rev) { m_referenced_playlist_rev = rev; };
 
-private:
-    void init();
-    void clear();
+protected:
+    virtual void init();
+    virtual void clear();
 
+private:
 	std::map<std::string, CCategoryItem*> m_category_map;
 
 	CCategoryItem* m_base;

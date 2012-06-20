@@ -257,4 +257,15 @@ QVariant CMuroaTreeModel::dataFromColumn(CItemBase* item, int column) const {
 }
 
 
+void CMuroaTreeModel::init()
+{
+	CRootItem::init();
+}
+
+void CMuroaTreeModel::clear()
+{
+	beginResetModel();
+	CRootItem::clear();
+	endResetModel();
+}
 

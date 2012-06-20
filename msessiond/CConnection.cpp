@@ -181,4 +181,9 @@ void CConnection::error(CmdError* errorMsg) {
 	m_rpc->error(errorMsg->getCorrespondingJobID(), errorMsg->getErrorCode(), errorMsg->getDescription());
 }
 
+void CConnection::onClose() {
+	m_session->removeConnection(this);
+}
+
+
 } /* namespace muroa */

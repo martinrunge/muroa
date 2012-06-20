@@ -50,6 +50,8 @@ public:
 
 	unsigned id() { return m_Id; };
 
+	inline static unsigned getNextID() { return m_first_free_id++; };
+
 public slots:
 	virtual void timeout();
 

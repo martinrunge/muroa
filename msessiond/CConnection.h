@@ -62,6 +62,8 @@ public:
 private:
     CConnection(boost::asio::io_service& io_service);
 
+    void onClose();
+
     CRpc *m_rpc;
     CSession* m_session;
     CSessionContainer* m_session_container;

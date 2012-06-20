@@ -10,6 +10,7 @@
 #include "CMuroaTreeModel.h"
 
 #include <MuroaExceptions.h>
+#include <muroaConstants.h>
 
 #include <QDebug>
 
@@ -191,19 +192,23 @@ void CConnection::onEditNextlist(uint32_t jobID, unsigned  fromRev, unsigned toR
 
 void CConnection::play(uint32_t jobID)
 {
+	jobID = (jobID==0)?CmdBase::getNextID():jobID;
 	CMuroaXml::play(jobID);
 }
 
 void CConnection::stop(uint32_t jobID)
 {
+	jobID = (jobID==0)?CmdBase::getNextID():jobID;
 	CMuroaXml::stop(jobID);
 }
 
 void CConnection::next(uint32_t jobID) {
+	jobID = (jobID==0)?CmdBase::getNextID():jobID;
 	CMuroaXml::next(jobID);
 }
 
 void CConnection::prev(uint32_t jobID) {
+	jobID = (jobID==0)?CmdBase::getNextID():jobID;
 	CMuroaXml::prev(jobID);
 }
 
