@@ -92,7 +92,7 @@ CRpc::~CRpc() {
     	m_connection->getSession()->scanCollection(m_connection, jobID);
     }
 
-    void CRpc::onProgress(uint32_t jobID, int progress)
+    void CRpc::onProgress(uint32_t jobID, int progress, int total)
     {
     }
 
@@ -169,7 +169,7 @@ CRpc::~CRpc() {
 		case Cmd::PROGRESS:
 		{
 			CmdProgress* msg = reinterpret_cast<CmdProgress*>(cmd);
-			progress(msg->getCorrespondingJobId(), msg->getProgress());
+			progress(msg->getCorrespondingJobId(), msg->getProgress(), msg->getTotal());
 			break;
 		}
 		case Cmd::FINISHED:

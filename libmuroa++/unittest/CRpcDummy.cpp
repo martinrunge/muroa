@@ -77,9 +77,9 @@ void CRpcDummy::onScanCollection(uint32_t jobID) {
 	m_last_cmd = oss.str();
 }
 
-void CRpcDummy::onProgress(uint32_t jobID, int progress) {
+void CRpcDummy::onProgress(uint32_t jobID, int progress, int total) {
 	ostringstream oss;
-	oss << "progress(" << jobID << "," << progress << ")";
+	oss << "progress(" << jobID << "," << progress << "," << total << ")";
 	m_last_cmd = oss.str();
 }
 

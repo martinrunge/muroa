@@ -62,11 +62,14 @@ QVariant CMuroaListModel::data(const QModelIndex & index, int role) const {
 			return QVariant();
 		if(item->type() ==  CItemType::E_PLAYLISTITEM ) {
 			CPlaylistItem* plItem = reinterpret_cast<CPlaylistItem*>(item);
-			return QString("%1 <- %2").arg(plItem->getMediaItemHash()).arg(plItem->getHash());
+			return QString("Playlist ItemID: %1\n"
+					        "points to MediaItem Hash: %2").arg(plItem->getHash()).arg(plItem->getMediaItemHash());
 		}
 		else {
 			CNextlistItem* nlItem = reinterpret_cast<CNextlistItem*>(item);
-			return QString("%1 <- %2").arg(nlItem->getPlaylistItemHash()).arg(nlItem->getHash());
+			return QString("Nextlist ItemID: %1 \n "
+					        "points to playlist item -> %2\n"
+					        "mediaItem hash: %3").arg(nlItem->getHash()).arg(nlItem->getPlaylistItemHash()).arg(nlItem->getMediaItemHash());
 		}
 	}
 	else if(role == Qt::DisplayRole)

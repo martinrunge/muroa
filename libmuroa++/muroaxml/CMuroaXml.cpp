@@ -95,9 +95,9 @@ void CMuroaXml::scanCollection(uint32_t jobID) {
 	sendData(oss.str());
 }
 
-void CMuroaXml::progress(uint32_t jobID, int progress) {
+void CMuroaXml::progress(uint32_t jobID, int progress, int total) {
 	ostringstream oss;
-	oss << "<" << xmlCommands::progress << " jobID=\"" << jobID << "\" progress=\"" << progress << "\"/>" << endl;
+	oss << "<" << xmlCommands::progress << " jobID=\"" << jobID << "\" progress=\"" << progress << "\"" << " total=\"" << total << "\"/>" << endl;
 	sendData(oss.str());
 }
 

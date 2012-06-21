@@ -162,7 +162,7 @@ void CConnection::prev(CmdPrev* prevCmd) {
 }
 
 void CConnection::progress(CmdProgress* progressMsg) {
-	m_rpc->progress(progressMsg->getCorrespondingJobId(), progressMsg->getProgress());
+	m_rpc->progress(progressMsg->getCorrespondingJobId(), progressMsg->getProgress(), progressMsg->getTotal());
 }
 
 void CConnection::finished(CmdFinished* finishedCmd) {

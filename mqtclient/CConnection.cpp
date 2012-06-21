@@ -80,8 +80,9 @@ void CConnection::onStateChanged(int newState)
 {
 }
 
-void CConnection::onProgress(uint32_t jobID, int progress)
+void CConnection::onProgress(uint32_t jobID, int progress, int total)
 {
+	emit progressSig(progress, total);
 }
 
 void CConnection::onFinished(uint32_t jobID) {

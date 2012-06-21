@@ -95,10 +95,10 @@ void CMuroaXmlRpcTest::next() {
 
 void CMuroaXmlRpcTest::progress() {
 	m_rpc_out->joinSession(m_sessionName);
-	m_rpc_out->progress(17, 89);
+	m_rpc_out->progress(17, 89, 100);
 	string last_cmd = m_rpc_in->getLastCmd();
 
-	CPPUNIT_ASSERT(last_cmd.compare("progress(17,89)") == 0);
+	CPPUNIT_ASSERT(last_cmd.compare("progress(17,89,100)") == 0);
 }
 
 void CMuroaXmlRpcTest::stateChanged() {

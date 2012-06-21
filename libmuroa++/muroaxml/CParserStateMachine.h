@@ -92,7 +92,7 @@ public:
 
 	virtual void onStateChanged(int newState) = 0;
 	virtual void onScanCollection(uint32_t jobID) = 0;
-	virtual void onProgress(uint32_t jobID, int progress) = 0;
+	virtual void onProgress(uint32_t jobID, int progress, int total) = 0;
 	virtual void onError(uint32_t jobID, int errorCode, std::string description) = 0;
 
 	virtual void onGetCollection( uint32_t jobID, unsigned knownRev ) = 0;
@@ -134,6 +134,7 @@ private:
 
 	uint32_t m_jobID;
 	int m_progress;
+	int m_total;
 	int m_newState;
 	int m_errorCode;
 	std::string m_errorDescription;

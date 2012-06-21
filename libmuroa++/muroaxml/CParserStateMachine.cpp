@@ -298,7 +298,7 @@ int CParserStateMachine::sessionState(const action_flag& init_start_end, const s
 			onScanCollection(m_jobID);
 		}
 		else if (name.compare(xmlCommands::progress) == 0) {
-			onProgress(m_jobID, m_progress);
+			onProgress(m_jobID, m_progress, m_total);
 		}
 		else if (name.compare("stateChanged") == 0) {
 			onStateChanged(m_newState);
@@ -429,15 +429,19 @@ uint32_t CParserStateMachine::parseJobID(const char** attrs) {
 
 
 void CParserStateMachine::parseNextArgs(const char **attrs) {
+	m_jobID = parseJobID(attrs);
 }
 
 void CParserStateMachine::parsePrevArgs(const char **attrs) {
+	m_jobID = parseJobID(attrs);
 }
 
 void CParserStateMachine::parseStopArgs(const char **attrs) {
+	m_jobID = parseJobID(attrs);
 }
 
 void CParserStateMachine::parsePlayArgs(const char **attrs) {
+	m_jobID = parseJobID(attrs);
 }
 
 void CParserStateMachine::parseProgressArgs(const char** attrs) {
@@ -453,6 +457,9 @@ void CParserStateMachine::parseProgressArgs(const char** attrs) {
 		}
 		else if(name.compare("progress") == 0) {
 			m_progress = CUtils::str2long(value);
+		}
+		else if(name.compare("total") == 0) {
+			m_total = CUtils::str2long(value);
 		}
 	}
 }

@@ -40,8 +40,8 @@ public:
 	virtual void scanCollection(uint32_t jobID) = 0;
 	virtual void onScanCollection(uint32_t jobID) = 0;
 
-	virtual void progress(uint32_t jobID, int progress) = 0;
-	virtual void onProgress(uint32_t jobID, int progress) = 0;
+	virtual void progress(uint32_t jobID, int progress, int total) = 0;
+	virtual void onProgress(uint32_t jobID, int progress, int total) = 0;
 
 	virtual void finished(uint32_t jobID) = 0;
 	virtual void onFinished(uint32_t jobID) = 0;

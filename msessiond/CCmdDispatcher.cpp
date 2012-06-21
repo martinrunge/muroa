@@ -61,14 +61,17 @@ void CCmdDispatcher::incomingCmd(muroa::Cmd* cmd) {
 	}
 	case Cmd::ERROR:
 	{
+		m_session->sendToInitiator(cmd, cmd->getConnectionID() );
 		break;
 	}
 	case Cmd::FINISHED:
 	{
+		m_session->toAll(cmd);
 		break;
 	}
 	case Cmd::PROGRESS:
 	{
+		m_session->toAll(cmd);
 		break;
 	}
 	case Cmd::OPENDB:

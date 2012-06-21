@@ -42,6 +42,8 @@ int CStream::write(char* data, int size) const
 
 void CStream::setProgress(  int playedSecs, int totalSecs ) const {
 	CmdProgress* progCmd = new CmdProgress();
+	progCmd->setProgress(playedSecs, totalSecs);
+
 	m_session->postIncomingCmd(progCmd);
 }
 
