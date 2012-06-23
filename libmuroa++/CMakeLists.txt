@@ -48,6 +48,7 @@ set( HEADERS       CRootItem.h
                    CCategoryItem.h
                    # CCategoryItemIterator.h
                    IContentItem.h
+                   IIdProvider.h
                    CMediaItem.h
                    CPlaylistItem.cpp
                    CNextlistItem.cpp

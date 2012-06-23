@@ -30,11 +30,20 @@
 using namespace std;
 
 uint32_t CPlaylistItem::m_next_free_id = 1;   // 0 is reserved
+muroa::IIdProvider* m_id_provider = 0;
+
+uint32_t CPlaylistItem::getNextFreeID() {
+	return m_next_free_id++;
+}
+
+void CPlaylistItem::setNextFreeID(uint32_t next_free_id) {
+	m_next_free_id = next_free_id;
+}
 
 CPlaylistItem::CPlaylistItem(CRootItem *root_item, CCategoryItem*  parent, int posInParent) :
                IContentItem( root_item, parent, CItemType::E_PLAYLISTITEM )
 {
-	m_hash = m_next_free_id++;
+	m_hash = getNextFreeID();
 	m_root_item->setContentPtr(CItemType(CItemType::E_PLAYLISTITEM), this, m_hash );
 	assembleText();
 }
@@ -71,7 +80,7 @@ CPlaylistItem::CPlaylistItem(CRootItem *root_item, std::string text, CCategoryIt
 		}
 		m_hash = CUtils::str2uint32(hashStr.c_str());
 		if(m_hash == 0){
-			m_hash = m_next_free_id++;
+			m_hash = getNextFreeID();
 		}
 
 		assembleText();
@@ -92,12 +101,12 @@ CPlaylistItem::CPlaylistItem(uint32_t mediaItemHash, uint32_t plID )
               :IContentItem(0, 0, CItemType::E_PLAYLISTITEM),  m_mediaitem_hash(mediaItemHash)
 {
 	if(plID == 0) {
-		m_hash = m_next_free_id++;
+		m_hash = getNextFreeID();
 	}
 	else {
 		m_hash = plID;
-		if( m_next_free_id <= m_hash) {
-			m_next_free_id = m_hash + 1;
+		if( getNextFreeID() <= m_hash) {
+			setNextFreeID( m_hash + 1 );
 		}
 	}
 	assembleText();
@@ -164,3 +173,4 @@ void CPlaylistItem::assembleText() {
 	m_text = ss.str();
 
 }
+

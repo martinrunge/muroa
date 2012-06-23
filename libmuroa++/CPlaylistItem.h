@@ -25,6 +25,7 @@
 #define CPLAYLISTITEM_H_
 
 #include "IContentItem.h"
+#include "IIdProvider.h"
 #include "MuroaExceptions.h"
 
 class CMediaItem;
@@ -47,8 +48,15 @@ public:
 	void setMediaItemHash(uint32_t hash);
 	void setMediaItem(CMediaItem* mediaitem);
 
+	static void setIDProvider(muroa::IIdProvider* idProvider);
+	static muroa::IIdProvider* getIDProvider();
+
 private:
 	uint32_t m_mediaitem_hash;
+
+	static uint32_t getNextFreeID();
+	static void setNextFreeID(uint32_t next_free_id);
+	static muroa::IIdProvider* m_id_provider;
 	static uint32_t m_next_free_id;
 
 	void assembleText();

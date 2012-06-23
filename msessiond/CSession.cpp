@@ -55,6 +55,7 @@ CSession::CSession(string name, boost::asio::io_service& io_service) : m_io_serv
                                                                        m_sessionStorage(0),
                                                                        m_stateDBFilename("state.db"),
                                                                        m_stream(this),
+                                                                       m_plIdProvider(this),
                                                                        m_app(CApp::getInstPtr()) {
 
 	// all thee collection have an empty revision 0!

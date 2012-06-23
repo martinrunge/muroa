@@ -22,6 +22,7 @@
 #include <boost/asio.hpp>
 
 #include "sessionEx.h"
+#include "CPlaylistIdProvider.h"
 
 class CMsgBase;
 class CCmdDispatcher;
@@ -192,8 +193,9 @@ private:
 
     // boost::asio::io_service& m_io_service;
     CMediaScannerCtrl* m_mediaScanner;
-
     CCmdDispatcher* m_cmdDispatcher;
+
+    CPlaylistIdProvider m_plIdProvider;
 
     CApp* m_app;
     std::string privatePropertyKey(std::string key);
