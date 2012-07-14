@@ -1,0 +1,27 @@
+var NAVTREEINDEX =
+{
+"index.html":[],
+"annotated.html":[0,0],
+"class_c_category_item.html":[0,0,0],
+"class_c_category_item_iterator.html":[0,0,1],
+"class_c_diff.html":[0,0,2],
+"class_c_item_base.html":[0,0,3],
+"class_c_item_type.html":[0,0,4],
+"class_c_media_item.html":[0,0,5],
+"class_c_nextlist_item.html":[0,0,6],
+"struct_compare_categories_by_name.html":[0,0,7],
+"class_c_playlist_item.html":[0,0,8],
+"class_c_root_item.html":[0,0,9],
+"classmuroa_1_1_c_root_item_iterator.html":[0,0,10],
+"class_c_utils.html":[0,0,11],
+"class_ex_inv_msg.html":[0,0,12],
+"class_ex_inv_rev.html":[0,0,13],
+"class_ex_malformed_patch.html":[0,0,14],
+"class_ex_rpc_error.html":[0,0,15],
+"class_i_content_item.html":[0,0,16],
+"classes.html":[0,1],
+"hierarchy.html":[0,2],
+"functions.html":[0,3,0],
+"functions_func.html":[0,3,1],
+"files.html":[1,0]
+};
