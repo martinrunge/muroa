@@ -29,6 +29,7 @@ ringbuffer implementation that takes RTP packets as input and audio frames as ou
 #include <list>
 
 #include "cmutex.h"
+#include <stdio.h>
 
 class CAudioFrame;
 class CRTPPacket;

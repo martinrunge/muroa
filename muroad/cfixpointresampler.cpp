@@ -93,6 +93,9 @@
 #include "CFixPointResamplerLargeFilter.h"
 #include "CFixPointResamplerSmallFilter.h"
 
+#include <cstring>
+#include <climits>
+
 
 using namespace std;
 

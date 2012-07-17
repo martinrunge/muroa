@@ -38,6 +38,8 @@
 
 #include <time.h> 
 #include <math.h>
+#include <sys/stat.h>
+
 
 
 
@@ -569,7 +571,7 @@ IAudioIO* CPlayloop::initSoundSystem()
   IAudioIO* ptr;
 
   // check if alsa is available:  
-  status = stat("/proc/asound/devices", &buffer);
+  status = ::stat("/proc/asound/devices", &buffer);
   if(status == 0) {
     ptr = static_cast<IAudioIO*>(new CAudioIoAlsa());
   }

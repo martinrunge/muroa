@@ -1,2 +1,3 @@
 # ignore all generated files in build directory
 *~
+*.raw
