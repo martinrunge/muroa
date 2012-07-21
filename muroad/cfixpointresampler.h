@@ -27,6 +27,7 @@ audio resampling class
 */
 
 #include <stdint.h>
+#include <stdio.h>
 #include "cresampler.h"
 // #include "CFixPointConverter.h"
 #include "cfilterdef.h"
