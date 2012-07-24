@@ -103,6 +103,7 @@ void CTcpServer::start_accept() {
 
 void CTcpServer::handle_accept(CTcpConnection* new_connection, const boost::system::error_code& error) {
   if (!error) {
+	  new_connection->setNonBlocking();
 	  new_connection->start();
 	  m_connectionManager->add(new_connection);
   }

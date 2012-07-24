@@ -48,6 +48,19 @@ void CTcpConnection::stop() {
 	m_socket.close();
 }
 
+void CTcpConnection::setNonBlocking(bool mode) {
+#ifdef NEW_BOOST_ASIO
+	m_socket.non_blocking(true);
+#else
+	boost::asio::socket_base::non_blocking_io command(mode);
+	m_socket.io_control(command);
+#endif
+
+	boost::asio::socket_base::send_buffer_size option(2048);
+	m_socket.set_option(option);
+
+}
+
 void CTcpConnection::onClose() {
 
 }
@@ -78,7 +91,10 @@ void CTcpConnection::dataReceived( boost::array<char, 8192> /*buffer*/, int /*le
 void CTcpConnection::handle_write(const boost::system::error_code& error, size_t bytes_transferred) {
     if (error) {
         LOG4CPLUS_ERROR(m_logger, "error in handle_write:  " << error.message());
-        delete this;
+        onClose();
+    }
+    else {
+    	LOG4CPLUS_DEBUG(m_logger, "handle_write: " << bytes_transferred << " Bytes transferred");
     }
 }
 

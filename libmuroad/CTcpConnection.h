@@ -55,6 +55,8 @@ public:
   virtual void start();
   virtual void stop();
 
+  virtual void setNonBlocking(bool mode = true);
+
   virtual void onClose();
 
   tcp::endpoint remoteEndpoint();

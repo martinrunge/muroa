@@ -10,7 +10,9 @@
 #include "CSession.h"
 #include "CApp.h"
 
-CPlaylistIdProvider::CPlaylistIdProvider(CSession* session) : m_session(session)
+uint32_t CPlaylistIdProvider::m_next_free_id = 1;   // 0 is reserved
+
+CPlaylistIdProvider::CPlaylistIdProvider(muroa::CSession* session) : m_session(session)
 {
 }
 

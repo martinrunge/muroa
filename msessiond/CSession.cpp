@@ -186,6 +186,7 @@ CMediaItem* CSession::getCurrentMediaItem() throw(ExInvMsg)
 
 
 void CSession::addConnection(CConnection* ptr) {
+	ptr->setSession(this);
 	m_connections.insert(ptr);
 	m_connections_by_id.insert(std::pair<unsigned, CConnection*>(ptr->getID(), ptr));
 	ptr->joinSession(m_name);

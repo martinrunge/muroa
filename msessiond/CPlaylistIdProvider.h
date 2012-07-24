@@ -10,18 +10,21 @@
 
 #include <IIdProvider.h>
 
+namespace muroa {
 class CSession;
+}
 
 class CPlaylistIdProvider: public muroa::IIdProvider {
 public:
-	CPlaylistIdProvider(CSession* session);
+	CPlaylistIdProvider(muroa::CSession* session);
 	virtual ~CPlaylistIdProvider();
 
     uint32_t getNextFreeID();
 	void setNextFreeID(uint32_t id);
 
 private:
-	CSession* m_session;
+	muroa::CSession* m_session;
+	static uint32_t m_next_free_id;
 };
 
 #endif /* CPLAYLISTIDPROVIDER_H_ */
