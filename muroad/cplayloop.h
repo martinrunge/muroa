@@ -30,11 +30,18 @@
 #include "caudiooss.h"
 #include "cmutex.h"
 
+#include "CSettings.h"
+
 #include <boost/date_time/posix_time/posix_time.hpp>
 #include <boost/date_time/time_duration.hpp>
 
 #include <list>
 #include <string>
+
+namespace muroa
+{
+  class CApp;
+}
 
 
 class CAudioFrame;
@@ -51,7 +58,7 @@ using namespace boost::posix_time;
 class CPlayloop : public CThreadSlave
 {
 public:
-  CPlayloop(CPlayer* parent, Cmuroad* config, CPacketRingBuffer* packet_ringbuffer );
+  CPlayloop(CPlayer* parent, muroa::CApp *app, CPacketRingBuffer* packet_ringbuffer );
 
     ~CPlayloop();
 
@@ -67,8 +74,6 @@ public:
 
   
 private:
-
-
 
     CPacketRingBuffer *m_packet_ringbuffer;
     CRingBuffer *m_ringbuffer;
@@ -131,9 +136,11 @@ private:
     FILE* m_debug_fd1;
     
     CPlayer* m_player;
-    Cmuroad* m_config;
+    muroa::CApp *m_app;
+    muroa::CSettings& m_settings;
     
     int m_secs_idle;
+    int m_max_idle;
 
   private:
     bool checkStream(CRTPPacket* packet);

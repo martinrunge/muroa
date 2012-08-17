@@ -30,6 +30,11 @@ Class encapsulates all the playback functioinalty. It inplements an interface to
 #include "csync.h"
 #include "cposixcond.h"
 
+namespace muroa
+{
+  class CApp;
+}
+
 class Cmuroad;
 class CRecvloop;
 class CPlayloop;
@@ -37,9 +42,10 @@ class CRTPPacket;
 class CPThread;
 class CPacketRingBuffer;
 
+
 class CPlayer{
 public:
-    CPlayer(Cmuroad* config);
+    CPlayer(muroa::CApp *app);
 
     ~CPlayer();
     void start();
@@ -86,7 +92,8 @@ private:
     boost::posix_time::ptime m_sync_requested_at;
     int m_idle_time;
     
-    Cmuroad* m_config;
+    // Cmuroad* m_config;
+    muroa::CApp* m_app;
 };
 
 #endif

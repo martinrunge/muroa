@@ -81,9 +81,9 @@ set( HEADERS          sessionEx.h
 
 
 include_directories(${SOURCE_DIR} ${Boost_INCLUDE_DIRS} ${SQLITE_INCLUDE_DIR} 
-                    ${CMAKE_SOURCE_DIR} ${CMAKE_SOURCE_DIR}/../libmuroad ${CMAKE_SOURCE_DIR}/../libmuroa++) 
+                    ${CMAKE_SOURCE_DIR} ${CMAKE_SOURCE_DIR}/../libmuroadaemon ${CMAKE_SOURCE_DIR}/../libmuroa++) 
 
-link_directories(${BINARY_DIR} ${SQLITE_LIBRARY_DIRS} "${CMAKE_SOURCE_DIR}/../libmuroad/build" "${CMAKE_SOURCE_DIR}/../libmuroa++/build")
+link_directories(${BINARY_DIR} ${SQLITE_LIBRARY_DIRS} "${CMAKE_SOURCE_DIR}/../libmuroadaemon/build" "${CMAKE_SOURCE_DIR}/../libmuroa++/build")
 
 ADD_EXECUTABLE(msessiond main.cpp ${SRCS} ${HEADERS} )
 
@@ -91,7 +91,7 @@ set_target_properties( msessiond PROPERTIES  COMPILE_FLAGS "-std=gnu++0x" )
 # SET_TARGET_PROPERTIES( msessiond PROPERTIES  LINK_FLAGS -Wl,--eh-frame-hdr)
 # SET_TARGET_PROPERTIES( msessiond PROPERTIES  LINK_FLAGS -Wl,-shared-libgcc)
 
-TARGET_LINK_LIBRARIES(msessiond    muroad
+TARGET_LINK_LIBRARIES(msessiond    muroadaemon
                                    muroa++
                                    ${Boost_LIBRARIES} 
                                    ${SQLITE_LIBRARIES}
@@ -162,7 +162,7 @@ set_target_properties( msessiondtest PROPERTIES  COMPILE_FLAGS "-std=gnu++0x" )
 
 TARGET_LINK_LIBRARIES(msessiondtest  cppunit 
                                      muroa++
-                                     muroad
+                                     muroadaemon
                                      ${Boost_LIBRARIES} 
                                      ${Taglib_LIBRARIES} 
                                      ${QT_LIBRARIES} 

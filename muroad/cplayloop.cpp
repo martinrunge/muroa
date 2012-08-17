@@ -26,6 +26,9 @@
 #include "cpacketringbuffer.h"
 #include "cringbuffer.h"
 
+#include "CApp.h"
+#include "CSettings.h"
+
 #ifndef FIXPOINT
 #include "cfloatresampler.h"
 #endif
@@ -46,14 +49,14 @@
 
 using namespace std;
 using namespace boost::posix_time;
+using namespace muroa;
 /** C-tor */
 
-CPlayloop::CPlayloop(CPlayer* parent, Cmuroad* config, CPacketRingBuffer* packet_ringbuffer)
- : CThreadSlave(), m_counter(0), m_average_size(32)
+CPlayloop::CPlayloop(CPlayer* parent, CApp *app, CPacketRingBuffer* packet_ringbuffer)
+ : CThreadSlave(), m_counter(0), m_average_size(32), m_app(app), m_settings(app->settings())
 {
 
   m_player = parent;
-  m_config = config;
   
   m_desired_sample_rate = 48000;
   m_frames_to_discard = 0;
@@ -66,9 +69,13 @@ CPlayloop::CPlayloop(CPlayer* parent, Cmuroad* config, CPacketRingBuffer* packet
   m_sample_size = sizeof(short);
   m_num_channels = 2;
 
+  m_max_idle = m_settings.getProptery("MaxIdle", 10);
+
+
   // m_audio_sink = new CAudioIoAlsa();  
   m_audio_sink = initSoundSystem();
-  m_audio_sink->open(m_config->audioDevice(), m_desired_sample_rate, m_num_channels);
+  string audio_device = m_settings.getProptery(string("AudioDevice"), string("hw:0,0"));
+  m_audio_sink->open(audio_device, m_desired_sample_rate, m_num_channels);
   
   int actual_sample_rate = m_audio_sink->getActualSampleRate();
   cerr << "CPlayloop::CPlayloop: open audio sink: try " << m_desired_sample_rate << " ... succeeded with " << actual_sample_rate << endl;
@@ -82,10 +89,10 @@ CPlayloop::CPlayloop(CPlayer* parent, Cmuroad* config, CPacketRingBuffer* packet
 
   #ifndef FIXPOINT
   // m_resampler = new CResampler(m_ringbuffer, SRC_SINC_BEST_QUALITY, 2);
-  // m_resampler = static_cast<CResampler*>(new CFloatResampler(m_ringbuffer, high, 2));
-  #endif
-  
+  m_resampler = static_cast<CResampler*>(new CFloatResampler(m_ringbuffer, high, 2));
+  #else
   m_resampler = static_cast<CResampler*>(new CFixPointResampler(m_ringbuffer, best, 2));
+  #endif
 
   m_resample_factor = (double) m_frames_per_second_post_resampler/m_frames_per_second_pre_resampler; 
   m_correction_factor = 1.0;
@@ -138,7 +145,9 @@ void CPlayloop::DoLoop() {
 
      if(retval == 0)
      {
-       m_audio_sink->open(m_config->audioDevice(), m_desired_sample_rate, m_num_channels);
+       string audio_device = m_settings.getProptery(string("AudioDevice"), string("hw:0.0"));
+
+       m_audio_sink->open(audio_device, m_desired_sample_rate, m_num_channels);
        m_player->idleTime(0);
      }
      else
@@ -147,7 +156,7 @@ void CPlayloop::DoLoop() {
          m_player->idleTime( m_player->idleTime() + 1);
        }
      }
-     if(m_player->idleTime() > m_config->maxIdle())
+     if(m_player->idleTime() > m_max_idle)
      {
        m_audio_sink->close();
      }

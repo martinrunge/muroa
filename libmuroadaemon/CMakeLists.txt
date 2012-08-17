@@ -1,5 +1,6 @@
 cmake_minimum_required (VERSION 2.6)
-project (asiotest)
+
+project (muroadaemon)
 
 set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake" ${CMAKE_MODULE_PATH})
 
@@ -42,21 +43,21 @@ include_directories(${CMAKE_SOURCE_DIR} ${Boost_INCLUDE_DIRS} ${EXPAT_INCLUDE_DI
 
 link_directories(  )
 
-add_library(  muroad SHARED  ${SRC} ${HEADERS} )
-target_link_libraries( muroad  ${Boost_LIBRARIES} ${EXPAT_LIBRARIES} log4cplus pthread avahi-client avahi-common)
-set_target_properties( muroad  PROPERTIES  COMPILE_FLAGS "-std=gnu++0x -pthread" ) 
+add_library(  muroadaemon SHARED  ${SRC} ${HEADERS} )
+target_link_libraries( muroadaemon  ${Boost_LIBRARIES} ${EXPAT_LIBRARIES} log4cplus pthread avahi-client avahi-common)
+set_target_properties( muroadaemon  PROPERTIES  COMPILE_FLAGS "-std=gnu++0x -pthread" ) 
 # SET_TARGET_PROPERTIES( muroad PROPERTIES  LINK_FLAGS -Wl,-shared-libgcc)
 ###################################################################################
 # This step merges a gdb_index section into the binary to speed up debugging.
 # Doing this by add_custom_command will become obsolete as soon as the linker does it. 
 ###################################################################################
-add_custom_command(TARGET muroad
+add_custom_command(TARGET muroadaemon
                    POST_BUILD  
-                   COMMAND  ${CMAKE_SOURCE_DIR}/../scripts/mkgdbindex.sh libmuroad.so 
+                   COMMAND  ${CMAKE_SOURCE_DIR}/../scripts/mkgdbindex.sh libmuroadaemon.so 
                    WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
                    COMMENT "building gdb index")
                                    
 ###################################################################################                                   
 
 
-install(TARGETS   muroad DESTINATION  lib)
+install(TARGETS   muroadaemon DESTINATION  lib)

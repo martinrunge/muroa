@@ -23,17 +23,22 @@
 #include "cpacketringbuffer.h"
 #include "cplayer.h"
 
-using namespace std;
+#include "CApp.h"
 
-CRecvloop::CRecvloop(CPlayer* parent, Cmuroad* config, CPacketRingBuffer* packet_ringbuffer): CThreadSlave()
+using namespace std;
+using namespace muroa;
+
+CRecvloop::CRecvloop(CPlayer* parent, CApp* app, CPacketRingBuffer* packet_ringbuffer): CThreadSlave(), m_app(app), m_settings(app->settings())
 {
 
   m_player = parent;
-  m_config = config;
   
   m_packet_ringbuffer = packet_ringbuffer;
 
-  m_socket = new CSocket(SOCK_DGRAM, m_config->port());
+  m_max_idle = m_settings.getProptery("MaxIdle", 10);
+
+
+  m_socket = new CSocket(SOCK_DGRAM, m_settings.port());
   m_socket->recordSenderWithRecv(true);
 
   m_rtp_packet = new CRTPPacket();
@@ -75,7 +80,7 @@ void CRecvloop::DoLoop()
         }
 
         // wake up playback thread
-        if(m_player->idleTime() > m_config->maxIdle() && m_config->maxIdle() != 0) {
+        if(m_player->idleTime() > m_max_idle && m_max_idle != 0) {
            m_player->m_traffic_cond.Signal();
         }
         
@@ -91,7 +96,7 @@ void CRecvloop::DoLoop()
         // cerr << "Sender was: " << m_socket->latestSender()->ipAddress() << " port " << m_socket->latestSender()->port() << endl;
         
         // wake up playback thread
-        if(m_player->idleTime() > m_config->maxIdle() && m_config->maxIdle() != 0) {
+        if(m_player->idleTime() > m_max_idle && m_max_idle != 0) {
            m_player->m_traffic_cond.Signal();
         }
 

@@ -37,21 +37,24 @@
 #include "crecvloop.h"
 #include "cpacketringbuffer.h"
 
+#include "CApp.h"
+#include "CSettings.h"
+
 
 using namespace std;
 using namespace boost::posix_time;
+using namespace muroa;
 
-CPlayer::CPlayer(Cmuroad* config)
+CPlayer::CPlayer(CApp* app) : m_app(app)
 {
   
   int num;
   cout << "dsclient" << endl;
-  m_config = config;
    
   m_packet_ringbuffer = new CPacketRingBuffer(10);
 
-  m_recvloop = new CRecvloop(this, config, m_packet_ringbuffer);
-  m_playloop = new CPlayloop(this, config, m_packet_ringbuffer);
+  m_recvloop = new CRecvloop(this, m_app, m_packet_ringbuffer);
+  m_playloop = new CPlayloop(this, m_app, m_packet_ringbuffer);
 
   m_recvloop_thread = new CPThread(m_recvloop);
   m_playloop_thread = new CPThread(m_playloop);

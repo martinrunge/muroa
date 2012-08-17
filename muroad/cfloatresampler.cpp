@@ -19,6 +19,7 @@
  ***************************************************************************/
 #include <iostream>
 #include <assert.h>
+#include <cstring>
 
 #include "cfloatresampler.h"
 #include "caudioframe.h"
@@ -108,9 +109,7 @@ CFloatResampler::~CFloatResampler()
   src_delete(m_src_state);
 
   delete[] m_out_buffer;
-
 }
-
 
 
 

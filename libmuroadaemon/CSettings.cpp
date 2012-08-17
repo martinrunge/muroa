@@ -171,8 +171,8 @@ void CSettings::applyDefaults() {
 	m_logfile = "/var/log/muroad.log";
 	m_configfile = "/etc/muroa.conf";
 
-    m_service_name = "MuroaClient";
-    m_service_type = "_muroa._tcp";
+    m_service_name = "Muroa streaming client";
+    m_service_type = "_muroad._udp";
 
     m_ip_version = 4;
 }

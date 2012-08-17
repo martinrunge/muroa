@@ -28,6 +28,12 @@
 @author Martin Runge
 */
 
+namespace muroa
+{
+  class CApp;
+}
+#include "CSettings.h"
+
 class CRTPPacket;
 class CSocket;
 class CPacketRingBuffer;
@@ -36,7 +42,7 @@ class CPlayer;
 class CRecvloop : public CThreadSlave
 {
 public:
-    CRecvloop(CPlayer* parent, Cmuroad *config, CPacketRingBuffer* packet_ringbuffer);
+    CRecvloop(CPlayer* parent, muroa::CApp *app, CPacketRingBuffer* packet_ringbuffer);
 
     ~CRecvloop();
   
@@ -49,8 +55,11 @@ private:
 
     CPacketRingBuffer *m_packet_ringbuffer;
     CPlayer* m_player;
-    Cmuroad* m_config;
+    muroa::CApp* m_app;
+    muroa::CSettings& m_settings;
+
     CSync m_tmp_sync_obj;
+    int m_max_idle;
 };
 
 #endif

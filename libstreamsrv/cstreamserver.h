@@ -70,7 +70,7 @@ public:
       \fn CStreamServer::adjustClientListTo(std::vector<std::string> clients)
       \brief  specify a new list of clients and adjust the used list to that new list.
 
-      This is done in two steps: first, search the connection list for cliet connections not listed any more in the new list and remove them. Second, search the new list for clients, that are not yet listed in the modified connection list and add them.
+      This is done in two steps: first, search the connection list for client connections not listed any more in the new list and remove them. Second, search the new list for clients, that are not yet listed in the modified connection list and add them.
     */
     void adjustClientListTo(std::list<std::string> clients);
 

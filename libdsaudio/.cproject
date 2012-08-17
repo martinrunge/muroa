@@ -53,7 +53,7 @@
 		<buildTargets>
 			<target name="Build" path="" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
 				<buildCommand>make</buildCommand>
-				<buildArguments>-C build -j 4 VERBOSE=1</buildArguments>
+				<buildArguments>-C build_x86 -j 4 VERBOSE=1</buildArguments>
 				<buildTarget/>
 				<stopOnError>true</stopOnError>
 				<useDefaultCommand>false</useDefaultCommand>
@@ -61,7 +61,7 @@
 			</target>
 			<target name="Run CMake" path="" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
 				<buildCommand>cmake</buildCommand>
-				<buildArguments>-E chdir build cmake -DCMAKE_BUILD_TYPE=Debug ..</buildArguments>
+				<buildArguments>-E chdir build_x86 cmake -DCMAKE_BUILD_TYPE=Debug ..</buildArguments>
 				<buildTarget/>
 				<stopOnError>true</stopOnError>
 				<useDefaultCommand>false</useDefaultCommand>

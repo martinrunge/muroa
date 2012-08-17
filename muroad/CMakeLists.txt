@@ -3,6 +3,8 @@ cmake_minimum_required (VERSION 2.6)
 
 set(VERBOSE 1)
 
+SET(ARCH x86)
+
 set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../msessiond/cmake" ${CMAKE_MODULE_PATH})
 
 find_package(PkgConfig)
@@ -23,6 +25,7 @@ set( SRCS             cpacketringbuffer.cpp
                       cresampler.cpp
 		              cfilterdef.cpp
                       cfixpointresampler.cpp
+                      cfloatresampler.cpp
                       cmuroad.cpp
                       main.cpp
                       cplayer.cpp
@@ -35,6 +38,7 @@ set( HEADERS          cpacketringbuffer.h
                       cresampler.h
 		              cfilterdef.h
                       cfixpointresampler.h
+                      cfloatresampler.h
                       cmuroad.h
                       cplayer.h
                       crecvloop.h
@@ -45,7 +49,7 @@ set( HEADERS          cpacketringbuffer.h
 include_directories(${SOURCE_DIR} 
                     ${Boost_INCLUDE_DIRS} 
                     ${CMAKE_SOURCE_DIR} 
-                    ${CMAKE_SOURCE_DIR}/../libmuroad 
+                    ${CMAKE_SOURCE_DIR}/../libmuroadaemon 
                     ${CMAKE_SOURCE_DIR}/../libmuroa++
                     ${CMAKE_SOURCE_DIR}/../libsock++
                     ${CMAKE_SOURCE_DIR}/../libdsaudio
@@ -56,10 +60,10 @@ link_directories(${BINARY_DIR}
                  ${SQLITE_LIBRARY_DIRS} 
                  ${BOOST_LIBRARYDIR}
                  ${LibSamplerate_CFLAGS}
-                 "${CMAKE_SOURCE_DIR}/../libmuroad/build" 
-                 "${CMAKE_SOURCE_DIR}/../libmuroa++/build"
-                 "${CMAKE_SOURCE_DIR}/../libsock++/build"
-                 "${CMAKE_SOURCE_DIR}/../libdsaudio/build")
+                 "${CMAKE_SOURCE_DIR}/../libmuroadaemon/build_${ARCH}" 
+#                 "${CMAKE_SOURCE_DIR}/../libmuroa++/build_${ARCH}"
+                 "${CMAKE_SOURCE_DIR}/../libsock++/build_${ARCH}"
+                 "${CMAKE_SOURCE_DIR}/../libdsaudio/build_${ARCH}")
 
 ADD_EXECUTABLE(muroad ${SRCS} ${HEADERS} )
 
@@ -77,6 +81,7 @@ TARGET_LINK_LIBRARIES(muroad       ${Boost_LIBRARIES}
                                    log4cplus
                                    sock++
                                    dsaudio
+                                   muroadaemon
                                    )
                                    
                                    
