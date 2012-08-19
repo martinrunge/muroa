@@ -66,7 +66,6 @@ private:
   log4cplus::Logger m_logger;
 
   CApp* m_app;
-  CDnsSdAvahi* m_dnssd;
 };
 
 }

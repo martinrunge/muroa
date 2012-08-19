@@ -35,14 +35,14 @@
 
 class CSocket {
 public:
-	CSocket(__socket_type type = SOCK_STREAM, unsigned short port = 0);
+	CSocket(__socket_type type = SOCK_STREAM, unsigned short port = 0, bool search_port_from_here = false);
   
   CSocket(int sock_descr, const bool bound = false, const bool connected = false);
 
 	~CSocket();
  
   /** bind to a port */
-  int bind(const unsigned short port);
+  int bind(const unsigned short port, bool search_from_here = false);
   
   /** connect to a server */
   int connect(const std::string hostname, const unsigned short port = 0);

@@ -23,7 +23,6 @@
 
 #include "CTcpServer.h"
 #include "CApp.h"
-#include "avahi/CDnsSdAvahi.h"
 
 using namespace std;
 using namespace log4cplus;
@@ -69,16 +68,11 @@ CTcpServer::CTcpServer(boost::asio::io_service& io_service, IConnectionManager* 
 	}
 	settings.setPort(portNr);
 
-	m_dnssd = new CDnsSdAvahi(io_service, settings.serviceName(), portNr, settings.serviceType());
-	m_dnssd->setServiceChangedHandler(boost::bind( &muroa::CApp::serviceChanged, app));
-
-
 	m_acceptor.listen();
 	start_accept();
 }
 
 CTcpServer::~CTcpServer() {
-	delete m_dnssd;
 }
 
 void CTcpServer::setConnectionFactory( factory_ptr_t connection_factory ) {

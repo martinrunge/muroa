@@ -54,10 +54,7 @@ CPlayer::CPlayer(CApp* app, boost::asio::io_service& io_service) : m_app(app), m
 
   m_settings.setServiceType("_muroad._udp");
   m_settings.setServiceName("Muroa Streaming Client");
-
-  m_dnssd = new CDnsSdAvahi(io_service, app->settings().serviceName(), app->settings().port(), app->settings().serviceType());
-  m_dnssd->setServiceChangedHandler(boost::bind( &muroa::CApp::serviceChanged, app));
-
+  m_settings.setPort(44400);
    
   m_packet_ringbuffer = new CPacketRingBuffer(10);
 
@@ -69,6 +66,9 @@ CPlayer::CPlayer(CApp* app, boost::asio::io_service& io_service) : m_app(app), m
 
   m_sync_requested_for_stream_id = -1;
   m_sync_requested_at = microsec_clock::universal_time();
+
+  m_dnssd = new CDnsSdAvahi(io_service, app->settings().serviceName(), app->settings().port(), app->settings().serviceType(), vector<string>());
+  m_dnssd->setServiceChangedHandler(boost::bind( &muroa::CApp::serviceChanged, app));
 
   m_idle_time = 0;
 

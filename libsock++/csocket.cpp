@@ -24,7 +24,7 @@
 
 using namespace std;
 
-CSocket::CSocket(__socket_type type, unsigned short port){
+CSocket::CSocket(__socket_type type, unsigned short port, bool search_port_from_here){
   m_timeout = -1;  //blocking
   m_is_bound = false;
   m_is_connected = false;
@@ -50,7 +50,7 @@ CSocket::CSocket(__socket_type type, unsigned short port){
     
   
   if(port != 0)
-    bind(port);
+    bind(port, search_port_from_here);
   
     
 }
@@ -72,18 +72,21 @@ CSocket::~CSocket(){
 }
 
 /** bind to a port */
-int CSocket::bind(unsigned short port){
+int CSocket::bind(unsigned short port, bool search_from_here){
   struct sockaddr_in sockaddr;
-
+  int retval;
 //   if(m_is_listening)
 //     return -2;
+  do {
+	  sockaddr.sin_family = AF_INET;
+	  sockaddr.sin_port = htons(port);
+	  sockaddr.sin_addr.s_addr = htonl(INADDR_ANY);
 
-  sockaddr.sin_family = AF_INET;
-  sockaddr.sin_port = htons(port);
-  sockaddr.sin_addr.s_addr = htonl(INADDR_ANY);
 
-
-  int retval = ::bind(m_socket_descr, (struct sockaddr*) &sockaddr, sizeof(sockaddr));
+	  retval = ::bind(m_socket_descr, (struct sockaddr*) &sockaddr, sizeof(sockaddr));
+	  port++;
+  } while( search_from_here == true && retval != 0);
+  port--;
 
   if(retval == 0) {
     m_port_nr = port;

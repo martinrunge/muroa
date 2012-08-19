@@ -32,13 +32,15 @@ struct userdata
 
 class CDnsSdAvahi : public CDnsSdBase {
 public:
-	CDnsSdAvahi(boost::asio::io_service& io_service, std::string service_name, unsigned short service_port, std::string service_type = "_muroa._tcp");
+	CDnsSdAvahi(boost::asio::io_service& io_service, std::string service_name, unsigned short service_port, std::string service_type, std::vector<std::string> browselist);
 	virtual ~CDnsSdAvahi();
 
 //	void operator()();
 //	void cancel();
 
 //	void registerService(std::string serviceName, unsigned short servicePort);
+
+	void addBrowseService(std::string sericeType);
 
 	void clientCallback(AvahiClient *client, AvahiClientState state, void * userdata);
 	void entryGroupCallback(AvahiEntryGroup *group, AvahiEntryGroupState state, void *userdata);
