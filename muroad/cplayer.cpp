@@ -39,17 +39,25 @@
 
 #include "CApp.h"
 #include "CSettings.h"
+#include "avahi/CDnsSdAvahi.h"
 
 
 using namespace std;
 using namespace boost::posix_time;
 using namespace muroa;
 
-CPlayer::CPlayer(CApp* app) : m_app(app)
+CPlayer::CPlayer(CApp* app, boost::asio::io_service& io_service) : m_app(app), m_settings(app->settings()), m_io_service(io_service)
 {
   
   int num;
   cout << "dsclient" << endl;
+
+  m_settings.setServiceType("_muroad._udp");
+  m_settings.setServiceName("Muroa Streaming Client");
+
+  m_dnssd = new CDnsSdAvahi(io_service, app->settings().serviceName(), app->settings().port(), app->settings().serviceType());
+  m_dnssd->setServiceChangedHandler(boost::bind( &muroa::CApp::serviceChanged, app));
+
    
   m_packet_ringbuffer = new CPacketRingBuffer(10);
 

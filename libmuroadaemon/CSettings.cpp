@@ -107,6 +107,7 @@ int CSettings::parse(int argc, char** argv) throw(configEx) {
 
         default:
             printf("?? getopt returned character code 0%o ??\n", c);
+            break;
         }
     }
 
@@ -120,7 +121,7 @@ int CSettings::parse(int argc, char** argv) throw(configEx) {
     try {
     	read_json(m_configfile, m_pt);
     }
-    catch(boost::property_tree::json_parser::json_parser_error err) {
+    catch(boost::property_tree::json_parser::json_parser_error& err) {
     	LOG4CPLUS_ERROR( m_app->logger() , "failed to load config file '" << m_configfile << "': " << err.what() );
     }
     return 0;

@@ -55,7 +55,10 @@ public:
     inline std::string logfile() { return m_logfile; };
 
     inline std::string serviceName() {return m_service_name; };
+    inline void setServiceName(std::string service_name ) { m_service_name = service_name; };
+
     inline std::string serviceType() {return m_service_type; };
+    inline void setServiceType(std::string service_type) { m_service_type = service_type; };
 
     std::string getProptery(const std::string& key, const std::string& defaultVal);
     void setProptery(const std::string& key, const std::string& val);

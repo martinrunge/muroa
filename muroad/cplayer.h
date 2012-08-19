@@ -30,12 +30,16 @@ Class encapsulates all the playback functioinalty. It inplements an interface to
 #include "csync.h"
 #include "cposixcond.h"
 
+#include <boost/asio.hpp>
+
+
 namespace muroa
 {
   class CApp;
+  class CSettings;
+  class CDnsSdAvahi;
 }
 
-class Cmuroad;
 class CRecvloop;
 class CPlayloop;
 class CRTPPacket;
@@ -45,7 +49,7 @@ class CPacketRingBuffer;
 
 class CPlayer{
 public:
-    CPlayer(muroa::CApp *app);
+    CPlayer(muroa::CApp *app, boost::asio::io_service& io_service);
 
     ~CPlayer();
     void start();
@@ -78,6 +82,8 @@ public:
     CPosixCond m_traffic_cond;
 
 private:
+    muroa::CDnsSdAvahi *m_dnssd;
+
     CPacketRingBuffer * m_packet_ringbuffer;
   
     CPlayloop *m_playloop;
@@ -94,6 +100,9 @@ private:
     
     // Cmuroad* m_config;
     muroa::CApp* m_app;
+    muroa::CSettings& m_settings;
+
+    boost::asio::io_service& m_io_service;
 };
 
 #endif

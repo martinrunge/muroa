@@ -16,11 +16,12 @@ CServiceDesc::CServiceDesc() {
 
 }
 
-CServiceDesc::CServiceDesc(string serviceName, string hostName, string domainName, int portNr, int interface, int protocol)
+CServiceDesc::CServiceDesc(string serviceName, string hostName, string domainName, string serviceType, int portNr, int interface, int protocol)
 {
 	m_serviceName = serviceName;
 	m_hostName = hostName;
 	m_domainName = domainName;
+	m_serviceType = serviceType;
 	m_portNr = portNr;
 
 	m_interface = interface;

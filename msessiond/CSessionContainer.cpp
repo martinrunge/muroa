@@ -31,11 +31,14 @@ struct RetrieveKey
     }
 };
 
-CSessionContainer::CSessionContainer( CApp* app ) : m_tcp_server(0), m_app(app) {
+CSessionContainer::CSessionContainer( CApp* app ) : m_tcp_server(0), m_app(app), m_settings(app->settings()) {
 
 }
 
 void CSessionContainer::setup( boost::asio::io_service& io_service) {
+
+	m_settings.setServiceName("Muroa Session Server");
+	m_settings.setServiceType("_muroa._tcp");
 
 	m_tcp_server = new CTcpServer(io_service, this, m_app, reinterpret_cast<factory_ptr_t>(&CConnection::create));
 

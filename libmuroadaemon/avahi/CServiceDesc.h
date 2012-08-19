@@ -16,7 +16,7 @@ namespace muroa {
 class CServiceDesc {
 public:
 	CServiceDesc();
-	CServiceDesc(std::string serviceName, std::string hostName,	std::string domainName, int portNr = 0, int interface = 0, int protocol = 0);
+	CServiceDesc(std::string serviceName, std::string hostName,	std::string domainName, std::string serviceType = std::string(), int portNr = 0, int interface = 0, int protocol = 0);
 	virtual ~CServiceDesc();
     int getInterface() const
     {
@@ -58,6 +58,11 @@ public:
         return m_serviceName;
     }
 
+    std::string getServiceType() const
+    {
+        return m_serviceType;
+    }
+
     void setDomainName(std::string m_domainName)
     {
         this->m_domainName = m_domainName;
@@ -78,9 +83,15 @@ public:
         this->m_serviceName = m_serviceName;
     }
 
+    void setServiceType(std::string m_serviceType)
+    {
+        this->m_serviceType = m_serviceType;
+    }
+
     inline bool operator ==(const CServiceDesc &other)
 	{
     	if(m_serviceName.compare( other.getServiceName() ) == 0 &&
+           m_serviceType.compare( other.getServiceType() ) == 0 &&
     	   m_domainName.compare( other.getDomainName() ) == 0 &&
     	   m_hostName.compare( other.getHostName() ) == 0 &&
     	   m_protocol    == other.getProtocol() &&
@@ -94,6 +105,7 @@ public:
 
 private:
     std::string m_serviceName;
+    std::string m_serviceType;
     std::string m_hostName;
     std::string m_domainName;
 	int m_portNr;

@@ -143,6 +143,7 @@ int CApp::daemonize() {
     		return 1;
         }
     }
+    return 0;
 
 }
 

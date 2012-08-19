@@ -35,7 +35,6 @@
 
 #include "Exceptions.h"
 
-#include "avahi/CDnsSdAvahi.h"
 
 using namespace std;
 
@@ -56,12 +55,10 @@ int main(int argc, char *argv[])
 		// CTcpServer server(io_service, app, &CTcpConnection::create);
 		CSignalHandler* sigPtr = CSignalHandler::create(io_service);
 		sigPtr->start();
-		muroa::CDnsSdAvahi dnssd(io_service, app->settings().serviceName(), app->settings().port(), app->settings().serviceType());
-		dnssd.setServiceChangedHandler(boost::bind( &muroa::CApp::serviceChanged, app));
 
 		LOG4CPLUS_DEBUG(app->logger(), "starting io_service");
 
-	    CPlayer player(app);
+	    CPlayer player(app, io_service);
 	    player.start();
 
 	    io_service.run();

@@ -49,10 +49,10 @@ typedef struct serialisation_vars{
   char timestamp[32]; // only 27 used
 }serialisation_vars_t;
 
-typedef union m_serialization_buffer_t{
+typedef union serialization_buffer{
   serialisation_vars_t serialisation_vars;
   char raw_buffer[4 + 4 + 4 + 4 + 32];
-};
+} serialization_buffer_t;
 
 
 class CSync{
@@ -113,7 +113,7 @@ private:
   boost::posix_time::ptime *m_local_time;
 
 
-  union m_serialization_buffer_t m_serialization_buffer;
+  serialization_buffer_t m_serialization_buffer;
 
 
 protected:

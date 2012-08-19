@@ -52,6 +52,7 @@ private:
 
 	CTcpServer* m_tcp_server;
 	CApp* m_app;
+	CSettings& m_settings;
 
 	CSignalHandler* m_sigPtr;
 
