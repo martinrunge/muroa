@@ -8,6 +8,8 @@
 #include "CSessionContainer.h"
 #include "muroaConstants.h"
 
+#include "avahi/CDnsSdAvahi.h"
+
 #include "CSession.h"
 #include <boost/asio.hpp>
 #include <algorithm>
@@ -31,7 +33,7 @@ struct RetrieveKey
     }
 };
 
-CSessionContainer::CSessionContainer( CApp* app ) : m_tcp_server(0), m_app(app), m_settings(app->settings()) {
+CSessionContainer::CSessionContainer( CApp* app ) : m_tcp_server(0), m_dnssd(0), m_app(app), m_settings(app->settings()) {
 
 }
 
@@ -45,12 +47,24 @@ void CSessionContainer::setup( boost::asio::io_service& io_service) {
 	m_sigPtr = CSignalHandler::create(io_service);
 	m_sigPtr->start();
 
+	vector<string> browselist;
+	browselist.push_back("_muroa._tcp");
+	browselist.push_back("_muroad._udp");
+
+	m_dnssd = new CDnsSdAvahi(io_service, m_settings.serviceName(), m_settings.port(), m_settings.serviceType(), browselist);
+	m_dnssd->setServiceChangedHandler(boost::bind( &muroa::CApp::serviceChanged, m_app));
+
+//	m_dnssd->addBrowseService("_muroa._tcp");
+//	m_dnssd->addBrowseService("_muroad._udp");
+
 	CSession* createNewSession = new CSession(CREATE_NEW_SESSION, io_service);
 	m_sessions.insert(pair<string, CSession*>(CREATE_NEW_SESSION, createNewSession));
 }
 
 CSessionContainer::~CSessionContainer() {
-
+	if(m_dnssd != 0) {
+		delete m_dnssd;
+	}
 }
 
 void CSessionContainer::add(CTcpConnection* c) {

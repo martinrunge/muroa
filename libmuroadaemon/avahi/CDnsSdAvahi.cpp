@@ -75,7 +75,8 @@ void CDnsSdAvahi::staticResolveCallback( AvahiServiceResolver *r,
 CDnsSdAvahi::CDnsSdAvahi(boost::asio::io_service& io_service,
 		                 string service_name,
 		                 unsigned short service_port,
-		                 string service_type)
+		                 string service_type,
+		                 std::vector<std::string> browselist)
 
                        : CDnsSdBase(io_service),
                          m_threaded_poll(0),
@@ -99,12 +100,9 @@ CDnsSdAvahi::CDnsSdAvahi(boost::asio::io_service& io_service,
     int error;
     m_client = avahi_client_new(avahi_threaded_poll_get(m_threaded_poll), AvahiClientFlags(0), &CDnsSdAvahi::staticClientCallback, &m_userdata, &error);
 
-    // Create the service browser
-    m_service_browser = avahi_service_browser_new(m_client, AVAHI_IF_UNSPEC, AVAHI_PROTO_UNSPEC, m_service_type.c_str(), NULL, AvahiLookupFlags(0), &CDnsSdAvahi::staticBrowseCallback, &m_userdata);
-    if(!m_service_browser)
-    {
-      cerr << "Failed to create service browser: "<< avahi_strerror(avahi_client_errno(m_client)) << endl;
-      return;
+    vector<string>::iterator it;
+    for(it = browselist.begin(); it!= browselist.end(); it++) {
+    	addBrowseService(*it);
     }
 
 	avahi_threaded_poll_start(m_threaded_poll);
@@ -126,6 +124,15 @@ void CDnsSdAvahi::cleanup()
 
 }
 
+void CDnsSdAvahi::addBrowseService(std::string sericeType) {
+    // Create the service browser
+    m_service_browser = avahi_service_browser_new(m_client, AVAHI_IF_UNSPEC, AVAHI_PROTO_UNSPEC, sericeType.c_str(), NULL, AvahiLookupFlags(0), &CDnsSdAvahi::staticBrowseCallback, &m_userdata);
+    if(!m_service_browser)
+    {
+      cerr << "Failed to create service browser: "<< avahi_strerror(avahi_client_errno(m_client)) << endl;
+      return;
+    }
+}
 
 
 
@@ -292,7 +299,7 @@ void CDnsSdAvahi::resolveCallback( AvahiServiceResolver *r,
             if(hasService(name) == 0)
             {
             	// no service with that name known yet
-            	addService(ServDescPtr( new CServiceDesc(name, host_name, domain, port, interface, protocol)));
+            	addService(ServDescPtr( new CServiceDesc(name, host_name, domain, type, port, interface, protocol)));
             }
 
 

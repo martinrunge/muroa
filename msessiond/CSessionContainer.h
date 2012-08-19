@@ -25,6 +25,7 @@ namespace muroa {
 
 class CSession;
 class CApp;
+class CDnsSdAvahi;
 
 class CSessionContainer : public IConnectionManager {
 
@@ -51,6 +52,8 @@ private:
 	static std::mutex m_mutex;
 
 	CTcpServer* m_tcp_server;
+    CDnsSdAvahi* m_dnssd;
+
 	CApp* m_app;
 	CSettings& m_settings;
 

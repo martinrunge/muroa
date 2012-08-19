@@ -38,7 +38,9 @@ CRecvloop::CRecvloop(CPlayer* parent, CApp* app, CPacketRingBuffer* packet_ringb
   m_max_idle = m_settings.getProptery("MaxIdle", 10);
 
 
-  m_socket = new CSocket(SOCK_DGRAM, m_settings.port());
+  m_socket = new CSocket(SOCK_DGRAM, m_settings.port(), true);
+  m_settings.setPort( m_socket->getPort() );
+
   m_socket->recordSenderWithRecv(true);
 
   m_rtp_packet = new CRTPPacket();
