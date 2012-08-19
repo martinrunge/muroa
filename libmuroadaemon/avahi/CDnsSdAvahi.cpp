@@ -292,7 +292,7 @@ void CDnsSdAvahi::resolveCallback( AvahiServiceResolver *r,
             if(hasService(name) == 0)
             {
             	// no service with that name known yet
-            	addService(ServDescPtr( new CServiceDesc(name, host_name, domain, port, interface, protocol)));
+            	addService(ServDescPtr( new CServiceDesc(name, host_name, domain, type, port, interface, protocol)));
             }
 
 
