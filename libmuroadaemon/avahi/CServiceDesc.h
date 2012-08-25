@@ -94,6 +94,7 @@ public:
            m_serviceType.compare( other.getServiceType() ) == 0 &&
     	   m_domainName.compare( other.getDomainName() ) == 0 &&
     	   m_hostName.compare( other.getHostName() ) == 0 &&
+    	   m_portNr      == other.getPortNr() &&
     	   m_protocol    == other.getProtocol() &&
     	   m_interface   == other.getInterface())
     	{

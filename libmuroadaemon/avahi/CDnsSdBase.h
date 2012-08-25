@@ -22,6 +22,8 @@
 namespace muroa {
 
 typedef boost::function<void(void)> service_changed_handler_t;
+typedef boost::function<void(ServDescPtr)> add_service_handler_t;
+typedef boost::function<void(std::string name)> rm_service_handler_t;
 
 class CDnsSdBase {
 public:
@@ -35,6 +37,8 @@ public:
     ServDescPtr getService(int index) { return m_services.at(index); };
 
     void setServiceChangedHandler(service_changed_handler_t handler);
+    void setServiceAddedHandler(add_service_handler_t handler);
+    void setServiceRemovedHandler(rm_service_handler_t handler);
 
     void addService(ServDescPtr newService);
     int removeService(std::string name);
@@ -48,6 +52,9 @@ protected:
 
 private:
 	service_changed_handler_t m_service_changed_handler;
+	add_service_handler_t m_add_service_handler;
+	rm_service_handler_t m_rm_service_handler;
+
 	std::mutex m_mutex;
 
 	CApp* m_app;

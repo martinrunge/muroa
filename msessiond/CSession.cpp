@@ -557,6 +557,29 @@ void CSession::setProperty(string key, int val) {
 }
 
 
+bool CSession::hasClient(std::string name) {
+	return false;
+}
+
+void CSession::addClient(std::string name) {
+
+}
+
+void CSession::rmClient(std::string name) {
+
+}
+
+void CSession::enableClient(std::string name) {
+
+}
+
+void CSession::disableClient(std::string name) {
+
+}
+
+
+
+
 bool CSession::operator==(const CSession& other) {
 
 	if(m_name.compare(other.m_name) != 0) return false;

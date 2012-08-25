@@ -70,6 +70,20 @@ public:
 	virtual void onEditPlaylist(uint32_t jobID, unsigned fromRev, unsigned toRev, std::string playlistDiff ) = 0;
 	virtual void onEditNextlist(uint32_t jobID, unsigned fromRev, unsigned toRev, std::string nextlistDiff ) = 0;
 
+	virtual void getSessionClients(uint32_t jobID) = 0;
+	virtual void getUnassignedClients(uint32_t jobID) = 0;
+	virtual void addClient(uint32_t jobID, std::string name) = 0;
+	virtual void rmClient(uint32_t jobID, std::string name) = 0;
+	virtual void enableClient(uint32_t jobID, std::string name) = 0;
+	virtual void disableClient(uint32_t jobID, std::string name) = 0;
+
+	virtual void onGetSessionClients(uint32_t jobID) = 0;
+	virtual void onGetUnassignedClients(uint32_t jobID) = 0;
+	virtual void onAddClient(uint32_t jobID, std::string name) = 0;
+	virtual void onRmClient(uint32_t jobID, std::string name) = 0;
+	virtual void onEnableClient(uint32_t jobID, std::string name) = 0;
+	virtual void onDisableClient(uint32_t jobID, std::string name) = 0;
+
 	// onDataToSend:
 	// called when there are serialized command ready to be sent to receiver
 	virtual void onDataToSend(const char* data, int len) = 0;

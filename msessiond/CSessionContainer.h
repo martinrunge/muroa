@@ -47,6 +47,11 @@ public:
 	void addSessionlessConnection(CConnection* ptr);
 	CSession* assignConnection(CConnection* ptr, std::string sessionName);
 
+	void serviceChanged();
+	void serviceAdded(ServDescPtr srvPtr);
+	void serviceRemoved(std::string name);
+
+
 private:
 	static CSessionContainer* m_inst_ptr;
 	static std::mutex m_mutex;
@@ -61,6 +66,8 @@ private:
 
 	std::map<std::string, CSession*> m_sessions;
 	std::set<CConnection*> m_sessionless_connections;
+
+	std::set<std::string> m_unassignedClientNames;
 };
 
 } /* namespace muroa */

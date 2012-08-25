@@ -19,7 +19,9 @@ using namespace log4cplus;
 namespace muroa {
 
 CDnsSdBase::CDnsSdBase(boost::asio::io_service& io_service) : m_io_service(io_service),
-		                                                      m_service_changed_handler(0)
+		                                                      m_service_changed_handler(0),
+		                                                      m_add_service_handler(0),
+		                                                      m_rm_service_handler(0)
 {
 	CApp* m_app = CApp::getInstPtr();
 }
@@ -42,9 +44,12 @@ void CDnsSdBase::addService(ServDescPtr newService)
 {
 	// lock_guard<mutex> lk(m_mutex);
 	m_services.push_back(newService);
+	LOG4CPLUS_TRACE(Logger::getInstance("main"), "service added ..."  );
 	if(m_service_changed_handler) {
-		LOG4CPLUS_TRACE(Logger::getInstance("main"), "service added ..."  );
 		m_io_service.post( boost::bind(m_service_changed_handler) );
+	}
+	if(m_add_service_handler) {
+		m_io_service.post( boost::bind(m_add_service_handler, newService) );
 	}
 }
 
@@ -61,6 +66,19 @@ int CDnsSdBase::removeService(std::string name)
 			num++;
 		}
 	}
+
+	if(num > 0) {
+		LOG4CPLUS_TRACE(m_app->logger(), "service changed."  );
+		if(m_service_changed_handler)
+		{
+			m_io_service.post(boost::bind(m_service_changed_handler));
+		}
+		if(m_rm_service_handler)
+		{
+			m_io_service.post(boost::bind(m_rm_service_handler, name));
+		}
+	}
+
 	return num;
 }
 
@@ -80,7 +98,14 @@ int CDnsSdBase::removeService(const CServiceDesc& rmSd )
 
 	if(num > 0) {
 		LOG4CPLUS_TRACE(m_app->logger(), "service changed."  );
-        m_io_service.post(boost::bind(m_service_changed_handler));
+		if(m_service_changed_handler)
+		{
+			m_io_service.post(boost::bind(m_service_changed_handler));
+		}
+		if(m_rm_service_handler)
+		{
+			m_io_service.post(boost::bind(m_rm_service_handler, rmSd.getServiceName()));
+		}
 	}
 
 	return num;
@@ -121,6 +146,14 @@ ServDescPtr CDnsSdBase::getService(string name, int which)
 
 void CDnsSdBase::setServiceChangedHandler(service_changed_handler_t handler) {
 	m_service_changed_handler = handler;
+}
+
+void CDnsSdBase::setServiceAddedHandler(add_service_handler_t handler) {
+	m_add_service_handler = handler;
+}
+
+void CDnsSdBase::setServiceRemovedHandler(rm_service_handler_t handler) {
+	m_rm_service_handler = handler;
 }
 
 

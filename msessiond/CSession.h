@@ -139,6 +139,14 @@ public:
 	bool operator==(const CSession& other);
 	inline bool operator!=(const CSession& other) { return !operator==(other); }
 
+	bool hasClient(std::string name);
+	void addClient(std::string name);
+	void rmClient(std::string name);
+
+	void enableClient(std::string name);
+	void disableClient(std::string name);
+
+
 
 private:
 

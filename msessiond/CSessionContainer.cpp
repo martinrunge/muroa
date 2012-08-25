@@ -20,6 +20,7 @@ namespace muroa {
 
 using namespace std;
 using namespace log4cplus;
+using namespace muroa;
 
 CSessionContainer* CSessionContainer::m_inst_ptr = 0;
 std::mutex CSessionContainer::m_mutex;
@@ -52,10 +53,9 @@ void CSessionContainer::setup( boost::asio::io_service& io_service) {
 	browselist.push_back("_muroad._udp");
 
 	m_dnssd = new CDnsSdAvahi(io_service, m_settings.serviceName(), m_settings.port(), m_settings.serviceType(), browselist);
-	m_dnssd->setServiceChangedHandler(boost::bind( &muroa::CApp::serviceChanged, m_app));
-
-//	m_dnssd->addBrowseService("_muroa._tcp");
-//	m_dnssd->addBrowseService("_muroad._udp");
+	m_dnssd->setServiceChangedHandler(boost::bind( &muroa::CSessionContainer::serviceChanged, this));
+	m_dnssd->setServiceAddedHandler(boost::bind( &muroa::CSessionContainer::serviceAdded, this, _1));
+	m_dnssd->setServiceRemovedHandler(boost::bind( &muroa::CSessionContainer::serviceRemoved, this, _1));
 
 	CSession* createNewSession = new CSession(CREATE_NEW_SESSION, io_service);
 	m_sessions.insert(pair<string, CSession*>(CREATE_NEW_SESSION, createNewSession));
@@ -123,6 +123,57 @@ CSession* CSessionContainer::assignConnection(CConnection* ptr, std::string sess
 	return session;
 }
 
+void CSessionContainer::serviceChanged() {
+
+}
+
+void CSessionContainer::serviceAdded(ServDescPtr srvPtr) {
+	string name = srvPtr->getServiceName();
+	int num = 0;
+
+	LOG4CPLUS_DEBUG(m_app->logger(), "service " << name << " appeared.");
+	map<std::string, CSession*>::iterator it;
+	for(it = m_sessions.begin(); it != m_sessions.end(); it++)
+	{
+		if(it->second->hasClient(name)) {
+			it->second->enableClient(name);
+			num++;
+		}
+	}
+	if(num > 1) {
+		LOG4CPLUS_ERROR(m_app->logger(), "more than on session claimed client '" << name << "'. A client can only be part of one session!");
+	}
+
+	if(num == 0) {
+		LOG4CPLUS_DEBUG(m_app->logger(), "service " << name << " not part of any session.");
+		m_unassignedClientNames.insert(name);
+	}
+
+}
+
+void CSessionContainer::serviceRemoved(std::string name) {
+	int num = 0;
+
+	LOG4CPLUS_DEBUG(m_app->logger(), "service " << name << " disappeared.");
+	map<std::string, CSession*>::iterator it;
+	for(it = m_sessions.begin(); it != m_sessions.end(); it++)
+	{
+		if(it->second->hasClient(name)) {
+			it->second->disableClient(name);
+			num++;
+		}
+	}
+	if(num > 1) {
+		LOG4CPLUS_ERROR(m_app->logger(), "more than on session claimed client '" << name << "'. A client can only be part of one session!");
+	}
+
+	set<string>::iterator it2 = m_unassignedClientNames.find(name);
+	if(it2 !=  m_unassignedClientNames.end())
+	{
+		LOG4CPLUS_DEBUG(m_app->logger(), "removing service " << name << " from list of clients not assigned to any session.");
+		m_unassignedClientNames.erase(it2);
+	}
+}
 
 
 } /* namespace muroa */
