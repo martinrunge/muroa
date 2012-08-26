@@ -150,6 +150,42 @@ void CRpcDummy::onEditNextlist(uint32_t jobID, unsigned  fromRev, unsigned toRev
 	m_last_cmd = oss.str();
 }
 
+void CRpcDummy::onGetSessionClients(uint32_t jobID) {
+	ostringstream oss;
+	oss << "getSessionClients(" << jobID << ")";
+	m_last_cmd = oss.str();
+}
+
+void CRpcDummy::onGetUnassignedClients(uint32_t jobID) {
+	ostringstream oss;
+	oss << "getUnassignedClients(" << jobID << ")";
+	m_last_cmd = oss.str();
+}
+
+void CRpcDummy::onAddClient(uint32_t jobID, std::string name) {
+	ostringstream oss;
+	oss << "addClient(" << jobID << "," << name << ")";
+	m_last_cmd = oss.str();
+}
+
+void CRpcDummy::onRmClient(uint32_t jobID, std::string name) {
+	ostringstream oss;
+	oss << "rmClient(" << jobID << "," << name << ")";
+	m_last_cmd = oss.str();
+}
+
+void CRpcDummy::onEnableClient(uint32_t jobID, std::string name) {
+	ostringstream oss;
+	oss << "enableClient(" << jobID << "," << name << ")";
+	m_last_cmd = oss.str();
+}
+
+void CRpcDummy::onDisableClient(uint32_t jobID, std::string name) {
+	ostringstream oss;
+	oss << "disableClient(" << jobID << "," << name << ")";
+	m_last_cmd = oss.str();
+}
+
 void CRpcDummy::onListSessions(std::vector<std::string> sessionList) {
 	m_last_stringvec = sessionList;
 	m_last_cmd = "sessionList";

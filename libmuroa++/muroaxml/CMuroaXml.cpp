@@ -163,6 +163,37 @@ void CMuroaXml::editNextlist(uint32_t jobID, unsigned fromRev, unsigned toRev, s
 	sendData(oss.str());
 }
 
+void CMuroaXml::getSessionClients(uint32_t jobID) {
+	ostringstream oss;
+
+}
+
+void CMuroaXml::getUnassignedClients(uint32_t jobID) {
+	ostringstream oss;
+
+}
+
+void CMuroaXml::addClient(uint32_t jobID, std::string name) {
+	ostringstream oss;
+
+}
+
+void CMuroaXml::rmClient(uint32_t jobID, std::string name) {
+	ostringstream oss;
+
+}
+
+void CMuroaXml::enableClient(uint32_t jobID, std::string name) {
+	ostringstream oss;
+
+}
+
+void CMuroaXml::disableClient(uint32_t jobID, std::string name) {
+	ostringstream oss;
+
+}
+
+
 
 void CMuroaXml::newData(const char* data, int len) {
 	int done = 0;

@@ -140,6 +140,30 @@ CRpc::~CRpc() {
     	m_connection->incomingCmd(en);
     }
 
+	void CRpc::onGetSessionClients(uint32_t jobID) {
+
+	}
+
+	void CRpc::onGetUnassignedClients(uint32_t jobID) {
+
+	}
+
+	void CRpc::onAddClient(uint32_t jobID, std::string name){
+
+	}
+
+	void CRpc::onRmClient(uint32_t jobID, std::string name) {
+
+	}
+
+	void CRpc::onEnableClient(uint32_t jobID, std::string name) {
+
+	}
+
+	void CRpc::onDisableClient(uint32_t jobID, std::string name) {
+
+	}
+
 	void CRpc::sendCmd(muroa::Cmd* cmd) {
 		switch(cmd->type()) {
 		case Cmd::PLAY:

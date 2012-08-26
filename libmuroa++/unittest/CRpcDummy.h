@@ -66,6 +66,13 @@ public:
 	void onEditPlaylist(uint32_t jobID, unsigned fromRev, unsigned toRev, std::string playlistDiff );
 	void onEditNextlist(uint32_t jobID, unsigned fromRev, unsigned toRev, std::string nextlistDiff );
 
+	void onGetSessionClients(uint32_t jobID);
+	void onGetUnassignedClients(uint32_t jobID);
+	void onAddClient(uint32_t jobID, std::string name);
+	void onRmClient(uint32_t jobID, std::string name);
+	void onEnableClient(uint32_t jobID, std::string name);
+	void onDisableClient(uint32_t jobID, std::string name);
+
 	void onStartSession(){ };
 	void onEndSession(){ };
 	void onXmlVersion(){ };

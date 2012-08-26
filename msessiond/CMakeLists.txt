@@ -83,7 +83,7 @@ set( HEADERS          sessionEx.h
 include_directories(${SOURCE_DIR} ${Boost_INCLUDE_DIRS} ${SQLITE_INCLUDE_DIR} 
                     ${CMAKE_SOURCE_DIR} ${CMAKE_SOURCE_DIR}/../libmuroadaemon ${CMAKE_SOURCE_DIR}/../libmuroa++) 
 
-link_directories(${BINARY_DIR} ${SQLITE_LIBRARY_DIRS} "${CMAKE_SOURCE_DIR}/../libmuroadaemon/build" "${CMAKE_SOURCE_DIR}/../libmuroa++/build")
+link_directories(${BINARY_DIR} ${SQLITE_LIBRARY_DIRS} "${CMAKE_SOURCE_DIR}/../libmuroadaemon/build_x86" "${CMAKE_SOURCE_DIR}/../libmuroa++/build")
 
 ADD_EXECUTABLE(msessiond main.cpp ${SRCS} ${HEADERS} )
 

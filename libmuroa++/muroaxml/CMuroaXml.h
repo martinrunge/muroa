@@ -49,6 +49,12 @@ public:
 	void editPlaylist(uint32_t jobID, unsigned fromRev, unsigned toRev, std::string diff );
 	void editNextlist(uint32_t jobID, unsigned fromRev, unsigned toRev, std::string diff );
 
+	void getSessionClients(uint32_t jobID);
+	void getUnassignedClients(uint32_t jobID);
+	void addClient(uint32_t jobID, std::string name);
+	void rmClient(uint32_t jobID, std::string name);
+	void enableClient(uint32_t jobID, std::string name);
+	void disableClient(uint32_t jobID, std::string name);
 
 	void newData(const char* data, int len);
 
