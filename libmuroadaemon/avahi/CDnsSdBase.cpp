@@ -126,19 +126,14 @@ int CDnsSdBase::hasService(string name)
 }
 
 
-ServDescPtr CDnsSdBase::getService(string name, int which)
+ServDescPtr CDnsSdBase::getServiceByName(string name)
 {
-	int num = 0;
 	vector<ServDescPtr>::iterator it;
 	for(it = m_services.begin(); it != m_services.end(); it++)
 	{
 		if( name.compare( (*it)->getServiceName() ) == 0 )
 		{
-			if(num == which)
-			{
-				return *it;
-			}
-			num++;
+			return *it;
 		}
 	}
 	return ServDescPtr();

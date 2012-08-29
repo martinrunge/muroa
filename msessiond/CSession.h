@@ -42,7 +42,7 @@ class CStateDB;
 
 class CSession : boost::noncopyable {
 public:
-	CSession(std::string name, boost::asio::io_service& io_service);
+	CSession(std::string name, boost::asio::io_service& io_service, CSessionContainer* const sessionContainer);
  	//CSession( std::string name );
 	virtual ~CSession();
 
@@ -165,6 +165,8 @@ private:
 	std::set<CConnection*> m_connections;
 	std::map<unsigned, CConnection*> m_connections_by_id;
 
+	std::set<std::string> m_playback_clients;
+
 	std::map<uint32_t, CConnection*> m_job_initiators;
 
 	client_job_t getClientCmdIdBySubprocessCmdID(uint32_t subprocess_cmd_id, bool delentry = true) throw(ExInvMsg);
@@ -206,6 +208,7 @@ private:
     CPlaylistIdProvider m_plIdProvider;
 
     CApp* m_app;
+    CSessionContainer* const m_sessionContainer;
     std::string privatePropertyKey(std::string key);
 
     void dequeueCmd();

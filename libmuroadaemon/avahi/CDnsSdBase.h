@@ -33,7 +33,7 @@ public:
     std::vector<ServDescPtr> getServiceList() const;
     void setServiceList(std::vector<ServDescPtr> services);
 
-    ServDescPtr getService(std::string name, int which = 0);
+    ServDescPtr getServiceByName(std::string name);
     ServDescPtr getService(int index) { return m_services.at(index); };
 
     void setServiceChangedHandler(service_changed_handler_t handler);

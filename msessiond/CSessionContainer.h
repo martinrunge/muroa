@@ -51,6 +51,7 @@ public:
 	void serviceAdded(ServDescPtr srvPtr);
 	void serviceRemoved(std::string name);
 
+	ServDescPtr getServiceByName(std::string name);
 
 private:
 	static CSessionContainer* m_inst_ptr;

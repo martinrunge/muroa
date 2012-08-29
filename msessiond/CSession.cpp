@@ -21,7 +21,10 @@
 #include "CMediaScannerCtrl.h"
 #include "CApp.h"
 #include "CStateDB.h"
+#include "CSessionContainer.h"
 #include "CSessionStorage.h"
+#include "avahi/CServiceDesc.h"
+
 
 #include "CCmdDispatcher.h"
 
@@ -43,20 +46,25 @@ namespace muroa {
  * All connections that belong to a session \b must use the same io_service!!!
  *
  */
-CSession::CSession(string name, boost::asio::io_service& io_service) : m_io_service(io_service),
-		                                                               m_name(name),
-                                                                       m_maxMediaColRev(0),
-                                                                       m_maxPlaylistRev(0),
-                                                                       m_maxNextlistRev(0),
-                                                                       m_minMediaColRev(0),
-                                                                       m_minPlaylistRev(0),
-                                                                       m_minNextlistRev(0),
-                                                                       m_playlistPos(0),
-                                                                       m_sessionStorage(0),
-                                                                       m_stateDBFilename("state.db"),
-                                                                       m_stream(this),
-                                                                       m_plIdProvider(this),
-                                                                       m_app(CApp::getInstPtr()) {
+CSession::CSession(string name,
+		             boost::asio::io_service& io_service,
+		             CSessionContainer* const sessionContainer)
+							: m_io_service(io_service),
+							  m_name(name),
+							  m_maxMediaColRev(0),
+							  m_maxPlaylistRev(0),
+							  m_maxNextlistRev(0),
+							  m_minMediaColRev(0),
+							  m_minPlaylistRev(0),
+							  m_minNextlistRev(0),
+							  m_playlistPos(0),
+							  m_sessionStorage(0),
+							  m_stateDBFilename("state.db"),
+							  m_stream(this),
+							  m_plIdProvider(this),
+							  m_app(CApp::getInstPtr()),
+							  m_sessionContainer(sessionContainer)
+{
 
 	// all thee collection have an empty revision 0!
 	m_mediaColRevs[m_maxMediaColRev] = new CRootItem();
@@ -558,23 +566,50 @@ void CSession::setProperty(string key, int val) {
 
 
 bool CSession::hasClient(std::string name) {
-	return false;
+	if( m_playback_clients.count(name) == 0 ) {
+		return false;
+	}
+	else {
+		return true;
+	}
 }
 
 void CSession::addClient(std::string name) {
-
+	assert(!hasClient(name));
+	m_playback_clients.insert(name);
+	enableClient(name);
 }
 
 void CSession::rmClient(std::string name) {
-
+	assert(hasClient(name));
+	m_playback_clients.erase(name);
+	disableClient(name);
 }
 
 void CSession::enableClient(std::string name) {
+	ServDescPtr srvPtr = m_sessionContainer->getServiceByName(name);
+	if(srvPtr == NULL) {
+		LOG4CPLUS_ERROR(m_app->logger(), "Cannot enable unkonwn client '" << name << "'." );
+	}
+	else {
+		int port = srvPtr->getPortNr();
+		string host = srvPtr->getHostName();
 
+		///@TODO: enable client
+	}
 }
 
 void CSession::disableClient(std::string name) {
+	ServDescPtr srvPtr = m_sessionContainer->getServiceByName(name);
+	if(srvPtr == NULL) {
+		LOG4CPLUS_ERROR(m_app->logger(), "Cannot disable unkonwn client '" << name << "'." );
+	}
+	else {
+		int port = srvPtr->getPortNr();
+		string host = srvPtr->getHostName();
 
+		///@TODO: enable client
+	}
 }
 
 

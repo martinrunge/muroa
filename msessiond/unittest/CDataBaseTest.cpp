@@ -182,7 +182,7 @@ void CDataBaseTest::prepareSession() {
 	m_testHashPos = mItems->size() / 2;
 	m_testHash = mItems->at(m_testHashPos)->getHash();
 
-	m_session = new muroa::CSession("unittest", m_io_service);
+	m_session = new muroa::CSession("unittest", m_io_service, 0);
 
 	m_categorizer = new muroa::CMediaItemCategorizer();
 
@@ -253,7 +253,7 @@ void CDataBaseTest::restoreSession() {
 	muroa::CSession* restoredSession;
 	m_stateDB->open();
 	try {
-		restoredSession = new muroa::CSession("unittest", m_io_service);
+		restoredSession = new muroa::CSession("unittest", m_io_service, 0);
 		m_stateDB->restoreSession(restoredSession);
 	}
 	catch(...) {
