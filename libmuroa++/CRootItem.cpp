@@ -33,7 +33,7 @@ CRootItem::~CRootItem() {
 
 void CRootItem::init() {
 	m_base = new CCategoryItem(this, "", 0);
-	setCategoryPtr("/", m_base);
+	// setCategoryPtr("/", m_base);
 	for(int i=0; i < CItemType::numTypes(); i++) {
 		m_content_maps.push_back( new map<uint32_t, IContentItem*>() );
 	}
@@ -153,7 +153,7 @@ void CRootItem::setContentPtr(const CItemType& type, IContentItem* ptr, const ui
 	ret = content_map->insert(pair<uint32_t, IContentItem*>(hash, ptr));
 	if (ret.second==false)
 	{
-	    std::cerr << "element 'z' already existed";
+	    std::cerr << "setContentPtr: element '" << ret.first->first << "' already existed";
 	    std::cerr << " with a value of " << ret.first->second << std::endl;
 	}
 }
@@ -166,7 +166,8 @@ void CRootItem::delContentPtr(const CItemType& type, const uint32_t hash) {
 
 void CRootItem::deserialize(std::string text) throw(ExMalformedPatch) {
 	istringstream iss(text);
-	char cline[4096];
+	string line;
+	line.reserve(4096);
 
 	clear();
 	init();
@@ -174,19 +175,19 @@ void CRootItem::deserialize(std::string text) throw(ExMalformedPatch) {
 	CItemBase* currentCategory = 0;
 
 	while(!iss.eof() && !iss.fail()) {
-		iss.getline(cline, 4096);
+		getline(iss, line);
 		if(iss.fail()) {
 			cerr << "CRootItem::deserialize: Error reading lines." << endl;
 			return;
 		}
-		if( strlen(cline) < 3)  continue;
-		IContentItem* contItem = addContentItem(cline);
+		if( line.size() < 3)  continue;
+		line.append("\n");
+		IContentItem* contItem = addContentItem(line);
 	}
 }
 
 void CRootItem::fromFile(std::string filename) throw(ExMalformedPatch) {
 	ifstream ifs(filename);
-	char cline[4096];
 	int lineNr = 0;
 
 	clear();
@@ -195,10 +196,11 @@ void CRootItem::fromFile(std::string filename) throw(ExMalformedPatch) {
 	CItemBase* currentCategory = 0;
 
 	while(!ifs.eof() && !ifs.fail()) {
-		ifs.getline(cline, 4096);
+		string line;
+		line.reserve(4096);  // should be enough
+		getline(ifs, line);
 		lineNr++;
 		if(lineNr <= 3) {
-			string line(cline);
 			int pos = line.find("=");
 			line = line.substr(pos+1, line.size() - pos - 1);
 			try {
@@ -224,8 +226,9 @@ void CRootItem::fromFile(std::string filename) throw(ExMalformedPatch) {
 
 		}
 		else {
-			if( strlen(cline) < 3)  continue;
-			IContentItem* contItem = addContentItem(cline);
+			if( line.size() < 3)  continue;
+			line.append("\n");
+			IContentItem* contItem = addContentItem(line);
 		}
 	}
 }
@@ -425,7 +428,7 @@ void CRootItem::setCategoryPtr(std::string path, CCategoryItem* itemPtr) {
 	ret = m_category_map.insert(std::pair<std::string,CCategoryItem*>(path, itemPtr));
 	if (ret.second==false)
 	{
-	    std::cerr << "element 'z' already existed";
+	    std::cerr << "setCategoryPtr: element '" << ret.first->first << "' already existed";
 	    std::cerr << " with a value of " << ret.first->second << std::endl;
 	}
 }
@@ -506,12 +509,17 @@ std::string CRootItem::stripFirstSection(std::string& text) {
 	return retval;
 }
 
-
-CItemType CRootItem::getItemType(std::string& text) {
-	string itemTypeStr = stripFirstSection(text);
-
+/***
+ * get the first section of the text line (from beginning to first tab) and create a corresponding CItemType object.
+ * The text is not modified.
+ */
+CItemType CRootItem::getItemType(const std::string& text) {
+	int tabpos = text.find('\t');
+	if( tabpos == string::npos ) {
+		return CItemType(CItemType::E_INVAL);
+	}
+	string itemTypeStr = text.substr(0, tabpos);
 	return CItemType(itemTypeStr);
-
 }
 
 CCategoryItem* CRootItem::mkPath(string path) {

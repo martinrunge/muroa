@@ -101,7 +101,7 @@ private:
 	std::vector< std::map< uint32_t, IContentItem* >* > m_content_maps;
 
 	std::string stripFirstSection(std::string& text);
-	CItemType getItemType(std::string& text);
+	CItemType getItemType(const std::string& text);
 
 	uint32_t m_revision;
     uint32_t m_referenced_mediaCol_rev;

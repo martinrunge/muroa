@@ -12,6 +12,7 @@
 #include <cmds/SimpleCmds.h>
 #include <cmds/CmdEditMediaCol.h>
 #include <cmds/CmdEditNextlist.h>
+#include <cmds/CmdEditSessionState.h>
 
 #include <IContentItem.h>
 #include <CNextlistItem.h>
@@ -25,6 +26,9 @@
 #include "CSessionStorage.h"
 #include "avahi/CServiceDesc.h"
 
+#include <boost/algorithm/string.hpp>
+#include <boost/algorithm/string/split.hpp>
+#include <boost/algorithm/string/join.hpp>
 
 #include "CCmdDispatcher.h"
 
@@ -51,12 +55,15 @@ CSession::CSession(string name,
 		             CSessionContainer* const sessionContainer)
 							: m_io_service(io_service),
 							  m_name(name),
+							  m_streamClientHdl(this),
 							  m_maxMediaColRev(0),
 							  m_maxPlaylistRev(0),
 							  m_maxNextlistRev(0),
+							  m_maxSessionStateRev(0),
 							  m_minMediaColRev(0),
 							  m_minPlaylistRev(0),
 							  m_minNextlistRev(0),
+							  m_minSessionStateRev(0),
 							  m_playlistPos(0),
 							  m_sessionStorage(0),
 							  m_stateDBFilename("state.db"),
@@ -70,6 +77,7 @@ CSession::CSession(string name,
 	m_mediaColRevs[m_maxMediaColRev] = new CRootItem();
 	m_playlistRevs[m_maxPlaylistRev] = new CRootItem();
 	m_nextlistRevs[m_maxNextlistRev] = new CRootItem();
+	m_sessionStateRevs[m_maxSessionStateRev] = new CRootItem();
 
 	m_cmdDispatcher = new CCmdDispatcher(this);
 
@@ -77,35 +85,8 @@ CSession::CSession(string name,
 
 	m_sessionStorage = new CSessionStorage(this);
 	m_sessionStorage->restore();
-
-//	m_stateDB = new CStateDB(m_stateDBFilename);
-//	m_stateDB->open();
-//	m_stateDB->restoreSession(this);
-
 }
 
-
-// this c-tor is intended for unittest only
-/*CSession::CSession( std::string name ) :
-		                                    m_name(name),
-											m_maxMediaColRev(0),
-											m_maxPlaylistRev(0),
-											m_maxNextlistRev(0),
-											m_minMediaColRev(0),
-											m_minPlaylistRev(0),
-											m_minNextlistRev(0),
-											m_playlistPos(0),
-											m_stateDB(0),
-											m_sessionStorage(0),
-											m_stateDBFilename("unittest_state.db"),
-											m_app(CApp::getInstPtr()) {
-
-	// all thee collection have an empty revision 0!
-	m_mediaColRevs[m_maxMediaColRev] = new CRootItem();
-	m_playlistRevs[m_maxPlaylistRev] = new CRootItem();
-	m_nextlistRevs[m_maxNextlistRev] = new CRootItem();
-
-} */
 
 CSession::~CSession() {
 
@@ -132,6 +113,11 @@ CSession::~CSession() {
 	for(int i = m_minMediaColRev; i <= m_maxMediaColRev; i++) {
 		m_mediaColRevs.erase(i);
 	}
+
+	for(int i = m_minSessionStateRev; i <= m_maxSessionStateRev; i++) {
+		m_sessionStateRevs.erase(i);
+	}
+
 	delete m_cmdDispatcher;
 
 }
@@ -223,6 +209,12 @@ CRootItem*  CSession::getNextlist(int revision) const throw(ExInvMsg) {
 	return ri;
 }
 
+CRootItem*  CSession::getSessionState(int revision) const throw(ExInvMsg) {
+	unsigned rev = (revision < 0)?m_maxSessionStateRev:revision;
+	CRootItem* ri = getRev(m_sessionStateRevs, rev, "SessionState revision # not known in session ");
+	return ri;
+}
+
 const string CSession::getMediaColDiff(unsigned fromRevision, int toRevision) const {
 	unsigned toRev = (toRevision < 0)?m_maxMediaColRev:toRevision;
 
@@ -246,13 +238,22 @@ const string CSession::getPlaylistDiff(unsigned fromRevision, int toRevision) co
 const string CSession::getNextlistDiff(unsigned fromRevision, int toRevision) const {
 	unsigned toRev = (toRevision < 0)?m_maxNextlistRev:toRevision;
 
-	CRootItem* fromItem = getRev(m_playlistRevs, fromRevision, "Can't build nextlist diff. Base revision # is unknown in session '");
-	CRootItem* toItem = getRev(m_playlistRevs, toRev, "Can't build nextlist diff. Target revision # is unknown in session '");
+	CRootItem* fromItem = getRev(m_nextlistRevs, fromRevision, "Can't build nextlist diff. Base revision # is unknown in session '");
+	CRootItem* toItem = getRev(m_nextlistRevs, toRev, "Can't build nextlist diff. Target revision # is unknown in session '");
 
 	string diff = fromItem->diff(*toItem);
 	return diff;
 }
 
+const string CSession::getSessionStateDiff(unsigned fromRevision, int toRevision) const {
+	unsigned toRev = (toRevision < 0)?m_maxSessionStateRev:toRevision;
+
+	CRootItem* fromItem = getRev(m_sessionStateRevs, fromRevision, "Can't build nextlist diff. Base revision # is unknown in session '");
+	CRootItem* toItem = getRev(m_sessionStateRevs, toRev, "Can't build nextlist diff. Target revision # is unknown in session '");
+
+	string diff = fromItem->diff(*toItem);
+	return diff;
+}
 
 void CSession::addMediaColRev(CRootItem* ri) {
 		m_maxMediaColRev++;
@@ -292,6 +293,20 @@ void CSession::addNextlistRev(const string& nextlist) {
 	ri->deserialize(nextlist);
 	addNextlistRev(ri);
 }
+
+void CSession::addSessionStateRev(CRootItem* ri) {
+	m_maxSessionStateRev++;
+	ri->setRevision(m_maxSessionStateRev);
+	m_sessionStateRevs.insert(pair<unsigned, CRootItem*>(m_maxSessionStateRev, ri));
+	m_sessionStorage->saveSessionStateRevs(m_maxSessionStateRev, m_maxSessionStateRev);
+}
+
+void CSession::addSessionStateRev(const std::string& sessionState) {
+	CRootItem* ri = new CRootItem();
+	ri->deserialize(sessionState);
+	addSessionStateRev(ri);
+}
+
 
 int CSession::addMediaColRevFromDiff(const string& mediaColDiff, unsigned diffFromRev) throw(ExInvMsg) {
 	CRootItem* ri = 0;
@@ -336,6 +351,16 @@ int CSession::addNextlistRevFromDiff(const string& nextlistDiff, unsigned diffFr
 //	}
 }
 
+int CSession::addSessionStateRevFromDiff(const std::string& sessionStateDiff, unsigned diffFromRev) throw(ExInvMsg) {
+	uint32_t oldrev = getMaxSessionStateRev();
+	CRootItem* base = getRev(m_sessionStateRevs, diffFromRev, "Can't apply diff to session state based on revision # because that revision is unknown in session '");
+
+	CRootItem* ri = new CRootItem(*base);
+	ri->patch(sessionStateDiff);
+	addSessionStateRev(ri);
+}
+
+
 int CSession::addNextlistRevFromNextCmd() {
 	CRootItem *oldNextlist = getNextlist();
 	CRootItem* newNextlist = new CRootItem( getMaxNextlistRev() + 1 );
@@ -355,19 +380,22 @@ int CSession::addNextlistRevFromNextCmd() {
 		CCategoryItem* plBase = playlist->getBase();
 		ci = playlist->getContentPtr(CItemType(CItemType::E_PLAYLISTITEM), curNlItem->getPlaylistItemHash() );
 		ci = plBase->getSuccessorOf(ci);
-		if(ci != 0) {
-			assert(ci->type() == CItemType::E_PLAYLISTITEM);
-			CPlaylistItem* nextPlItem = reinterpret_cast<CPlaylistItem*>(ci);
-
-			CNextlistItem* newNlItem = new CNextlistItem(newNextlist, newNextlist->getBase());
-			newNlItem->setMediaItemHash(nextPlItem->getMediaItemHash());
-			newNlItem->setPlaylistItem(nextPlItem);
-			newNextlist->addContentItem(newNlItem, newNextlist->getBase());
-
-			oss << "@@ -1,1 +1,1 @@" << endl;
-			oss << "-" << newNextlist->getBase()->getPath() << "\t" << onlBase->getContentItem(0)->serialize();
-			oss << "+" << newNextlist->getBase()->getPath() << "\t" << newNlItem->serialize();
+		m_playlistPos++;
+		if(ci == 0) {
+			ci = plBase->getContentItem(0);
+			m_playlistPos = 0;
 		}
+		assert(ci->type() == CItemType::E_PLAYLISTITEM);
+		CPlaylistItem* nextPlItem = reinterpret_cast<CPlaylistItem*>(ci);
+
+		CNextlistItem* newNlItem = new CNextlistItem(newNextlist, newNextlist->getBase());
+		newNlItem->setMediaItemHash(nextPlItem->getMediaItemHash());
+		newNlItem->setPlaylistItem(nextPlItem);
+		newNextlist->addContentItem(newNlItem, newNextlist->getBase());
+
+		oss << "@@ -1,1 +1,1 @@" << endl;
+		oss << "-" << newNextlist->getBase()->getPath() << "\t" << onlBase->getContentItem(0)->serialize();
+		oss << "+" << newNextlist->getBase()->getPath() << "\t" << newNlItem->serialize();
 	}
 	else
 	{
@@ -376,6 +404,11 @@ int CSession::addNextlistRevFromNextCmd() {
 			assert(ci->type() == CItemType::E_NEXTLISTITEM );
 			newNextlist->addContentItem(ci, newNextlist->getBase());
 		}
+		IContentItem* it = newNextlist->getBase()->getContentItem(0);
+		assert(it->type() == CItemType::E_NEXTLISTITEM);
+		CNextlistItem* nlit0 = reinterpret_cast<CNextlistItem*>(it);
+		m_playlistPos = nlit0->getPlaylistItemHash();
+
 		oss << "@@ -1,1 +0,0 @@" << endl;
 		oss << "-" << newNextlist->getBase()->getPath() << "\t" << onlBase->getContentItem(0)->serialize();
 	}
@@ -390,19 +423,6 @@ int CSession::addNextlistRevFromNextCmd() {
 int CSession::addNextlistRevFromPrevCmd() {
 
 }
-
-void CSession::setMinMediaColRevision(int rev) throw() {
-	m_minMediaColRev = rev;
-}
-
-void CSession::setMinPlaylistRevision(int rev) throw() {
-	m_minPlaylistRev = rev;
-}
-
-void CSession::setMinNextlistRevision(int rev) throw() {
-	m_minNextlistRev = rev;
-}
-
 
 
 CRootItem*  CSession::getRev(const map<unsigned, CRootItem*>& collection,
@@ -449,7 +469,7 @@ void CSession::scanProgress(uint32_t jobID, uint32_t progress) {
 
 		CmdProgress* progCmd = new CmdProgress(cljob.second, progress);
 		cljob.first->sendCmd(progCmd);
-	}catch(ExInvMsg ex) {
+	}catch(ExInvMsg& ex) {
 
 	}
 }
@@ -462,7 +482,7 @@ void CSession::jobFinished(uint32_t jobID) {
 		CmdFinished* finiCmd = new CmdFinished(clientJob.second);
 		clientJob.first->sendCmd(finiCmd);
 
-	}catch(ExInvMsg ex) {
+	}catch(ExInvMsg& ex) {
 		;
 	}
 
@@ -533,13 +553,15 @@ void CSession::sendToInitiator(Cmd* cmd, unsigned connId) {
 	}
 }
 
-void CSession::toAll( Cmd* cmd ) {
+void CSession::toAll( Cmd* cmd, bool deleteCmd ) {
 	set<CConnection*>::iterator it = m_connections.begin();
 	while( it != m_connections.end() ) {
 		(*it)->sendCmd(cmd);
 		++it;
 	}
-	delete cmd;
+	if(deleteCmd) {
+		delete cmd;
+	}
 }
 
 string CSession::getProperty(string key, string defaultVal) {
@@ -564,53 +586,37 @@ void CSession::setProperty(string key, int val) {
 	m_app->settings().setProptery(privKey, val);
 }
 
-
-bool CSession::hasClient(std::string name) {
-	if( m_playback_clients.count(name) == 0 ) {
-		return false;
-	}
-	else {
-		return true;
-	}
-}
-
 void CSession::addClient(std::string name) {
-	assert(!hasClient(name));
-	m_playback_clients.insert(name);
-	enableClient(name);
+	pair<CRootItem*, string> result;
+	result = m_streamClientHdl.addClientStateDiff(getSessionState(), name);
+	int curSessionStateRev = getMaxSessionStateRev();
+
+	addSessionStateRev( result.first );
+	string stateDiff = result.second;
+
+	CmdEditSessionState* cmd_edss = new CmdEditSessionState(curSessionStateRev, getMaxSessionStateRev(), stateDiff );
+	toAll(cmd_edss);
 }
 
 void CSession::rmClient(std::string name) {
-	assert(hasClient(name));
-	m_playback_clients.erase(name);
-	disableClient(name);
 }
 
-void CSession::enableClient(std::string name) {
-	ServDescPtr srvPtr = m_sessionContainer->getServiceByName(name);
-	if(srvPtr == NULL) {
-		LOG4CPLUS_ERROR(m_app->logger(), "Cannot enable unkonwn client '" << name << "'." );
-	}
-	else {
-		int port = srvPtr->getPortNr();
-		string host = srvPtr->getHostName();
 
-		///@TODO: enable client
-	}
+ServDescPtr CSession::getServiceByName(std::string name) {
+	return m_sessionContainer->getServiceByName(name);
 }
 
-void CSession::disableClient(std::string name) {
-	ServDescPtr srvPtr = m_sessionContainer->getServiceByName(name);
-	if(srvPtr == NULL) {
-		LOG4CPLUS_ERROR(m_app->logger(), "Cannot disable unkonwn client '" << name << "'." );
-	}
-	else {
-		int port = srvPtr->getPortNr();
-		string host = srvPtr->getHostName();
 
-		///@TODO: enable client
-	}
+/*
+set<string>& CSession::getClients() const {
+	return m_playback_clients;
 }
+
+void CSession::setClients(set<string> clients) {
+	m_playback_clients = clients;
+}
+*/
+
 
 
 

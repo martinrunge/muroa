@@ -10,6 +10,7 @@
 #include "CMediaItem.h"
 #include "CPlaylistItem.h"
 #include "CNextlistItem.h"
+#include "CStreamClientItem.h"
 
 
 IContentItem::IContentItem(CRootItem *root_item, CCategoryItem*  parent, const item_type_t type) :
@@ -44,6 +45,7 @@ IContentItem* IContentItem::itemFactory(const CItemType itemType,
 	case CItemType::E_NEXTLISTITEM:
 		return new CNextlistItem(root_item, parent, posInParent);
 		break;
+	// does CStreamClientItem a constructor without text ???
 	default:
 		return 0;
 		break;
@@ -72,6 +74,9 @@ IContentItem* IContentItem::itemFactory(const CItemType itemType,
 		break;
 	case CItemType::E_NEXTLISTITEM:
 		return new CNextlistItem(root_item, text, parent, posInParent);
+		break;
+	case CItemType::E_STREAM_CLIENT:
+		return new CStreamClientItem(root_item, text, parent, posInParent);
 		break;
 	default:
 		return 0;

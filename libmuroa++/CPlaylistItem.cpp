@@ -61,6 +61,17 @@ CPlaylistItem::CPlaylistItem(CRootItem *root_item, std::string text, CCategoryIt
 	try {
 		rpos = m_text.find('\t', lpos);
 		if( rpos != string::npos ) {
+			string typeStr = text.substr(lpos, rpos - lpos);
+			if(typeStr.compare(CItemType::getString(m_item_type)) == 0 ) {
+				lpos = rpos + 1;
+			}
+		}
+		else {
+			throw ExMalformedPatch("error parsing first field (expecting type string or 'media item hash'): terminating tab char is missing." ,-1);
+		}
+
+		rpos = m_text.find('\t', lpos);
+		if( rpos != string::npos ) {
 			string mediaitemHashStr = text.substr(lpos, rpos - lpos);
 			m_mediaitem_hash = CUtils::str2uint32(mediaitemHashStr.c_str());
 			lpos = rpos + 1;
@@ -70,7 +81,7 @@ CPlaylistItem::CPlaylistItem(CRootItem *root_item, std::string text, CCategoryIt
 		}
 
 		string hashStr;
-		rpos = m_text.find('\t', lpos);
+		rpos = m_text.find_first_of("\t\n", lpos);
 		if( rpos != string::npos ) {
 			hashStr = text.substr(lpos, rpos - lpos);
 			lpos = rpos + 1;
@@ -83,9 +94,13 @@ CPlaylistItem::CPlaylistItem(CRootItem *root_item, std::string text, CCategoryIt
 			m_hash = getNextFreeID();
 		}
 
-		assembleText();
+		// assembleText();
 		if(m_parent) {
 			m_parent->addChild(this, posInParent);
+		}
+
+		if(m_text.rfind('\n') == string::npos ) {
+			m_text.append("\n");
 		}
 
 		// for CPlaylistItem, m_hash is an index number that never changes during

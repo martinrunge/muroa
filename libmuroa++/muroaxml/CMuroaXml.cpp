@@ -64,23 +64,33 @@ void CMuroaXml::leaveSession() {
 }
 
 void CMuroaXml::play(uint32_t jobID) {
-	sendData(xmlCommands::play);
+	ostringstream oss;
+	oss << "<" << xmlCommands::play << " jobID=\"" << jobID << "\"/>" << endl;
+	sendData(oss.str());
 }
 
 void CMuroaXml::pause(uint32_t jobID) {
-	sendData(xmlCommands::pause);
+	ostringstream oss;
+	oss << "<" << xmlCommands::pause << " jobID=\"" << jobID << "\"/>" << endl;
+	sendData(oss.str());
 }
 
 void CMuroaXml::stop(uint32_t jobID) {
-	sendData(xmlCommands::stop);
+	ostringstream oss;
+	oss << "<" << xmlCommands::stop << " jobID=\"" << jobID << "\"/>" << endl;
+	sendData(oss.str());
 }
 
 void CMuroaXml::next(uint32_t jobID) {
-	sendData(xmlCommands::next);
+	ostringstream oss;
+	oss << "<" << xmlCommands::next << " jobID=\"" << jobID << "\"/>" << endl;
+	sendData(oss.str());
 }
 
 void CMuroaXml::prev(uint32_t jobID) {
-	sendData(xmlCommands::prev);
+	ostringstream oss;
+	oss << "<" << xmlCommands::prev << " jobID=\"" << jobID << "\"/>" << endl;
+	sendData(oss.str());
 }
 
 void CMuroaXml::stateChanged(int newState) {
@@ -133,6 +143,13 @@ void CMuroaXml::getNextlist(uint32_t jobID, unsigned knownRev) {
 	sendData(oss.str());
 }
 
+void CMuroaXml::getSessionState(uint32_t jobID, unsigned knownRev) {
+	ostringstream oss;
+	oss << "<" << xmlCommands::getSessionState << " knownRev=\"" << knownRev << "\"/>" << endl;
+	sendData(oss.str());
+}
+
+
 void CMuroaXml::editCollection(uint32_t jobID, unsigned fromRev, unsigned toRev, string diff ) {
 	ostringstream oss;
 	oss << "<" << xmlCommands::editCollection << " fromRev=\"" << fromRev << "\" toRev=\"" << toRev << "\">" << endl;
@@ -163,14 +180,22 @@ void CMuroaXml::editNextlist(uint32_t jobID, unsigned fromRev, unsigned toRev, s
 	sendData(oss.str());
 }
 
+void CMuroaXml::editSessionState(uint32_t jobID, unsigned fromRev, unsigned toRev, string diff ) {
+	ostringstream oss;
+	oss << "<" << xmlCommands::editSessionState << " fromRev=\"" << fromRev << "\" toRev=\"" << toRev << "\">" << endl;
+	oss << "<![CDATA[" << endl;
+	oss << diff << endl;
+	oss << "]]>" << endl;
+	oss << "</" << xmlCommands::editSessionState << ">" << endl;
+	sendData(oss.str());
+}
+
 void CMuroaXml::getSessionClients(uint32_t jobID) {
 	ostringstream oss;
-
 }
 
 void CMuroaXml::getUnassignedClients(uint32_t jobID) {
 	ostringstream oss;
-
 }
 
 void CMuroaXml::addClient(uint32_t jobID, std::string name) {

@@ -45,6 +45,7 @@ public:
 	void onGetCollection(uint32_t jobID, unsigned knownRev );
 	void onGetPlaylist(uint32_t jobID, unsigned knownRev );
 	void onGetNextlist(uint32_t jobID, unsigned knownRev );
+	void onGetSessionState( uint32_t jobID, unsigned knownRev );
 
 	void onCollection(uint32_t jobID, unsigned  diffFromRev, std::string collection);
 	void onPlaylist(uint32_t jobID, unsigned  diffFromRev, std::string playlist);
@@ -53,6 +54,14 @@ public:
 	void onEditCollection(uint32_t jobID, unsigned fromRev, unsigned toRev, std::string collectionDiff );
 	void onEditPlaylist(uint32_t jobID, unsigned fromRev, unsigned toRev, std::string playlistDiff );
 	void onEditNextlist(uint32_t jobID, unsigned fromRev, unsigned toRev, std::string nextlistDiff );
+	void onEditSessionState(uint32_t jobID, unsigned fromRev, unsigned toRev, std::string sessionStateDiff );
+
+	void onGetSessionClients(uint32_t jobID);
+	void onGetUnassignedClients(uint32_t jobID);
+	void onAddClient(uint32_t jobID, std::string name);
+	void onRmClient(uint32_t jobID, std::string name);
+	void onEnableClient(uint32_t jobID, std::string name);
+	void onDisableClient(uint32_t jobID, std::string name);
 
 	void onStartSession(){ };
 	void onEndSession(){ };

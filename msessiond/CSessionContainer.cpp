@@ -8,10 +8,15 @@
 #include "CSessionContainer.h"
 #include "muroaConstants.h"
 
+#include "cmds/CmdAddUnassignedStreamClient.h"
+#include "cmds/CmdRmUnassignedStreamClient.h"
+
 #include "avahi/CDnsSdAvahi.h"
 
 #include "CSession.h"
 #include <boost/asio.hpp>
+#include <boost/algorithm/string.hpp>
+
 #include <algorithm>
 
 #include "sessionEx.h"
@@ -131,54 +136,42 @@ void CSessionContainer::serviceAdded(ServDescPtr srvPtr) {
 	string name = srvPtr->getServiceName();
 	int num = 0;
 
-	LOG4CPLUS_DEBUG(m_app->logger(), "service " << name << " appeared.");
-	map<std::string, CSession*>::iterator it;
-	for(it = m_sessions.begin(); it != m_sessions.end(); it++)
-	{
-		if(it->second->hasClient(name)) {
-			it->second->enableClient(name);
-			num++;
+	if(srvPtr->getServiceType().compare("_muroad._udp") == 0) {
+		LOG4CPLUS_DEBUG(m_app->logger(), "service " << name << " appeared.");
+		map<std::string, CSession*>::iterator it;
+		for(it = m_sessions.begin(); it != m_sessions.end(); it++)
+		{
+			it->second->addClient(name);
 		}
 	}
-	if(num > 1) {
-		LOG4CPLUS_ERROR(m_app->logger(), "more than on session claimed client '" << name << "'. A client can only be part of one session!");
-	}
-
-	if(num == 0) {
-		LOG4CPLUS_DEBUG(m_app->logger(), "service " << name << " not part of any session.");
-		m_unassignedClientNames.insert(name);
-	}
-
 }
 
-void CSessionContainer::serviceRemoved(std::string name) {
+void CSessionContainer::serviceRemoved(ServDescPtr srvPtr) {
 	int num = 0;
 
-	LOG4CPLUS_DEBUG(m_app->logger(), "service " << name << " disappeared.");
-	map<std::string, CSession*>::iterator it;
-	for(it = m_sessions.begin(); it != m_sessions.end(); it++)
-	{
-		if(it->second->hasClient(name)) {
-			it->second->disableClient(name);
-			num++;
+	if(srvPtr->getServiceType().compare("_muroad._udp") == 0) {
+		LOG4CPLUS_DEBUG(m_app->logger(), "service " << srvPtr->getServiceName() << " disappeared.");
+		map<std::string, CSession*>::iterator it;
+		for(it = m_sessions.begin(); it != m_sessions.end(); it++)
+		{
+			it->second->rmClient(srvPtr->getServiceName());
 		}
-	}
-	if(num > 1) {
-		LOG4CPLUS_ERROR(m_app->logger(), "more than on session claimed client '" << name << "'. A client can only be part of one session!");
-	}
-
-	set<string>::iterator it2 = m_unassignedClientNames.find(name);
-	if(it2 !=  m_unassignedClientNames.end())
-	{
-		LOG4CPLUS_DEBUG(m_app->logger(), "removing service " << name << " from list of clients not assigned to any session.");
-		m_unassignedClientNames.erase(it2);
 	}
 }
 
 ServDescPtr CSessionContainer::getServiceByName(std::string name) {
-	m_dnssd->getServiceByName(name);
+	return m_dnssd->getServiceByName(name);
 }
 
+void CSessionContainer::toAll(Cmd* cmd)
+{
+	map<string, CSession*>::iterator it;
+	for(it = m_sessions.begin(); it != m_sessions.end(); it++)
+	{
+		(*it).second->toAll(cmd, false);
+	}
+	delete cmd;
+}
 
 
 } /* namespace muroa */

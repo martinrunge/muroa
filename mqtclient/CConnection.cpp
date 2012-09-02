@@ -3,6 +3,7 @@
 #include "cmds/CmdEditMediaCol.h"
 #include "cmds/CmdEditPlaylist.h"
 #include "cmds/CmdEditNextlist.h"
+#include "cmds/CmdEditSessionState.h"
 #include "muroaConstants.h"
 
 #include "CSession.h"
@@ -105,6 +106,10 @@ void CConnection::onGetNextlist(uint32_t jobID, unsigned  knownRev)
 {
 }
 
+void CConnection::onGetSessionState(uint32_t jobID, unsigned  knownRev)
+{
+}
+
 void CConnection::onCollection(uint32_t jobID, unsigned  diffFromRev, std::string collection)
 {
 }
@@ -191,6 +196,29 @@ void CConnection::onEditNextlist(uint32_t jobID, unsigned  fromRev, unsigned toR
 	}
 }
 
+void CConnection::onEditSessionState(uint32_t jobID, unsigned  fromRev, unsigned toRev, std::string sessionStateDiff) {
+	try {
+		if(fromRev == 0) {
+			m_session->getSessionStateModel()->deserialize(sessionStateDiff);
+		}
+		else {
+			uint32_t knownRev = m_session->getSessionStateModel()->getRevision();
+			if( knownRev != fromRev ) {
+				std::ostringstream oss;
+				oss << "onEditSessionState: Error: got a diff based on rev " << fromRev << " but known rev is " << knownRev;
+				throw ExMalformedPatch(oss.str(), 0);
+			}
+			m_session->getSessionStateModel()->patch(sessionStateDiff);
+		}
+		m_session->getSessionStateModel()->setRevision(toRev);
+	}
+	catch(ExMalformedPatch& ex)
+	{
+		// if diff did not work, try to get whole nextlist (no diff)
+		getSessionState(0);
+	}
+}
+
 void CConnection::play(uint32_t jobID)
 {
 	jobID = (jobID==0)?CmdBase::getNextID():jobID;
@@ -214,12 +242,31 @@ void CConnection::prev(uint32_t jobID) {
 }
 
 
+void CConnection::onGetSessionClients(uint32_t jobID) {
+}
+
+void CConnection::onGetUnassignedClients(uint32_t jobID) {
+}
+
+void CConnection::onAddClient(uint32_t jobID, std::string name) {
+}
+
+void CConnection::onRmClient(uint32_t jobID, std::string name) {
+}
+
+void CConnection::onEnableClient(uint32_t jobID, std::string name) {
+}
+
+void CConnection::onDisableClient(uint32_t jobID, std::string name) {
+}
+
 void CConnection::doJoinSession(string name) {
 	joinSession(name);
 
     m_sm.getLatestMediaCol();
     m_sm.getLatestPlaylist();
     m_sm.getLatestNextlist();
+    m_sm.getLatestSessionState();
 
 }
 
@@ -276,6 +323,11 @@ void CConnection::sendCommand(CmdBase* cmd) {
 			getNextlist( cmd->knownRev() );
 		}
 		break;
+		case CmdBase::GET_SESSION_STATE:
+		{
+			getSessionState( cmd->knownRev() );
+		}
+		break;
 		case CmdBase::EDIT_MEDIA_COL:
 		{
 			CmdEditMediaCol* emc = static_cast<CmdEditMediaCol*>(cmd);
@@ -292,6 +344,12 @@ void CConnection::sendCommand(CmdBase* cmd) {
 		{
 			CmdEditNextlist* enl = static_cast<CmdEditNextlist*>(cmd);
 			editNextlist( enl->id(), enl->knownRev(), 0, enl->data() );
+		}
+		break;
+		case CmdBase::EDIT_SESSION_STATE:
+		{
+			CmdEditSessionState* ess = static_cast<CmdEditSessionState*>(cmd);
+			editSessionState( ess->id(), ess->knownRev(), 0, ess->data() );
 		}
 		break;
 		case CmdBase::PLAY:

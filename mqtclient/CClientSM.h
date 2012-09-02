@@ -23,6 +23,7 @@ public:
     void getLatestMediaCol();
     void getLatestPlaylist();
     void getLatestNextlist();
+    void getLatestSessionState();
 
 public slots:
 	void scanCollection();

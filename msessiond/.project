@@ -4,7 +4,7 @@
 	<comment></comment>
 	<projects>
 		<project>libmuroa++</project>
-		<project>libmuroad</project>
+		<project>libmuroadaemon</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>

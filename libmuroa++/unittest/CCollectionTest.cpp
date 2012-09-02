@@ -26,6 +26,7 @@
 #include "CMediaItem.h"
 #include "CPlaylistItem.h"
 #include "CNextlistItem.h"
+#include "CStreamClientItem.h"
 #include "CRootItem.h"
 
 #include <cmath>
@@ -94,7 +95,7 @@ void CCollectionTest::serializePlaylist() {
 	string serialisation = plItem->serialize();
 	delete plItem;
 	stringstream ss;
-	ss << "\tP\t" << 2350368098UL << "\t" << hashval;
+	ss << "P\t" << 2350368098UL << "\t" << hashval << endl;
 
 	CPPUNIT_ASSERT( serialisation.compare( ss.str()) == 0);
 
@@ -111,25 +112,57 @@ void CCollectionTest::deserializePlaylist() {
 
 void CCollectionTest::serializeNextlist() {
 	CNextlistItem *nlItem = new CNextlistItem(m_root, 0) ;
+	nlItem->setMediaItemHash( 2665035088UL );
 	nlItem->setPlaylistItemHash( 2350368098UL );
 	uint32_t hashval = nlItem->getHash();
 
 	string serialisation = nlItem->serialize();
 	delete nlItem;
 	stringstream ss;
-	ss << "\tN\t" << 2350368098UL << "\t" << hashval;
+	ss << "N\t" << 2665035088 << "\t" << 2350368098UL << endl;
 
 	CPPUNIT_ASSERT( serialisation.compare( ss.str()) == 0);
 }
 
 void CCollectionTest::deserializeNextlist() {
 	CNextlistItem *nlItem = new CNextlistItem(m_root, "2665035088\t2350368098", 0);
-	uint32_t hashval = nlItem->getHash();
-	uint32_t mediahash = nlItem->getPlaylistItemHash();
+	uint32_t mediahash = nlItem->getMediaItemHash();
+	uint32_t playlisthash = nlItem->getPlaylistItemHash();
 	delete nlItem;
-	CPPUNIT_ASSERT( hashval == 2350368098UL);
 	CPPUNIT_ASSERT( mediahash == 2665035088UL);
+	CPPUNIT_ASSERT( playlisthash == 2350368098UL);
 }
+
+void CCollectionTest::serializeStreamClient() {
+	CStreamClientItem *scItem = new CStreamClientItem(m_root, 0, "Küche");
+	scItem->setHostName("kitchenclient");
+	scItem->setDomainName("local");
+	scItem->setPort(46635);
+	scItem->setEnabled(false);
+
+	uint32_t hashval = scItem->getHash();
+
+	string serialisation = scItem->serialize();
+	delete scItem;
+	stringstream ss;
+	ss << "S\t" << "Küche" << "\t" << "kitchenclient" << "\t" << "local" << "\t" << 46635 << "\t" << "disabled" << endl;
+
+	CPPUNIT_ASSERT( serialisation.compare( ss.str()) == 0);
+}
+
+void CCollectionTest::deserializeStreamClient() {
+	string serialisation = "Küche\tkitchenclient\tlocal\t46635\tdisabled\n";
+
+	CStreamClientItem *scItem = new CStreamClientItem(m_root, serialisation, 0);
+
+	CPPUNIT_ASSERT( scItem->getServiceName().compare("Küche") == 0);
+	CPPUNIT_ASSERT( scItem->getHostName().compare("kitchenclient") == 0);
+	CPPUNIT_ASSERT( scItem->getDomainName().compare("local") == 0);
+	CPPUNIT_ASSERT( scItem->getPort() == 46635);
+	CPPUNIT_ASSERT( scItem->isEnabled() == false);
+
+}
+
 
 void CCollectionTest::serializeCategory() {
 	CCategoryItem* base = new CCategoryItem(m_root);

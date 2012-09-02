@@ -27,7 +27,7 @@ public:
 	void saveMediaColRevs(long minRev, long maxRev);
 	void savePlaylistRevs(long minRev, long maxRev);
 	void saveNextlistRevs(long minRev, long maxRev);
-
+	void saveSessionStateRevs(long minRev, long maxRev);
 	void restore();
 
 	void cleanup();
@@ -44,12 +44,14 @@ private:
 	void restoreMediaColRevs();
 	void restorePlaylistRevs();
 	void restoreNextlistRevs();
+	void restoreSessionStateRevs();
 
 	void restoreRootItemRevs( std::string subdir_name );
 
 	static const std::string mediaColSubdir;
 	static const std::string playlistSubdir;
 	static const std::string nextlistSubdir;
+	static const std::string sessionStateSubdir;
 
 	static const std::string mcrev_file_extension;
 };

@@ -1,6 +1,6 @@
 /***************************************************************************
  *
- *   CCollectionTest.h
+ *   CStreamClientItem.h
  *
  *   This file is part of libmuroa++                                  *
  *   Copyright (C) 2011 by Martin Runge <martin.runge@web.de>           *
@@ -21,60 +21,52 @@
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
 
-#ifndef CCOLLECTIONTEST_H_
-#define CCOLLECTIONTEST_H_
+#ifndef CSTREAMCLIENTITEM_H_
+#define CSTREAMCLIENTITEM_H_
 
-#include <cppunit/extensions/HelperMacros.h>
-#include <cppunit/TestFixture.h>
+#include "IContentItem.h"
+#include "MuroaExceptions.h"
 
-class CCategoryItem;
-class CRootItem;
-
-class CCollectionTest: public CppUnit::TestFixture {
-	  CPPUNIT_TEST_SUITE( CCollectionTest );
-	  CPPUNIT_TEST( replaceTabs );
-	  CPPUNIT_TEST( construct );
-	  CPPUNIT_TEST( serializeMedia );
-	  CPPUNIT_TEST( deserializeMedia );
-	  CPPUNIT_TEST( serializePlaylist );
-	  CPPUNIT_TEST( deserializePlaylist );
-	  CPPUNIT_TEST( serializeNextlist );
-	  CPPUNIT_TEST( deserializeNextlist );
-	  CPPUNIT_TEST( serializeStreamClient );
-	  CPPUNIT_TEST( deserializeStreamClient );
-	  CPPUNIT_TEST( serializeCategory );
-	  CPPUNIT_TEST( traverse );
-	  CPPUNIT_TEST( serialize );
-	  CPPUNIT_TEST( deserialize );
-	  CPPUNIT_TEST_SUITE_END();
-
+class CStreamClientItem: public IContentItem {
 public:
-	CCollectionTest();
-	virtual ~CCollectionTest();
+	CStreamClientItem(CRootItem *root_item, CCategoryItem*  parent, std::string service_name, int posInParent = -1);
+	CStreamClientItem(CRootItem *root_item, std::string text, CCategoryItem*  parent, int posInParent = -1) throw(ExMalformedPatch);
+	virtual ~CStreamClientItem();
 
-	void setUp();
-    void tearDown();
+	bool operator==(const IContentItem& other);
+	inline bool operator!=(const IContentItem& other){ return !operator==(other); };
 
-    void replaceTabs();
-	void construct();
-	void traverse();
-	void serializeMedia();
-    void deserializeMedia();
-	void serializePlaylist();
-	void deserializePlaylist();
-	void serializeNextlist();
-	void deserializeNextlist();
-	void serializeStreamClient();
-	void deserializeStreamClient();
-	void serializeCategory();
-	void serialize();
-    void deserialize();
+	std::string serialize(bool asDiff = false);
+	std::string getDomainName() const;
+	void setDomainName(std::string domainName);
+	bool isEnabled() const;
+	void setEnabled(bool enabled);
+	std::string getHostName() const;
+	void setHostName(std::string hostName);
+	int32_t getPort() const;
+	void setPort(int32_t port);
+	std::string getOwnerSessionName() const;
+	void setOwnerSessionName(std::string ownerSessionName);
+	std::string getServiceName() const;
+//	void setServiceName(std::string serviceName);
+
+	bool isAssignedToSession() { return m_owner_session_name.empty(); };
 
 private:
-    CRootItem* m_root;
+	std::string m_service_name;
+	std::string m_host_name;
+	std::string m_domain_name;
+	int32_t m_port;
+	std::string m_owner_session_name;
+	bool m_enabled;
 
-    CRootItem* prepareFakeCollection(int numArtist, int numAlbum, int numTitle);
+
+	void assembleText();
+
+	static const std::string DISABLED_STR;
+	static const std::string ENABLED_STR;
+
 
 };
 
-#endif /* CCOLLECTIONTEST_H_ */
+#endif /* CSTREAMCLIENTITEM_H_ */

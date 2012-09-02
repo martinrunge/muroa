@@ -57,11 +57,13 @@ int CDnsSdBase::removeService(std::string name)
 {
 	lock_guard<mutex> lk(m_mutex);
 	int num = 0;
+	ServDescPtr rmSrv;
 	vector<ServDescPtr>::iterator it;
 	for(it = m_services.begin(); it != m_services.end(); it++)
 	{
 		if( name.compare( (*it)->getServiceName() ) == 0 )
 		{
+			rmSrv = *it;
 			m_services.erase(it);
 			num++;
 		}
@@ -75,7 +77,7 @@ int CDnsSdBase::removeService(std::string name)
 		}
 		if(m_rm_service_handler)
 		{
-			m_io_service.post(boost::bind(m_rm_service_handler, name));
+			m_io_service.post(boost::bind(m_rm_service_handler, rmSrv));
 		}
 	}
 
@@ -86,11 +88,13 @@ int CDnsSdBase::removeService(const CServiceDesc& rmSd )
 {
 	lock_guard<mutex> lk(m_mutex);
 	int num = 0;
+	ServDescPtr rmSrv;
 	vector<ServDescPtr>::iterator it;
 	for(it = m_services.begin(); it != m_services.end(); it++)
 	{
 		if( **it == rmSd )
 		{
+			rmSrv = *it;
 			m_services.erase(it);
 			num++;
 		}
@@ -104,7 +108,7 @@ int CDnsSdBase::removeService(const CServiceDesc& rmSd )
 		}
 		if(m_rm_service_handler)
 		{
-			m_io_service.post(boost::bind(m_rm_service_handler, rmSd.getServiceName()));
+			m_io_service.post(boost::bind(m_rm_service_handler, rmSrv));
 		}
 	}
 
@@ -147,7 +151,7 @@ void CDnsSdBase::setServiceAddedHandler(add_service_handler_t handler) {
 	m_add_service_handler = handler;
 }
 
-void CDnsSdBase::setServiceRemovedHandler(rm_service_handler_t handler) {
+void CDnsSdBase::setServiceRemovedHandler(add_service_handler_t handler) {
 	m_rm_service_handler = handler;
 }
 

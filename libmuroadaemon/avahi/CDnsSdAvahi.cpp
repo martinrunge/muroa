@@ -254,7 +254,7 @@ void CDnsSdAvahi::browseCallback(AvahiServiceBrowser *b,
         case AVAHI_BROWSER_REMOVE:
         {
             cerr << "(Browser) REMOVE: service '" << name << "' of type '" << type << "' in domain '" << domain << "'" << endl;
-            CServiceDesc tmpSd(name, "", domain, 0, interface, protocol);
+            CServiceDesc tmpSd(name, "", domain, type, 0, interface, protocol);
             removeService( tmpSd );
             break;
         }

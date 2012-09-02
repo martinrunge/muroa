@@ -49,12 +49,14 @@ enum session_state_t {SESSION_ROOT_STATE,
                       IN_GET_COLLECTION_STATE,
                       IN_GET_PLAYLIST_STATE,
                       IN_GET_NEXTLIST_STATE,
+                      IN_GET_SESSION_STATE_STATE,
                       IN_COLLECTION_STATE,
                       IN_PLAYLIST_STATE,
                       IN_NEXTLIST_STATE,
                       IN_EDIT_COLLECTION_STATE,
                       IN_EDIT_PLAYLIST_STATE,
                       IN_EDIT_NEXTLIST_STATE,
+                      IN_EDIT_SESSION_STATE_STATE,
                       IN_LEAVE,
 };
 
@@ -98,6 +100,7 @@ public:
 	virtual void onGetCollection( uint32_t jobID, unsigned knownRev ) = 0;
 	virtual void onGetPlaylist( uint32_t jobID, unsigned knownRev ) = 0;
 	virtual void onGetNextlist( uint32_t jobID, unsigned knownRev ) = 0;
+	virtual void onGetSessionState( uint32_t jobID, unsigned knownRev ) = 0;
 
 	virtual void onCollection( uint32_t jobID, unsigned knownRev, std::string collection ) = 0;
 	virtual void onPlaylist( uint32_t jobID, unsigned knownRev, std::string playlist ) = 0;
@@ -106,6 +109,7 @@ public:
 	virtual void onEditCollection( uint32_t jobID, unsigned fromRev, unsigned toRev, std::string editScript ) = 0;
 	virtual void onEditPlaylist( uint32_t jobID, unsigned fromRev, unsigned toRev, std::string editScript ) = 0;
 	virtual void onEditNextlist( uint32_t jobID, unsigned fromRev, unsigned toRev, std::string editScript ) = 0;
+	virtual void onEditSessionState( uint32_t jobID, unsigned fromRev, unsigned toRev, std::string editScript ) = 0;
 
 	virtual void onStartSession() = 0;
 	virtual void onEndSession() = 0;

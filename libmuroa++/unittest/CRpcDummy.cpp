@@ -114,6 +114,12 @@ void CRpcDummy::onGetNextlist(uint32_t jobID, unsigned  knownRev) {
 	m_last_cmd = oss.str();
 }
 
+void CRpcDummy::onGetSessionState(uint32_t jobID, unsigned  knownRev) {
+	ostringstream oss;
+	oss << "getSessionState(" << knownRev << ")";
+	m_last_cmd = oss.str();
+}
+
 void CRpcDummy::onCollection(uint32_t jobID, unsigned  diffFromRev, string collection) {
 	ostringstream oss;
 	oss << "collection(" << diffFromRev << ")";
@@ -147,6 +153,12 @@ void CRpcDummy::onEditPlaylist(uint32_t jobID, unsigned  fromRev, unsigned toRev
 void CRpcDummy::onEditNextlist(uint32_t jobID, unsigned  fromRev, unsigned toRev, string nextlistDiff) {
 	ostringstream oss;
 	oss << "editNextlist(" << fromRev << ")";
+	m_last_cmd = oss.str();
+}
+
+void CRpcDummy::onEditSessionState(uint32_t jobID, unsigned  fromRev, unsigned toRev, string sessionStateDiff) {
+	ostringstream oss;
+	oss << "editSessionState(" << fromRev << ")";
 	m_last_cmd = oss.str();
 }
 

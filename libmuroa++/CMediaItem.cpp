@@ -39,6 +39,18 @@ CMediaItem::CMediaItem(CRootItem *root_item, std::string text, CCategoryItem*  p
 	try {
 		rpos = m_text.find('\t', lpos);
 		if( rpos != string::npos ) {
+			string typeStr = text.substr(lpos, rpos - lpos);
+			if(typeStr.compare(CItemType::getString(m_item_type)) == 0 ) {
+				lpos = rpos + 1;
+			}
+			num_tabs++;
+		}
+		else {
+			throw ExMalformedPatch("error parsing first field (expecting type string or filename), terminating tab char is missing.", -1);
+		}
+
+		rpos = m_text.find('\t', lpos);
+		if( rpos != string::npos ) {
 			m_filename = text.substr(lpos, rpos - lpos);
 			lpos = rpos + 1;
 			num_tabs++;
@@ -49,7 +61,7 @@ CMediaItem::CMediaItem(CRootItem *root_item, std::string text, CCategoryItem*  p
 
 		rpos = m_text.find('\t', lpos);
 		if( rpos != string::npos ) {
-			m_artist = text.substr(lpos, rpos - lpos);
+			m_artist = m_text.substr(lpos, rpos - lpos);
 			lpos = rpos + 1;
 			num_tabs++;
 		}
@@ -59,7 +71,7 @@ CMediaItem::CMediaItem(CRootItem *root_item, std::string text, CCategoryItem*  p
 
 		rpos = m_text.find('\t', lpos);
 		if( rpos != string::npos ) {
-			m_album = text.substr(lpos, rpos - lpos);
+			m_album = m_text.substr(lpos, rpos - lpos);
 			lpos = rpos + 1;
 			num_tabs++;
 		}
@@ -69,7 +81,7 @@ CMediaItem::CMediaItem(CRootItem *root_item, std::string text, CCategoryItem*  p
 
 		rpos = m_text.find('\t', lpos);
 		if( rpos != string::npos ) {
-			m_title = text.substr(lpos, rpos - lpos);
+			m_title = m_text.substr(lpos, rpos - lpos);
 			lpos = rpos + 1;
 			num_tabs++;
 		}
@@ -79,8 +91,8 @@ CMediaItem::CMediaItem(CRootItem *root_item, std::string text, CCategoryItem*  p
 
 		rpos = m_text.find('\t', lpos);
 		if( rpos != string::npos ) {
-			string yearStr = text.substr(lpos, rpos - lpos);
-			m_year = CUtils::str2long(yearStr.c_str());
+			string yearStr = m_text.substr(lpos, rpos - lpos);
+			m_year = CUtils::str2long(yearStr);
 			lpos = rpos + 1;
 			num_tabs++;
 		}
@@ -90,8 +102,8 @@ CMediaItem::CMediaItem(CRootItem *root_item, std::string text, CCategoryItem*  p
 
 		rpos = m_text.find('\t', lpos);
 		if( rpos != string::npos ) {
-			string durationStr = text.substr(lpos, rpos - lpos);
-			m_duration_in_s = CUtils::str2long(durationStr.c_str());
+			string durationStr = m_text.substr(lpos, rpos - lpos);
+			m_duration_in_s = CUtils::str2long(durationStr);
 			lpos = rpos + 1;
 			num_tabs++;
 		}
@@ -100,19 +112,25 @@ CMediaItem::CMediaItem(CRootItem *root_item, std::string text, CCategoryItem*  p
 		}
 
 		string hashStr;
-		rpos = m_text.find('\t', lpos);
+		rpos = m_text.find_first_of("\t\n", lpos);
 		if(rpos != string::npos ) {
-			string hashStr = text.substr(lpos, rpos - lpos);  // there may be extra data after this field as long as it is separated by a tab char.
+			hashStr = m_text.substr(lpos, rpos - lpos);  // there may be extra data after this field as long as it is separated by a tab char.
 		}
 		else {
-			string hashStr = text.substr(lpos);
+			hashStr = m_text.substr(lpos);
 		}
-		m_hash = CUtils::str2uint32(hashStr.c_str());
+		m_hash = CUtils::str2uint32(hashStr);
 
 		if(m_parent) {
 			m_parent->addChild(this, posInParent);
 		}
-		rehash();
+		// rehash();
+		if( m_root_item != 0) {
+			m_root_item->setContentPtr(CItemType(CItemType::E_MEDIAITEM), this, m_hash );
+		}
+		if(m_text.rfind('\n') == string::npos ) {
+			m_text.append("\n");
+		}
 	}
 	catch(std::invalid_argument& ex)
 	{

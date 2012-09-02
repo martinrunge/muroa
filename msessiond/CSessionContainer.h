@@ -49,9 +49,11 @@ public:
 
 	void serviceChanged();
 	void serviceAdded(ServDescPtr srvPtr);
-	void serviceRemoved(std::string name);
+	void serviceRemoved(ServDescPtr srvPtr);
 
 	ServDescPtr getServiceByName(std::string name);
+
+	void toAll(Cmd* cmd);
 
 private:
 	static CSessionContainer* m_inst_ptr;
@@ -67,8 +69,6 @@ private:
 
 	std::map<std::string, CSession*> m_sessions;
 	std::set<CConnection*> m_sessionless_connections;
-
-	std::set<std::string> m_unassignedClientNames;
 };
 
 } /* namespace muroa */

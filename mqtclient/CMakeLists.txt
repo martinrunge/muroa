@@ -29,9 +29,11 @@ set( SRC           CQtClient.cpp
                    cmds/CmdGetMediaCol.cpp
                    cmds/CmdGetPlaylist.cpp
                    cmds/CmdGetNextlist.cpp
+                   cmds/CmdGetSessionState.cpp
                    cmds/CmdEditMediaCol.cpp
                    cmds/CmdEditPlaylist.cpp
                    cmds/CmdEditNextlist.cpp
+                   cmds/CmdEditSessionState.cpp
                    cmds/CmdScanCollection.cpp
                    
                    main.cpp )
@@ -58,9 +60,11 @@ set( MOC_H         CQtClient.h
                    cmds/CmdGetMediaCol.h
                    cmds/CmdGetPlaylist.h
                    cmds/CmdGetNextlist.h
+                   cmds/CmdGetSessionState.h
                    cmds/CmdEditMediaCol.h
                    cmds/CmdEditPlaylist.h
                    cmds/CmdEditNextlist.h
+                   cmds/CmdEditSessionState.h
                    cmds/CmdScanCollection.h
                    )
                    

@@ -50,6 +50,7 @@ public:
 	void sendLatestMediaColRev(uint32_t jobID, unsigned knownRev = 0);
 	void sendLatestPlaylistRev(uint32_t jobID, unsigned knownRev = 0);
 	void sendLatestNextlistRev(uint32_t jobID, unsigned knownRev = 0);
+	void sendLatestSessionStateRev(uint32_t jobID, unsigned knownRev = 0);
 
 	void dataReceived( boost::array<char, 8192> buffer, int length);
 

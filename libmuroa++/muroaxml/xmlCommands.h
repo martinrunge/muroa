@@ -27,6 +27,7 @@ public:
     static const std::string sessionDesc;
     static const std::string joinSession;
     static const std::string leaveSession;
+    static const std::string leave;
     static const std::string play;
     static const std::string pause;
     static const std::string stop;
@@ -41,9 +42,11 @@ public:
     static const std::string getCollection;
     static const std::string getPlaylist;
     static const std::string getNextlist;
+    static const std::string getSessionState;
     static const std::string editCollection;
     static const std::string editPlaylist;
     static const std::string editNextlist;
+    static const std::string editSessionState;
 
 };
 

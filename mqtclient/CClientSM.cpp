@@ -11,9 +11,11 @@
 #include "cmds/CmdGetMediaCol.h"
 #include "cmds/CmdGetPlaylist.h"
 #include "cmds/CmdGetNextlist.h"
+#include "cmds/CmdGetSessionState.h"
 #include "cmds/CmdEditMediaCol.h"
 #include "cmds/CmdEditPlaylist.h"
 #include "cmds/CmdEditNextlist.h"
+#include "cmds/CmdEditSessionState.h"
 #include "cmds/CmdScanCollection.h"
 
 CClientSM::CClientSM(CConnection* connection, QObject* parent) : m_connection(connection)
@@ -44,6 +46,11 @@ void CClientSM::getLatestNextlist() {
 	m_connection->sendCommand(cmd);
 }
 
+void CClientSM::getLatestSessionState() {
+	unsigned knownSessionStateRev = m_connection->getSession()->getSessionStateRev();
+	CmdGetSessionState* cmd = new CmdGetSessionState(knownSessionStateRev);
+	m_connection->sendCommand(cmd);
+}
 
 void CClientSM::scanCollection() {
 	unsigned knownMediaColRev = m_connection->getSession()->getMediaColRev();

@@ -63,14 +63,25 @@ int main(int argc, char** argv) {
 		io_service.run();
 
     }
-    catch( muroa::configEx ex ) {
-    	cerr << ex.what() << endl;
+    catch( muroa::configEx& ex ) {
+    	cerr << "Uncaught exception of type 'muroa::configEx': " << ex.what() << endl;
+		LOG4CPLUS_ERROR(app->logger(), "Uncaught exception of type 'muroa::configEx': " << ex.what());
     	rc = -1;
     }
-    catch (std::exception& e) {
-    	cerr << e.what() << endl;
-		LOG4CPLUS_ERROR(app->logger(), "Uncaught exception from mainloop: " << e.what());
+    catch (invalid_argument& invarg) {
+    	cerr << "Uncaught exception of type 'invalid_argument': " << invarg.what() << endl;
+		LOG4CPLUS_ERROR(app->logger(), "Uncaught exception of type 'invalid_argument': " << invarg.what());
+	}    catch (std::exception& e) {
+    	cerr << "Uncaught exception of type 'std::exception': " << e.what() << endl;
+		LOG4CPLUS_ERROR(app->logger(), "Uncaught exception of type 'std::exception': " << e.what());
 	}
+
+    catch (bad_alloc& baex) {
+    	cerr << "Uncaught exception of type 'bad_alloc': " << baex.what() << endl;
+		LOG4CPLUS_ERROR(app->logger(), "Uncaught exception of type 'bad_alloc': " << baex.what());
+	}
+
+
     delete sc;
     delete app;
 

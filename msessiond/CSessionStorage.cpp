@@ -21,6 +21,7 @@ using namespace muroa;
 const string CSessionStorage::mediaColSubdir("mediacol");
 const string CSessionStorage::playlistSubdir("playlist");
 const string CSessionStorage::nextlistSubdir("nextlist");
+const string CSessionStorage::sessionStateSubdir("session_state");
 
 const string CSessionStorage::mcrev_file_extension(".mcrev");
 
@@ -45,6 +46,11 @@ CSessionStorage::CSessionStorage(CSession* session)  : m_app(muroa::CApp::getIns
 	if(!exists(m_storage_path/nextlistSubdir)) {
 		create_directory(m_storage_path/nextlistSubdir);
 	}
+
+	if(!exists(m_storage_path/sessionStateSubdir)) {
+		create_directory(m_storage_path/sessionStateSubdir);
+	}
+
 }
 
 CSessionStorage::~CSessionStorage()
@@ -64,6 +70,7 @@ void CSessionStorage::save() {
 	minRev = m_session->getMinNextlistRev();
 	maxRev = m_session->getMaxNextlistRev();
 	saveNextlistRevs(minRev, maxRev);
+
 }
 
 void CSessionStorage::saveMediaColRevs(long minRev, long maxRev) {
@@ -114,11 +121,28 @@ void CSessionStorage::saveNextlistRevs(long minRev, long maxRev) {
 	}
 }
 
+void CSessionStorage::saveSessionStateRevs(long minRev, long maxRev) {
+	assert(maxRev >= minRev);
+	if(minRev == 0) minRev++;
+	CRootItem* ri;
+	for(long i = minRev; i <= maxRev; i++) {
+		ri = m_session->getSessionState(i);
+
+		ostringstream oss;
+		oss << i << ".mcrev";
+		path fn = m_storage_path/sessionStateSubdir/oss.str();
+		if(!exists(fn)) {
+			ri->serialize(fn.string());
+		}
+	}
+}
+
 
 void CSessionStorage::restore() {
 	restoreMediaColRevs();
 	restorePlaylistRevs();
 	restoreNextlistRevs();
+	restoreSessionStateRevs();
 }
 
 void CSessionStorage::cleanup() {
@@ -197,13 +221,23 @@ void CSessionStorage::restoreRootItemRevs( string subdir_name ) {
 		}
 //		m_session->setMinPlaylistRev( usableMin );
 //		m_session->setMaxPlaylistRev( maxRev );  // max rev will be reached by calling addMediaVolRev() several times.
-	} else { // subdir_name.compare(nextlistSubdir) == 0
+	} else if(subdir_name.compare(nextlistSubdir) == 0) {
 		m_session->setMinNextlistRev( usableMin );
 		for(unsigned long i = usableMin; i <= maxRev ; i++) {
 			CRootItem*ri = new CRootItem();
 			ri->fromFile(filenames.find(i)->second);
 			m_session->setMaxNextlistRev( ri->getRevision() - 1 );
 			m_session->addNextlistRev(ri);
+		}
+//		m_session->setMinNextlistRev( usableMin );
+//		m_session->setMaxNextlistRev( maxRev );  // max rev will be reached by calling addMediaVolRev() several times.
+	} else { // subdir_name.compare(sessionStateSubDir) == 0
+		m_session->setMinSessionStateRev( usableMin );
+		for(unsigned long i = usableMin; i <= maxRev ; i++) {
+			CRootItem*ri = new CRootItem();
+			ri->fromFile(filenames.find(i)->second);
+			m_session->setMaxSessionStateRev( ri->getRevision() - 1 );
+			m_session->addSessionStateRev(ri);
 		}
 //		m_session->setMinNextlistRev( usableMin );
 //		m_session->setMaxNextlistRev( maxRev );  // max rev will be reached by calling addMediaVolRev() several times.
@@ -220,4 +254,8 @@ void CSessionStorage::restorePlaylistRevs() {
 
 void CSessionStorage::restoreNextlistRevs() {
 	restoreRootItemRevs(nextlistSubdir);
+}
+
+void CSessionStorage::restoreSessionStateRevs() {
+	restoreRootItemRevs(sessionStateSubdir);
 }

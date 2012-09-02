@@ -21,6 +21,7 @@ CSession::CSession() : QObject(), m_connection(this) {
 	m_mediaColModel = new CMuroaTreeModel();
 	m_playlistModel = new CMuroaListModel();
 	m_nextlistModel = new CMuroaListModel();
+	m_sessionStateModel = new CMuroaTreeModel();
 
 	m_playlistModel->setMediaCol(m_mediaColModel);
 	m_nextlistModel->setMediaCol(m_mediaColModel);
@@ -36,18 +37,6 @@ CSession::~CSession() {
 	// TODO Auto-generated destructor stub
 }
 
-
-CMuroaTreeModel* CSession::getMediaColModel() const {
-	return m_mediaColModel;
-}
-
-CMuroaListModel* CSession::getPlaylistModel() const {
-	return m_playlistModel;
-}
-
-CMuroaListModel* CSession::getNextlistModel() const {
-	return m_nextlistModel;
-}
 
 void CSession::openConnection(const CServiceDesc &sd) {
     m_connection.open(sd.getHostName(), sd.getPortNr());
@@ -90,7 +79,7 @@ void CSession::restore()
 		string nextlistFile = QString("%1/%2").arg(m_storeageLoc).arg("nextlist.mcrev").toUtf8().data();
 		m_nextlistModel->fromFile(nextlistFile);
 	}
-	catch(ExMalformedPatch ex) {
+	catch(ExMalformedPatch& ex) {
 
 	}
 }

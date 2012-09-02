@@ -52,10 +52,12 @@ public:
 	virtual void getCollection(uint32_t jobID, unsigned knownRev ) = 0;
 	virtual void getPlaylist(uint32_t jobID, unsigned knownRev ) = 0;
 	virtual void getNextlist(uint32_t jobID, unsigned knownRev ) = 0;
+	virtual void getSessionState(uint32_t jobID, unsigned knownRev ) = 0;
 
 	virtual void editCollection(uint32_t jobID, unsigned fromRev, unsigned toRev, std::string diff ) = 0;
 	virtual void editPlaylist(uint32_t jobID, unsigned fromRev, unsigned toRev, std::string diff ) = 0;
 	virtual void editNextlist(uint32_t jobID, unsigned fromRev, unsigned toRev, std::string diff ) = 0;
+	virtual void editSessionState(uint32_t jobID, unsigned fromRev, unsigned toRev, std::string diff ) = 0;
 
 	virtual void onPlay(uint32_t jobID = 0) = 0;
 	virtual void onStop(uint32_t jobID = 0) = 0;
@@ -65,10 +67,12 @@ public:
 	virtual void onGetCollection(uint32_t jobID, unsigned knownRev ) = 0;
 	virtual void onGetPlaylist(uint32_t jobID, unsigned knownRev ) = 0;
 	virtual void onGetNextlist(uint32_t jobID, unsigned knownRev ) = 0;
+	virtual void onGetSessionState(uint32_t jobID, unsigned knownRev ) = 0;
 
 	virtual void onEditCollection(uint32_t jobID, unsigned fromRev, unsigned toRev, std::string collectionDiff) = 0;
 	virtual void onEditPlaylist(uint32_t jobID, unsigned fromRev, unsigned toRev, std::string playlistDiff ) = 0;
 	virtual void onEditNextlist(uint32_t jobID, unsigned fromRev, unsigned toRev, std::string nextlistDiff ) = 0;
+	virtual void onEditSessionState(uint32_t jobID, unsigned fromRev, unsigned toRev, std::string diff ) = 0;
 
 	virtual void getSessionClients(uint32_t jobID) = 0;
 	virtual void getUnassignedClients(uint32_t jobID) = 0;

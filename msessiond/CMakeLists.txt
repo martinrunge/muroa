@@ -23,6 +23,7 @@ set( SRCS             sessionEx.cpp
                       CSessionContainer.cpp
                       CSession.cpp
                       CSessionStorage.cpp
+                      CStreamClientHdl.cpp
                       CPlaylistIdProvider.cpp
                       CConnection.cpp
                       CRpc.cpp
@@ -53,6 +54,7 @@ set( HEADERS          sessionEx.h
                       CSessionContainer.h
                       CSession.h
                       CSessionStorage.h
+                      CStreamClientHdl.h
                       CPlaylistIdProvider.h
                       CConnection.h
                       CRpc.h

@@ -78,7 +78,7 @@ void CConnection::sendLatestMediaColRev(uint32_t jobID, unsigned knownRev) {
 		}
 		m_rpc->editCollection( jobID, knownRev, m_session->getMaxMediaColRev(), diff);
 	}
-	catch(ExInvMsg iex) {
+	catch(ExInvMsg& iex) {
 		m_rpc->error(jobID, 0, iex.what());
 	}
 }
@@ -97,7 +97,7 @@ void CConnection::sendLatestPlaylistRev(uint32_t jobID, unsigned knownRev) {
 		}
 		m_rpc->editPlaylist(jobID, knownRev, m_session->getMaxPlaylistRev(), diff);
 	}
-	catch(ExInvMsg iex) {
+	catch(ExInvMsg& iex) {
 		m_rpc->error(jobID, 0, iex.what());
 	}
 }
@@ -115,7 +115,25 @@ void CConnection::sendLatestNextlistRev(uint32_t jobID, unsigned knownRev) {
 		}
 		m_rpc->editNextlist(jobID, knownRev, m_session->getMaxNextlistRev(), diff);
 	}
-	catch(ExInvMsg iex) {
+	catch(ExInvMsg& iex) {
+		m_rpc->error(jobID, 0, iex.what());
+	}
+}
+
+void CConnection::sendLatestSessionStateRev(uint32_t jobID, unsigned knownRev) {
+	std::string diff;
+	try {
+		if( m_session->hasSessionStateRev( knownRev )) {
+            diff = m_session->getSessionStateDiff(knownRev);
+		}
+		else
+		{
+            CRootItem* ri = m_session->getSessionState();  // get latest rev
+            diff = ri->serialize();
+		}
+		m_rpc->editSessionState(jobID, knownRev, m_session->getMaxSessionStateRev(), diff);
+	}
+	catch(ExInvMsg& iex) {
 		m_rpc->error(jobID, 0, iex.what());
 	}
 }
@@ -134,7 +152,7 @@ void CConnection::incomingCmd( Cmd* cmd ) {
 	try {
 		m_session->incomingCmd(cmd, this);
 	}
-	catch(ExInvMsg invmex)
+	catch(ExInvMsg& invmex)
 	{
 		CmdError *cmdErr = new CmdError(cmd->id(), 0, invmex.what());
 		error(cmdErr);

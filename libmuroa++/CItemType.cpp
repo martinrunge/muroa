@@ -14,7 +14,8 @@ std::map<unsigned, std::string> CItemType::m_type2str = { std::pair<int, std::st
 			                                              std::pair<int, std::string>(E_CAT, "C"),
 			                                              std::pair<int, std::string>(E_MEDIAITEM, "M"),
                                                           std::pair<int, std::string>(E_PLAYLISTITEM, "P"),
-			                                              std::pair<int, std::string>(E_NEXTLISTITEM, "N")};
+			                                              std::pair<int, std::string>(E_NEXTLISTITEM, "N"),
+                                                          std::pair<int, std::string>(E_STREAM_CLIENT, "S")};
 
 std::map<std::string, unsigned> CItemType::m_str2type = CItemType::init_reverse_map();
 

@@ -23,6 +23,7 @@ set( SRC           CRootItem.cpp
                    CMediaItem.cpp
                    CPlaylistItem.cpp
                    CNextlistItem.cpp
+                   CStreamClientItem.cpp
                    CDiff.cpp
                    CUtils.cpp
                    # libmain.cpp
@@ -38,6 +39,11 @@ set( SRC           CRootItem.cpp
                    cmds/CmdEditMediaCol.cpp 
                    cmds/CmdEditPlaylist.cpp
                    cmds/CmdEditNextlist.cpp
+                   cmds/CmdEditSessionState.cpp
+                   cmds/CmdAddUnassignedStreamClient.cpp
+                   cmds/CmdRmUnassignedStreamClient.cpp
+                   cmds/CmdAddStreamClient.cpp
+                   cmds/CmdRmStreamClient.cpp
                    )
                   
 
@@ -50,15 +56,16 @@ set( HEADERS       CRootItem.h
                    IContentItem.h
                    IIdProvider.h
                    CMediaItem.h
-                   CPlaylistItem.cpp
-                   CNextlistItem.cpp
+                   CPlaylistItem.h
+                   CNextlistItem.h
+                   CStreamClientItem.h
                    CDiff.h
                    CUtils.h
                    MuroaExceptions.h
                    muroaxml/IRPC.h
                    muroaxml/CMuroaXml.h
                    muroaxml/xmlCommands.h
-                   muroaxml/CParserStateMachine.cpp
+                   muroaxml/CParserStateMachine.h
                    cmds/Cmd.h 
                    cmds/SimpleCmds.h 
                    cmds/CmdError.h 
@@ -67,6 +74,11 @@ set( HEADERS       CRootItem.h
                    cmds/CmdEditMediaCol.h 
                    cmds/CmdEditPlaylist.h
                    cmds/CmdEditNextlist.h
+                   cmds/CmdEditSessionState.h
+                   cmds/CmdAddUnassignedStreamClient.h
+                   cmds/CmdRmUnassignedStreamClient.h
+                   cmds/CmdAddStreamClient.h
+                   cmds/CmdRmStreamClient.h
                    )
                    
 include_directories(${CMAKE_SOURCE_DIR} ${Boost_INCLUDE_DIRS} ${EXPAT_INCLUDE_DIRS})

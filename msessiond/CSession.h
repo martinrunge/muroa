@@ -17,12 +17,14 @@
 #include <CRootItem.h>
 #include <MuroaExceptions.h>
 
+#include <avahi/CServiceDesc.h>
 #include <mediaprocessing/CStream.h>
 
 #include <boost/asio.hpp>
 
 #include "sessionEx.h"
 #include "CPlaylistIdProvider.h"
+#include "CStreamClientHdl.h"
 
 class CMsgBase;
 class CCmdDispatcher;
@@ -63,18 +65,22 @@ public:
 	CRootItem*  getMediaCol(int revision = -1) const throw(ExInvMsg);
 	CRootItem*  getPlaylist(int revision = -1) const throw(ExInvMsg);
 	CRootItem*  getNextlist(int revision = -1) const throw(ExInvMsg);
+	CRootItem*  getSessionState(int revision = -1) const throw(ExInvMsg);
 
 	const std::string getMediaColDiff(unsigned fromRevision, int toRevision = -1) const;
 	const std::string getPlaylistDiff(unsigned fromRevision, int toRevision = -1) const;
 	const std::string getNextlistDiff(unsigned fromRevision, int toRevision = -1) const;
+	const std::string getSessionStateDiff(unsigned fromRevision, int toRevision = -1) const;
 
 	inline int getMaxMediaColRev() const { return m_maxMediaColRev; };
 	inline int getMaxPlaylistRev() const { return m_maxPlaylistRev; };
 	inline int getMaxNextlistRev() const { return m_maxNextlistRev; };
+	inline int getMaxSessionStateRev() const { return m_maxSessionStateRev; };
 
 	inline int getMinMediaColRev() const { return m_minMediaColRev; };
 	inline int getMinPlaylistRev() const { return m_minPlaylistRev; };
 	inline int getMinNextlistRev() const { return m_minNextlistRev; };
+	inline int getMinSessionStateRev() const { return m_minSessionStateRev; };
 
 	inline bool hasMediaColRev(unsigned rev) const
 	{
@@ -91,13 +97,21 @@ public:
 		return (rev != 0 && rev <= m_maxNextlistRev && rev >= m_minNextlistRev);
 	};
 
+	inline bool hasSessionStateRev(unsigned rev) const
+	{
+		return (rev != 0 && rev <= m_maxSessionStateRev && rev >= m_minSessionStateRev);
+	};
+
+
 	inline void setMinMediaColRev( const unsigned min ) { m_minMediaColRev = min; };
 	inline void setMinPlaylistRev( const unsigned min ) { m_minPlaylistRev = min; };
 	inline void setMinNextlistRev( const unsigned min ) { m_minNextlistRev = min; };
+	inline void setMinSessionStateRev( const unsigned min ) { m_minSessionStateRev = min; };
 
 	inline void setMaxMediaColRev( const unsigned max ) { m_maxMediaColRev = max; };
 	inline void setMaxPlaylistRev( const unsigned max ) { m_maxPlaylistRev = max; };
 	inline void setMaxNextlistRev( const unsigned max ) { m_maxNextlistRev = max; };
+	inline void setMaxSessionStateRev( const unsigned max ) { m_maxSessionStateRev = max; };
 
 
 	void addMediaColRev(CRootItem* ri);
@@ -106,17 +120,16 @@ public:
 	void addPlaylistRev(const std::string& playlist);
 	void addNextlistRev(CRootItem* ri);
 	void addNextlistRev(const std::string& nextlist);
+	void addSessionStateRev(CRootItem* ri);
+	void addSessionStateRev(const std::string& sessionState);
 
 	int addMediaColRevFromDiff(const std::string& mediaColDiff, unsigned diffFromRev) throw(ExInvMsg);
 	int addPlaylistRevFromDiff(const std::string& playlistDiff, unsigned diffFromRev) throw(ExInvMsg);
 	int addNextlistRevFromDiff(const std::string& nextlistDiff, unsigned diffFromRev) throw(ExInvMsg);
+	int addSessionStateRevFromDiff(const std::string& sessionStateDiff, unsigned diffFromRev) throw(ExInvMsg);
 
 	int addNextlistRevFromNextCmd();
 	int addNextlistRevFromPrevCmd();
-
-	void setMinMediaColRevision(int rev) throw();
-	void setMinPlaylistRevision(int rev) throw();
-	void setMinNextlistRevision(int rev) throw();
 
 	void scanCollection(CConnection* initiator, uint32_t jobID);
 	void scanProgress(uint32_t jobID, uint32_t progress);
@@ -125,7 +138,7 @@ public:
 	void response(uint32_t requestID, int32_t returnCode, std::string message);
 	void reportError(uint32_t jobID, int32_t errCode, std::string message);
 
-	void toAll( Cmd* cmd );
+	void toAll( Cmd* cmd, bool deleteCmd = true );
 	void sendToInitiator(Cmd* cmd, unsigned connId);
 	void incomingCmd(Cmd*  cmd, CConnection* initiator);
 	void postIncomingCmd(Cmd* cmd);
@@ -139,13 +152,10 @@ public:
 	bool operator==(const CSession& other);
 	inline bool operator!=(const CSession& other) { return !operator==(other); }
 
-	bool hasClient(std::string name);
 	void addClient(std::string name);
 	void rmClient(std::string name);
 
-	void enableClient(std::string name);
-	void disableClient(std::string name);
-
+	ServDescPtr getServiceByName(std::string name);
 
 
 private:
@@ -165,7 +175,7 @@ private:
 	std::set<CConnection*> m_connections;
 	std::map<unsigned, CConnection*> m_connections_by_id;
 
-	std::set<std::string> m_playback_clients;
+	CStreamClientHdl m_streamClientHdl;
 
 	std::map<uint32_t, CConnection*> m_job_initiators;
 
@@ -183,14 +193,17 @@ private:
 	std::map<unsigned, CRootItem*> m_mediaColRevs;
 	std::map<unsigned, CRootItem*> m_playlistRevs;
 	std::map<unsigned, CRootItem*> m_nextlistRevs;
+	std::map<unsigned, CRootItem*> m_sessionStateRevs;
 
     unsigned m_maxMediaColRev;
     unsigned m_maxPlaylistRev;
     unsigned m_maxNextlistRev;
+    unsigned m_maxSessionStateRev;
 
     unsigned m_minMediaColRev;
     unsigned m_minPlaylistRev;
     unsigned m_minNextlistRev;
+    unsigned m_minSessionStateRev;
 
     unsigned m_playlistPos;
 

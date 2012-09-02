@@ -142,6 +142,7 @@ void CParserStateMachine::onCharacters(const std::string& text)
 	case IN_EDIT_COLLECTION_STATE:
 	case IN_EDIT_PLAYLIST_STATE:
 	case IN_EDIT_NEXTLIST_STATE:
+	case IN_EDIT_SESSION_STATE_STATE:
 		m_edit_text += text;
 		break;
 	default:
@@ -206,57 +207,67 @@ int CParserStateMachine::sessionState(const action_flag& init_start_end, const s
 			m_state.session_state = IN_PROGRESS;
 			parseProgressArgs(attrs);
 		}
-		else if (name.compare("stateChanged") == 0) {
+		else if (name.compare(xmlCommands::stateChanged) == 0) {
 			m_state.session_state = IN_STATE_CHANGED;
 			parseStateChangedArgs(attrs);
 		}
-		else if (name.compare("error") == 0) {
+		else if (name.compare(xmlCommands::error) == 0) {
 			m_state.session_state = IN_ERROR;
 			parseErrorArgs(attrs);
 		}
 		// get
-		else if (name.compare("getCollection") == 0) {
+		else if (name.compare(xmlCommands::getCollection) == 0) {
 			m_state.session_state = IN_GET_COLLECTION_STATE;
 			parseKnownRev(attrs);   // init with attrs
 		}
-		else if (name.compare("getPlaylist") == 0) {
+		else if (name.compare(xmlCommands::getPlaylist) == 0) {
 			m_state.session_state = IN_GET_PLAYLIST_STATE;
 			parseKnownRev(attrs);   // init with attrs
 		}
-		else if (name.compare("getNextlist") == 0) {
+		else if (name.compare(xmlCommands::getNextlist) == 0) {
 			m_state.session_state = IN_GET_NEXTLIST_STATE;
 			parseKnownRev(attrs);   // init with attrs
 		}
-		// response to get
-		else if (name.compare("collection") == 0) {
-			m_state.session_state = IN_COLLECTION_STATE;
-			parseDiffFromRev(attrs);   // init with attrs
+		else if (name.compare(xmlCommands::getSessionState) == 0) {
+			m_state.session_state = IN_GET_SESSION_STATE_STATE;
+			parseKnownRev(attrs);   // init with attrs
 		}
-		else if (name.compare("playlist") == 0) {
-			m_state.session_state = IN_PLAYLIST_STATE;
-			parseDiffFromRev(attrs);   // init with attrs
-		}
-		else if (name.compare("nextlist") == 0) {
-			m_state.session_state = IN_NEXTLIST_STATE;
-			parseDiffFromRev(attrs);   // init with attrs
-		}
+
+//		// response to get
+//		else if (name.compare(xmlCommands::collection) == 0) {
+//			m_state.session_state = IN_COLLECTION_STATE;
+//			parseDiffFromRev(attrs);   // init with attrs
+//		}
+//		else if (name.compare(xmlCommands::playlist) == 0) {
+//			m_state.session_state = IN_PLAYLIST_STATE;
+//			parseDiffFromRev(attrs);   // init with attrs
+//		}
+//		else if (name.compare(xmlCommands::nextlist) == 0) {
+//			m_state.session_state = IN_NEXTLIST_STATE;
+//			parseDiffFromRev(attrs);   // init with attrs
+//		}
 		// edit
-		else if (name.compare("editCollection") == 0) {
+		else if (name.compare(xmlCommands::editCollection) == 0) {
 			m_state.session_state = IN_EDIT_COLLECTION_STATE;
 			parseFromRev(attrs);   // init with attrs
 			parseToRev(attrs);   // init with attrs
 		}
-		else if (name.compare("editPlaylist") == 0) {
+		else if (name.compare(xmlCommands::editPlaylist) == 0) {
 			m_state.session_state = IN_EDIT_PLAYLIST_STATE;
 			parseFromRev(attrs);   // init with attrs
 			parseToRev(attrs);   // init with attrs
 		}
-		else if (name.compare("editNextlist") == 0) {
+		else if (name.compare(xmlCommands::editNextlist) == 0) {
 			m_state.session_state = IN_EDIT_NEXTLIST_STATE;
 			parseFromRev(attrs);   // init with attrs
 			parseToRev(attrs);   // init with attrs
 		}
-		else if (name.compare("leave") == 0) {
+		else if (name.compare(xmlCommands::editSessionState) == 0) {
+			m_state.session_state = IN_EDIT_SESSION_STATE_STATE;
+			parseFromRev(attrs);   // init with attrs
+			parseToRev(attrs);   // init with attrs
+		}
+		else if (name.compare(xmlCommands::leave) == 0) {
 			onLeaveSession();
 		}
 
@@ -268,29 +279,29 @@ int CParserStateMachine::sessionState(const action_flag& init_start_end, const s
 		break;
 
 	case END:
-		if(name.compare("session") == 0) {
+		if(name.compare(xmlCommands::joinSession) == 0) {
 			// end of session
 			m_xml_tag_depth = 0;
 			m_state.root_state = ROOT_STATE;
 			onLeaveSession();
 		}
-		else if(name.compare("next") == 0) {
+		else if(name.compare(xmlCommands::next) == 0) {
 			onNext(m_jobID);
 			m_jobID = 0;
 		}
-		else if(name.compare("prev") == 0) {
+		else if(name.compare(xmlCommands::prev) == 0) {
 			onPrev(m_jobID);
 			m_jobID = 0;
 		}
-		else if(name.compare("play") == 0) {
+		else if(name.compare(xmlCommands::play) == 0) {
 			onPlay(m_jobID);
 			m_jobID = 0;
 		}
-		else if(name.compare("pause") == 0) {
+		else if(name.compare(xmlCommands::pause) == 0) {
 			onPause(m_jobID);
 			m_jobID = 0;
 		}
-		else if(name.compare("stop") == 0) {
+		else if(name.compare(xmlCommands::stop) == 0) {
 			onStop(m_jobID);
 			m_jobID =0;
 		}
@@ -300,60 +311,69 @@ int CParserStateMachine::sessionState(const action_flag& init_start_end, const s
 		else if (name.compare(xmlCommands::progress) == 0) {
 			onProgress(m_jobID, m_progress, m_total);
 		}
-		else if (name.compare("stateChanged") == 0) {
+		else if (name.compare(xmlCommands::stateChanged) == 0) {
 			onStateChanged(m_newState);
 		}
-		else if (name.compare("error") == 0) {
+		else if (name.compare(xmlCommands::error) == 0) {
 			onError(m_jobID, m_errorCode, m_errorDescription);
 			m_jobID =0;
 			m_errorCode = 0;
 			m_errorDescription = "";
 		}
 		// get
-		else if (name.compare("getCollection") == 0) {
+		else if (name.compare(xmlCommands::getCollection) == 0) {
 			// got collection
 			onGetCollection(m_jobID, m_knownRev);
 			m_jobID= 0;
 		}
-		else if (name.compare("getPlaylist") == 0) {
+		else if (name.compare(xmlCommands::getPlaylist) == 0) {
 			onGetPlaylist(m_jobID, m_knownRev);
 			m_jobID= 0;
 		}
-		else if (name.compare("getNextlist") == 0) {
+		else if (name.compare(xmlCommands::getNextlist) == 0) {
 			onGetNextlist(m_jobID, m_knownRev);
 			m_jobID= 0;
 		}
+		else if (name.compare(xmlCommands::getSessionState) == 0) {
+			onGetSessionState(m_jobID, m_knownRev);
+			m_jobID= 0;
+		}
 
-		// response to get
-		else if (name.compare("collection") == 0) {
-			onCollection(m_jobID, m_diffFromRev, m_get_text);
-			m_jobID = 0;
-			m_get_text = "";
-		}
-		else if (name.compare("playlist") == 0) {
-			onPlaylist(m_jobID, m_diffFromRev, m_get_text);
-			m_jobID = 0;
-			m_get_text = "";
-		}
-		else if (name.compare("nextlist") == 0) {
-			onNextlist(m_jobID, m_diffFromRev, m_get_text);
-			m_jobID = 0;
-			m_get_text = "";
-		}
+//		// response to get
+//		else if (name.compare(xmlCommands::collection) == 0) {
+//			onCollection(m_jobID, m_diffFromRev, m_get_text);
+//			m_jobID = 0;
+//			m_get_text = "";
+//		}
+//		else if (name.compare(xmlCommands::playlist) == 0) {
+//			onPlaylist(m_jobID, m_diffFromRev, m_get_text);
+//			m_jobID = 0;
+//			m_get_text = "";
+//		}
+//		else if (name.compare(xmlCommands::nextlist) == 0) {
+//			onNextlist(m_jobID, m_diffFromRev, m_get_text);
+//			m_jobID = 0;
+//			m_get_text = "";
+//		}
 
 		// edit
-		else if (name.compare("editCollection") == 0) {
+		else if (name.compare(xmlCommands::editCollection) == 0) {
 			onEditCollection(m_jobID, m_fromRev, m_toRev, m_edit_text);
 			m_jobID = 0;
 			m_edit_text = "";
 		}
-		else if (name.compare("editPlaylist") == 0) {
+		else if (name.compare(xmlCommands::editPlaylist) == 0) {
 			onEditPlaylist(m_jobID, m_fromRev, m_toRev, m_edit_text);
 			m_jobID = 0;
 			m_edit_text = "";
 		}
-		else if (name.compare("editNextlist") == 0) {
+		else if (name.compare(xmlCommands::editNextlist) == 0) {
 			onEditNextlist(m_jobID, m_fromRev, m_toRev, m_edit_text);
+			m_jobID = 0;
+			m_edit_text = "";
+		}
+		else if (name.compare(xmlCommands::editSessionState) == 0) {
+			onEditSessionState(m_jobID, m_fromRev, m_toRev, m_edit_text);
 			m_jobID = 0;
 			m_edit_text = "";
 		}

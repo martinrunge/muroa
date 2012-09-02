@@ -20,6 +20,7 @@ public:
 		             E_MEDIAITEM,
 		             E_PLAYLISTITEM,
 		             E_NEXTLISTITEM,
+		             E_STREAM_CLIENT,
 	                 E_USER_TYPE };
 	typedef enum item_type item_type_t;
 

@@ -44,10 +44,12 @@ public:
 	void getCollection(uint32_t jobID, unsigned knownRev = 0);
 	void getPlaylist(uint32_t jobID, unsigned knownRev = 0);
 	void getNextlist(uint32_t jobID, unsigned knownRev = 0);
+	void getSessionState(uint32_t jobID, unsigned knownRev = 0);
 
 	void editCollection(uint32_t jobID, unsigned fromRev, unsigned toRev, std::string diff );
 	void editPlaylist(uint32_t jobID, unsigned fromRev, unsigned toRev, std::string diff );
 	void editNextlist(uint32_t jobID, unsigned fromRev, unsigned toRev, std::string diff );
+	void editSessionState(uint32_t jobID, unsigned fromRev, unsigned toRev, std::string diff );
 
 	void getSessionClients(uint32_t jobID);
 	void getUnassignedClients(uint32_t jobID);
