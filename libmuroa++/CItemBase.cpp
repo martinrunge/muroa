@@ -26,6 +26,7 @@
 
 using namespace std;
 using namespace boost;
+namespace muroa {
 
 CItemBase::CItemBase(CRootItem *root_item, CCategoryItem*  parent, const item_type_t type) :
            m_parent(parent), m_item_type(type), m_root_item(root_item)
@@ -50,4 +51,4 @@ void CItemBase::replaceTabs(string& str) {
 	std::replace( str.begin(), str.end(), '\t', ' ' );
 	trim(str);
 }
-
+} // namespace muroa

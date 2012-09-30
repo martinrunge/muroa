@@ -28,6 +28,8 @@
 #include "IIdProvider.h"
 #include "MuroaExceptions.h"
 
+namespace muroa {
+
 class CMediaItem;
 
 class CPlaylistItem: public IContentItem {
@@ -61,5 +63,5 @@ private:
 
 	void assembleText();
 };
-
+} // namespace muroa
 #endif /* CPLAYLISTITEM_H_ */

@@ -13,14 +13,16 @@
 
 #include "boost/filesystem/path.hpp"
 
-class CMediaItem;
+namespace muroa {
+  class CMediaItem;
+}
 
 class CMediaColUpdater {
 public:
 	CMediaColUpdater(std::string mediaColDir) throw(std::string);
 	virtual ~CMediaColUpdater();
 
-	int update(std::vector<CMediaItem*>* newCol);
+	int update(std::vector<muroa::CMediaItem*>* newCol);
 	boost::filesystem::path getMediaColPath() { return m_mediaColPath; };
 
 private:

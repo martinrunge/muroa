@@ -12,6 +12,8 @@
 #include <stdexcept>
 #include "MuroaExceptions.h"
 
+namespace muroa {
+
 class CRootItem;
 class CCategoryItem;
 class CMediaItem;
@@ -63,5 +65,5 @@ protected:
 	uint32_t m_hash;
 
 };
-
+} // namespace muroa
 #endif /* ICONTENTITEM_H_ */

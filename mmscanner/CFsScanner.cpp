@@ -22,6 +22,7 @@
 #include "CMsgProgress.h"
 
 using namespace std;
+using namespace muroa;
 
 CFsScanner::CFsScanner(CMediaScanner* parent) : m_scanResult(0), m_scanning(false), m_parent( parent ), m_jobID(0) {
 }

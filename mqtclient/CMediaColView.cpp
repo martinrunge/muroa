@@ -17,6 +17,7 @@
 #include "CModelDiff.h"
 #include "CDiffBuilder.h"
 
+using namespace muroa;
 
 CMediaColView::CMediaColView(QWidget * parent) : QTreeView(parent){
 	setAcceptDrops(true);
@@ -114,7 +115,7 @@ void CMediaColView::performDrag()
     	{
     		rowsSeen.append(pos);
     		comb_hash_t combhash;
-    		CItemBase* item = mcModel->itemFromIndex(indexList.at(i));
+    		muroa::CItemBase* item = mcModel->itemFromIndex(indexList.at(i));
     		switch(item->type()) {
     		case CItemType::E_ROOT:
     			// add all
@@ -128,7 +129,7 @@ void CMediaColView::performDrag()
 
     		default:
     			// derived from IContentitem
-        		IContentItem* citem = reinterpret_cast<IContentItem*>(item);
+    			IContentItem* citem = reinterpret_cast<IContentItem*>(item);
     			combhash.type = citem->type();
     			combhash.hash = citem->getHash();
     			md.appendToSelectedItems(combhash);

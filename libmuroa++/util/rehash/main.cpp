@@ -39,6 +39,7 @@
 namespace fs = boost::filesystem;
 
 using namespace std;
+using namespace muroa;
 
 void walkTree(string dir);
 

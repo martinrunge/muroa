@@ -12,6 +12,7 @@
 #include "cmds/CmdEditPlaylist.h"
 #include "cmds/CmdEditNextlist.h"
 
+using namespace muroa;
 
 CDiffBuilder::CDiffBuilder(CRootItem* mediaColPtr, CRootItem* plPtr, CRootItem* nlPtr ):
     m_mediaColPtr(mediaColPtr),

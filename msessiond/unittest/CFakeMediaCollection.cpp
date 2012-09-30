@@ -25,6 +25,7 @@ extern "C" {
 
 using namespace boost::filesystem;
 using namespace std;
+using namespace muroa;
 
 CFakeMediaCollection::CFakeMediaCollection(string indir) : m_rootdir(indir) {
 

@@ -12,12 +12,12 @@
 
 #include "CRootItem.h"
 
-class CMediaItem;
-class CPlaylistItem;
-class CNextlistItem;
 
 namespace muroa {
 
+class CMediaItem;
+class CPlaylistItem;
+class CNextlistItem;
 class CSession;
 
 class CStateDB: public CStateDbBase {

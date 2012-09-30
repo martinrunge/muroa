@@ -15,15 +15,17 @@
 #include "CModelDiff.h"
 #include "cmds/CmdBase.h"
 
-class CCollectionItem;
-class CPlaylistItem;
+namespace muroa {
+  class CCollectionItem;
+  class CPlaylistItem;
+}
 
 
 class CDiffBuilder : public QObject {
 	Q_OBJECT;
 
 public:
-	CDiffBuilder(CRootItem* mediaColPtr, CRootItem* plPtr, CRootItem* nlPtr );
+	CDiffBuilder(muroa::CRootItem* mediaColPtr, muroa::CRootItem* plPtr, muroa::CRootItem* nlPtr );
 	virtual ~CDiffBuilder();
 
 	std::string diff(CModelDiff md);
@@ -33,9 +35,9 @@ signals:
 
 
 private:
-	CRootItem* m_mediaColPtr;
-	CRootItem* m_plPtr;
-	CRootItem* m_nlPtr;
+	muroa::CRootItem* m_mediaColPtr;
+	muroa::CRootItem* m_plPtr;
+	muroa::CRootItem* m_nlPtr;
 
 	typedef std::string (CDiffBuilder::*getItemPtr)(comb_hash_t);
 

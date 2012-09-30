@@ -13,7 +13,9 @@
 #include <string>
 #include <vector>
 
-class CMediaItem;
+namespace muroa {
+  class CMediaItem;
+}
 
 class CStateDbUpdater : public CStateDbBase {
 public:
@@ -24,8 +26,8 @@ public:
 	int close();
 
 
-	int appendCollectionRev(std::vector<CMediaItem*> *collection);
-	std::vector<CMediaItem*> *getCollectionRev(int rev);
+	int appendCollectionRev(std::vector<muroa::CMediaItem*> *collection);
+	std::vector<muroa::CMediaItem*> *getCollectionRev(int rev);
 };
 
 #endif /* CSTATEDBUPDATER_H_ */

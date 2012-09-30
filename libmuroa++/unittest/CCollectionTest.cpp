@@ -36,6 +36,7 @@
 #include <sstream>
 
 using namespace std;
+using namespace muroa;
 
 CPPUNIT_TEST_SUITE_REGISTRATION( CCollectionTest );
 
@@ -65,26 +66,139 @@ void CCollectionTest::construct() {
 	item = m_root->addCategory("stufe2", item);
 	item = m_root->addCategory("stufe3", item);
 
-	IContentItem *mItem = m_root->addContentItem("/path/to/file.mp3\tTest Artist 0\tTest Album 0	Test Title 9\t2008\t90\t3560093084", item);
+	IContentItem *mItem = m_root->addContentItem("/path/to/file.mp3\tTest Artist 0\tTest Album 0\tTest Title 9\t2008\t90\t3560093084", item);
 }
 
-void CCollectionTest::serializeMedia() {
-	CMediaItem *mItem = new CMediaItem(m_root, "/path/to/file.mp3\tTest Artist 0\tTest Album 0	Test Title 9\t2008\t90\t3560093084", 0);
+// serialize CMediaItem constructed from string without typeStr -> rehash() needed
+void CCollectionTest::serializeMedia1() {
+	string textform("/path/to/file.mp3\tTest Artist 0\tTest Album 0\tTest Title 9\t2008\t90\t3560093084");
+	CMediaItem *mItem = new CMediaItem(m_root, textform, 0);
 	string result = mItem->serialize();
 
 	stringstream ss;
-	ss << mItem->getText();
+	ss << "M\t" << textform << endl;
 	string expected = ss.str();
 
 	delete mItem;
 	CPPUNIT_ASSERT(result.compare(expected) == 0 );
 }
 
-void CCollectionTest::deserializeMedia() {
+// serialize CMediaItem constructed from string with typeStr: input string is directly used as serialisation
+void CCollectionTest::serializeMedia2() {
+	string textform("M\t/path/to/file.mp3\tTest Artist 0\tTest Album 0\tTest Title 9\t2008\t90\t3560093084\n");
+	CMediaItem *mItem = new CMediaItem(m_root, textform, 0);
+	string result = mItem->serialize();
+
+	string expected = textform;
+
+	delete mItem;
+	CPPUNIT_ASSERT(result.compare(expected) == 0 );
+}
+
+// construct CMediaItem via set methods: serialisation via rehash() is needed
+// this testcase recalculates the hash value !!! Make sure the correct value is given in "textform"
+void CCollectionTest::serializeMedia3() {
+	string textform("M\t/path/to/file.mp3\tTest Artist 0\tTest Album 0\tTest Title 9\t2008\t90\t775307642\n");
+	CMediaItem *mItem = new CMediaItem(m_root, 0);
+	mItem->setFilename("/path/to/file.mp3");
+	mItem->setArtist("Test Artist 0");
+	mItem->setAlbum("Test Album 0");
+	mItem->setTitle("Test Title 9");
+	mItem->setYear(2008);
+	mItem->setDuration(90);
+	// no hash was given, it has to be calculated
+
+	string result = mItem->serialize();
+
+	string expected = textform;
+
+	delete mItem;
+	CPPUNIT_ASSERT(result.compare(expected) == 0 );
+}
+
+// Without typeStr at the beginning, no newline: m_text (which caches the serialisation) needs to be constructed by assembleText()
+void CCollectionTest::deserializeMedia1() {
 	CMediaItem *mItem = new CMediaItem(m_root, "/path/to/file.mp3\tTest Artist 0\tTest Album 0	Test Title 9\t2008\t90\t3201968177", 0);
 	uint32_t hashval = mItem->getHash();
+	string filename = mItem->getFilename();
+	string artist = mItem->getArtist();
+	string album = mItem->getAlbum();
+	string title = mItem->getTitle();
+	int year = mItem->getYear();
+	int duration = mItem->getDuration();
+
 	delete mItem;
+	// hash is most important test case
 	CPPUNIT_ASSERT( hashval == 3201968177UL );
+	CPPUNIT_ASSERT( filename.compare("/path/to/file.mp3") == 0 );
+	CPPUNIT_ASSERT( artist.compare("Test Artist 0") == 0 );
+	CPPUNIT_ASSERT( album.compare("Test Album 0") == 0 );
+	CPPUNIT_ASSERT( title.compare("Test Title 9") == 0 );
+	CPPUNIT_ASSERT( year == 2008 );
+	CPPUNIT_ASSERT( duration == 90 );
+}
+
+// With typeStr at the beginning, no newline: m_text (which caches the serialisation) can be taken from input
+void CCollectionTest::deserializeMedia2() {
+	CMediaItem *mItem = new CMediaItem(m_root, "M\t/path/to/file.mp3\tTest Artist 0\tTest Album 0	Test Title 9\t2008\t90\t3201968177", 0);
+	uint32_t hashval = mItem->getHash();
+	string filename = mItem->getFilename();
+	string artist = mItem->getArtist();
+	string album = mItem->getAlbum();
+	string title = mItem->getTitle();
+	int year = mItem->getYear();
+	int duration = mItem->getDuration();
+	delete mItem;
+	// hash is most important test case
+	CPPUNIT_ASSERT( hashval == 3201968177UL );
+	CPPUNIT_ASSERT( filename.compare("/path/to/file.mp3") == 0 );
+	CPPUNIT_ASSERT( artist.compare("Test Artist 0") == 0 );
+	CPPUNIT_ASSERT( album.compare("Test Album 0") == 0 );
+	CPPUNIT_ASSERT( title.compare("Test Title 9") == 0 );
+	CPPUNIT_ASSERT( year == 2008 );
+	CPPUNIT_ASSERT( duration == 90 );
+}
+
+// Without typeStr at the beginning, newline: m_text (which caches the serialisation) needs to be constructed by assembleText()
+void CCollectionTest::deserializeMedia3() {
+	CMediaItem *mItem = new CMediaItem(m_root, "/path/to/file.mp3\tTest Artist 0\tTest Album 0	Test Title 9\t2008\t90\t3201968177\n", 0);
+	uint32_t hashval = mItem->getHash();
+	string filename = mItem->getFilename();
+	string artist = mItem->getArtist();
+	string album = mItem->getAlbum();
+	string title = mItem->getTitle();
+	int year = mItem->getYear();
+	int duration = mItem->getDuration();
+	delete mItem;
+	// hash is most important test case
+	CPPUNIT_ASSERT( hashval == 3201968177UL );
+	CPPUNIT_ASSERT( filename.compare("/path/to/file.mp3") == 0 );
+	CPPUNIT_ASSERT( artist.compare("Test Artist 0") == 0 );
+	CPPUNIT_ASSERT( album.compare("Test Album 0") == 0 );
+	CPPUNIT_ASSERT( title.compare("Test Title 9") == 0 );
+	CPPUNIT_ASSERT( year == 2008 );
+	CPPUNIT_ASSERT( duration == 90 );
+}
+
+// With typeStr at the beginning, newline: m_text (which caches the serialisation) can be taken from input
+void CCollectionTest::deserializeMedia4() {
+	CMediaItem *mItem = new CMediaItem(m_root, "M\t/path/to/file.mp3\tTest Artist 0\tTest Album 0	Test Title 9\t2008\t90\t3201968177\n", 0);
+	uint32_t hashval = mItem->getHash();
+	string filename = mItem->getFilename();
+	string artist = mItem->getArtist();
+	string album = mItem->getAlbum();
+	string title = mItem->getTitle();
+	int year = mItem->getYear();
+	int duration = mItem->getDuration();
+	delete mItem;
+	// hash is most important test case
+	CPPUNIT_ASSERT( hashval == 3201968177UL );
+	CPPUNIT_ASSERT( filename.compare("/path/to/file.mp3") == 0 );
+	CPPUNIT_ASSERT( artist.compare("Test Artist 0") == 0 );
+	CPPUNIT_ASSERT( album.compare("Test Album 0") == 0 );
+	CPPUNIT_ASSERT( title.compare("Test Title 9") == 0 );
+	CPPUNIT_ASSERT( year == 2008 );
+	CPPUNIT_ASSERT( duration == 90 );
 }
 
 void CCollectionTest::serializePlaylist() {
@@ -138,6 +252,7 @@ void CCollectionTest::serializeStreamClient() {
 	scItem->setHostName("kitchenclient");
 	scItem->setDomainName("local");
 	scItem->setPort(46635);
+	scItem->setOwnerSessionName("ownerSession");
 	scItem->setEnabled(false);
 
 	uint32_t hashval = scItem->getHash();
@@ -145,13 +260,13 @@ void CCollectionTest::serializeStreamClient() {
 	string serialisation = scItem->serialize();
 	delete scItem;
 	stringstream ss;
-	ss << "S\t" << "Küche" << "\t" << "kitchenclient" << "\t" << "local" << "\t" << 46635 << "\t" << "disabled" << endl;
+	ss << "S\t" << "Küche" << "\t" << "kitchenclient" << "\t" << "local" << "\t" << 46635 << "\t" << "ownerSession" << "\t" << "disabled" << endl;
 
 	CPPUNIT_ASSERT( serialisation.compare( ss.str()) == 0);
 }
 
 void CCollectionTest::deserializeStreamClient() {
-	string serialisation = "Küche\tkitchenclient\tlocal\t46635\tdisabled\n";
+	string serialisation = "Küche\tkitchenclient\tlocal\t46635\townerSession\tdisabled\n";
 
 	CStreamClientItem *scItem = new CStreamClientItem(m_root, serialisation, 0);
 
@@ -159,8 +274,8 @@ void CCollectionTest::deserializeStreamClient() {
 	CPPUNIT_ASSERT( scItem->getHostName().compare("kitchenclient") == 0);
 	CPPUNIT_ASSERT( scItem->getDomainName().compare("local") == 0);
 	CPPUNIT_ASSERT( scItem->getPort() == 46635);
+	CPPUNIT_ASSERT( scItem->getOwnerSessionName().compare("ownerSession") == 0);
 	CPPUNIT_ASSERT( scItem->isEnabled() == false);
-
 }
 
 
@@ -171,7 +286,7 @@ void CCollectionTest::serializeCategory() {
 	string result = base->serialize();
 
 	stringstream ss;
-	ss << mItem->getText();
+	ss << cItem->getPath() << "\t" << mItem->getText();
 	string expected = ss.str();
 	CPPUNIT_ASSERT(result.compare(expected) == 0 );
 }

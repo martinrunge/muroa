@@ -11,14 +11,14 @@
 #include "CDecoder.h"
 
 namespace std {
-class thread;
+  class thread;
 }
 
-class CMediaItem;
 class IAudioIO;
 
 namespace muroa {
-class CSession;
+  class CSession;
+  // class CMediaItem;
 }
 
 enum sessionState {

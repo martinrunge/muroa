@@ -13,11 +13,10 @@
 
 #include "sessionEx.h"
 
-class CMediaItem;
-class CPlaylistItem;
-
 namespace muroa {
-	class CSession;
+    class CMediaItem;
+    class CPlaylistItem;
+    class CSession;
 }
 
 class CStateDbBase {
@@ -36,18 +35,18 @@ public:
     void updateCollectionRevItem( int pos, int hash, int rev );
 
     int getNumMediaItemsByHash(unsigned hash);
-    CMediaItem* getMediaItemByHash(unsigned hash);
+    muroa::CMediaItem* getMediaItemByHash(unsigned hash);
     unsigned getHashByFilename(const std::string& filename, bool& found) const;
     bool hashPresent();
-    CMediaItem* getMediaItemByPos(int colPos, int colRev);
+    muroa::CMediaItem* getMediaItemByPos(int colPos, int colRev);
 
     int rowIDofColRevEntry(int colPos, int colHash, int colRev);
 
 protected:
     sqlite3 *m_db;
 
-    int updateMediaItem( CMediaItem* item );
-    CMediaItem* getMediaItemFromStmt(sqlite3_stmt *pStmt);
+    int updateMediaItem( muroa::CMediaItem* item );
+    muroa::CMediaItem* getMediaItemFromStmt(sqlite3_stmt *pStmt);
 
     void beginTansaction() throw(CApiMisuseException);
     void endTransaction() throw(CApiMisuseException);

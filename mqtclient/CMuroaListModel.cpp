@@ -33,6 +33,7 @@
 #include <stack>
 
 using namespace std;
+using namespace muroa;
 
 
 CMuroaListModel::CMuroaListModel(): m_mediaCol(0), m_playlist(0) {

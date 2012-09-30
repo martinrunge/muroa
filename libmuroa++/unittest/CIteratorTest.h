@@ -13,7 +13,9 @@
 
 #include <string>
 
-class CRootItem;
+namespace muroa {
+  class CRootItem;
+}
 
 class CIteratorTest : public CppUnit::TestFixture {
 	  CPPUNIT_TEST_SUITE( CIteratorTest );
@@ -32,7 +34,7 @@ public:
     void backward();
 
 private:
-	CRootItem* m_rootItem;
+	muroa::CRootItem* m_rootItem;
 	std::string m_orig;
 };
 

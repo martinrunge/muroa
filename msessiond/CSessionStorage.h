@@ -14,9 +14,7 @@
 namespace muroa {
 	class CApp;
 	class CSession;
-}
-
-class CRootItem;
+	class CRootItem;
 
 class CSessionStorage {
 public:
@@ -55,5 +53,5 @@ private:
 
 	static const std::string mcrev_file_extension;
 };
-
+} // namespace muroa
 #endif /* CSESSIONSTORAGE_H_ */

@@ -27,6 +27,7 @@
 #include "CUtils.h"
 #include <sstream>
 using namespace std;
+namespace muroa {
 
 const string CStreamClientItem::DISABLED_STR("disabled");
 const string CStreamClientItem::ENABLED_STR("enabled");
@@ -38,28 +39,34 @@ CStreamClientItem::CStreamClientItem(CRootItem *root_item, CCategoryItem*  paren
 	m_hash = hash(m_service_name);
 	assembleText();
 	m_root_item->setContentPtr(CItemType(CItemType::E_STREAM_CLIENT), this, m_hash );
+	if(parent != 0) {
+		parent->addChild(this);
+	}
 }
 
 CStreamClientItem::CStreamClientItem(CRootItem *root_item, std::string text, CCategoryItem*  parent, int posInParent) throw(ExMalformedPatch)
-: IContentItem( root_item, parent, CItemType::E_NEXTLISTITEM )
+: IContentItem( root_item, parent, CItemType::E_STREAM_CLIENT )
 {
-	m_text = text;
 	size_t lpos, rpos;
 	lpos = 0;
+	bool serialisationNeeded = true;
 
 	try {
-		rpos = m_text.find('\t', lpos);
+		rpos = text.find('\t', lpos);
 		if( rpos != string::npos ) {
 			string typeStr = text.substr(lpos, rpos - lpos);
 			if(typeStr.compare(CItemType::getString(m_item_type)) == 0 ) {
+				// serialisation started with type string 'S' -> input string is suitable for m_text
 				lpos = rpos + 1;
+				m_text = text;
+				serialisationNeeded = false;
 			}
 		}
 		else {
 			throw ExMalformedPatch("error parsing first field (expecting type string or 'service name'): terminating tab char is missing." ,-1);
 		}
 
-		rpos = m_text.find('\t', lpos);
+		rpos = text.find('\t', lpos);
 		if( rpos != string::npos ) {
 			m_service_name = text.substr(lpos, rpos - lpos);
 			lpos = rpos + 1;
@@ -70,7 +77,7 @@ CStreamClientItem::CStreamClientItem(CRootItem *root_item, std::string text, CCa
 
 		m_hash = hash(m_service_name);
 
-		rpos = m_text.find('\t', lpos);
+		rpos = text.find('\t', lpos);
 		if( rpos != string::npos ) {
 			m_host_name = text.substr(lpos, rpos - lpos);
 			lpos = rpos + 1;
@@ -79,7 +86,7 @@ CStreamClientItem::CStreamClientItem(CRootItem *root_item, std::string text, CCa
 			throw ExMalformedPatch("error parsing 'host_name' field, terminating tab char is missing.", -1);
 		}
 
-		rpos = m_text.find('\t', lpos);
+		rpos = text.find('\t', lpos);
 		if( rpos != string::npos ) {
 			m_domain_name = text.substr(lpos, rpos - lpos);
 			lpos = rpos + 1;
@@ -89,7 +96,7 @@ CStreamClientItem::CStreamClientItem(CRootItem *root_item, std::string text, CCa
 		}
 
 		string m_port_str;
-		rpos = m_text.find('\t', lpos);
+		rpos = text.find('\t', lpos);
 		if( rpos != string::npos ) {
 			m_port_str = text.substr(lpos, rpos - lpos);
 			m_port = CUtils::str2long(m_port_str);
@@ -99,7 +106,7 @@ CStreamClientItem::CStreamClientItem(CRootItem *root_item, std::string text, CCa
 			throw ExMalformedPatch("error parsing 'port' field, terminating tab char is missing.", -1);
 		}
 
-		rpos = m_text.find('\t', lpos);
+		rpos = text.find('\t', lpos);
 		if( rpos != string::npos ) {
 			m_owner_session_name = text.substr(lpos, rpos - lpos);
 			lpos = rpos + 1;
@@ -109,7 +116,7 @@ CStreamClientItem::CStreamClientItem(CRootItem *root_item, std::string text, CCa
 		}
 
 		string ena_str;
-		rpos = m_text.find_first_of('\t\n', lpos);
+		rpos = text.find_first_of('\t\n', lpos);
 		if(rpos != string::npos ) {
 			ena_str = text.substr(lpos, rpos - lpos);
 		}
@@ -125,7 +132,9 @@ CStreamClientItem::CStreamClientItem(CRootItem *root_item, std::string text, CCa
 		}
 
 		m_root_item->setContentPtr(CItemType(CItemType::E_STREAM_CLIENT), this, m_hash );
-		// assembleText();
+		if(serialisationNeeded) {
+			assembleText();
+		}
 
 		if(m_text.rfind('\n') == string::npos ) {
 			m_text.append("\n");
@@ -252,4 +261,4 @@ void CStreamClientItem::assembleText() {
 	ss << CItemType::getString(m_item_type) << "\t" << m_service_name << "\t" << m_host_name << "\t" << m_domain_name << "\t" << m_port << "\t" << m_owner_session_name << "\t" << ena << endl;
 	m_text = ss.str();
 }
-
+} // namespace muroa

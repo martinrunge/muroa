@@ -13,6 +13,8 @@
 
 #include <string>
 
+namespace muroa {
+
 class CMediaItem : public IContentItem {
 public:
 	CMediaItem(CRootItem *root_item = 0);
@@ -54,8 +56,8 @@ private:
 	int m_year;
 	int m_duration_in_s;
 
-
+	void assembleText();
 	void rehash();
 };
-
+} // namespace muroa
 #endif /* CCOLLECTIONITEM_H_ */

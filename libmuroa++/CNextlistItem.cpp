@@ -28,6 +28,7 @@
 #include "CUtils.h"
 #include <sstream>
 using namespace std;
+namespace muroa {
 
 uint32_t CNextlistItem::m_next_free_id = 0;
 
@@ -41,24 +42,26 @@ CNextlistItem::CNextlistItem(CRootItem *root_item, CCategoryItem*  parent, int p
 CNextlistItem::CNextlistItem(CRootItem *root_item, std::string text, CCategoryItem*  parent, int posInParent) throw(ExMalformedPatch)
 : IContentItem( root_item, parent, CItemType::E_NEXTLISTITEM )
 {
-	m_text = text;
 	size_t lpos, rpos;
 	lpos = 0;
     m_hash = m_next_free_id++;
+    bool serialisationNeeded = true;
 
 	try {
-		rpos = m_text.find('\t', lpos);
+		rpos = text.find('\t', lpos);
 		if( rpos != string::npos ) {
 			string typeStr = text.substr(lpos, rpos - lpos);
 			if(typeStr.compare(CItemType::getString(m_item_type)) == 0 ) {
 				lpos = rpos + 1;
+				m_text = text;
+				serialisationNeeded = false;
 			}
 		}
 		else {
 			throw ExMalformedPatch("error parsing first field (expecting type string or 'media item hash' field): terminating tab char is missing.", -1);
 		}
 
-		rpos = m_text.find('\t', lpos);
+		rpos = text.find('\t', lpos);
 		if( rpos != string::npos ) {
 			string mediaitemHashStr = text.substr(lpos, rpos - lpos);
 			m_mediaitem_hash = CUtils::str2uint32(mediaitemHashStr.c_str());
@@ -69,7 +72,7 @@ CNextlistItem::CNextlistItem(CRootItem *root_item, std::string text, CCategoryIt
 		}
 
 		string playlistIdStr;
-		rpos = m_text.find_first_of("\t\n", lpos);
+		rpos = text.find_first_of("\t\n", lpos);
 		if( rpos != string::npos ) {
 			playlistIdStr = text.substr(lpos, rpos - lpos);
 			lpos = rpos + 1;
@@ -79,7 +82,10 @@ CNextlistItem::CNextlistItem(CRootItem *root_item, std::string text, CCategoryIt
 		}
 		m_playlistitem_hash = CUtils::str2uint32(playlistIdStr.c_str());
 
-		// assembleText();
+		if(serialisationNeeded) {
+		   assembleText();
+		   // from here on "m_text" is surely valid
+		}
 		m_root_item->setContentPtr(CItemType(CItemType::E_NEXTLISTITEM), this, m_hash );
 
 		if(m_text.rfind('\n') == string::npos ) {
@@ -151,4 +157,4 @@ void CNextlistItem::assembleText() {
 	ss << "N\t" << m_mediaitem_hash << "\t" << m_playlistitem_hash << endl;
 	m_text = ss.str();
 }
-
+} // namespace muroa

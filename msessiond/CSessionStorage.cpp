@@ -16,7 +16,7 @@
 
 using namespace std;
 using namespace boost::filesystem;
-using namespace muroa;
+namespace muroa {
 
 const string CSessionStorage::mediaColSubdir("mediacol");
 const string CSessionStorage::playlistSubdir("playlist");
@@ -259,3 +259,4 @@ void CSessionStorage::restoreNextlistRevs() {
 void CSessionStorage::restoreSessionStateRevs() {
 	restoreRootItemRevs(sessionStateSubdir);
 }
+} // namespace muroa

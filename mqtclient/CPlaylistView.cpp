@@ -14,6 +14,8 @@
 
 #include "CDiffBuilder.h"
 
+using namespace muroa;
+
 CPlaylistView::CPlaylistView(QWidget * parent ) : QListView( parent ),
                                                   m_dragActive(false),
                                                   m_role(E_PLAYLIST) {

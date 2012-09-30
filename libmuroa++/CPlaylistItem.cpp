@@ -29,8 +29,10 @@
 #include <sstream>
 using namespace std;
 
+namespace muroa {
+
 uint32_t CPlaylistItem::m_next_free_id = 1;   // 0 is reserved
-muroa::IIdProvider* m_id_provider = 0;
+IIdProvider* m_id_provider = 0;
 
 uint32_t CPlaylistItem::getNextFreeID() {
 	return m_next_free_id++;
@@ -52,25 +54,29 @@ CPlaylistItem::CPlaylistItem(CRootItem *root_item, std::string text, CCategoryIt
 : IContentItem( root_item, parent, CItemType::E_PLAYLISTITEM )
 {
 
-	m_text = text;
+	bool serialisationNeeded = true;
+
 	// first section is handled by CItemBase
 	size_t lpos, rpos;
 	// lpos = m_text.find('\t', 1) + 1;
 	lpos = 0;
 
 	try {
-		rpos = m_text.find('\t', lpos);
+		rpos = text.find('\t', lpos);
 		if( rpos != string::npos ) {
 			string typeStr = text.substr(lpos, rpos - lpos);
 			if(typeStr.compare(CItemType::getString(m_item_type)) == 0 ) {
+				// serialisation started with type string 'P' -> input string is suitable for m_text
 				lpos = rpos + 1;
+				m_text = text;
+				serialisationNeeded = false;
 			}
 		}
 		else {
 			throw ExMalformedPatch("error parsing first field (expecting type string or 'media item hash'): terminating tab char is missing." ,-1);
 		}
 
-		rpos = m_text.find('\t', lpos);
+		rpos = text.find('\t', lpos);
 		if( rpos != string::npos ) {
 			string mediaitemHashStr = text.substr(lpos, rpos - lpos);
 			m_mediaitem_hash = CUtils::str2uint32(mediaitemHashStr.c_str());
@@ -81,7 +87,7 @@ CPlaylistItem::CPlaylistItem(CRootItem *root_item, std::string text, CCategoryIt
 		}
 
 		string hashStr;
-		rpos = m_text.find_first_of("\t\n", lpos);
+		rpos = text.find_first_of("\t\n", lpos);
 		if( rpos != string::npos ) {
 			hashStr = text.substr(lpos, rpos - lpos);
 			lpos = rpos + 1;
@@ -94,7 +100,11 @@ CPlaylistItem::CPlaylistItem(CRootItem *root_item, std::string text, CCategoryIt
 			m_hash = getNextFreeID();
 		}
 
-		// assembleText();
+		if(serialisationNeeded) {
+			assembleText();
+			// from here on "m_text" ist surely valid
+		}
+
 		if(m_parent) {
 			m_parent->addChild(this, posInParent);
 		}
@@ -188,4 +198,6 @@ void CPlaylistItem::assembleText() {
 	m_text = ss.str();
 
 }
+
+} // namespace muroa
 

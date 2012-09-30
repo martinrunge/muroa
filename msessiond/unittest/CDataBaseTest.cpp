@@ -24,6 +24,7 @@ CPPUNIT_TEST_SUITE_REGISTRATION( CDataBaseTest );
 
 using namespace std;
 using namespace	boost::filesystem;
+using namespace muroa;
 
 muroa::CSession* CDataBaseTest::m_session = 0;
 unsigned CDataBaseTest::m_testHash = 0;

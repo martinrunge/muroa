@@ -12,6 +12,7 @@
 #include "CNextlistItem.h"
 #include "CStreamClientItem.h"
 
+namespace muroa {
 
 IContentItem::IContentItem(CRootItem *root_item, CCategoryItem*  parent, const item_type_t type) :
    CItemBase(root_item, parent, type)
@@ -115,3 +116,4 @@ uint32_t IContentItem::hash( std::string stdstr ) {
 	return hash;
 }
 
+} // namespace muroa

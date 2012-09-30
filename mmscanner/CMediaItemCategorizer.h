@@ -10,10 +10,10 @@
 
 #include <vector>
 
+namespace muroa {
+
 class CMediaItem;
 class CRootItem;
-
-namespace muroa {
 
 class CMediaItemCategorizer {
 public:

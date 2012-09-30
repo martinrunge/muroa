@@ -20,7 +20,9 @@
 namespace fs = boost::filesystem;
 
 class CMediaScanner;
-class CMediaItem;
+namespace muroa {
+	class CMediaItem;
+}
 
 class CFsScanner {
 	// for unittests
@@ -36,7 +38,7 @@ public:
 	inline uint32_t getJobID() { return m_jobID; };
 	void scanDir(std::string dir, uint32_t jobID );
 	void scanDirBFS(std::string dir);
-	std::vector<CMediaItem*>* finishScan();
+	std::vector<muroa::CMediaItem*>* finishScan();
 
 private:
 	int walkTree(std::string dir);
@@ -45,11 +47,11 @@ private:
 	void cleanupScanResult();
 
 	bool knownType( fs::path path );
-	CMediaItem* readTag( fs::path path );
+	muroa::CMediaItem* readTag( fs::path path );
 
 	std::vector<std::string> m_types;
 
-	std::vector<CMediaItem*>* m_scanResult;
+	std::vector<muroa::CMediaItem*>* m_scanResult;
 
 	std::list<std::string> m_progressDirs;
 	int m_progress_dirs_size;

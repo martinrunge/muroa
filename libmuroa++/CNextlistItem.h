@@ -27,6 +27,9 @@
 #include "IContentItem.h"
 #include "MuroaExceptions.h"
 
+namespace muroa {
+
+
 class CPlaylistItem;
 
 class CNextlistItem: public IContentItem {
@@ -54,5 +57,5 @@ private:
 	void assembleText();
 
 };
-
+} // namespace muroa
 #endif /* CNEXTLISTITEM_H_ */

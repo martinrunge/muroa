@@ -22,8 +22,6 @@ enum origin {
 	E_NONE
 };
 
-class IContentItem;
-class CRootItem;
 
 class comb_hash {
 public:
@@ -101,9 +99,6 @@ private:
 	enum origin m_destination;
 
 	enum origin m_commandType;
-
-//	CRootItem* m_originRoot;
-//	CRootItem* m_destinationRoot;
 };
 
 #endif /* CMODELDIFF_H_ */

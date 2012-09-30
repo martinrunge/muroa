@@ -31,6 +31,7 @@
 #include <algorithm>
 
 using namespace std;
+namespace muroa {
 
 CCategoryItem::CCategoryItem(CRootItem *root_item, string text, CCategoryItem*  parent) : CItemBase(root_item, parent, CItemType::E_CAT)
 {
@@ -40,7 +41,11 @@ CCategoryItem::CCategoryItem(CRootItem *root_item, string text, CCategoryItem*  
 	if(m_parent) {
 		m_path = m_parent->getPath();
 	}
-	m_path.append("/");
+	// if m_path does not end with a slash, append one
+	size_t lastslashpos = m_path.rfind('/');
+	if( m_path.size() == 0 || lastslashpos != m_path.size() - 1 ) {
+		m_path.append("/");
+	}
 	m_path.append(m_name);
 	if(m_parent) {
 		m_parent->addChild(this);
@@ -361,4 +366,6 @@ string CCategoryItem::getParentPath(string ownPath) {
 		return ownPath.substr(0, rpos);
 	}
 }
+
+} // namespace muroa
 

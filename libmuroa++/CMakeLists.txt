@@ -47,7 +47,8 @@ set( SRC           CRootItem.cpp
                    )
                   
 
-set( HEADERS       CRootItem.h
+set( HEADERS       IItemModel.h
+                   CRootItem.h
                    CRootItemIterator.h
                    CItemType.h
                    CItemBase.h

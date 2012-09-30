@@ -27,6 +27,7 @@
 #include "CUtils.h"
 
 using namespace std;
+using namespace muroa;
 
 CPPUNIT_TEST_SUITE_REGISTRATION( CDiffTest );
 

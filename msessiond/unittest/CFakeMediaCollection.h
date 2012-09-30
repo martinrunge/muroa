@@ -11,14 +11,16 @@
 #include <string>
 #include <vector>
 
-class CMediaItem;
+namespace muroa {
+  class CMediaItem;
+}
 
 class CFakeMediaCollection {
 public:
 	CFakeMediaCollection(std::string indir);
 	virtual ~CFakeMediaCollection();
 
-	std::vector<CMediaItem*>* collectionWithoutFiles( int size );
+	std::vector<muroa::CMediaItem*>* collectionWithoutFiles( int size );
 	int mp3Ccollection(int numArtists, int numAlbumsPerArtist, int numTitlesPerAlbum);
 private:
 

@@ -10,11 +10,11 @@
 
 #include <string>
 
-class CRootItem;
 
 namespace muroa {
 
 class CSession;
+class CRootItem;
 
 /**
 *  A session remembers its streaming clients even if they disappear. They are marked as disabled then.

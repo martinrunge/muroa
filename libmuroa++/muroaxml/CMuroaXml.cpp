@@ -200,22 +200,18 @@ void CMuroaXml::getUnassignedClients(uint32_t jobID) {
 
 void CMuroaXml::addClient(uint32_t jobID, std::string name) {
 	ostringstream oss;
-
 }
 
 void CMuroaXml::rmClient(uint32_t jobID, std::string name) {
 	ostringstream oss;
-
 }
 
 void CMuroaXml::enableClient(uint32_t jobID, std::string name) {
 	ostringstream oss;
-
 }
 
 void CMuroaXml::disableClient(uint32_t jobID, std::string name) {
 	ostringstream oss;
-
 }
 
 

@@ -6,6 +6,7 @@
  */
 
 #include "CRootItem.h"
+#include "IItemModel.h"
 
 #include "CCategoryItem.h"
 #include "IContentItem.h"
@@ -22,6 +23,7 @@
 #include <cstring>
 
 using namespace std;
+namespace muroa {
 
 CRootItem::CRootItem(uint32_t rev) : m_revision(rev) {
 	init();
@@ -397,18 +399,34 @@ bool CRootItem::operator==(const CRootItem& other) {
 
 
 bool CRootItem::beginInsertItems(const int pos, const int count, const CCategoryItem* parent) {
+	set<IItemModel*>::iterator it;
+	for(it = m_connected_ItemModels.begin(); it != m_connected_ItemModels.end(); it++ ) {
+		(*it)->beginInsertItems(pos, count, parent);
+	}
 	return true;
 }
 
 bool CRootItem::endInsertItems(void) {
+	set<IItemModel*>::iterator it;
+	for(it = m_connected_ItemModels.begin(); it != m_connected_ItemModels.end(); it++ ) {
+		(*it)->endInsertItems();
+	}
 	return true;
 }
 
 bool CRootItem::beginRemoveItems(const int pos, const int count, const CCategoryItem* parent) {
+	set<IItemModel*>::iterator it;
+	for(it = m_connected_ItemModels.begin(); it != m_connected_ItemModels.end(); it++ ) {
+		(*it)->beginRemoveItems(pos, count, parent);
+	}
 	return true;
 }
 
 bool CRootItem::endRemoveItems(void) {
+	set<IItemModel*>::iterator it;
+	for(it = m_connected_ItemModels.begin(); it != m_connected_ItemModels.end(); it++ ) {
+		(*it)->endRemoveItems();
+	}
 	return true;
 }
 
@@ -445,6 +463,15 @@ CRootItem::iterator CRootItem::begin() {
 
 CRootItem::iterator CRootItem::end() {
 	return iterator(m_base, m_base->numChildren());
+}
+
+
+void CRootItem::connectItemModel(muroa::IItemModel* model) {
+	m_connected_ItemModels.insert(model);
+}
+
+muroa::IItemModel* CRootItem::disconnectItemModel(muroa::IItemModel* model) {
+	m_connected_ItemModels.erase(model);
 }
 
 
@@ -551,5 +578,5 @@ CCategoryItem* CRootItem::mkPath(string path) {
 
 	return static_cast<CCategoryItem*>(parent);
 }
-
+} // namespace muroa
 

@@ -10,6 +10,8 @@
 #include "CRootItem.h"
 #include "CUtils.h"
 
+using namespace muroa;
+
 CPPUNIT_TEST_SUITE_REGISTRATION( CIteratorTest );
 
 CIteratorTest::CIteratorTest() {

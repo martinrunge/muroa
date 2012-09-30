@@ -29,6 +29,8 @@
 
 #include "CItemType.h"
 
+namespace muroa {
+
 class IContentItem;
 class CCategoryItem;
 class CRootItem;
@@ -69,5 +71,7 @@ protected:
 	CRootItem *m_root_item;
 
 };
+
+}  // namespace muroa
 
 #endif /* CITEMBASE_H_ */

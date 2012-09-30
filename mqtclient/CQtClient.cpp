@@ -7,6 +7,7 @@
 
 #include "CDiffBuilder.h"
 
+using namespace muroa;
 
 CQtClient::CQtClient(QWidget *parent)
     : QMainWindow(parent) ,

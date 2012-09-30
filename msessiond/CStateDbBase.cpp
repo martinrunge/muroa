@@ -15,6 +15,7 @@
 #include <assert.h>
 
 using namespace std;
+using namespace muroa;
 
 CStateDbBase::CStateDbBase(std::string dbFileName) : m_dbFileName( dbFileName ),
 		                                     m_db(0),

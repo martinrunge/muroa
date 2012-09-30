@@ -15,6 +15,8 @@
 
 #include "CDiffBuilder.h"
 
+using namespace muroa;
+
 CNextlistView::CNextlistView(QWidget * parent ) : QListView( parent ),
                                                   m_dragActive(false),
                                                   m_role(E_NEXTLIST) {

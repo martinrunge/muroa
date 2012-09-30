@@ -27,6 +27,8 @@
 #include "IContentItem.h"
 #include "MuroaExceptions.h"
 
+namespace muroa {
+
 class CStreamClientItem: public IContentItem {
 public:
 	CStreamClientItem(CRootItem *root_item, CCategoryItem*  parent, std::string service_name, int posInParent = -1);
@@ -68,5 +70,5 @@ private:
 
 
 };
-
+} // namespace muroa
 #endif /* CSTREAMCLIENTITEM_H_ */

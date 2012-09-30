@@ -32,6 +32,7 @@
 #include <stack>
 
 using namespace std;
+using namespace muroa;
 
 int CMuroaTreeModel::m_num_columns = 6;
 QString CMuroaTreeModel::m_column_headers[] = {"Artist", "Album", "Title", "Year", "Duration", "Filename"};

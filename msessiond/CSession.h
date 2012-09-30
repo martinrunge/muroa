@@ -28,18 +28,19 @@
 
 class CMsgBase;
 class CCmdDispatcher;
-class CSessionStorage;
+
+
+namespace muroa {
 
 class CPlaylistItem;
 class CNextlistItem;
-
-namespace muroa {
 
 class Cmd;
 class CTcpServer;
 class CMediaScannerCtrl;
 class CApp;
 class CStateDB;
+class CSessionStorage;
 
 
 class CSession : boost::noncopyable {

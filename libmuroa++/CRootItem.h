@@ -17,19 +17,23 @@
 #include <string>
 #include <map>
 #include <vector>
+#include <set>
 #include <iostream>
 
 #include <stdexcept>
 
 #include "CCategoryItem.h"
 
-class CItemBase;
-class IContentItem;
-
-class CMediaItem;
-
 #include <iterator>
 using namespace std;
+
+namespace muroa {
+
+class CItemBase;
+class IContentItem;
+class IItemModel;
+
+class CMediaItem;
 
 
 class CRootItem {
@@ -89,6 +93,10 @@ public:
     uint32_t getReferencedPlaylistRev() { return m_referenced_playlist_rev; };
     void setReferencedPlaylistRev(uint32_t rev) { m_referenced_playlist_rev = rev; };
 
+    void connectItemModel(muroa::IItemModel* model);
+    muroa::IItemModel* disconnectItemModel(muroa::IItemModel* model);
+    std::set<muroa::IItemModel*> getConnectedItemModels() { return m_connected_ItemModels; };
+
 protected:
     virtual void init();
     virtual void clear();
@@ -103,9 +111,13 @@ private:
 	std::string stripFirstSection(std::string& text);
 	CItemType getItemType(const std::string& text);
 
+	std::set<muroa::IItemModel*> m_connected_ItemModels;
+
 	uint32_t m_revision;
     uint32_t m_referenced_mediaCol_rev;
     uint32_t m_referenced_playlist_rev;
 };
+
+}
 
 #endif /* CROOTITEM_H_ */

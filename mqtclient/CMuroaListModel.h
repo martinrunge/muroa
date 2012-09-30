@@ -25,39 +25,41 @@
 #define CLISTMODEL_H_
 
 #include <QAbstractListModel>
-#include "CRootItem.h"
+#include <CRootItem.h>
+#include <IItemModel.h>
 
 class CTreeItem;
-class CItemBase;
-
-class CMuroaListModel : public QAbstractListModel, public CRootItem {
+namespace muroa {
+	class CItemBase;
+}
+class CMuroaListModel : public QAbstractListModel, public muroa::CRootItem, public muroa::IItemModel {
 public:
 	CMuroaListModel();
 	virtual ~CMuroaListModel();
 
-	void setBase(CCategoryItem* base);
+	void setBase(muroa::CCategoryItem* base);
 
-	inline void setMediaCol(CRootItem* ri) { m_mediaCol = ri; };
-	inline CRootItem* getMediaCol() { return m_mediaCol; };
-	inline void setPlaylist(CRootItem* ri) { m_playlist = ri; };
-	inline CRootItem* getPlaylist() { return m_playlist; };
+	inline void setMediaCol(muroa::CRootItem* ri) { m_mediaCol = ri; };
+	inline muroa::CRootItem* getMediaCol() { return m_mediaCol; };
+	inline void setPlaylist(muroa::CRootItem* ri) { m_playlist = ri; };
+	inline muroa::CRootItem* getPlaylist() { return m_playlist; };
 
 	int rowCount(const QModelIndex& index) const;
 	QVariant data(const QModelIndex& index, int role = Qt::DisplayRole ) const;
 	QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole );
 
-	bool beginInsertItems( const int pos, const int count, const CCategoryItem* parent );
+	bool beginInsertItems( const int pos, const int count, const muroa::CCategoryItem* parent );
 	bool endInsertItems( );
-	bool beginRemoveItems( const int pos, const int count, const CCategoryItem* parent );
+	bool beginRemoveItems( const int pos, const int count, const muroa::CCategoryItem* parent );
 	bool endRemoveItems( );
 
-	CItemBase* itemFromIndex(QModelIndex index);
+	muroa::CItemBase* itemFromIndex(QModelIndex index);
 
 private:
-	CCategoryItem* m_model_base;
+	muroa::CCategoryItem* m_model_base;
 
-	CRootItem* m_mediaCol;
-	CRootItem* m_playlist;
+	muroa::CRootItem* m_mediaCol;
+	muroa::CRootItem* m_playlist;
 
     void init();
     void clear();

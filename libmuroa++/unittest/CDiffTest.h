@@ -31,8 +31,10 @@
 
 #include <string>
 
-class CCategoryItem;
-class CRootItem;
+namespace muroa {
+  class CCategoryItem;
+  class CRootItem;
+}
 
 class CDiffTest : public CppUnit::TestFixture {
 	  CPPUNIT_TEST_SUITE( CDiffTest );
@@ -51,7 +53,7 @@ public:
 	void patch();
 
 private:
-	CRootItem* m_rootItem;
+	muroa::CRootItem* m_rootItem;
 
 	CDiff m_diff;
 };

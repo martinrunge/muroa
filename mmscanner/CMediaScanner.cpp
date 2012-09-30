@@ -25,6 +25,7 @@
 #include "CMsgCollectionChanged.h"
 
 using namespace std;
+using namespace muroa;
 
 CMediaScanner::CMediaScanner() : CEventLoop(), m_fs_scanner(0), m_stateDbUpdater(0), m_mediaColUpdater(0), m_progress(-1)
 {

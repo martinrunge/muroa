@@ -31,6 +31,8 @@
 #include <stack>
 #include <sstream>
 
+namespace muroa {
+
 class CContentItem;
 class CCategoryItem;
 
@@ -108,5 +110,6 @@ public:
     bool operator () (const CCategoryItem& lhs, const CCategoryItem& rhs) { return lhs.getName() < rhs.getName(); }
 };
 
+}
 
 #endif /* CCATEGORYITEM_H_ */

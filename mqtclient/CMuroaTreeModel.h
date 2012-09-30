@@ -28,9 +28,12 @@
 #include "CRootItem.h"
 
 class CTreeItem;
-class CItemBase;
 
-class CMuroaTreeModel: public QAbstractItemModel, public CRootItem {
+namespace muroa {
+	class CItemBase;
+}
+
+class CMuroaTreeModel: public QAbstractItemModel, public muroa::CRootItem {
 	Q_OBJECT;
 public:
 	CMuroaTreeModel( );
@@ -48,18 +51,18 @@ public:
     int rowCount(const QModelIndex &parent = QModelIndex()) const;
     int columnCount(const QModelIndex &parent = QModelIndex()) const;
 
-	bool beginInsertItems( const int pos, const int count, const CCategoryItem* parent );
+	bool beginInsertItems( const int pos, const int count, const muroa::CCategoryItem* parent );
 	bool endInsertItems( );
-	bool beginRemoveItems( const int pos, const int count, const CCategoryItem* parent );
+	bool beginRemoveItems( const int pos, const int count, const muroa::CCategoryItem* parent );
 	bool endRemoveItems( );
 
-    CItemBase* itemFromIndex(const QModelIndex & index) const;
+    muroa::CItemBase* itemFromIndex(const QModelIndex & index) const;
 
 private:
-    QModelIndex index(const CItemBase* item, int column = 0) const;
+    QModelIndex index(const muroa::CItemBase* item, int column = 0) const;
 
-    QVariant dataFromColumn(CItemBase* item, int column) const;
-    QModelIndex indexFromItem(const CItemBase* item) const;
+    QVariant dataFromColumn(muroa::CItemBase* item, int column) const;
+    QModelIndex indexFromItem(const muroa::CItemBase* item) const;
 
     void init();
     void clear();

@@ -27,15 +27,22 @@
 #include <cppunit/extensions/HelperMacros.h>
 #include <cppunit/TestFixture.h>
 
-class CCategoryItem;
-class CRootItem;
+namespace muroa {
+  class CCategoryItem;
+  class CRootItem;
+}
 
 class CCollectionTest: public CppUnit::TestFixture {
 	  CPPUNIT_TEST_SUITE( CCollectionTest );
 	  CPPUNIT_TEST( replaceTabs );
 	  CPPUNIT_TEST( construct );
-	  CPPUNIT_TEST( serializeMedia );
-	  CPPUNIT_TEST( deserializeMedia );
+	  CPPUNIT_TEST( serializeMedia1 );
+	  CPPUNIT_TEST( serializeMedia2 );
+	  CPPUNIT_TEST( serializeMedia3 );
+	  CPPUNIT_TEST( deserializeMedia1 );
+	  CPPUNIT_TEST( deserializeMedia2 );
+	  CPPUNIT_TEST( deserializeMedia3 );
+	  CPPUNIT_TEST( deserializeMedia4 );
 	  CPPUNIT_TEST( serializePlaylist );
 	  CPPUNIT_TEST( deserializePlaylist );
 	  CPPUNIT_TEST( serializeNextlist );
@@ -58,22 +65,33 @@ public:
     void replaceTabs();
 	void construct();
 	void traverse();
-	void serializeMedia();
-    void deserializeMedia();
+	void serializeMedia1();
+	void serializeMedia2();
+	void serializeMedia3();
+    void deserializeMedia1();
+    void deserializeMedia2();
+    void deserializeMedia3();
+    void deserializeMedia4();
 	void serializePlaylist();
 	void deserializePlaylist();
+	void serializePlaylist2();
+	void deserializePlaylist2();
 	void serializeNextlist();
 	void deserializeNextlist();
+	void serializeNextlist2();
+	void deserializeNextlist2();
 	void serializeStreamClient();
 	void deserializeStreamClient();
+	void serializeStreamClient2();
+	void deserializeStreamClient2();
 	void serializeCategory();
 	void serialize();
     void deserialize();
 
 private:
-    CRootItem* m_root;
+    muroa::CRootItem* m_root;
 
-    CRootItem* prepareFakeCollection(int numArtist, int numAlbum, int numTitle);
+    muroa::CRootItem* prepareFakeCollection(int numArtist, int numAlbum, int numTitle);
 
 };
 

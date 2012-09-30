@@ -6,10 +6,12 @@
  */
 
 #include "CStateDbUpdater.h"
-#include "CMediaItem.h"
 
 #include <assert.h>
 using namespace std;
+using namespace muroa;
+
+#include "CMediaItem.h"
 
 CStateDbUpdater::CStateDbUpdater(std::string dbFileName) : CStateDbBase(dbFileName) {
 

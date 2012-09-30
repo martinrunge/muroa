@@ -18,6 +18,7 @@
 #include <iostream>
 
 using namespace std;
+namespace muroa {
 
 CMediaItem::CMediaItem(CRootItem *root_item, CCategoryItem*  parent, int posInParent) : IContentItem( root_item, parent, CItemType::E_MEDIAITEM ) {
 	if(m_parent) {
@@ -28,28 +29,29 @@ CMediaItem::CMediaItem(CRootItem *root_item, CCategoryItem*  parent, int posInPa
 CMediaItem::CMediaItem(CRootItem *root_item, std::string text, CCategoryItem*  parent, int posInParent) throw(ExMalformedPatch)
    : IContentItem( root_item, parent, CItemType::E_MEDIAITEM )   {
 
-	m_text = text;
-	// first section is handled by CItemBase
 	size_t lpos, rpos;
-	// lpos = m_text.find('\t', 1) + 1;
 	lpos = 0;
 	int num_tabs = 0;
 	int error_in_section = 0;
+	bool serialisationNeeded = true;
 
 	try {
-		rpos = m_text.find('\t', lpos);
+		rpos = text.find('\t', lpos);
 		if( rpos != string::npos ) {
 			string typeStr = text.substr(lpos, rpos - lpos);
 			if(typeStr.compare(CItemType::getString(m_item_type)) == 0 ) {
+				// serialisation started with type string 'M' -> input string is suitable for m_text
 				lpos = rpos + 1;
+				m_text = text;
+				serialisationNeeded = false;
+				num_tabs++;
 			}
-			num_tabs++;
 		}
 		else {
 			throw ExMalformedPatch("error parsing first field (expecting type string or filename), terminating tab char is missing.", -1);
 		}
 
-		rpos = m_text.find('\t', lpos);
+		rpos = text.find('\t', lpos);
 		if( rpos != string::npos ) {
 			m_filename = text.substr(lpos, rpos - lpos);
 			lpos = rpos + 1;
@@ -59,9 +61,9 @@ CMediaItem::CMediaItem(CRootItem *root_item, std::string text, CCategoryItem*  p
 			throw ExMalformedPatch("error parsing filename field, terminating tab char is missing.", -1);
 		}
 
-		rpos = m_text.find('\t', lpos);
+		rpos = text.find('\t', lpos);
 		if( rpos != string::npos ) {
-			m_artist = m_text.substr(lpos, rpos - lpos);
+			m_artist = text.substr(lpos, rpos - lpos);
 			lpos = rpos + 1;
 			num_tabs++;
 		}
@@ -69,9 +71,9 @@ CMediaItem::CMediaItem(CRootItem *root_item, std::string text, CCategoryItem*  p
 			throw ExMalformedPatch("error parsing artist field, terminating tab char is missing.", -1);
 		}
 
-		rpos = m_text.find('\t', lpos);
+		rpos = text.find('\t', lpos);
 		if( rpos != string::npos ) {
-			m_album = m_text.substr(lpos, rpos - lpos);
+			m_album = text.substr(lpos, rpos - lpos);
 			lpos = rpos + 1;
 			num_tabs++;
 		}
@@ -79,9 +81,9 @@ CMediaItem::CMediaItem(CRootItem *root_item, std::string text, CCategoryItem*  p
 			throw ExMalformedPatch("error parsing album field, terminating tab char is missing.", -1);
 		}
 
-		rpos = m_text.find('\t', lpos);
+		rpos = text.find('\t', lpos);
 		if( rpos != string::npos ) {
-			m_title = m_text.substr(lpos, rpos - lpos);
+			m_title = text.substr(lpos, rpos - lpos);
 			lpos = rpos + 1;
 			num_tabs++;
 		}
@@ -89,9 +91,9 @@ CMediaItem::CMediaItem(CRootItem *root_item, std::string text, CCategoryItem*  p
 			throw ExMalformedPatch("error parsing title field, terminating tab char is missing.", -1);
 		}
 
-		rpos = m_text.find('\t', lpos);
+		rpos = text.find('\t', lpos);
 		if( rpos != string::npos ) {
-			string yearStr = m_text.substr(lpos, rpos - lpos);
+			string yearStr = text.substr(lpos, rpos - lpos);
 			m_year = CUtils::str2long(yearStr);
 			lpos = rpos + 1;
 			num_tabs++;
@@ -100,9 +102,9 @@ CMediaItem::CMediaItem(CRootItem *root_item, std::string text, CCategoryItem*  p
 			throw ExMalformedPatch("error parsing year field, terminating tab char is missing.", -1);
 		}
 
-		rpos = m_text.find('\t', lpos);
+		rpos = text.find('\t', lpos);
 		if( rpos != string::npos ) {
-			string durationStr = m_text.substr(lpos, rpos - lpos);
+			string durationStr = text.substr(lpos, rpos - lpos);
 			m_duration_in_s = CUtils::str2long(durationStr);
 			lpos = rpos + 1;
 			num_tabs++;
@@ -112,19 +114,24 @@ CMediaItem::CMediaItem(CRootItem *root_item, std::string text, CCategoryItem*  p
 		}
 
 		string hashStr;
-		rpos = m_text.find_first_of("\t\n", lpos);
+		rpos = text.find_first_of("\t\n", lpos);
 		if(rpos != string::npos ) {
-			hashStr = m_text.substr(lpos, rpos - lpos);  // there may be extra data after this field as long as it is separated by a tab char.
+			hashStr = text.substr(lpos, rpos - lpos);  // there may be extra data after this field as long as it is separated by a tab char.
 		}
 		else {
-			hashStr = m_text.substr(lpos);
+			hashStr = text.substr(lpos);
 		}
 		m_hash = CUtils::str2uint32(hashStr);
 
 		if(m_parent) {
 			m_parent->addChild(this, posInParent);
 		}
-		// rehash();
+
+		if(serialisationNeeded) {
+			assembleText();
+			// from here on "m_text" is surely valid
+		}
+
 		if( m_root_item != 0) {
 			m_root_item->setContentPtr(CItemType(CItemType::E_MEDIAITEM), this, m_hash );
 		}
@@ -198,16 +205,15 @@ void CMediaItem::setYear(int year)
 	rehash();
 }
 
+void CMediaItem::assembleText() {
+	stringstream ss;
+	ss << "M\t" << m_filename << "\t" << m_artist << "\t" << m_album << "\t" << m_title << "\t" << m_year << "\t" << m_duration_in_s << "\t" << m_hash << endl;
+	m_text = ss.str();
+}
 
 void CMediaItem::rehash() {
 	stringstream ss;
-
-
-//	if( m_parent ) {
-//		ss << m_parent->getPath();
-//	}
 	ss << "M\t" << m_filename << "\t" << m_artist << "\t" << m_album << "\t" << m_title << "\t" << m_year << "\t" << m_duration_in_s;
-	//ss << "m\t" <<  m_filename << "\t" << m_artist << "\t" << m_album << "\t" << m_title << "\t" << m_year << "\t" << m_duration_in_s;
 
 	uint32_t oldhash = m_hash;
 	m_hash = hash( ss.str() );
@@ -217,7 +223,6 @@ void CMediaItem::rehash() {
 		m_root_item->setContentPtr(CItemType(CItemType::E_MEDIAITEM), this, m_hash );
  		m_root_item->delContentPtr(CItemType(CItemType::E_MEDIAITEM), oldhash );  // would delete this
 	}
-
 	m_text = ss.str();
 }
 
@@ -270,3 +275,4 @@ string CMediaItem::serialize(bool asDiff) {
 		return m_text;
 	}
 }
+} // namespace muroa
