@@ -153,18 +153,18 @@ void CConnection::onEditCollection(uint32_t jobID, unsigned  fromRev, unsigned t
 void CConnection::onEditPlaylist(uint32_t jobID, unsigned  fromRev, unsigned toRev, std::string playlistDiff) {
 	try {
 		if(fromRev == 0) {
-			m_session->getPlaylistModel()->deserialize(playlistDiff);
+			m_session->getPlaylistModel()->getRootItem()->deserialize(playlistDiff);
 		}
 		else {
-			uint32_t knownRev = m_session->getPlaylistModel()->getRevision();
+			uint32_t knownRev = m_session->getPlaylistModel()->getRootItem()->getRevision();
 			if( knownRev != fromRev ) {
 				std::ostringstream oss;
 				oss << "editPlaylist: Error: got a diff based on rev " << fromRev << " but known rev is " << knownRev;
 				throw ExMalformedPatch(oss.str(), 0);
 			}
-			m_session->getPlaylistModel()->patch(playlistDiff);
+			m_session->getPlaylistModel()->getRootItem()->patch(playlistDiff);
 		}
-		m_session->getPlaylistModel()->setRevision(toRev);
+		m_session->getPlaylistModel()->getRootItem()->setRevision(toRev);
 	}
 	catch(ExMalformedPatch& ex)
 	{
@@ -176,18 +176,18 @@ void CConnection::onEditPlaylist(uint32_t jobID, unsigned  fromRev, unsigned toR
 void CConnection::onEditNextlist(uint32_t jobID, unsigned  fromRev, unsigned toRev, std::string nextlistDiff) {
 	try {
 		if(fromRev == 0) {
-			m_session->getNextlistModel()->deserialize(nextlistDiff);
+			m_session->getNextlistModel()->getRootItem()->deserialize(nextlistDiff);
 		}
 		else {
-			uint32_t knownRev = m_session->getNextlistModel()->getRevision();
+			uint32_t knownRev = m_session->getNextlistModel()->getRootItem()->getRevision();
 			if( knownRev != fromRev ) {
 				std::ostringstream oss;
 				oss << "editNextlist: Error: got a diff based on rev " << fromRev << " but known rev is " << knownRev;
 				throw ExMalformedPatch(oss.str(), 0);
 			}
-			m_session->getNextlistModel()->patch(nextlistDiff);
+			m_session->getNextlistModel()->getRootItem()->patch(nextlistDiff);
 		}
-		m_session->getNextlistModel()->setRevision(toRev);
+		m_session->getNextlistModel()->getRootItem()->setRevision(toRev);
 	}
 	catch(ExMalformedPatch& ex)
 	{

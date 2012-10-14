@@ -20,6 +20,11 @@ class QDragMoveEvent;
 class QDropEvent;
 class CDiffBuilder;
 
+class CMuroaListModel;
+namespace muroa {
+class CStreamClientItem;
+}
+
 class CRenderClientsListView : public QListView {
 	Q_OBJECT;
 public:
@@ -27,8 +32,6 @@ public:
 	virtual ~CRenderClientsListView();
 
 	void setDiffBuilderPtr(CDiffBuilder* db) { m_diffBuilder = db; };
-	void setRole(enum origin role ) { m_role = role; };
-	enum origin getRole() { return m_role; };
 
 	inline void setDiffBuilder(CDiffBuilder* diffBuilderPtr) {m_diffBuilder = diffBuilderPtr; };
 	inline CDiffBuilder* getDiffBuilder(CDiffBuilder* diffBuilderPtr) {return m_diffBuilder; };
@@ -43,12 +46,12 @@ protected:
 private:
     void performDrag();
 
-    enum origin m_role;
-
     QPoint m_startPos;
     bool m_dragActive;
 
     CDiffBuilder* m_diffBuilder;
+
+    const QString dndMimeType;
 };
 
 #endif /* CRENDERCLIENTSLISTVIEW_H_ */

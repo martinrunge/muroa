@@ -11,14 +11,16 @@
 
 #include "CRenderClientsListView.h"
 #include "CStreamClientItem.h"
+#include "CMuroaListModel.h"
 
 #include "CDiffBuilder.h"
 
 using namespace muroa;
 
+
 CRenderClientsListView::CRenderClientsListView(QWidget * parent ) : QListView( parent ),
                                                   m_dragActive(false),
-                                                  m_role(E_NEXTLIST) {
+                                                  dndMimeType("application/x-muroa-render-clients") {
 	setAcceptDrops(true);
 	viewport()->setAcceptDrops(true);
 	setDragDropMode(QAbstractItemView::DragDrop);
@@ -56,7 +58,7 @@ void CRenderClientsListView::dragEnterEvent(QDragEnterEvent *event)
     //CRenderClientsListView *source = qobject_cast<CRenderClientsListView *>(event->source());
 	const QMimeData* data = event->mimeData();
 
-    if (data && data->hasFormat("application/x-muroa-playlist-diff")) {
+    if (data && data->hasFormat(dndMimeType)) {
         event->setDropAction(Qt::MoveAction);
         event->accept();
     }
@@ -68,7 +70,7 @@ void CRenderClientsListView::dragMoveEvent(QDragMoveEvent *event)
     // CRenderClientsListView *source = qobject_cast<CRenderClientsListView *>(event->source());
 	const QMimeData* data = event->mimeData();
 
-    if (data && data->hasFormat("application/x-muroa-playlist-diff")) {
+    if (data && data->hasFormat(dndMimeType)) {
         event->setDropAction(Qt::MoveAction);
         event->accept();
     }
@@ -79,13 +81,13 @@ void CRenderClientsListView::dropEvent(QDropEvent *event)
 	qDebug() << QString("dropEvent");
 	const QMimeData* data = event->mimeData();
 
-    if (data && data->hasFormat("application/x-muroa-playlist-diff")) {
+    if (data && data->hasFormat(dndMimeType)) {
         event->setDropAction(Qt::MoveAction);
         event->accept();
 
         // CPlaylistModel* plModel = reinterpret_cast<CPlaylistModel*>(model());
 
-        CModelDiff md(data->data("application/x-muroa-playlist-diff"));
+        CModelDiff md(data->data(dndMimeType));
         QModelIndex currentIdx = indexAt( event->pos());
         //md.appendToInsert(currentIdx.row(), plModel->itemAt(currentIdx.row())->getHash());
         int insertPos = currentIdx.row();
@@ -94,7 +96,7 @@ void CRenderClientsListView::dropEvent(QDropEvent *event)
         	insertPos = model()->rowCount();
         }
         md.setInsertPos( insertPos );
-        md.setDestination(m_role);
+        md.setDestination(E_RENDER_CLIENT);
 
         qDebug() << QString("CRenderClientsListView::dropEvent: Move [%1,%2] to %3").arg(md.getSelectedItems().at(0).hash).arg(md.getSelectedItems().at(md.getNumSelected() - 1 ).hash).arg(md.getInsertPos());
         // plModel->makeDiff(&md);
@@ -106,26 +108,24 @@ void CRenderClientsListView::performDrag()
 {
 	qDebug() << QString("performDrag");
 
-    CMuroaListModel* plModel = reinterpret_cast<CMuroaListModel*>(model());
+    CMuroaListModel* lmodel = reinterpret_cast<CMuroaListModel*>(model());
 
     QModelIndexList indexList = selectedIndexes();
-    CModelDiff md(m_role);
+    CModelDiff md(E_RENDER_CLIENT);
 
     for(int i = 0; i < indexList.size(); i++)
     {
     	comb_hash_t combhash;
-		CItemBase* item = plModel->itemFromIndex(indexList.at(i));
+		CItemBase* item = lmodel->itemFromIndex(indexList.at(i));
 		switch(item->type()) {
 		case CItemType::E_ROOT:
 			// add all
 			break;
 
-		case CItemType::E_NEXTLISTITEM:
+		case CItemType::E_STREAM_CLIENT:
 		{
-    		CNextlistItem* nlitem = reinterpret_cast<CNextlistItem*>(item);
-			combhash.type = nlitem->type();
-			combhash.hash = nlitem->getMediaItemHash();
-			combhash.pl_id = nlitem->getPlaylistItemHash();
+    		CStreamClientItem* scItem = reinterpret_cast<CStreamClientItem*>(item);
+			combhash.type = scItem->type();
 			combhash.line = indexList.at(i).row();
 			md.appendToSelectedItems(combhash);
 		}
@@ -138,7 +138,7 @@ void CRenderClientsListView::performDrag()
     {
     	QMimeData *mimeData = new QMimeData;
         //mimeData->setText(item->asString());
-        mimeData->setData("application/x-muroa-playlist-diff", md.toQByteArray());
+        mimeData->setData(dndMimeType, md.toQByteArray());
 
         m_dragActive = true;
         QDrag *drag = new QDrag(this);

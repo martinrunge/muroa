@@ -64,8 +64,7 @@ private:
     QVariant dataFromColumn(muroa::CItemBase* item, int column) const;
     QModelIndex indexFromItem(const muroa::CItemBase* item) const;
 
-    void init();
-    void clear();
+    void reset();
 
 
     // CRootItem *m_rootItem;

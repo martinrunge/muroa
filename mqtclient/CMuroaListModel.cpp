@@ -37,23 +37,35 @@ using namespace std;
 using namespace muroa;
 
 
-CMuroaListModel::CMuroaListModel(): m_mediaCol(0), m_playlist(0) {
-	m_model_base = getBase();
+CMuroaListModel::CMuroaListModel(CRootItem* rootItem): m_rootItem(rootItem), m_deleteRootItem(false), m_mediaCol(0), m_playlist(0), m_reset_base(false) {
+	if(rootItem == 0) {
+		m_rootItem = new CRootItem();
+		m_deleteRootItem = true;
+	}
+	m_model_base = m_rootItem->getBase();
 }
 
 CMuroaListModel::~CMuroaListModel() {
-	// TODO Auto-generated destructor stub
+	if(m_deleteRootItem) {
+		delete m_rootItem;
+	}
 }
 
-void CMuroaListModel::setBase(CCategoryItem* base) {
-	m_model_base = base;
+void CMuroaListModel::setBase(string path) {
+	m_base_path = path;
+
+	CCategoryItem* baseCatItem = m_rootItem->getCategoryPtr(m_base_path);
+	if(baseCatItem == 0) {
+		// not yet there, create it
+		baseCatItem = m_rootItem->mkPath(m_base_path);
+	}
+	m_model_base = baseCatItem;
 }
 
 
 int CMuroaListModel::rowCount(const QModelIndex & index) const {
 	return m_model_base->getNumContentItems();
 }
-
 
 
 QVariant CMuroaListModel::data(const QModelIndex & index, int role) const {
@@ -139,8 +151,6 @@ CItemBase* CMuroaListModel::itemFromIndex(QModelIndex index) {
 	return item;
 }
 
-
-
 QVariant CMuroaListModel::headerData(int section, Qt::Orientation orientation, int role) {
 	if(role != Qt::DisplayRole)
 	{
@@ -160,26 +170,29 @@ bool CMuroaListModel::endInsertItems( ) {
 }
 
 bool CMuroaListModel::beginRemoveItems( const int pos, const int count, const CCategoryItem* parent ) {
+	if(parent == m_rootItem->getBase()) {
+		//deleteing all -> keep m_base
+		m_reset_base = true;
+	} else {
+		m_reset_base = false;
+	}
+
 	QAbstractListModel::beginRemoveRows(QModelIndex(), pos, pos + count - 1);
 	return true;
 }
 
 bool CMuroaListModel::endRemoveItems( ) {
 	QAbstractListModel::endRemoveRows();
+	if(m_reset_base) {
+		setBase(m_base_path);
+	}
 	return true;
 }
 
-void CMuroaListModel::init()
+void CMuroaListModel::reset()
 {
-	CRootItem::init();
-}
-
-void CMuroaListModel::clear()
-{
-	beginResetModel();
-	CRootItem::clear();
-	setBase(CRootItem::getBase());
-	endResetModel();
+	m_rootItem->reset();
+	setBase("/");
 }
 
 

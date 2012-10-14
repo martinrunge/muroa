@@ -18,6 +18,7 @@ enum origin {
 	E_MEDIA_COL,
 	E_PLAYLIST,
 	E_NEXTLIST,
+	E_RENDER_CLIENT,
 	E_EXTERN,
 	E_NONE
 };

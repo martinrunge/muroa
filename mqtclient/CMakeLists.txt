@@ -23,7 +23,7 @@ set( SRC           CQtClient.cpp
                    CMediaColView.cpp
                    CPlaylistView.cpp
                    CNextlistView.cpp
-                 #  CRenderClientsListView.cpp
+                   CRenderClientsListView.cpp
                    CModelDiff.cpp
                    CDiffBuilder.cpp
                    
@@ -56,7 +56,7 @@ set( MOC_H         CQtClient.h
                    CMediaColView.h
                    CPlaylistView.h
                    CNextlistView.h
-                  # CRenderClientsListView.h
+                   CRenderClientsListView.h
                    CModelDiff.h
                    CDiffBuilder.h
 

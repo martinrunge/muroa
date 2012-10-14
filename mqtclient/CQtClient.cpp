@@ -53,7 +53,7 @@ CQtClient::CQtClient(QWidget *parent)
 	ui.playlistListView->setModel(m_session.getPlaylistModel());
 	ui.nextlistListView->setModel(m_session.getNextlistModel());
 
-	m_diffBuilder = new CDiffBuilder(m_session.getMediaColModel(), m_session.getPlaylistModel(), m_session.getNextlistModel());
+	m_diffBuilder = new CDiffBuilder(m_session.getMediaColModel(), m_session.getPlaylistModel()->getRootItem(), m_session.getNextlistModel()->getRootItem());
 	ui.mediaColTreeView->setDiffBuilderPtr(m_diffBuilder);
 	ui.playlistListView->setDiffBuilderPtr(m_diffBuilder);
 	ui.nextlistListView->setDiffBuilderPtr(m_diffBuilder);

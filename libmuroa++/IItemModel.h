@@ -22,8 +22,7 @@ public:
 	virtual bool endRemoveItems(void) = 0;
 
 protected:
-    virtual void init() = 0;
-    virtual void clear() = 0;
+    virtual void reset() = 0;
 
 };
 

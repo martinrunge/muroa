@@ -44,8 +44,8 @@ public slots:
     void dumpCollection();
 
     inline uint32_t getMediaColRev() const { return m_mediaColModel->getRevision(); };
-    inline uint32_t getNextlistRev() const { return m_playlistModel->getRevision(); };
-    inline uint32_t getPlaylistRev() const { return m_nextlistModel->getRevision(); };
+    inline uint32_t getNextlistRev() const { return m_playlistModel->getRootItem()->getRevision(); };
+    inline uint32_t getPlaylistRev() const { return m_nextlistModel->getRootItem()->getRevision(); };
     inline uint32_t getSessionStateRev() const { return m_sessionState->getRevision(); };
 //
 //    void setMediaColRev(uint32_t mediaColRev);

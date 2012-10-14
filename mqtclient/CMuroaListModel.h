@@ -32,12 +32,14 @@ class CTreeItem;
 namespace muroa {
 	class CItemBase;
 }
-class CMuroaListModel : public QAbstractListModel, public muroa::CRootItem, public muroa::IItemModel {
+class CMuroaListModel : public QAbstractListModel, public muroa::IItemModel {
 public:
-	CMuroaListModel();
+	CMuroaListModel(muroa::CRootItem* rootItem = 0);
 	virtual ~CMuroaListModel();
 
-	void setBase(muroa::CCategoryItem* base);
+	void setBase(std::string path);
+	inline muroa::CRootItem* getRootItem() const { return m_rootItem; };
+
 
 	inline void setMediaCol(muroa::CRootItem* ri) { m_mediaCol = ri; };
 	inline muroa::CRootItem* getMediaCol() { return m_mediaCol; };
@@ -56,13 +58,20 @@ public:
 	muroa::CItemBase* itemFromIndex(QModelIndex index);
 
 private:
+
+	// the model's data is in here
+	muroa::CRootItem* m_rootItem;
+	bool m_deleteRootItem;
+
 	muroa::CCategoryItem* m_model_base;
 
 	muroa::CRootItem* m_mediaCol;
 	muroa::CRootItem* m_playlist;
 
-    void init();
-    void clear();
+	std::string m_base_path;
+	bool m_reset_base;
+
+    void reset();
 };
 
 #endif /* CLISTMODEL_H_ */

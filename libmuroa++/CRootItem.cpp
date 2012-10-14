@@ -25,27 +25,40 @@
 using namespace std;
 namespace muroa {
 
-CRootItem::CRootItem(uint32_t rev) : m_revision(rev) {
-	init();
+CRootItem::CRootItem(uint32_t rev) : m_base(0), m_revision(rev) {
+	reset();
 }
 
 CRootItem::~CRootItem() {
-	clear();
+	beginRemoveItems(0, m_base->getNumCategories() + m_base->getNumContentItems(), m_base);
+	delete m_base;
+	m_content_maps.clear();
+	endRemoveItems();
 }
 
-void CRootItem::init() {
-	m_base = new CCategoryItem(this, "", 0);
+void CRootItem::reset() {
+	if(m_base != 0) {
+		beginRemoveItems(0, m_base->getNumCategories() + m_base->getNumContentItems(), m_base);
+		delete m_base;
+		m_content_maps.clear();
+		m_base = new CCategoryItem(this, "", 0);
+		endRemoveItems();
+	}
+	else {
+		m_base = new CCategoryItem(this, "", 0);
+	}
 	// setCategoryPtr("/", m_base);
 	for(int i=0; i < CItemType::numTypes(); i++) {
 		m_content_maps.push_back( new map<uint32_t, IContentItem*>() );
 	}
 }
 
-void CRootItem::clear() {
-	beginRemoveItems(0, m_base->getNumCategories() + m_base->getNumContentItems(), m_base);
-	delete m_base;
-	m_content_maps.clear();
-}
+//void CRootItem::clear() {
+//	beginRemoveItems(0, m_base->getNumCategories() + m_base->getNumContentItems(), m_base);
+//	delete m_base;
+//	m_content_maps.clear();
+//	endRemoveItems();
+//}
 
 
 CCategoryItem* CRootItem::addCategory(string name, CCategoryItem* parent) {
@@ -171,8 +184,7 @@ void CRootItem::deserialize(std::string text) throw(ExMalformedPatch) {
 	string line;
 	line.reserve(4096);
 
-	clear();
-	init();
+	reset();
 
 	CItemBase* currentCategory = 0;
 
@@ -192,8 +204,7 @@ void CRootItem::fromFile(std::string filename) throw(ExMalformedPatch) {
 	ifstream ifs(filename);
 	int lineNr = 0;
 
-	clear();
-	init();
+	reset();
 
 	CItemBase* currentCategory = 0;
 

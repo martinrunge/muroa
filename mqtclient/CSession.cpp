@@ -69,9 +69,9 @@ void CSession::save()
 	string mediaColFile = QString("%1/%2").arg(m_storeageLoc).arg("mediacol.mcrev").toUtf8().data();
 	m_mediaColModel->serialize(mediaColFile);
 	string playlistFile = QString("%1/%2").arg(m_storeageLoc).arg("playlist.mcrev").toUtf8().data();
-	m_playlistModel->serialize(playlistFile);
+	m_playlistModel->getRootItem()->serialize(playlistFile);
 	string nextlistFile = QString("%1/%2").arg(m_storeageLoc).arg("nextlist.mcrev").toUtf8().data();
-	m_nextlistModel->serialize(nextlistFile);
+	m_nextlistModel->getRootItem()->serialize(nextlistFile);
 }
 
 void CSession::restore()
@@ -80,9 +80,9 @@ void CSession::restore()
 		string mediaColFile = QString("%1/%2").arg(m_storeageLoc).arg("mediacol.mcrev").toUtf8().data();
 		m_mediaColModel->fromFile(mediaColFile);
 		string playlistFile = QString("%1/%2").arg(m_storeageLoc).arg("playlist.mcrev").toUtf8().data();
-		m_playlistModel->fromFile(playlistFile);
+		m_playlistModel->getRootItem()->fromFile(playlistFile);
 		string nextlistFile = QString("%1/%2").arg(m_storeageLoc).arg("nextlist.mcrev").toUtf8().data();
-		m_nextlistModel->fromFile(nextlistFile);
+		m_nextlistModel->getRootItem()->fromFile(nextlistFile);
 	}
 	catch(ExMalformedPatch& ex) {
 

@@ -97,9 +97,8 @@ public:
     muroa::IItemModel* disconnectItemModel(muroa::IItemModel* model);
     std::set<muroa::IItemModel*> getConnectedItemModels() { return m_connected_ItemModels; };
 
-protected:
-    virtual void init();
-    virtual void clear();
+    virtual void reset();
+    // virtual void clear();
 
 private:
 	std::map<std::string, CCategoryItem*> m_category_map;
