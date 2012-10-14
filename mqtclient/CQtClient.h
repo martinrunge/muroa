@@ -8,6 +8,7 @@
 
 #include "CDnsSdServiceBrowserAvahi.h"
 #include "CSession.h"
+#include "CSessionAdminDlg.h"
 
 class CDiffBuilder;
 
@@ -23,6 +24,7 @@ public:
 
 public slots:
 	void showPreferences();
+	void showSessionAdmin();
     void openConnection();
     void connectionStatusChanged(enum connectionState status);
     void progress(int done, int total);
@@ -33,6 +35,8 @@ private:
 
     CSession m_session;
     CDiffBuilder* m_diffBuilder;
+
+    CSessionAdminDlg m_sessionAdminDlg;
 
     void setupServiceBrowser();
     CServiceBrowser* m_serviceBrowser;

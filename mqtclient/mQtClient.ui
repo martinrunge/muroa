@@ -104,7 +104,7 @@
      <x>0</x>
      <y>0</y>
      <width>1073</width>
-     <height>23</height>
+     <height>21</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuCo_llection">
@@ -127,6 +127,7 @@
      <string>&amp;Settings</string>
     </property>
     <addaction name="action_Preferences"/>
+    <addaction name="actionSession_Admininstration"/>
    </widget>
    <widget class="QMenu" name="menu_Connection">
     <property name="title">
@@ -235,6 +236,11 @@
   <action name="actionDump_to_stdout">
    <property name="text">
     <string>Dump to stdout</string>
+   </property>
+  </action>
+  <action name="actionSession_Admininstration">
+   <property name="text">
+    <string>Session Admininstration</string>
    </property>
   </action>
  </widget>

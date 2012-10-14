@@ -11,6 +11,7 @@ using namespace muroa;
 
 CQtClient::CQtClient(QWidget *parent)
     : QMainWindow(parent) ,
+      m_sessionAdminDlg(m_session.getSessionState(), this),
       m_dnssd("_muroa._tcp")
 {
 	ui.setupUi(this);
@@ -35,6 +36,7 @@ CQtClient::CQtClient(QWidget *parent)
     connect(ui.actionDump_to_stdout, SIGNAL(triggered()), &m_session, SLOT(dumpCollection()));
 
     connect(ui.action_Preferences, SIGNAL(triggered()), this, SLOT(showPreferences()));
+    connect(ui.actionSession_Admininstration, SIGNAL(triggered()), this, SLOT(showSessionAdmin()));
 
 	statusBar()->addWidget(&m_connection_status_label);
 
@@ -75,6 +77,12 @@ void CQtClient::showPreferences()
 	CPreferencesDlg prefs;
 	prefs.exec();
 }
+
+void CQtClient::showSessionAdmin()
+{
+	m_sessionAdminDlg.show();
+}
+
 
 void CQtClient::openConnection() {
 	int rc = m_serviceBrowser->exec();

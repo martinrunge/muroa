@@ -28,6 +28,7 @@
 #include "CMediaItem.h"
 #include "CPlaylistItem.h"
 #include "CNextlistItem.h"
+#include "CStreamClientItem.h"
 
 #include <iostream>
 #include <stack>
@@ -61,16 +62,23 @@ QVariant CMuroaListModel::data(const QModelIndex & index, int role) const {
 		IContentItem* item = m_model_base->getContentItem( index.row() );
 		if(!item)
 			return QVariant();
-		if(item->type() ==  CItemType::E_PLAYLISTITEM ) {
-			CPlaylistItem* plItem = reinterpret_cast<CPlaylistItem*>(item);
-			return QString("Playlist ItemID: %1\n"
-					        "points to MediaItem Hash: %2").arg(plItem->getHash()).arg(plItem->getMediaItemHash());
-		}
-		else {
-			CNextlistItem* nlItem = reinterpret_cast<CNextlistItem*>(item);
-			return QString("Nextlist ItemID: %1 \n "
-					        "points to playlist item -> %2\n"
-					        "mediaItem hash: %3").arg(nlItem->getHash()).arg(nlItem->getPlaylistItemHash()).arg(nlItem->getMediaItemHash());
+		switch(item->type()) {
+			case CItemType::E_PLAYLISTITEM: {
+				CPlaylistItem* plItem = reinterpret_cast<CPlaylistItem*>(item);
+				return QString("Playlist ItemID: %1\n"
+								"points to MediaItem Hash: %2").arg(plItem->getHash()).arg(plItem->getMediaItemHash());
+			}
+			case CItemType::E_NEXTLISTITEM: {
+				CNextlistItem* nlItem = reinterpret_cast<CNextlistItem*>(item);
+				return QString("Nextlist ItemID: %1 \n "
+								"points to playlist item -> %2\n"
+								"mediaItem hash: %3").arg(nlItem->getHash()).arg(nlItem->getPlaylistItemHash()).arg(nlItem->getMediaItemHash());
+			}
+			case CItemType::E_STREAM_CLIENT: {
+				CStreamClientItem* scItem = reinterpret_cast<CStreamClientItem*>(item);
+				QString entry = QString("owned by session: %1").arg(scItem->getOwnerSessionName().c_str());
+				return entry;
+			}
 		}
 	}
 	else if(role == Qt::DisplayRole)
@@ -78,16 +86,39 @@ QVariant CMuroaListModel::data(const QModelIndex & index, int role) const {
 		CMediaItem* mItem(0);
 		IContentItem* ci(0);
 		IContentItem* item = m_model_base->getContentItem( index.row() );
-		if(!item || m_mediaCol == 0) {
+		if(!item) {
 			return QVariant();
 		}
-		if(item->type() ==  CItemType::E_PLAYLISTITEM ) {
+		switch(item->type()) {
+		case CItemType::E_PLAYLISTITEM:
+		{
 			CPlaylistItem* plItem = reinterpret_cast<CPlaylistItem*>(item);
+			if(plItem == 0 || m_mediaCol == 0 ) {
+				return QVariant();
+			}
 			ci = m_mediaCol->getContentPtr(CItemType(CItemType::E_MEDIAITEM), plItem->getMediaItemHash() );
+			break;
 		}
-		else {
+		case CItemType::E_NEXTLISTITEM:
+		{
 			CNextlistItem* nlItem = reinterpret_cast<CNextlistItem*>(item);
+			if(nlItem == 0 || m_mediaCol == 0 ) {
+				return QVariant();
+			}
 			ci = m_mediaCol->getContentPtr(CItemType(CItemType::E_MEDIAITEM), nlItem->getMediaItemHash() );
+			break;
+		}
+		case CItemType::E_STREAM_CLIENT:
+		{
+			CStreamClientItem* scItem = reinterpret_cast<CStreamClientItem*>(item);
+			QString entry = QString("%1 [%2]").arg(scItem->getServiceName().c_str()).arg(scItem->getHostName().c_str());
+			return entry;
+
+			break;
+		}
+		default:
+			ci = 0;
+			break;
 		}
 		if(ci == 0) {
 			return QVariant();

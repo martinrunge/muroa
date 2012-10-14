@@ -17,11 +17,13 @@ set( SRC           CQtClient.cpp
                    CDnsSdBase.cpp
                    CDnsSdServiceBrowserAvahi.cpp
                    CPreferencesDlg.cpp
+                   CSessionAdminDlg.cpp
                    CMuroaListModel.cpp
                    CMuroaTreeModel.cpp
                    CMediaColView.cpp
                    CPlaylistView.cpp
                    CNextlistView.cpp
+                 #  CRenderClientsListView.cpp
                    CModelDiff.cpp
                    CDiffBuilder.cpp
                    
@@ -48,11 +50,13 @@ set( MOC_H         CQtClient.h
                    CDnsSdBase.h
                    CDnsSdServiceBrowserAvahi.h
                    CPreferencesDlg.h
+                   CSessionAdminDlg.h
                    CMuroaListModel.h
                    CMuroaTreeModel.h
                    CMediaColView.h
                    CPlaylistView.h
                    CNextlistView.h
+                  # CRenderClientsListView.h
                    CModelDiff.h
                    CDiffBuilder.h
 
@@ -70,7 +74,8 @@ set( MOC_H         CQtClient.h
                    
 SET(UIS            mQtClient.ui  
                    ServiceBrowser.ui 
-                   PreferencesDlg.ui )
+                   PreferencesDlg.ui 
+                   SessionAdminDlg.ui )
 
 set(RCCS           mQtClient.qrc )      
 

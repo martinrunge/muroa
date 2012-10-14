@@ -199,18 +199,18 @@ void CConnection::onEditNextlist(uint32_t jobID, unsigned  fromRev, unsigned toR
 void CConnection::onEditSessionState(uint32_t jobID, unsigned  fromRev, unsigned toRev, std::string sessionStateDiff) {
 	try {
 		if(fromRev == 0) {
-			m_session->getSessionStateModel()->deserialize(sessionStateDiff);
+			m_session->getSessionState()->deserialize(sessionStateDiff);
 		}
 		else {
-			uint32_t knownRev = m_session->getSessionStateModel()->getRevision();
+			uint32_t knownRev = m_session->getSessionState()->getRevision();
 			if( knownRev != fromRev ) {
 				std::ostringstream oss;
 				oss << "onEditSessionState: Error: got a diff based on rev " << fromRev << " but known rev is " << knownRev;
 				throw ExMalformedPatch(oss.str(), 0);
 			}
-			m_session->getSessionStateModel()->patch(sessionStateDiff);
+			m_session->getSessionState()->patch(sessionStateDiff);
 		}
-		m_session->getSessionStateModel()->setRevision(toRev);
+		m_session->getSessionState()->setRevision(toRev);
 	}
 	catch(ExMalformedPatch& ex)
 	{

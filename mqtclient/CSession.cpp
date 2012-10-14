@@ -21,7 +21,8 @@ CSession::CSession() : QObject(), m_connection(this) {
 	m_mediaColModel = new CMuroaTreeModel();
 	m_playlistModel = new CMuroaListModel();
 	m_nextlistModel = new CMuroaListModel();
-	m_sessionStateModel = new CMuroaTreeModel();
+
+	m_sessionState = new muroa::CRootItem();
 
 	m_playlistModel->setMediaCol(m_mediaColModel);
 	m_nextlistModel->setMediaCol(m_mediaColModel);
@@ -34,7 +35,11 @@ CSession::CSession() : QObject(), m_connection(this) {
 }
 
 CSession::~CSession() {
-	// TODO Auto-generated destructor stub
+	delete m_sessionState;
+
+	delete m_nextlistModel;
+	delete m_playlistModel;
+	delete m_mediaColModel;
 }
 
 
