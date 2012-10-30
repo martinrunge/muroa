@@ -20,6 +20,7 @@ using namespace muroa;
 
 CRenderClientsListView::CRenderClientsListView(QWidget * parent ) : QListView( parent ),
                                                   m_dragActive(false),
+                                                  m_diffBuilder(0),
                                                   dndMimeType("application/x-muroa-render-clients") {
 	setAcceptDrops(true);
 	viewport()->setAcceptDrops(true);

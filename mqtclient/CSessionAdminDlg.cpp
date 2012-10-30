@@ -26,7 +26,10 @@ CSessionAdminDlg::CSessionAdminDlg(CRootItem* sessionState ,QWidget* parent): m_
 	m_sessionState->connectItemModel(m_ownClientsModel);
 
   	ui.ownRenderersListView->setModel(m_ownClientsModel);
+  	ui.ownRenderersListView->setDiffBuilder( &m_diffBuilder );
+
   	ui.availRenderersListView->setModel(m_availClientsModel);
+  	ui.availRenderersListView->setDiffBuilder( &m_diffBuilder );
 }
 
 CSessionAdminDlg::~CSessionAdminDlg() {

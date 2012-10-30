@@ -12,6 +12,8 @@
 #include <QSettings>
 #include "ui_SessionAdminDlg.h"
 
+#include  "CDiffBuilder.h"
+
 class CMuroaListModel;
 
 namespace muroa {
@@ -32,6 +34,8 @@ public slots:
 private:
     Ui::SessionAdminDlg ui;
   	QSettings m_settings;
+
+  	CDiffBuilder m_diffBuilder;
 
   	muroa::CRootItem* m_sessionState;
 
