@@ -11,14 +11,14 @@
 #include <QListView>
 
 #include "cmds/CmdBase.h"
-#include "cmds/CmdEditPlaylist.h"
+#include "cmds/CmdEditSessionState.h"
 #include "CModelDiff.h"
 
 class QMouseEvent;
 class QDragEnterEvent;
 class QDragMoveEvent;
 class QDropEvent;
-class CDiffBuilder;
+class CRenderClientsDiffBuilder;
 
 class CMuroaListModel;
 namespace muroa {
@@ -31,10 +31,18 @@ public:
 	CRenderClientsListView( QWidget * parent = 0 );
 	virtual ~CRenderClientsListView();
 
-	void setDiffBuilderPtr(CDiffBuilder* db) { m_diffBuilder = db; };
+	inline void setDiffBuilder(CRenderClientsDiffBuilder* diffBuilderPtr) {m_rcDiffBuilder = diffBuilderPtr; };
+	inline CRenderClientsDiffBuilder* getDiffBuilder(void) {
+		return m_rcDiffBuilder;
+	}
 
-	inline void setDiffBuilder(CDiffBuilder* diffBuilderPtr) {m_diffBuilder = diffBuilderPtr; };
-	inline CDiffBuilder* getDiffBuilder(CDiffBuilder* diffBuilderPtr) {return m_diffBuilder; };
+	enum origin getRole() const {
+		return m_role;
+	}
+
+	void setRole(enum origin role) {
+		m_role = role;
+	}
 
 protected:
     void mousePressEvent(QMouseEvent *event);
@@ -49,8 +57,9 @@ private:
     QPoint m_startPos;
     bool m_dragActive;
 
-    CDiffBuilder* m_diffBuilder;
+    CRenderClientsDiffBuilder* m_rcDiffBuilder;
 
+    enum origin m_role;
     const QString dndMimeType;
 };
 

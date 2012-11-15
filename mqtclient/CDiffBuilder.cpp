@@ -234,10 +234,6 @@ std::string CDiffBuilder::diff(CModelDiff md) {
 		cmd = new CmdEditNextlist(m_nlPtr->getRevision(), text);
 		break;
 
-	case E_RENDER_CLIENT:
-		cmd = new CmdEditSessionState(m_nlPtr->getRevision(), text);
-		break;
-
 	default:
 		qDebug() << QString("unknown command type: %1").arg(commandType);
 	}

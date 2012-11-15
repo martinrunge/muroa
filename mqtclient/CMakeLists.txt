@@ -26,6 +26,7 @@ set( SRC           CQtClient.cpp
                    CRenderClientsListView.cpp
                    CModelDiff.cpp
                    CDiffBuilder.cpp
+                   CRenderClientsDiffBuilder.cpp
                    
                    cmds/CmdBase.cpp
                    cmds/CmdGetMediaCol.cpp
@@ -59,6 +60,7 @@ set( MOC_H         CQtClient.h
                    CRenderClientsListView.h
                    CModelDiff.h
                    CDiffBuilder.h
+                   CRenderClientsDiffBuilder.h
 
                    cmds/CmdBase.h
                    cmds/CmdGetMediaCol.h

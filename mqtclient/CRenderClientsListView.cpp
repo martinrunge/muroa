@@ -13,14 +13,14 @@
 #include "CStreamClientItem.h"
 #include "CMuroaListModel.h"
 
-#include "CDiffBuilder.h"
+#include "CRenderClientsDiffBuilder.h"
 
 using namespace muroa;
 
 
 CRenderClientsListView::CRenderClientsListView(QWidget * parent ) : QListView( parent ),
                                                   m_dragActive(false),
-                                                  m_diffBuilder(0),
+                                                  m_rcDiffBuilder(0),
                                                   dndMimeType("application/x-muroa-render-clients") {
 	setAcceptDrops(true);
 	viewport()->setAcceptDrops(true);
@@ -89,6 +89,7 @@ void CRenderClientsListView::dropEvent(QDropEvent *event)
         // CPlaylistModel* plModel = reinterpret_cast<CPlaylistModel*>(model());
 
         CModelDiff md(data->data(dndMimeType));
+        md.setCommandType(E_OWN_RENDER_CLIENT);
         QModelIndex currentIdx = indexAt( event->pos());
         //md.appendToInsert(currentIdx.row(), plModel->itemAt(currentIdx.row())->getHash());
         int insertPos = currentIdx.row();
@@ -97,11 +98,11 @@ void CRenderClientsListView::dropEvent(QDropEvent *event)
         	insertPos = model()->rowCount();
         }
         md.setInsertPos( insertPos );
-        md.setDestination(E_RENDER_CLIENT);
+        md.setDestination(m_role);
 
         qDebug() << QString("CRenderClientsListView::dropEvent: Move [%1,%2] to %3").arg(md.getSelectedItems().at(0).hash).arg(md.getSelectedItems().at(md.getNumSelected() - 1 ).hash).arg(md.getInsertPos());
         // plModel->makeDiff(&md);
-        m_diffBuilder->diff(md);
+        m_rcDiffBuilder->diff(md);
     }
 }
 
@@ -112,17 +113,13 @@ void CRenderClientsListView::performDrag()
     CMuroaListModel* lmodel = reinterpret_cast<CMuroaListModel*>(model());
 
     QModelIndexList indexList = selectedIndexes();
-    CModelDiff md(E_RENDER_CLIENT);
+    CModelDiff md(m_role);
 
     for(int i = 0; i < indexList.size(); i++)
     {
     	comb_hash_t combhash;
 		CItemBase* item = lmodel->itemFromIndex(indexList.at(i));
 		switch(item->type()) {
-		case CItemType::E_ROOT:
-			// add all
-			break;
-
 		case CItemType::E_STREAM_CLIENT:
 		{
     		CStreamClientItem* scItem = reinterpret_cast<CStreamClientItem*>(item);

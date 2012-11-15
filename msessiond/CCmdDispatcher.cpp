@@ -15,6 +15,7 @@
 #include <cmds/CmdEditMediaCol.h>
 #include <cmds/CmdEditPlaylist.h>
 #include <cmds/CmdEditNextlist.h>
+#include <cmds/CmdEditSessionState.h>
 
 #include <CPlaylistItem.h>
 #include <CNextlistItem.h>
@@ -135,6 +136,25 @@ void CCmdDispatcher::incomingCmd(muroa::Cmd* cmd) {
 		catch(ExMalformedPatch& ex) {
 			CmdError* errMsg = new CmdError(cmd_enl->id(), 0, ex.reason());
 			m_session->sendToInitiator(errMsg, cmd_enl->getConnectionID() );
+		}
+		break;
+	}
+	case Cmd::EDIT_SESSION_STATE:
+	{
+		CmdEditSessionState* cmd_ess = reinterpret_cast<CmdEditSessionState*>(cmd);
+		try {
+			int current_ss_rev = m_session->getMaxSessionStateRev();
+			m_session->addSessionStateRevFromDiff(cmd_ess->getDiff(), cmd_ess->getFromRev());
+			// if there was no exception, the diff is ok, send it to all clients
+			if( current_ss_rev == 0 ) {
+				cmd_ess->setDiff(m_session->getSessionState()->serialize());
+			}
+			cmd_ess->setToRev( m_session->getMaxSessionStateRev() );
+			m_session->toAll(cmd_ess);
+		}
+		catch(ExMalformedPatch& ex) {
+			CmdError* errMsg = new CmdError(cmd_ess->id(), 0, ex.reason());
+			m_session->sendToInitiator(errMsg, cmd_ess->getConnectionID() );
 		}
 		break;
 	}

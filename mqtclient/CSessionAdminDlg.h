@@ -12,19 +12,20 @@
 #include <QSettings>
 #include "ui_SessionAdminDlg.h"
 
-#include  "CDiffBuilder.h"
 
+class CRenderClientsDiffBuilder;
 class CMuroaListModel;
 
 namespace muroa {
 	class CRootItem;
 }
+class CConnection;
 
 class CSessionAdminDlg  : public QDialog
 {
 	Q_OBJECT;
 public:
-	CSessionAdminDlg(muroa::CRootItem* sessionState, QWidget* parent = 0);
+	CSessionAdminDlg(muroa::CRootItem* sessionState, const CConnection*, QWidget* parent = 0);
 	virtual ~CSessionAdminDlg();
 
 public slots:
@@ -35,9 +36,10 @@ private:
     Ui::SessionAdminDlg ui;
   	QSettings m_settings;
 
-  	CDiffBuilder m_diffBuilder;
+  	CRenderClientsDiffBuilder* m_rcDiffBuilder;
 
   	muroa::CRootItem* m_sessionState;
+  	const CConnection* m_connection;
 
   	CMuroaListModel *m_availClientsModel;
   	CMuroaListModel *m_ownClientsModel;

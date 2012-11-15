@@ -46,14 +46,14 @@ void CConnection::stop() {
 	CTcpConnection::stop();
 }
 
-
 void CConnection::dataReceived( boost::array<char, 8192> buffer, int length) {
 	m_rpc->newData(buffer.data(), length);
 }
 
 void CConnection::onJoinSession(std::string name) {
 	if(name.compare(CREATE_NEW_SESSION) == 0) {
-		m_rpc->error(0, 0, "cannot join dummy session "CREATE_NEW_SESSION);
+		m_rpc->error(0, 0, "cannot join dummy session "\
+				            CREATE_NEW_SESSION);
 	}
 	else {
 		setSession( m_session_container->assignConnection(this, name) );

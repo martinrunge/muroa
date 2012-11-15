@@ -6,16 +6,16 @@ python
 import sys
 sys.path.insert(0, '/usr/share/kde4/apps/kdevgdb/printers')
 
-sys.path.insert(0, '/usr/share/gcc-4.6/python/libstdcxx/v6')
+# sys.path.insert(0, '/usr/share/gcc-4.7/python')
 
 
-from qt4 import register_qt4_printers
-register_qt4_printers (None)
+# from qt4 import register_qt4_printers
+# register_qt4_printers (None)
 
 # from kde4 import register_kde4_printers
 # register_kde4_printers (None)
 
-from printers import register_libstdcxx_printers
-register_libstdcxx_printers (None)
+#from printers import register_libstdcxx_printers
+#register_libstdcxx_printers (None)
 
 end

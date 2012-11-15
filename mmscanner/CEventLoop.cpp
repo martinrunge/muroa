@@ -16,6 +16,8 @@
 #include <signal.h>
 #include <poll.h>
 #include <string.h>
+#include <stdio.h>
+#include <unistd.h>
 
 using namespace std;
 
@@ -24,7 +26,7 @@ CEventLoop::CEventLoop() : m_poll_fds(0),
                            m_run(false),
                            m_mainThreadID( pthread_self() ) {
 
-	int rc = socketpair(AF_UNIX, SOCK_STREAM, 0, m_notify_fds);
+	int rc = ::socketpair(AF_UNIX, SOCK_STREAM, 0, m_notify_fds);
 	preparePollFDs();
 }
 
@@ -47,7 +49,7 @@ void CEventLoop::sendEvent(CMsgBase *msg) {
 	const char * buffer = msg->serialize(size);
 
 	//written = send( fileno(stdout), buffer, size, 0);
-	 written = write( fileno(stdout), buffer, size);
+	 written = ::write( fileno(stdout), buffer, size);
 	// write( fileno(stdout), "sendEvent", 10);
 	::fsync(fileno(stdout));
 	m_dbg_file << "sent " << written << "bytes to parent (after fsync())" << endl;
@@ -91,7 +93,7 @@ int CEventLoop::run() {
 		else {
 			if(readable(fileno(stdin))) {
 				m_dbg_file << "m_socket readable" << endl;
-				ssize_t numBytes = read(fileno(stdin), bufFreePtr, bufferFreeSize);
+				ssize_t numBytes = ::read(fileno(stdin), bufFreePtr, bufferFreeSize);
 				m_dbg_file << "recv: " << numBytes << " bytes of data" << endl;
 				bufferSize += numBytes;
 				bufferFreeSize -= numBytes;
