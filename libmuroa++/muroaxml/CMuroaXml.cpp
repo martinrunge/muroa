@@ -15,6 +15,14 @@ using namespace std;
 
 CMuroaXml::CMuroaXml() throw (ExRpcError)
 {
+
+}
+
+CMuroaXml::~CMuroaXml() {
+}
+
+void CMuroaXml::open() {
+
 	m_parser = XML_ParserCreate(NULL);
 	if (!m_parser) {
 		// fprintf(stderr, "Couldn't allocate memory for parser\n");
@@ -26,19 +34,13 @@ CMuroaXml::CMuroaXml() throw (ExRpcError)
 	XML_SetElementHandler(m_parser, CMuroaXml::startTagHandler,	CMuroaXml::endTagHandler);
 	XML_SetCharacterDataHandler(m_parser, CMuroaXml::characterHandler);
 
-
-}
-
-CMuroaXml::~CMuroaXml() {
-}
-
-void CMuroaXml::open() {
 	sendData(xmlCommands::open);
 }
 
 void CMuroaXml::close() {
 	sendData(xmlCommands::close);
 	reset();
+	XML_ParserFree(m_parser);
 }
 
 void CMuroaXml::listSessions(vector<string> sessionList) {

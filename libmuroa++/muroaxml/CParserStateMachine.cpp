@@ -49,7 +49,6 @@ CParserStateMachine::~CParserStateMachine()
 {
 }
 
-
 void CParserStateMachine::onStartDocument()
 {
 	std::cerr << "on_start_document()" << std::endl;
