@@ -56,8 +56,8 @@ void CTcpConnection::setNonBlocking(bool mode) {
 	m_socket.io_control(command);
 #endif
 
-	boost::asio::socket_base::send_buffer_size option(2048);
-	m_socket.set_option(option);
+//	boost::asio::socket_base::send_buffer_size option(2048);
+//	m_socket.set_option(option);
 
 }
 

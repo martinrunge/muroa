@@ -5,7 +5,7 @@ project (muroadaemon)
 set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake" ${CMAKE_MODULE_PATH})
 
 set(Boost_USE_MULTITHREADED ON)
-find_package( Boost 1.36.0 COMPONENTS system REQUIRED )
+find_package( Boost 1.36.0 COMPONENTS system  REQUIRED )
 find_package( EXPAT REQUIRED )
 
 add_definitions(  )

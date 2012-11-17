@@ -200,7 +200,13 @@ void CConnection::error(CmdError* errorMsg) {
 }
 
 void CConnection::onClose() {
-	m_session->removeConnection(this);
+	if(m_session !=0) {
+		m_session->removeConnection(this);
+	}
+	else {
+		assert(m_session_container != 0);
+		m_session_container->remove(this);
+	}
 }
 
 
