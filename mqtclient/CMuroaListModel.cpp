@@ -37,12 +37,20 @@ using namespace std;
 using namespace muroa;
 
 
-CMuroaListModel::CMuroaListModel(CRootItem* rootItem): m_rootItem(rootItem), m_deleteRootItem(false), m_mediaCol(0), m_playlist(0), m_reset_base(false) {
+CMuroaListModel::CMuroaListModel(CRootItem* rootItem): m_rootItem(rootItem),
+		                                               m_deleteRootItem(false),
+		                                               m_mediaCol(0),
+		                                               m_playlist(0),
+		                                               m_reset_base(false),
+		                                           	   m_enabled_client_icon(":/icons/icons/network-connect.png"),
+		                                           	   m_disabled_client_icon(":/icons/icons/network-disconnect.png")
+{
 	if(rootItem == 0) {
 		m_rootItem = new CRootItem();
 		m_deleteRootItem = true;
 	}
 	m_model_base = m_rootItem->getBase();
+	m_rootItem->connectItemModel(this);
 }
 
 CMuroaListModel::~CMuroaListModel() {
@@ -139,6 +147,28 @@ QVariant CMuroaListModel::data(const QModelIndex & index, int role) const {
 		QString entry = QString("%1 %2").arg(QString::fromUtf8(mItem->getArtist().c_str()))
 				                        .arg(QString::fromUtf8(mItem->getTitle().c_str()));
 		return entry;
+	}
+	else if(role == Qt::DecorationRole)
+	{
+		IContentItem* item = m_model_base->getContentItem( index.row() );
+		if(!item) {
+			return QVariant();
+		}
+		switch(item->type()) {
+			case CItemType::E_STREAM_CLIENT:
+			{
+				CStreamClientItem* scItem = reinterpret_cast<CStreamClientItem*>(item);
+				if(scItem->isEnabled()) {
+					return m_enabled_client_icon;
+				} else {
+					return m_disabled_client_icon;
+				}
+				break;
+			}
+			default:
+				return QVariant();
+				break;
+			}
 	}
 	else
 	{

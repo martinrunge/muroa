@@ -5,5 +5,7 @@
         <file>icons/media-playback-stop.png</file>
         <file>icons/media-skip-backward.png</file>
         <file>icons/media-skip-forward.png</file>
+        <file>icons/network-connect.png</file>
+        <file>icons/network-disconnect.png</file>
     </qresource>
 </RCC>

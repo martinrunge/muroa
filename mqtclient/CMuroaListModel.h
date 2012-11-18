@@ -25,6 +25,7 @@
 #define CLISTMODEL_H_
 
 #include <QAbstractListModel>
+#include <QIcon>
 #include <CRootItem.h>
 #include <IItemModel.h>
 
@@ -62,6 +63,9 @@ private:
 	// the model's data is in here
 	muroa::CRootItem* m_rootItem;
 	bool m_deleteRootItem;
+
+	QIcon m_enabled_client_icon;
+	QIcon m_disabled_client_icon;
 
 	muroa::CCategoryItem* m_model_base;
 

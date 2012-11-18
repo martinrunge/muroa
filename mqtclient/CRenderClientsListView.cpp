@@ -28,6 +28,7 @@ CRenderClientsListView::CRenderClientsListView(QWidget * parent ) : QListView( p
 	setDropIndicatorShown(true);
 	setSelectionMode(QAbstractItemView::ExtendedSelection);
 	//setDragDropMode( QAbstractItemView::DragDrop );
+	setIconSize(QSize(64, 64));
 }
 
 CRenderClientsListView::~CRenderClientsListView() {
