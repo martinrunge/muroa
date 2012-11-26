@@ -159,6 +159,16 @@ void CSessionContainer::serviceRemoved(ServDescPtr srvPtr) {
 	}
 }
 
+void CSessionContainer::serviceTaken(std::string seviceName, std::string ownerSessionsName) {
+	LOG4CPLUS_DEBUG(m_app->logger(), "service " << seviceName << " was taken by session '" << ownerSessionsName << "'" );
+	map<std::string, CSession*>::iterator it;
+	for(it = m_sessions.begin(); it != m_sessions.end(); it++)
+	{
+		it->second->takeClient(seviceName, ownerSessionsName);
+	}
+}
+
+
 ServDescPtr CSessionContainer::getServiceByName(std::string name) {
 	return m_dnssd->getServiceByName(name);
 }

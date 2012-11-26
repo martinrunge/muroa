@@ -599,6 +599,27 @@ void CSession::addClient(std::string name) {
 }
 
 void CSession::rmClient(std::string name) {
+	pair<CRootItem*, string> result;
+	result = m_streamClientHdl.rmClientStateDiff(getSessionState(), name);
+	int curSessionStateRev = getMaxSessionStateRev();
+
+	addSessionStateRev( result.first );
+	string stateDiff = result.second;
+
+	CmdEditSessionState* cmd_edss = new CmdEditSessionState(curSessionStateRev, getMaxSessionStateRev(), stateDiff );
+	toAll(cmd_edss);
+}
+
+void CSession::takeClient(std::string name, std::string ownerSessionsName) {
+	pair<CRootItem*, string> result;
+	result = m_streamClientHdl.takeClientStateDiff(getSessionState(), name, ownerSessionsName);
+	int curSessionStateRev = getMaxSessionStateRev();
+
+	addSessionStateRev( result.first );
+	string stateDiff = result.second;
+
+	CmdEditSessionState* cmd_edss = new CmdEditSessionState(curSessionStateRev, getMaxSessionStateRev(), stateDiff );
+	toAll(cmd_edss);
 }
 
 

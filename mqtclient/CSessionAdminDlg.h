@@ -14,18 +14,20 @@
 
 
 class CRenderClientsDiffBuilder;
-class CMuroaListModel;
+class CRenderClientsListModel;
 
 namespace muroa {
 	class CRootItem;
 }
 class CConnection;
+class CSession;
 
 class CSessionAdminDlg  : public QDialog
 {
 	Q_OBJECT;
 public:
-	CSessionAdminDlg(muroa::CRootItem* sessionState, const CConnection*, QWidget* parent = 0);
+	CSessionAdminDlg(const CSession* const session,
+			         QWidget* parent = 0);
 	virtual ~CSessionAdminDlg();
 
 public slots:
@@ -39,10 +41,11 @@ private:
   	CRenderClientsDiffBuilder* m_rcDiffBuilder;
 
   	muroa::CRootItem* m_sessionState;
-  	const CConnection* m_connection;
+  	const CSession* const m_session;
+  	const CConnection* const m_connection;
 
-  	CMuroaListModel *m_availClientsModel;
-  	CMuroaListModel *m_ownClientsModel;
+  	CRenderClientsListModel *m_availRenderClientsModel;
+  	CRenderClientsListModel *m_ownRenderClientsModel;
 };
 
 #endif /* CSESSIONADMINDLG_H_ */

@@ -55,6 +55,7 @@ void CConnection::onListSessions(vector<string> sessions) {
 }
 
 void CConnection::onJoinSession(string sessionName) {
+	m_session->setName(sessionName);
 }
 
 void CConnection::onLeaveSession() {

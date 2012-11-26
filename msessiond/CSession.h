@@ -155,6 +155,7 @@ public:
 
 	void addClient(std::string name);
 	void rmClient(std::string name);
+	void takeClient(std::string name, std::string ownerSessionsName);
 
 	ServDescPtr getServiceByName(std::string name);
 

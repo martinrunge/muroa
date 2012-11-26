@@ -17,9 +17,9 @@
 #include "CMuroaTreeModel.h"
 #include "CMuroaListModel.h"
 
-#include <CRootItem.h>
-
+namespace muroa {
 class CRootItem;
+}
 
 class CSession: public QObject {
     Q_OBJECT
@@ -52,6 +52,9 @@ public slots:
 //    void setNextlistRev(uint32_t nextlistRev);
 //    void setPlaylistRev(uint32_t playlistRev);
 
+    void setName(const std::string& name) {m_name = name; };
+    const std::string getName(void) const { return m_name; };
+
 private:
     CConnection m_connection;
     CMuroaTreeModel *m_mediaColModel;
@@ -64,6 +67,8 @@ private:
 //    uint32_t m_playlistRev;
 //    uint32_t m_nextlistRev;
     QString m_storeageLoc;
+
+    std::string m_name;
 };
 
 #endif /* CSESSION_H_ */

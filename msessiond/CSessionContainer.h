@@ -50,6 +50,7 @@ public:
 	void serviceChanged();
 	void serviceAdded(ServDescPtr srvPtr);
 	void serviceRemoved(ServDescPtr srvPtr);
+	void serviceTaken(std::string seviceName, std::string ownerSessionsName);
 
 	ServDescPtr getServiceByName(std::string name);
 

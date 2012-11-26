@@ -34,8 +34,11 @@ public:
 
 	std::pair<CRootItem*, std::string> addClientStateDiff(const CRootItem* const curState, const std::string& addClient);
 	std::pair<CRootItem*, std::string> rmClientStateDiff(const CRootItem* const curState, const std::string& rmClient);
+	std::pair<CRootItem*, std::string> takeClientStateDiff(const CRootItem* const curState, const std::string& name, const std::string& ownerSessionsName);
 
-	int hasClient(std::string name,std::string category=std::string("/OwnStreamClients"));
+	int isOwnClient(std::string name,std::string category=std::string("/RenderClients"));
+	int hasClient(std::string name,std::string category=std::string("/RenderClients"));
+
 
 private:
 	CSession* m_session;

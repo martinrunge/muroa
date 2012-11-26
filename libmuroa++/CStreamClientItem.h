@@ -27,6 +27,8 @@
 #include "IContentItem.h"
 #include "MuroaExceptions.h"
 
+#include <stdint.h>
+
 namespace muroa {
 
 class CStreamClientItem: public IContentItem {

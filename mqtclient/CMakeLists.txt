@@ -20,6 +20,7 @@ set( SRC           CQtClient.cpp
                    CSessionAdminDlg.cpp
                    CMuroaListModel.cpp
                    CMuroaTreeModel.cpp
+                   CRenderClientsListModel.cpp
                    CMediaColView.cpp
                    CPlaylistView.cpp
                    CNextlistView.cpp
@@ -54,6 +55,7 @@ set( MOC_H         CQtClient.h
                    CSessionAdminDlg.h
                    CMuroaListModel.h
                    CMuroaTreeModel.h
+                   CRenderClientsListModel.cpp
                    CMediaColView.h
                    CPlaylistView.h
                    CNextlistView.h
