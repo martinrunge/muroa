@@ -36,9 +36,7 @@ signals:
 private:
 	muroa::CRootItem* m_sessionStatePtr;
 
-	muroa::CCategoryItem* m_avail_clients;
-	muroa::CCategoryItem* m_own_clients;
-
+	muroa::CCategoryItem* m_render_clients;
 
 	typedef std::string (CRenderClientsDiffBuilder::*getItemPtr)(comb_hash_t);
 

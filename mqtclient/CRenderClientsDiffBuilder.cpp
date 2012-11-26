@@ -17,8 +17,7 @@
 using namespace muroa;
 
 CRenderClientsDiffBuilder::CRenderClientsDiffBuilder( CRootItem* sstPtr) : m_sessionStatePtr(sstPtr),
-		                                                                   m_avail_clients(0),
-		                                                                   m_own_clients(0)
+		                                                                   m_render_clients(0)
 {
 }
 
@@ -32,8 +31,7 @@ void CRenderClientsDiffBuilder::prepareDiff(CModelDiff* md) {
 
 	enum origin commandType;
 
-	m_avail_clients = m_sessionStatePtr->getCategoryPtr("/AvailableStreamClients");
-	m_own_clients = m_sessionStatePtr->getCategoryPtr("/OwnStreamClients");
+	m_render_clients = m_sessionStatePtr->getCategoryPtr("/RenderClients");
 
 	int numToRemove = 0;
 	int numToInsert = 0;
@@ -163,12 +161,12 @@ std::string CRenderClientsDiffBuilder::diff(CModelDiff md) {
 }
 
 std::string CRenderClientsDiffBuilder::insertInOwnList(comb_hash_t comb_hash) {
-	muroa::IContentItem* citem = m_avail_clients->getContentItem(comb_hash.line);
+	muroa::IContentItem* citem = m_render_clients->getContentItem(comb_hash.line);
 	if(citem->type() == CItemType::E_STREAM_CLIENT) {
 		CStreamClientItem* scitem = reinterpret_cast<CStreamClientItem*>(citem);
 		string result;
-		result.reserve(m_own_clients->getPath().size() + scitem->getText().size() + 2 );
-		result = m_own_clients->getPath();
+		result.reserve(m_render_clients->getPath().size() + scitem->getText().size() + 2 );
+		result = m_render_clients->getPath();
 		result.append("\t");
 		result.append( scitem->getText() );
 		return result;
@@ -177,12 +175,12 @@ std::string CRenderClientsDiffBuilder::insertInOwnList(comb_hash_t comb_hash) {
 }
 
 std::string CRenderClientsDiffBuilder::insertInAvailList(comb_hash_t comb_hash) {
-	muroa::IContentItem* citem = m_avail_clients->getContentItem(comb_hash.line);
+	muroa::IContentItem* citem = m_render_clients->getContentItem(comb_hash.line);
 	if(citem->type() == CItemType::E_STREAM_CLIENT) {
 		CStreamClientItem* scitem = reinterpret_cast<CStreamClientItem*>(citem);
 		string result;
-		result.reserve(m_avail_clients->getPath().size() + scitem->getText().size() + 2 );
-		result = m_avail_clients->getPath();
+		result.reserve(m_render_clients->getPath().size() + scitem->getText().size() + 2 );
+		result = m_render_clients->getPath();
 		result.append("\t");
 		result.append( scitem->getText() );
 		return result;
@@ -191,12 +189,12 @@ std::string CRenderClientsDiffBuilder::insertInAvailList(comb_hash_t comb_hash) 
 }
 
 std::string CRenderClientsDiffBuilder::removeFromOwnList(comb_hash_t comb_hash) {
-	muroa::IContentItem* citem = m_own_clients->getContentItem(comb_hash.line);
+	muroa::IContentItem* citem = m_render_clients->getContentItem(comb_hash.line);
 	if(citem->type() == CItemType::E_STREAM_CLIENT) {
 		CStreamClientItem* scitem = reinterpret_cast<CStreamClientItem*>(citem);
 		string result;
-		result.reserve(m_own_clients->getPath().size() + scitem->getText().size() + 2 );
-		result = m_own_clients->getPath();
+		result.reserve(m_render_clients->getPath().size() + scitem->getText().size() + 2 );
+		result = m_render_clients->getPath();
 		result.append("\t");
 		result.append( scitem->getText() );
 		return result;
@@ -205,12 +203,12 @@ std::string CRenderClientsDiffBuilder::removeFromOwnList(comb_hash_t comb_hash) 
 }
 
 std::string CRenderClientsDiffBuilder::removeFromAvailList(comb_hash_t comb_hash) {
-	muroa::IContentItem* citem = m_avail_clients->getContentItem(comb_hash.line);
+	muroa::IContentItem* citem = m_render_clients->getContentItem(comb_hash.line);
 	if(citem->type() == CItemType::E_STREAM_CLIENT) {
 		CStreamClientItem* scitem = reinterpret_cast<CStreamClientItem*>(citem);
 		string result;
-		result.reserve(m_avail_clients->getPath().size() + scitem->getText().size() + 2 );
-		result = m_avail_clients->getPath();
+		result.reserve(m_render_clients->getPath().size() + scitem->getText().size() + 2 );
+		result = m_render_clients->getPath();
 		result.append("\t");
 		result.append( scitem->getText() );
 		return result;
