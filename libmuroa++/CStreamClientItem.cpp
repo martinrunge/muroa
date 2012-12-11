@@ -26,11 +26,29 @@
 #include "CCategoryItem.h"
 #include "CUtils.h"
 #include <sstream>
+#include <cassert>
+
 using namespace std;
 namespace muroa {
 
 const string CStreamClientItem::DISABLED_STR("disabled");
 const string CStreamClientItem::ENABLED_STR("enabled");
+
+CStreamClientItem::CStreamClientItem(const CStreamClientItem& other, CRootItem* const root_item, CCategoryItem*  const parent) :
+                   IContentItem( root_item, parent, CItemType::E_STREAM_CLIENT)
+{
+    m_domain_name = other.m_domain_name;
+    m_enabled = other.m_enabled;
+    m_hash = other.m_hash;
+    m_host_name = other.m_host_name;
+    m_name = other.m_name;
+    m_owner_session_name = other.m_owner_session_name;
+    m_port = other.m_port;
+    m_service_name = other.m_service_name;
+    m_text = other.m_text;
+
+    m_root_item->setContentPtr(CItemType(CItemType::E_STREAM_CLIENT), this, m_hash );
+}
 
 CStreamClientItem::CStreamClientItem(CRootItem *root_item, CCategoryItem*  parent, string service_name, int posInParent) :
                IContentItem( root_item, parent, CItemType::E_STREAM_CLIENT ),
@@ -116,7 +134,7 @@ CStreamClientItem::CStreamClientItem(CRootItem *root_item, std::string text, CCa
 		}
 
 		string ena_str;
-		rpos = text.find_first_of('\t\n', lpos);
+		rpos = text.find_first_of("\t\n", lpos);
 		if(rpos != string::npos ) {
 			ena_str = text.substr(lpos, rpos - lpos);
 		}
@@ -154,6 +172,20 @@ CStreamClientItem::CStreamClientItem(CRootItem *root_item, std::string text, CCa
 CStreamClientItem::~CStreamClientItem() {
 	m_root_item->delContentPtr(CItemType(CItemType::E_STREAM_CLIENT), m_hash );
 }
+
+//CStreamClientItem* CStreamClientItem::clone(const IContentItem& other, CRootItem* const root_item, CCategoryItem* const parent)
+//{
+//    assert(other.type() == CItemType::E_STREAM_CLIENT);
+//    const CStreamClientItem* const otherPtr = reinterpret_cast<const CStreamClientItem* const>(&other);
+//    CStreamClientItem* newItem = new CStreamClientItem(*otherPtr, root_item, parent);
+//
+//    newItem->m_domain_name = otherPtr->m_domain_name;
+//    newItem->m_enabled = otherPtr->m_enabled;
+//    newItem->m_hash = otherPtr->m_hash;
+//    newItem->m_host_name = otherPtr->m_host_name;
+//
+//    return newItem;
+//}
 
 
 bool CStreamClientItem::operator==(const IContentItem& other) {

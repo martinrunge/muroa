@@ -34,9 +34,12 @@ class CPlaylistItem;
 
 class CNextlistItem: public IContentItem {
 public:
+    CNextlistItem(const CNextlistItem& other, CRootItem* root_item, CCategoryItem* parent);
 	CNextlistItem(CRootItem *root_item, CCategoryItem*  parent, int posInParent = -1);
 	CNextlistItem(CRootItem *root_item, std::string text, CCategoryItem*  parent, int posInParent = -1) throw(ExMalformedPatch);
 	virtual ~CNextlistItem();
+
+	//CNextlistItem* clone(const IContentItem& other, CRootItem* root_item, CCategoryItem* parent);
 
 	inline uint32_t getPlaylistItemHash() { return m_playlistitem_hash; };
 	void setPlaylistItem(CPlaylistItem* plItem);

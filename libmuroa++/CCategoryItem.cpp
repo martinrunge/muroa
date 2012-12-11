@@ -53,6 +53,23 @@ CCategoryItem::CCategoryItem(CRootItem *root_item, string text, CCategoryItem*  
 	m_root_item->setCategoryPtr(m_path, this);
 }
 
+CCategoryItem::CCategoryItem(const CCategoryItem& other, CRootItem *root_item, CCategoryItem* parent) : CItemBase(root_item, parent, CItemType::E_CAT)
+{
+    m_path = other.m_path;
+    m_name = other.m_name;
+
+    for(int i = 0; i < other.m_sub_categories.size(); i++) {
+        m_sub_categories.push_back(new CCategoryItem(*(other.m_sub_categories[i]), root_item, this ));
+    }
+
+
+    for(int i = 0; i < other.m_content_items.size(); i++) {
+        IContentItem* cItem = IContentItem::itemFactory(*(other.m_content_items[i]), root_item, this);
+        m_content_items.push_back(cItem);
+    }
+
+    root_item->setCategoryPtr(m_path, this);
+}
 
 CCategoryItem::~CCategoryItem() {
 	std::vector<CCategoryItem*>::iterator cit;
@@ -341,7 +358,6 @@ bool CCategoryItem::operator==(const CCategoryItem& other) {
 		}
 		cit++;
 		other_cit++;
-
 	}
 
 	vector<IContentItem*>::const_iterator mit = m_content_items.begin();
@@ -352,7 +368,6 @@ bool CCategoryItem::operator==(const CCategoryItem& other) {
 		}
 		mit++;
 		other_mit++;
-
 	}
 	return true;
 }

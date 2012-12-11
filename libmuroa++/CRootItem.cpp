@@ -25,9 +25,24 @@
 using namespace std;
 namespace muroa {
 
-CRootItem::CRootItem(uint32_t rev) : m_base(0), m_revision(rev) {
+CRootItem::CRootItem(uint32_t rev) : m_base(0),
+                                     m_revision(rev),
+                                     m_referenced_mediaCol_rev(0),
+                                     m_referenced_playlist_rev(0)
+{
 	reset();
 }
+
+CRootItem::CRootItem(const CRootItem& other) {
+
+    for(int i=0; i < CItemType::numTypes(); i++) {
+        m_content_maps.push_back( new map<uint32_t, IContentItem*>() );
+    }
+
+    m_base = new CCategoryItem(*(other.m_base), this, 0);
+
+}
+
 
 CRootItem::~CRootItem() {
 	beginRemoveItems(0, m_base->getNumCategories() + m_base->getNumContentItems(), m_base);

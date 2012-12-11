@@ -27,6 +27,8 @@
 #include "CMediaItem.h"
 #include "CUtils.h"
 #include <sstream>
+#include <cassert>
+
 using namespace std;
 
 namespace muroa {
@@ -41,6 +43,16 @@ uint32_t CPlaylistItem::getNextFreeID() {
 void CPlaylistItem::setNextFreeID(uint32_t next_free_id) {
 	m_next_free_id = next_free_id;
 }
+
+CPlaylistItem::CPlaylistItem(const CPlaylistItem& other, CRootItem* root_item, CCategoryItem* parent) :
+               IContentItem(root_item, parent , CItemType::E_PLAYLISTITEM)
+{
+    m_hash = other.m_hash;
+    m_mediaitem_hash = other.m_mediaitem_hash;
+    root_item->setContentPtr(CItemType(CItemType::E_PLAYLISTITEM), this, m_hash);
+    m_text = other.m_text;
+}
+
 
 CPlaylistItem::CPlaylistItem(CRootItem *root_item, CCategoryItem*  parent, int posInParent) :
                IContentItem( root_item, parent, CItemType::E_PLAYLISTITEM )
@@ -136,6 +148,16 @@ CPlaylistItem::CPlaylistItem(uint32_t mediaItemHash, uint32_t plID )
 	}
 	assembleText();
 }
+
+//CPlaylistItem* CPlaylistItem::clone(const IContentItem& other, CRootItem *root_item, CCategoryItem*  parent) {
+//    assert(other.type() == CItemType::E_PLAYLISTITEM);
+//    CPlaylistItem* newItem = new CPlaylistItem(root_item, parent);
+//
+//    newItem->m_mediaitem_hash = m_mediaitem_hash;
+//
+//    return newItem;
+//}
+
 
 void CPlaylistItem::setParent(CRootItem *root_item, CCategoryItem*  parent, int posInParent) {
 	m_root_item = root_item;

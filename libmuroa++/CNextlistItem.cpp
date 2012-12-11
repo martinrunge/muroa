@@ -27,16 +27,27 @@
 #include "CPlaylistItem.h"
 #include "CUtils.h"
 #include <sstream>
+#include <cassert>
+
 using namespace std;
 namespace muroa {
 
 uint32_t CNextlistItem::m_next_free_id = 0;
 
+CNextlistItem::CNextlistItem(const CNextlistItem& other, CRootItem *root_item, CCategoryItem*  parent):
+               IContentItem( root_item, parent, CItemType::E_NEXTLISTITEM )
+{
+    m_hash = other.m_hash;
+    m_mediaitem_hash = other.m_mediaitem_hash;
+    m_name = other.m_name;
+    m_root_item->setContentPtr(CItemType(CItemType::E_NEXTLISTITEM), this, m_hash );
+}
+
 CNextlistItem::CNextlistItem(CRootItem *root_item, CCategoryItem*  parent, int posInParent) :
                IContentItem( root_item, parent, CItemType::E_NEXTLISTITEM )
 {
     m_hash = m_next_free_id++;
-	m_root_item->setContentPtr(CItemType(CItemType::E_PLAYLISTITEM), this, m_hash );
+	m_root_item->setContentPtr(CItemType(CItemType::E_NEXTLISTITEM), this, m_hash );
 }
 
 CNextlistItem::CNextlistItem(CRootItem *root_item, std::string text, CCategoryItem*  parent, int posInParent) throw(ExMalformedPatch)
@@ -106,6 +117,16 @@ CNextlistItem::CNextlistItem(CRootItem *root_item, std::string text, CCategoryIt
 CNextlistItem::~CNextlistItem() {
 	m_root_item->delContentPtr(CItemType(CItemType::E_NEXTLISTITEM), m_hash );
 }
+
+
+//CNextlistItem* CNextlistItem::clone(const IContentItem& other, CRootItem* root_item, CCategoryItem* parent)
+//{
+//    assert(other.type() == CItemType::E_NEXTLISTITEM);
+//    const CNextlistItem* const otherPtr = reinterpret_cast<const CNextlistItem* const>(&other);
+//    CNextlistItem* newItem = new CNextlistItem(*otherPtr, root_item, parent);
+//
+//    return newItem;
+//}
 
 void CNextlistItem::setPlaylistItem(CPlaylistItem* plItem) {
 	m_playlistitem_hash = plItem->getHash();

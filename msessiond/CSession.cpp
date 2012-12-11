@@ -589,10 +589,19 @@ void CSession::setProperty(string key, int val) {
 void CSession::addClient(std::string name) {
 	pair<CRootItem*, string> result;
 	result = m_streamClientHdl.addClientStateDiff(getSessionState(), name);
+	if(result.first == 0) {
+	    return;
+	}
 	int curSessionStateRev = getMaxSessionStateRev();
 
 	addSessionStateRev( result.first );
-	string stateDiff = result.second;
+	string stateDiff;
+	if(curSessionStateRev == 0) {
+	    stateDiff = result.first->serialize();
+	}
+	else {
+	    stateDiff = result.second;
+	}
 
 	CmdEditSessionState* cmd_edss = new CmdEditSessionState(curSessionStateRev, getMaxSessionStateRev(), stateDiff );
 	toAll(cmd_edss);

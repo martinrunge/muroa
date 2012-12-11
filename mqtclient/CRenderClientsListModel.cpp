@@ -74,80 +74,49 @@ void CRenderClientsListModel::setBase(string path) {
 
 
 int CRenderClientsListModel::rowCount(const QModelIndex & index) const {
-	return m_model_base->getNumContentItems();
+    int num = getNumSCItems();
+	return num;
 }
 
 
 QVariant CRenderClientsListModel::data(const QModelIndex & index, int role) const {
-	if(role == Qt::ToolTipRole)
-	{
-		IContentItem* item = m_model_base->getContentItem( index.row() );
-		if(!item)
-			return QVariant();
-		switch(item->type()) {
-			case CItemType::E_STREAM_CLIENT: {
-				CStreamClientItem* scItem = reinterpret_cast<CStreamClientItem*>(item);
-				QString entry = QString("owned by session: %1").arg(scItem->getOwnerSessionName().c_str());
-				return entry;
-			}
-		}
-	}
-	else if(role == Qt::DisplayRole)
-	{
-		CMediaItem* mItem(0);
-		IContentItem* ci(0);
-		IContentItem* item = m_model_base->getContentItem( index.row() );
-		if(!item) {
-			return QVariant();
-		}
-		switch(item->type()) {
-		case CItemType::E_STREAM_CLIENT:
-		{
-			CStreamClientItem* scItem = reinterpret_cast<CStreamClientItem*>(item);
-			if(m_role == E_OWN_RENDER_CLIENT)
-			{
-				if(scItem->getOwnerSessionName().compare(m_session->getName()) == 0) {
-					QString entry = QString("%1 [%2]").arg(scItem->getServiceName().c_str()).arg(scItem->getHostName().c_str());
-					return entry;
-				}
-			}
-			QString entry = QString("%1 [%2]").arg(scItem->getServiceName().c_str()).arg(scItem->getHostName().c_str());
-			return entry;
-			break;
-		}
-		default:
-			ci = 0;
-			break;
-		}
-		if(ci == 0) {
-			return QVariant();
-		}
-	}
-	else if(role == Qt::DecorationRole)
-	{
-		IContentItem* item = m_model_base->getContentItem( index.row() );
-		if(!item) {
-			return QVariant();
-		}
-		switch(item->type()) {
-			case CItemType::E_STREAM_CLIENT:
-			{
-				CStreamClientItem* scItem = reinterpret_cast<CStreamClientItem*>(item);
-				if(scItem->isEnabled()) {
-					return m_enabled_client_icon;
-				} else {
-					return m_disabled_client_icon;
-				}
-				break;
-			}
-			default:
-				return QVariant();
-				break;
-			}
-	}
-	else
-	{
-		return QVariant();
+    CStreamClientItem* scItem = getSCItem( index.row() );
+    if(!scItem) {
+        return QVariant();
+    }
+    switch(role)
+    {
+        case Qt::ToolTipRole:
+	    {
+	        QString entry = QString("owned by session: %1").arg(scItem->getOwnerSessionName().c_str());
+	        return entry;
+	    }
+        break;
+	    case Qt::DisplayRole:
+	    {
+	        if(m_role == E_OWN_RENDER_CLIENT)
+	        {
+	            if(scItem->getOwnerSessionName().compare(m_session->getName()) == 0) {
+	                QString entry = QString("%1 [%2]").arg(scItem->getServiceName().c_str()).arg(scItem->getHostName().c_str());
+	                return entry;
+	            }
+	        }
+	        QString entry = QString("%1 [%2]").arg(scItem->getServiceName().c_str()).arg(scItem->getHostName().c_str());
+	        return entry;
+	    }
+	    break;
+	    case Qt::DecorationRole:
+	    {
+	        if(scItem->isEnabled()) {
+	            return m_enabled_client_icon;
+	        } else {
+	            return m_disabled_client_icon;
+	        }
+	    }
+	    break;
+	    default:
+	        return QVariant();
+	        break;
 	}
 }
 
@@ -199,6 +168,55 @@ void CRenderClientsListModel::reset()
 	m_rootItem->reset();
 	setBase("/");
 }
+
+// role based access functions
+int CRenderClientsListModel::getNumSCItems() const {
+    int numItems = m_model_base->getNumContentItems();
+    if(m_role == E_AVAIL_RENDER_CLIENT) {
+        return numItems;
+    }
+    int numOwnClients = 0;
+    for(int i = 0; i < numItems; i++) {
+        IContentItem* ci = m_model_base->getContentItem(i);
+        if(ci->type() == CItemType::E_STREAM_CLIENT ) {
+            CStreamClientItem* sci = reinterpret_cast<CStreamClientItem*>(ci);
+            if(m_session->getName().compare( sci->getOwnerSessionName() ) == 0 ) {
+                // this item blongs to this session
+                numOwnClients++;
+            }
+        }
+    }
+    return numOwnClients;
+}
+
+muroa::CStreamClientItem* CRenderClientsListModel::getSCItem(int index) const {
+    int numItems = m_model_base->getNumContentItems();
+    if(m_role == E_AVAIL_RENDER_CLIENT) {
+        IContentItem* ci = m_model_base->getContentItem(index);
+        assert(ci->type() == CItemType::E_STREAM_CLIENT);
+        CStreamClientItem* sci = reinterpret_cast<CStreamClientItem*>(ci);
+        return sci;
+    }
+    else
+    {
+        int ownIndex = 0;
+        for(int i = 0; i < numItems; i++) {
+            IContentItem* ci = m_model_base->getContentItem(i);
+            if(ci->type() == CItemType::E_STREAM_CLIENT ) {
+                CStreamClientItem* sci = reinterpret_cast<CStreamClientItem*>(ci);
+                if(m_session->getName().compare( sci->getOwnerSessionName() ) == 0 ) {
+                    // this item blongs to this session
+                    if(ownIndex == index) {
+                        return sci;
+                    }
+                    ownIndex++;
+                }
+            }
+        }
+        return 0;
+    }
+}
+
 
 
 

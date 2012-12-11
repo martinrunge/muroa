@@ -53,6 +53,7 @@ class CCollectionTest: public CppUnit::TestFixture {
 	  CPPUNIT_TEST( traverse );
 	  CPPUNIT_TEST( serialize );
 	  CPPUNIT_TEST( deserialize );
+      CPPUNIT_TEST( copyConstruct );
 	  CPPUNIT_TEST_SUITE_END();
 
 public:
@@ -87,6 +88,7 @@ public:
 	void serializeCategory();
 	void serialize();
     void deserialize();
+    void copyConstruct();
 
 private:
     muroa::CRootItem* m_root;

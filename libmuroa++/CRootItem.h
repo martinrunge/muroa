@@ -39,6 +39,7 @@ class CMediaItem;
 class CRootItem {
 public:
 	CRootItem(uint32_t rev = 0);
+	CRootItem(const CRootItem& other);
 	virtual ~CRootItem();
 
 	typedef muroa::CRootItemIterator iterator;

@@ -38,6 +38,7 @@ class CTreeItem;
 class CSession;
 namespace muroa {
 	class CItemBase;
+	class CStreamClientItem;
 }
 class CRenderClientsListModel : public QAbstractListModel, public muroa::IItemModel {
 public:
@@ -63,7 +64,11 @@ public:
 
 private:
 
-	// the model's data is in here
+	// role based access functions
+	int getNumSCItems() const;
+    muroa::CStreamClientItem* getSCItem(int index) const;
+
+    // the model's data is in here
 	muroa::CRootItem* m_rootItem;
 	bool m_deleteRootItem;
 

@@ -16,7 +16,7 @@
 #include "cmds/CmdBase.h"
 
 namespace muroa {
-  class CStreamClientsItem;
+  class CStreamClientItem;
 }
 
 

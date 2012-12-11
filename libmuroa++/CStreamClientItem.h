@@ -33,9 +33,12 @@ namespace muroa {
 
 class CStreamClientItem: public IContentItem {
 public:
-	CStreamClientItem(CRootItem *root_item, CCategoryItem*  parent, std::string service_name, int posInParent = -1);
-	CStreamClientItem(CRootItem *root_item, std::string text, CCategoryItem*  parent, int posInParent = -1) throw(ExMalformedPatch);
+    CStreamClientItem(const CStreamClientItem& other, CRootItem* const root_item, CCategoryItem*  const parent);
+	CStreamClientItem(CRootItem* const root_item, CCategoryItem*  const parent, std::string service_name, int posInParent = -1);
+	CStreamClientItem(CRootItem* const root_item, std::string text, CCategoryItem* const parent, int posInParent = -1) throw(ExMalformedPatch);
 	virtual ~CStreamClientItem();
+
+//	CStreamClientItem* clone(const IContentItem& other, CRootItem* const root_item, CCategoryItem* const parent);
 
 	bool operator==(const IContentItem& other);
 	inline bool operator!=(const IContentItem& other){ return !operator==(other); };

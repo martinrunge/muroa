@@ -15,11 +15,10 @@
 
 using namespace muroa;
 
-CSessionAdminDlg::CSessionAdminDlg(const CSession* const session,
-                                   QWidget* parent):
-		                        		                m_sessionState(session->getSessionState()),
-		                        		                m_session(session),
-		                        		                m_connection(session->getConnection())
+CSessionAdminDlg::CSessionAdminDlg(const CSession* const session, QWidget* parent):
+	                        		                m_sessionState(session->getSessionState()),
+	                        		                m_session(session),
+	                        		                m_connection(session->getConnection())
 {
 	ui.setupUi(this);
 	// setRejoinState( m_settings.value("rejoin").toBool() );
@@ -43,7 +42,6 @@ CSessionAdminDlg::CSessionAdminDlg(const CSession* const session,
   	ui.ownRenderersListView->setRole(E_OWN_RENDER_CLIENT);
   	ui.ownRenderersListView->setModel(m_ownRenderClientsModel);
   	ui.ownRenderersListView->setDiffBuilder( m_rcDiffBuilder );
-
 
   	connect(m_rcDiffBuilder, SIGNAL(sendCommand(CmdBase*)), m_connection, SLOT(sendCommand(CmdBase*)));
 }

@@ -67,7 +67,7 @@ void CConnection::joinSession(std::string name) {
 void CConnection::sendLatestMediaColRev(uint32_t jobID, unsigned knownRev) {
 	std::string diff;
 	try {
-		if( m_session->hasMediaColRev( knownRev ))
+		if( knownRev > 0 && m_session->hasMediaColRev( knownRev ))
 		{
 			diff = m_session->getMediaColDiff(knownRev);
 		}
@@ -86,7 +86,7 @@ void CConnection::sendLatestMediaColRev(uint32_t jobID, unsigned knownRev) {
 void CConnection::sendLatestPlaylistRev(uint32_t jobID, unsigned knownRev) {
 	std::string diff;
 	try {
-		if( m_session->hasPlaylistRev( knownRev))
+		if( knownRev > 0 && m_session->hasPlaylistRev( knownRev))
 		{
             diff = m_session->getPlaylistDiff(knownRev);
 		}
@@ -105,7 +105,7 @@ void CConnection::sendLatestPlaylistRev(uint32_t jobID, unsigned knownRev) {
 void CConnection::sendLatestNextlistRev(uint32_t jobID, unsigned knownRev) {
 	std::string diff;
 	try {
-		if( m_session->hasNextlistRev( knownRev )) {
+		if( knownRev > 0 && m_session->hasNextlistRev( knownRev )) {
             diff = m_session->getNextlistDiff(knownRev);
 		}
 		else
@@ -123,7 +123,7 @@ void CConnection::sendLatestNextlistRev(uint32_t jobID, unsigned knownRev) {
 void CConnection::sendLatestSessionStateRev(uint32_t jobID, unsigned knownRev) {
 	std::string diff;
 	try {
-		if( m_session->hasSessionStateRev( knownRev )) {
+		if( knownRev > 0 && m_session->hasSessionStateRev( knownRev )) {
             diff = m_session->getSessionStateDiff(knownRev);
 		}
 		else

@@ -118,6 +118,15 @@ CSession* CSessionContainer::assignConnection(CConnection* ptr, std::string sess
 	if(it == m_sessions.end()) {
 		session = new CSession(sessionName, ptr->getIoService(), this);
 		m_sessions.insert(pair<string, CSession*>(sessionName, session));
+
+		// add all currently known services to the new session
+		const std::vector<ServDescPtr> slist = m_dnssd->getServiceList();
+	    std::vector<ServDescPtr>::const_iterator it;
+	    for(it = slist.begin(); it != slist.end(); it++) {
+	        if((*it)->getServiceType().compare("_muroad._udp") == 0) {
+	            session->addClient((*it)->getServiceName());
+	        }
+	    }
 	}
 	else {
 		session = it->second;

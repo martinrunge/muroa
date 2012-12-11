@@ -16,9 +16,24 @@
 #include <algorithm>
 
 #include <iostream>
+#include <cassert>
 
 using namespace std;
 namespace muroa {
+
+CMediaItem::CMediaItem(const CMediaItem& other, CRootItem* const root_item, CCategoryItem* const parent) :
+            IContentItem( root_item, parent, CItemType::E_MEDIAITEM )
+{
+    m_filename = other.m_filename;
+    m_artist = other.m_artist;
+    m_album = other.m_album;
+    m_title = other.m_title;
+    m_year = other.m_year;
+    m_duration_in_s = other.m_duration_in_s;
+    m_hash = other.m_hash;
+    m_text = other.m_text;
+}
+
 
 CMediaItem::CMediaItem(CRootItem *root_item, CCategoryItem*  parent, int posInParent) : IContentItem( root_item, parent, CItemType::E_MEDIAITEM ) {
 	if(m_parent) {
@@ -147,6 +162,24 @@ CMediaItem::CMediaItem(CRootItem *root_item, std::string text, CCategoryItem*  p
 
 CMediaItem::CMediaItem(CRootItem *root_item ) : IContentItem( root_item, 0, CItemType::E_MEDIAITEM ) {
 }
+
+//CMediaItem* CMediaItem::clone(const IContentItem& other, CRootItem *root_item, CCategoryItem*  parent) {
+//    assert(other.type() == CItemType::E_MEDIAITEM);
+//
+//    CMediaItem* newItem = new CMediaItem(root_item, parent);
+//
+//    newItem->m_filename = m_filename;
+//    newItem->m_artist = m_artist;
+//    newItem->m_album = m_album;
+//    newItem->m_title = m_title;
+//    newItem->m_year = m_year;
+//    newItem->m_duration_in_s = m_duration_in_s;
+//    newItem->m_hash = m_hash;
+//    newItem->m_text = m_text;
+//
+//    return newItem;
+//}
+
 
 void CMediaItem::setParent(CRootItem *root_item, CCategoryItem*  parent, int posInParent) {
 	m_root_item = root_item;

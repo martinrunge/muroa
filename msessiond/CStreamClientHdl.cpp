@@ -67,18 +67,21 @@ std::pair<CRootItem*, std::string> CStreamClientHdl::addClientStateDiff(const CR
 		num_clients = base->getNumContentItems();
 	}
 
-	CStreamClientItem *newsci = new CStreamClientItem(newState, base, addClient);
-	newsci->setHostName(srvPtr->getHostName());
-	newsci->setDomainName(srvPtr->getDomainName());
-	newsci->setPort(srvPtr->getPortNr());
-	newsci->setEnabled(true);
+	// create new client, but do NOT set its parent pointer so it will not be added to parent as child.
+	// Add it as child of "base" if it is new, only.
+    CStreamClientItem *newsci = new CStreamClientItem(newState, 0, addClient);
+    newsci->setHostName(srvPtr->getHostName());
+    newsci->setDomainName(srvPtr->getDomainName());
+    newsci->setPort(srvPtr->getPortNr());
+    newsci->setEnabled(true);
+
 
 	int pos = hasClient(addClient);
 	if(pos == -1) {
 		// streaming client is not known -> append it as available
-
 		oss << "@@ -0,0 +" << num_clients + 1 << ",1 @@" << endl;
 		oss << "+" << base->getPath() << "\t" << newsci->serialize();
+
 		base->addChild(newsci);
 	}
 	else

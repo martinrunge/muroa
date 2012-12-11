@@ -66,6 +66,7 @@ int CPosixCond::Wait(int timeout_in_s) {
   }
   time_val.tv_sec = time(NULL);
   time_val.tv_sec += timeout_in_s;
+  time_val.tv_nsec = 0;
   retval = pthread_cond_timedwait(&m_cond_var, m_mutex->GetMutexPtr(), &time_val );
   if(m_own_mutex) {
     m_mutex->UnLock();

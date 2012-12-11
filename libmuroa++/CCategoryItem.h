@@ -59,6 +59,7 @@ public:
 class CCategoryItem : public CItemBase {
 public:
 	CCategoryItem(CRootItem *root_item, std::string text = std::string(), CCategoryItem*  parent = 0);
+	CCategoryItem(const CCategoryItem& other, CRootItem *root_item, CCategoryItem*  parent = 0);
 	virtual ~CCategoryItem();
 
 	typedef CCategoryItemIterator iterator;

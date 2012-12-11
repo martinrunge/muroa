@@ -14,7 +14,7 @@
 
 namespace muroa {
 
-IContentItem::IContentItem(CRootItem *root_item, CCategoryItem*  parent, const item_type_t type) :
+IContentItem::IContentItem(CRootItem* const root_item, CCategoryItem*  const parent, const item_type_t type) :
    CItemBase(root_item, parent, type)
 {
 
@@ -25,8 +25,8 @@ IContentItem::~IContentItem() {
 }
 
 IContentItem* IContentItem::itemFactory(const CItemType itemType,
-		                                CRootItem *root_item,
-		                                CCategoryItem *parent,
+		                                CRootItem* const root_item,
+		                                CCategoryItem* const parent,
 		                                const unsigned posInParent)
 {
 	const CItemType::item_type_t type_enum = itemType.getType();
@@ -54,9 +54,9 @@ IContentItem* IContentItem::itemFactory(const CItemType itemType,
 }
 
 IContentItem* IContentItem::itemFactory(const CItemType itemType,
-		                                CRootItem *root_item,
+		                                CRootItem* const root_item,
 		                                std::string text,
-		                                CCategoryItem *parent,
+		                                CCategoryItem* const parent,
 		                                const unsigned posInParent) throw(ExMalformedPatch)
 {
 	const CItemType::item_type_t type_enum = itemType.getType();
@@ -99,6 +99,53 @@ IContentItem* IContentItem::itemFactory(CMediaItem* item,
 		 newItem->setFilename(item->getFilename());
 		 return newItem;
 }
+
+IContentItem* IContentItem::itemFactory(const IContentItem& other,
+                                               CRootItem* const root_item,
+                                               CCategoryItem* const parent)
+{
+    const CItemType::item_type_t type_enum = other.type();
+    switch(type_enum) {
+    case CItemType::E_ROOT:
+        return 0;
+        break;
+    case CItemType::E_CAT:
+        return 0;
+        break;
+    case CItemType::E_MEDIAITEM:
+    {
+        const CMediaItem* const otherPtr = reinterpret_cast<const CMediaItem* const>(&other);
+        CMediaItem* newItem = new CMediaItem(*otherPtr, root_item, parent);
+        return newItem;
+        break;
+    }
+    case CItemType::E_PLAYLISTITEM:
+    {
+        const CPlaylistItem* const otherPtr = reinterpret_cast<const CPlaylistItem* const>(&other);
+        CPlaylistItem* newItem = new CPlaylistItem(*otherPtr, root_item, parent);
+        return newItem;
+        break;
+    }
+    case CItemType::E_NEXTLISTITEM:
+    {
+        const CNextlistItem* const otherPtr = reinterpret_cast<const CNextlistItem* const>(&other);
+        CNextlistItem* newItem = new CNextlistItem(*otherPtr, root_item, parent);
+        return newItem;
+        break;
+    }
+    case CItemType::E_STREAM_CLIENT:
+    {
+        const CStreamClientItem* const otherPtr = reinterpret_cast<const CStreamClientItem* const>(&other);
+        CStreamClientItem* newItem = new CStreamClientItem(*otherPtr, root_item, parent);
+        return newItem;
+        break;
+    }
+    default:
+        return 0;
+        break;
+    }
+}
+
 
 
 bool IContentItem::operator==(const IContentItem& other) {

@@ -332,6 +332,22 @@ void CCollectionTest::traverse() {
 
 }
 
+void CCollectionTest::copyConstruct() {
+    CRootItem* rItem = prepareFakeCollection(10, 10, 10);
+    CRootItem* copyOfRItem = new CRootItem(*rItem);
+
+    CPPUNIT_ASSERT( (*rItem) == (*copyOfRItem) );
+    string orig_serialisation = rItem->serialize();
+
+    delete rItem;
+
+    string copied_serialisation = copyOfRItem->serialize();
+
+    CPPUNIT_ASSERT( copied_serialisation.compare(orig_serialisation) == 0);
+
+}
+
+
 void CCollectionTest::replaceTabs() {
 	CMediaItem *mItem = new CMediaItem(m_root, 0);
 	mItem->setArtist("Tabula\tRasa\t");
