@@ -383,6 +383,11 @@ void CRootItem::patch(std::string diff) throw(ExMalformedPatch) {
 						oss << "error removing item: unknown parent category '" << path << "'";
 						throw ExMalformedPatch(oss.str(), patchLineNr);
 					}
+                    if((lineNr - 1) < 0 || (lineNr - 1) > parent->getNumContentItems() ) {
+                        ostringstream oss;
+                        oss << "error: request to remove item at " << lineNr - 1 << " in category '" << path << "' outside valid range [0, " << parent->getNumContentItems() << "].";
+                        throw ExMalformedPatch(oss.str(), patchLineNr);
+                    }
 
 					IContentItem *contItem = parent->getContentItem(lineNr - 1);
 					string itemText = contItem->getText();

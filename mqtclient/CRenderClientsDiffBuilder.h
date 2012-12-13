@@ -15,6 +15,9 @@
 #include "CModelDiff.h"
 #include "cmds/CmdBase.h"
 
+
+class CSession;
+
 namespace muroa {
   class CStreamClientItem;
 }
@@ -24,7 +27,7 @@ class CRenderClientsDiffBuilder : public QObject {
 	Q_OBJECT;
 
 public:
-	CRenderClientsDiffBuilder( muroa::CRootItem* sstPtr );
+	CRenderClientsDiffBuilder( muroa::CRootItem* sstPtr, const CSession* const session );
 	virtual ~CRenderClientsDiffBuilder();
 
 	std::string diff(CModelDiff md);
@@ -35,6 +38,7 @@ signals:
 
 private:
 	muroa::CRootItem* m_sessionStatePtr;
+	const CSession* const m_session;
 
 	muroa::CCategoryItem* m_render_clients;
 

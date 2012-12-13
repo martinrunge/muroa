@@ -62,6 +62,9 @@ public:
 
 	muroa::CItemBase* itemFromIndex(QModelIndex index);
 
+	int own2availIndex(int ownIndex);
+	int avail2ownIndex(int availIndex);
+
 private:
 
 	// role based access functions

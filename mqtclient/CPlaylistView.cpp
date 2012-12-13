@@ -28,7 +28,6 @@ CPlaylistView::CPlaylistView(QWidget * parent ) : QListView( parent ),
 }
 
 CPlaylistView::~CPlaylistView() {
-	// TODO Auto-generated destructor stub
 }
 
 void CPlaylistView::mousePressEvent(QMouseEvent *event)

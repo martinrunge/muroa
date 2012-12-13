@@ -33,12 +33,9 @@ using namespace muroa;
 CPPUNIT_TEST_SUITE_REGISTRATION( CRootItemDiffTest );
 
 CRootItemDiffTest::CRootItemDiffTest() {
-	// TODO Auto-generated constructor stub
-
 }
 
 CRootItemDiffTest::~CRootItemDiffTest() {
-	// TODO Auto-generated destructor stub
 }
 
 

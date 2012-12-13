@@ -12,8 +12,6 @@ using namespace std;
 namespace muroa {
 
 CmdEditNextlist::CmdEditNextlist() : Cmd(Cmd::EDIT_NEXTLIST) {
-	// TODO Auto-generated constructor stub
-
 }
 
 CmdEditNextlist::CmdEditNextlist(unsigned  fromRev, unsigned toRev, std::string diff)
@@ -26,7 +24,6 @@ CmdEditNextlist::CmdEditNextlist(unsigned  fromRev, unsigned toRev, std::string 
 }
 
 CmdEditNextlist::~CmdEditNextlist() {
-	// TODO Auto-generated destructor stub
 }
 
     string CmdEditNextlist::getDiff() const

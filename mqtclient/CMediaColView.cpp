@@ -28,7 +28,6 @@ CMediaColView::CMediaColView(QWidget * parent) : QTreeView(parent){
 }
 
 CMediaColView::~CMediaColView() {
-	// TODO Auto-generated destructor stub
 }
 
 void CMediaColView::mousePressEvent(QMouseEvent *event)

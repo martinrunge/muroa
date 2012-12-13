@@ -23,7 +23,7 @@ CDnsSdBase::CDnsSdBase(boost::asio::io_service& io_service) : m_io_service(io_se
 		                                                      m_add_service_handler(0),
 		                                                      m_rm_service_handler(0)
 {
-	CApp* m_app = CApp::getInstPtr();
+	m_app = CApp::getInstPtr();
 }
 
 CDnsSdBase::~CDnsSdBase() {
@@ -64,7 +64,9 @@ int CDnsSdBase::removeService(std::string name)
 		if( name.compare( (*it)->getServiceName() ) == 0 )
 		{
 			rmSrv = *it;
-			m_services.erase(it);
+            vector<ServDescPtr>::iterator tmpit = it;
+			m_services.erase(tmpit);
+			--it;
 			num++;
 		}
 	}
@@ -86,33 +88,9 @@ int CDnsSdBase::removeService(std::string name)
 
 int CDnsSdBase::removeService(const CServiceDesc& rmSd )
 {
-	lock_guard<mutex> lk(m_mutex);
-	int num = 0;
-	ServDescPtr rmSrv;
-	vector<ServDescPtr>::iterator it;
-	for(it = m_services.begin(); it != m_services.end(); it++)
-	{
-		if( **it == rmSd )
-		{
-			rmSrv = *it;
-			m_services.erase(it);
-			num++;
-		}
-	}
-
-	if(num > 0) {
-		LOG4CPLUS_TRACE(m_app->logger(), "service changed."  );
-		if(m_service_changed_handler)
-		{
-			m_io_service.post(boost::bind(m_service_changed_handler));
-		}
-		if(m_rm_service_handler)
-		{
-			m_io_service.post(boost::bind(m_rm_service_handler, rmSrv));
-		}
-	}
-
-	return num;
+	string serviceName = rmSd.getServiceName();
+    int num = removeService(serviceName);
+ 	return num;
 }
 
 int CDnsSdBase::hasService(string name)

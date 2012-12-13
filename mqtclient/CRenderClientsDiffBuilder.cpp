@@ -8,6 +8,7 @@
 #include "CRenderClientsDiffBuilder.h"
 #include "CPlaylistItem.h"
 #include "CStreamClientItem.h"
+#include "CSession.h"
 
 #include "cmds/CmdEditMediaCol.h"
 #include "cmds/CmdEditPlaylist.h"
@@ -16,8 +17,10 @@
 
 using namespace muroa;
 
-CRenderClientsDiffBuilder::CRenderClientsDiffBuilder( CRootItem* sstPtr) : m_sessionStatePtr(sstPtr),
-		                                                                   m_render_clients(0)
+CRenderClientsDiffBuilder::CRenderClientsDiffBuilder( CRootItem* sstPtr, const CSession* const session) :
+                                                               m_sessionStatePtr(sstPtr),
+                                                               m_session(session),
+		                                                       m_render_clients(0)
 {
 }
 
@@ -32,6 +35,9 @@ void CRenderClientsDiffBuilder::prepareDiff(CModelDiff* md) {
 	enum origin commandType;
 
 	m_render_clients = m_sessionStatePtr->getCategoryPtr("/RenderClients");
+    if(m_render_clients == 0) {
+        m_render_clients = m_sessionStatePtr->mkPath("/renderClients");
+    }
 
 	int numToRemove = 0;
 	int numToInsert = 0;
@@ -72,73 +78,83 @@ std::string CRenderClientsDiffBuilder::diff(CModelDiff md) {
 
 	prepareDiff(&md);
 
-	int numToInsert = md.getNumToInsert();
-	int numToRemove = md.getNumToRemove();
+	int numToMod = md.getNumToInsert();
 
-	int rmFrom = md.getSelectedItems().at(0).line;
-	int rmTo = md.getSelectedItems().at(md.getNumSelected() - 1).line;
+	int modFrom = md.getSelectedItems().at(0).line;
+	int modTo   = md.getSelectedItems().at(md.getNumSelected() - 1).line;
 
 	int insTo = md.getInsertPos();
 
-	// ignore, if rows to remove are to be moved into their own range. (dropped on self)
-	if (rmFrom < insTo && rmTo > insTo
-			&& md.getOrigin() == md.getDestination()) {
-		//qDebug() << std::string("dropped on origin -> ignore: [%1, %2] -> %3").arg(rmFrom).arg(rmTo).arg(insTo);
-		//qDebug() << std::string("from: %1 to: %2 ").arg(md.getOrigin()).arg(md.getDestination());
-		//md.dump();
-		return text;
-	} else {
-		//qDebug() << std::string("building diff: [%1, %2] -> %3").arg(rmFrom).arg(rmTo).arg(insTo);
-		//md.dump();
+	// in /RenderClients Category, indices are always the same as no entry is actually inserted or removed
+	// we just modify the "ownerSessionName" property
+	if(md.getOrigin() == E_AVAIL_RENDER_CLIENT )
+	{
+	    if(md.getDestination() == E_OWN_RENDER_CLIENT ) {
+	        // avail -> own: make streaming clients part of own session
+	        text = prepareDiffHeader(modFrom + 1, numToMod, modFrom + 1, numToMod);
+            for(int i = modFrom; i <= modTo; i++) {
+	            IContentItem* ci = m_render_clients->getContentItem( i );
+	            CStreamClientItem* sci = reinterpret_cast<CStreamClientItem*>(ci);
+	            assert(sci != 0);
+	            if( m_session->getName().compare(sci->getOwnerSessionName()) != 0 ) {
+	                text += "-";
+                    text += m_render_clients->getPath();
+                    text += "\t";
+	                text += sci->serialize(false);
+	            }
+	        }
+
+	        for(int i = modFrom; i <= modTo; i++) {
+                IContentItem* ci = m_render_clients->getContentItem( i );
+                CStreamClientItem* sci = reinterpret_cast<CStreamClientItem*>(ci);
+                assert(sci != 0);
+                if( m_session->getName().compare(sci->getOwnerSessionName()) != 0 ) {
+                    sci->setOwnerSessionName(m_session->getName());
+                    text += "+";
+                    text += m_render_clients->getPath();
+                    text += "\t";
+                    text += sci->serialize(false);
+                }
+            }
+
+	    }
+	    else {
+	        return string();
+	    }
 	}
+	else {
+	    if(md.getDestination() == E_AVAIL_RENDER_CLIENT ) {
+	        // own -> avail: remove clients from own session
+            text = prepareDiffHeader(modFrom, numToMod, modTo, numToMod);
+            for(int i = modFrom; i <= modTo; i++) {
+                IContentItem* ci = m_render_clients->getContentItem( i );
+                CStreamClientItem* sci = reinterpret_cast<CStreamClientItem*>(ci);
+                assert(sci != 0);
+                if( m_session->getName().compare(sci->getOwnerSessionName()) == 0 ) {
+                    text += "-";
+                    text += m_render_clients->getPath();
+                    text += "\t";
+                    text += sci->serialize(false);
+                }
+            }
 
-	if (rmFrom > insTo) {
-		// insert first
-		if (numToInsert > 0) {
-			text.append(prepareDiffHeader(insTo, 0, insTo + 1, numToInsert));
-			for (int i = 0; i < numToInsert; i++) {
-				text.append("+");
-				text.append( (this->*getItemToInsert)(md.getSelectedItems().at(i)));
-				text.append("\n");
-			}
-		}
+            for(int i = modFrom; i <= modTo; i++) {
+                IContentItem* ci = m_render_clients->getContentItem( i );
+                CStreamClientItem* sci = reinterpret_cast<CStreamClientItem*>(ci);
+                assert(sci != 0);
+                if( m_session->getName().compare(sci->getOwnerSessionName()) == 0 ) {
+                    sci->setOwnerSessionName("");
+                    text += "+";
+                    text += m_render_clients->getPath();
+                    text += "\t";
+                    text += sci->serialize(false);
+                }
+            }
 
-		// remove then
-		if (numToRemove > 0) {
-			text.append(
-					prepareDiffHeader(rmFrom + 1, numToRemove,
-							rmFrom + numToInsert, 0));
-			for (int i = 0; i < numToRemove; i++) {
-				text.append("-");
-				text.append( (this->*getItemToRemove)(md.getSelectedItems().at(i)));
-				text.append("\n");
-			}
-		}
-
-	} else {
-		// remove first
-		if (numToRemove > 0) {
-			text.append(prepareDiffHeader(rmFrom + 1, numToRemove, rmFrom, 0));
-
-			for (int i = 0; i < numToRemove; i++) {
-				text += "-";
-				text += (this->*getItemToRemove)(md.getSelectedItems().at(i));
-				text += "\n";
-			}
-		}
-
-		// insert then
-		if (numToInsert > 0) {
-			// text.append( std::string("@@ -%1,%2 +%3,%4 @@\n").arg(insTo ).arg(0).arg(insTo - numToInsert + 1).arg(numToInsert) );
-			text.append(
-					prepareDiffHeader(insTo, 0, insTo - numToRemove + 1,
-							numToInsert));
-			for (int i = 0; i < numToInsert; i++) {
-				text += "+";
-				text += (this->*getItemToInsert)(md.getSelectedItems().at(i));
-				text += "\n";
-			}
-		}
+	    }
+	    else {
+	        return string();
+	    }
 	}
 
 	qDebug() << QString(text.c_str());
@@ -157,7 +173,7 @@ std::string CRenderClientsDiffBuilder::diff(CModelDiff md) {
 	}
 
 	emit sendCommand(cmd);
-	// return text;
+	return text;
 }
 
 std::string CRenderClientsDiffBuilder::insertInOwnList(comb_hash_t comb_hash) {

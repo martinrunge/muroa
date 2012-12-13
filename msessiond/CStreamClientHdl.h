@@ -15,6 +15,7 @@ namespace muroa {
 
 class CSession;
 class CRootItem;
+class CStreamClientItem;
 
 /**
 *  A session remembers its streaming clients even if they disappear. They are marked as disabled then.
@@ -37,6 +38,7 @@ public:
 	std::pair<CRootItem*, std::string> takeClientStateDiff(const CRootItem* const curState, const std::string& name, const std::string& ownerSessionsName);
 
 	int isOwnClient(std::string name,std::string category=std::string("/RenderClients"));
+    bool isOwnClient(CStreamClientItem* sci);
 	int hasClient(std::string name,std::string category=std::string("/RenderClients"));
 
 

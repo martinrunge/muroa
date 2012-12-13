@@ -64,7 +64,6 @@ CModelDiff::CModelDiff(const QByteArray& ba)
 }
 
 CModelDiff::~CModelDiff() {
-	// TODO Auto-generated destructor stub
 }
 
 QByteArray CModelDiff::toQByteArray() const

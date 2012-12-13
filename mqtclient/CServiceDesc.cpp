@@ -8,8 +8,6 @@
 #include "CServiceDesc.h"
 
 CServiceDesc::CServiceDesc() {
-	// TODO Auto-generated constructor stub
-
 }
 
 CServiceDesc::CServiceDesc(QString serviceName, QString hostName, QString domainName, int portNr, int interface, int protocol)
@@ -25,5 +23,4 @@ CServiceDesc::CServiceDesc(QString serviceName, QString hostName, QString domain
 
 
 CServiceDesc::~CServiceDesc() {
-	// TODO Auto-generated destructor stub
 }

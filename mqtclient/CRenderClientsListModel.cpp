@@ -218,6 +218,44 @@ muroa::CStreamClientItem* CRenderClientsListModel::getSCItem(int index) const {
 }
 
 
+int CRenderClientsListModel::own2availIndex(int ownIndex) {
+    int numItems = m_model_base->getNumContentItems();
+    int availIndex = 0;
+
+    for(int i = 0; i < numItems; i++) {
+        IContentItem* ci = m_model_base->getContentItem(i);
+        if(ci->type() == CItemType::E_STREAM_CLIENT ) {
+            CStreamClientItem* sci = reinterpret_cast<CStreamClientItem*>(ci);
+            if(m_session->getName().compare( sci->getOwnerSessionName() ) == 0 ) {
+                // this item belongs to this session
+                if(ownIndex == availIndex) {
+                    return i;
+                }
+                availIndex++;
+            }
+        }
+    }
+    return -1;
+}
+
+int CRenderClientsListModel::avail2ownIndex(int availIndex) {
+    int numItems = m_model_base->getNumContentItems();
+    int ownIndex = 0;
+    int countTo = (numItems > availIndex) ? availIndex : numItems;
+
+    for(int i = 0; i < countTo; i++) {
+        IContentItem* ci = m_model_base->getContentItem(i);
+        if(ci->type() == CItemType::E_STREAM_CLIENT ) {
+            CStreamClientItem* sci = reinterpret_cast<CStreamClientItem*>(ci);
+            if(m_session->getName().compare( sci->getOwnerSessionName() ) == 0 ) {
+                // this item belongs to this session
+                ownIndex++;
+            }
+        }
+    }
+    return ownIndex - 1;
+}
+
 
 
 

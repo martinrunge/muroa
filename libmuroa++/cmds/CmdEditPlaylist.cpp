@@ -12,8 +12,6 @@ using namespace std;
 namespace muroa {
 
 CmdEditPlaylist::CmdEditPlaylist() : Cmd(Cmd::EDIT_PLAYLIST) {
-	// TODO Auto-generated constructor stub
-
 }
 
 CmdEditPlaylist::CmdEditPlaylist(unsigned  fromRev, unsigned toRev, std::string diff)
@@ -26,7 +24,6 @@ CmdEditPlaylist::CmdEditPlaylist(unsigned  fromRev, unsigned toRev, std::string 
 }
 
 CmdEditPlaylist::~CmdEditPlaylist() {
-	// TODO Auto-generated destructor stub
 }
 
     string CmdEditPlaylist::getDiff() const

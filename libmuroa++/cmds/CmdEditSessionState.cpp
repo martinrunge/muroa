@@ -12,8 +12,6 @@ using namespace std;
 namespace muroa {
 
 CmdEditSessionState::CmdEditSessionState() : Cmd(Cmd::EDIT_SESSION_STATE) {
-	// TODO Auto-generated constructor stub
-
 }
 
 CmdEditSessionState::CmdEditSessionState(unsigned  fromRev, unsigned toRev, std::string diff)
@@ -26,7 +24,6 @@ CmdEditSessionState::CmdEditSessionState(unsigned  fromRev, unsigned toRev, std:
 }
 
 CmdEditSessionState::~CmdEditSessionState() {
-	// TODO Auto-generated destructor stub
 }
 
     string CmdEditSessionState::getDiff() const

@@ -29,7 +29,6 @@ CNextlistView::CNextlistView(QWidget * parent ) : QListView( parent ),
 }
 
 CNextlistView::~CNextlistView() {
-	// TODO Auto-generated destructor stub
 }
 
 void CNextlistView::mousePressEvent(QMouseEvent *event)

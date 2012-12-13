@@ -123,32 +123,40 @@ std::pair<CRootItem*, std::string> CStreamClientHdl::rmClientStateDiff(const CRo
 		ostringstream oss;
 		CRootItem* newState = new CRootItem(*curState);
 
-		ServDescPtr srvPtr = m_session->getServiceByName(rmClient);
-		assert(srvPtr != NULL);
+		/// TODO get service by name from session state! m_session->getServiceByName() gets it
+		//   from DnsSDBase where it has already been deleted by now.
 
 		CCategoryItem* base = newState->getCategoryPtr("/RenderClients");
 		if(base == 0) {
 			base = newState->mkPath("/RenderClients");
 		}
-		CStreamClientItem *rmsci = new CStreamClientItem(newState, base, rmClient);
 
-		if( rmsci->isEnabled() ) {
-			// it was enabled, disable it
-			oss << "@@ -" << pos << ",1 +" << pos << ",1 @@" << endl;
-			oss << "-" << base->getPath() << "\t" << rmsci->serialize();
-			rmsci->setEnabled(false);
-			oss << "+" << base->getPath() << "\t" << rmsci->serialize();
-		}
-		else
-		{
-			// it was already disabled -> do nothing
-			delete newState;
-			return make_pair((CRootItem*)0, string());
-		}
-		return make_pair(newState, oss.str());
+        IContentItem* ci = base->getContentItem(pos);
+        assert( ci->type() == CItemType::E_STREAM_CLIENT);
+        CStreamClientItem *rmsci = reinterpret_cast<CStreamClientItem*>(ci);
+
+        if( isOwnClient(rmsci) ) {
+            if( rmsci->isEnabled() ) {
+                // it was enabled, disable it
+                oss << "@@ -" << pos << ",1 +" << pos << ",1 @@" << endl;
+                oss << "-" << base->getPath() << "\t" << rmsci->serialize();
+                rmsci->setEnabled(false);
+                oss << "+" << base->getPath() << "\t" << rmsci->serialize();
+            }
+            else {
+                // it is our own client, but it was already dsbled -> do nothing
+                // it was already disabled -> do nothing
+                delete newState;
+                return make_pair((CRootItem*)0, string());
+            }
+        }
+        else {
+            // client is known and disappeared now. As it is not owned by this session, just remove it.
+            oss << "@@ -" << pos << ",1 +" << "0,0 @@" << endl;
+            oss << "-" << base->getPath() << "\t" << rmsci->serialize();
+        }
+        return make_pair(newState, oss.str());
 	}
-
-	return make_pair((CRootItem*)0, string());
 }
 
 /**
@@ -245,14 +253,31 @@ int CStreamClientHdl::isOwnClient(string name, string category)
 		IContentItem *tmp = base->getContentItem(i);
 		CStreamClientItem *sci = reinterpret_cast<CStreamClientItem*>(tmp);
 
-		if(sci->getServiceName().compare(name) == 0 && m_session->getName().compare( sci->getOwnerSessionName()) == 0 )
-		{
-			return i;
+		if(sci->getServiceName().compare(name) == 0 ) {
+		    if( isOwnClient(sci) ) {
+		        return i;
+		    }
 		}
 	}
 
 	return -1;
 }
+
+/**
+ *  \brief  Check if a render client is owned by this session
+ *
+ *  \return true if sci is owned by this session, false if not.
+ */
+bool CStreamClientHdl::isOwnClient(CStreamClientItem* sci)
+{
+    if(m_session->getName().compare( sci->getOwnerSessionName()) == 0 ) {
+        return true;
+    }
+    else {
+        return false;
+    }
+}
+
 
 /**
  *  \brief  Check if a render client is known

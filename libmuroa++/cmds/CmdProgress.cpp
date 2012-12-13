@@ -10,8 +10,6 @@
 namespace muroa {
 
 CmdProgress::CmdProgress() : Cmd(Cmd::PROGRESS) {
-	// TODO Auto-generated constructor stub
-
 }
 
 CmdProgress::CmdProgress(uint32_t correspondingJobID, uint32_t done, uint32_t total)

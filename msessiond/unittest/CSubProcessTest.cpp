@@ -27,12 +27,9 @@ CPPUNIT_TEST_SUITE_REGISTRATION( CSubProcessTest );
 using namespace std;
 
 CSubProcessTest::CSubProcessTest() {
-	// TODO Auto-generated constructor stub
-
 }
 
 CSubProcessTest::~CSubProcessTest() {
-	// TODO Auto-generated destructor stub
 }
 
 void CSubProcessTest::setUp() {

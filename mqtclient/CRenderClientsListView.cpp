@@ -11,7 +11,7 @@
 
 #include "CRenderClientsListView.h"
 #include "CStreamClientItem.h"
-#include "CMuroaListModel.h"
+#include "CRenderClientsListModel.h"
 
 #include "CRenderClientsDiffBuilder.h"
 
@@ -32,7 +32,6 @@ CRenderClientsListView::CRenderClientsListView(QWidget * parent ) : QListView( p
 }
 
 CRenderClientsListView::~CRenderClientsListView() {
-	// TODO Auto-generated destructor stub
 }
 
 void CRenderClientsListView::mousePressEvent(QMouseEvent *event)
@@ -101,7 +100,7 @@ void CRenderClientsListView::dropEvent(QDropEvent *event)
         md.setInsertPos( insertPos );
         md.setDestination(m_role);
 
-        qDebug() << QString("CRenderClientsListView::dropEvent: Move [%1,%2] to %3").arg(md.getSelectedItems().at(0).hash).arg(md.getSelectedItems().at(md.getNumSelected() - 1 ).hash).arg(md.getInsertPos());
+        qDebug() << QString("CRenderClientsListView::dropEvent: Move [%1,%2] to %3").arg(md.getSelectedItems().at(0).line).arg(md.getSelectedItems().at(md.getNumSelected() - 1 ).line).arg(md.getInsertPos());
         // plModel->makeDiff(&md);
         m_rcDiffBuilder->diff(md);
     }
@@ -111,7 +110,7 @@ void CRenderClientsListView::performDrag()
 {
 	qDebug() << QString("performDrag");
 
-    CMuroaListModel* lmodel = reinterpret_cast<CMuroaListModel*>(model());
+    CRenderClientsListModel* lmodel = reinterpret_cast<CRenderClientsListModel*>(model());
 
     QModelIndexList indexList = selectedIndexes();
     CModelDiff md(m_role);
@@ -125,7 +124,14 @@ void CRenderClientsListView::performDrag()
 		{
     		CStreamClientItem* scItem = reinterpret_cast<CStreamClientItem*>(item);
 			combhash.type = scItem->type();
-			combhash.line = indexList.at(i).row();
+			if(m_role == E_OWN_RENDER_CLIENT) {
+			    int filteredline = lmodel->own2availIndex(indexList.at(i).row());
+	            combhash.line = filteredline;
+			}
+			else {
+                combhash.line = indexList.at(i).row();
+			}
+
 			md.appendToSelectedItems(combhash);
 		}
 		default:

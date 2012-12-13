@@ -12,8 +12,6 @@ using namespace std;
 namespace muroa {
 
 CmdEditMediaCol::CmdEditMediaCol() : Cmd(Cmd::EDIT_MEDIACOL) {
-	// TODO Auto-generated constructor stub
-
 }
 
 CmdEditMediaCol::CmdEditMediaCol(unsigned  fromRev, unsigned toRev, std::string diff)
@@ -26,7 +24,6 @@ CmdEditMediaCol::CmdEditMediaCol(unsigned  fromRev, unsigned toRev, std::string 
 }
 
 CmdEditMediaCol::~CmdEditMediaCol() {
-	// TODO Auto-generated destructor stub
 }
 
     string CmdEditMediaCol::getDiff() const

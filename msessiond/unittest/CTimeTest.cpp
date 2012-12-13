@@ -13,12 +13,9 @@ using namespace std;
 CPPUNIT_TEST_SUITE_REGISTRATION( CTimeTest );
 
 CTimeTest::CTimeTest() {
-	// TODO Auto-generated constructor stub
-
 }
 
 CTimeTest::~CTimeTest() {
-	// TODO Auto-generated destructor stub
 }
 
 void CTimeTest::setUp() {

@@ -33,7 +33,7 @@ CSessionAdminDlg::CSessionAdminDlg(const CSession* const session, QWidget* paren
 	m_ownRenderClientsModel->setRole(E_OWN_RENDER_CLIENT);
 	m_sessionState->connectItemModel(m_ownRenderClientsModel);
 
-	m_rcDiffBuilder = new CRenderClientsDiffBuilder(m_sessionState);
+	m_rcDiffBuilder = new CRenderClientsDiffBuilder(m_sessionState, m_session);
 
 	ui.availRenderersListView->setRole(E_AVAIL_RENDER_CLIENT);
   	ui.availRenderersListView->setModel(m_availRenderClientsModel);

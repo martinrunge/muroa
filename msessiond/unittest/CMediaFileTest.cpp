@@ -21,12 +21,9 @@ using namespace std;
 CPPUNIT_TEST_SUITE_REGISTRATION( CMediaFileTest );
 
 CMediaFileTest::CMediaFileTest() {
-	// TODO Auto-generated constructor stub
-
 }
 
 CMediaFileTest::~CMediaFileTest() {
-	// TODO Auto-generated destructor stub
 }
 
 

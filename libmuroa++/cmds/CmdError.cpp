@@ -12,7 +12,6 @@ namespace muroa {
 CmdError::CmdError()
     :Cmd(Cmd::ERROR)
     {
-        // TODO Auto-generated constructor stub
     }
 
     CmdError::CmdError(unsigned  correspondingJobID, int errorCode, std::string description)

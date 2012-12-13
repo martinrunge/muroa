@@ -35,7 +35,6 @@ CFakeMediaCollection::CFakeMediaCollection(string indir) : m_rootdir(indir) {
 }
 
 CFakeMediaCollection::~CFakeMediaCollection() {
-	// TODO Auto-generated destructor stub
 }
 
 

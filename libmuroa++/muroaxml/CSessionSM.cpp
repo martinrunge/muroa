@@ -8,11 +8,8 @@
 #include "CSessionSM.h"
 
 CSessionSM::CSessionSM() {
-	// TODO Auto-generated constructor stub
-
 }
 
 CSessionSM::~CSessionSM() {
-	// TODO Auto-generated destructor stub
 }
 

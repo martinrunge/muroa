@@ -17,12 +17,9 @@
 using namespace std;
 
 CCollectionUpdater::CCollectionUpdater() {
-	// TODO Auto-generated constructor stub
-
 }
 
 CCollectionUpdater::~CCollectionUpdater() {
-	// TODO Auto-generated destructor stub
 }
 
 CCollection<CCollectionItem>* CCollectionUpdater::walkTree(string dir) {

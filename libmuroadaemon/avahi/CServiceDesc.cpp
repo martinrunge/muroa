@@ -12,8 +12,6 @@ using namespace std;
 namespace muroa {
 
 CServiceDesc::CServiceDesc() {
-	// TODO Auto-generated constructor stub
-
 }
 
 CServiceDesc::CServiceDesc(string serviceName, string hostName, string domainName, string serviceType, int portNr, int interface, int protocol)
@@ -30,7 +28,6 @@ CServiceDesc::CServiceDesc(string serviceName, string hostName, string domainNam
 
 
 CServiceDesc::~CServiceDesc() {
-	// TODO Auto-generated destructor stub
 }
 
 }
