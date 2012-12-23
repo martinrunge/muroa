@@ -3,7 +3,10 @@ cmake_minimum_required (VERSION 2.6)
 
 set(VERBOSE 1)
 
+if( "${ARCH}" STREQUAL "")
+MESSAGE("Setting ARCH to x86")
 SET(ARCH x86)
+endif( "${ARCH}" STREQUAL "")
 
 set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../msessiond/cmake" ${CMAKE_MODULE_PATH})
 
@@ -14,7 +17,11 @@ set(Boost_USE_MULTITHREADED ON )
 find_package( Boost 1.36.0 COMPONENTS filesystem system date_time program_options REQUIRED )
 find_package ( ALSA REQUIRED )
 find_package ( LibSamplerate REQUIRED )
-
+find_package ( ZLIB REQUIRED )
+find_package ( libavcodec REQUIRED )
+find_package ( libavformat REQUIRED )
+find_package ( libavutil REQUIRED )
+find_package ( log4cplus REQUIRED )
 
 # add_subdirectory(unittest)
 
@@ -47,7 +54,10 @@ set( HEADERS          cpacketringbuffer.h
 
 
 include_directories(${SOURCE_DIR} 
-                    ${Boost_INCLUDE_DIRS} 
+                    ${Boost_INCLUDE_DIRS}
+                    ${libavcodec_INCLUDE_DIRS} 
+                    ${libavformat_INCLUDE_DIRS} 
+                    ${log4cplus_INCLUDE_DIRS}
                     ${CMAKE_SOURCE_DIR} 
                     ${CMAKE_SOURCE_DIR}/../libmuroadaemon 
                     ${CMAKE_SOURCE_DIR}/../libmuroa++
@@ -59,6 +69,7 @@ include_directories(${SOURCE_DIR}
 link_directories(${BINARY_DIR} 
                  ${SQLITE_LIBRARY_DIRS} 
                  ${BOOST_LIBRARYDIR}
+                 ${libavcodec_LIBRARY_DIRS}
                  ${LibSamplerate_CFLAGS}
                  "${CMAKE_SOURCE_DIR}/../libmuroadaemon/build_${ARCH}" 
 #                 "${CMAKE_SOURCE_DIR}/../libmuroa++/build_${ARCH}"
@@ -71,14 +82,13 @@ set_target_properties( muroad PROPERTIES  COMPILE_FLAGS "-std=gnu++0x" )
 # SET_TARGET_PROPERTIES( msessiond PROPERTIES  LINK_FLAGS -Wl,--eh-frame-hdr)
 # SET_TARGET_PROPERTIES( msessiond PROPERTIES  LINK_FLAGS -Wl,-shared-libgcc)
 
-TARGET_LINK_LIBRARIES(muroad       ${Boost_LIBRARIES} 
-                                   avformat
-                                   avcodec
-                                   avutil 
+TARGET_LINK_LIBRARIES(muroad       ${Boost_LIBRARIES}
+                                   ${libavcodec_LIBRARIES} 
+                                   ${libavformat_LIBRARIES} 
+                                   ${libavavutil_LIBRARIES} 
                                    ${LibSamplerate_LIBRARIES}
                                    ${ALSA_LIBRARY}
-                                   ao
-                                   log4cplus
+                                   ${log4cplus_LIBRARY}
                                    sock++
                                    dsaudio
                                    muroadaemon
