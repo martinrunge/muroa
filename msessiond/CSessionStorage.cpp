@@ -9,6 +9,8 @@
 
 #include <CApp.h>
 #include <CRootItem.h>
+#include <IContentItem.h>
+#include <CStreamClientItem.h>
 #include "CSession.h"
 #include <CUtils.h>
 
@@ -258,5 +260,57 @@ void CSessionStorage::restoreNextlistRevs() {
 
 void CSessionStorage::restoreSessionStateRevs() {
 	restoreRootItemRevs(sessionStateSubdir);
+
+	// check if all render clients are in the same state as in last revision
+	int num_clients;
+    CRootItem* sstate = m_session->getSessionState( );
+    CRootItem* newSState = new CRootItem(*sstate);
+
+    CCategoryItem* base = newSState->getCategoryPtr("/RenderClients");
+    if(base == 0) {
+        base = newSState->mkPath("/RenderClients");
+        num_clients = 0;
+    }
+    else {
+        num_clients = base->getNumContentItems();
+    }
+
+    for(int i=0; i < num_clients; i++) {
+        IContentItem* ci = base->getContentItem(i);
+        if(ci->type() == CItemType::E_STREAM_CLIENT) {
+            CStreamClientItem* sci = reinterpret_cast<CStreamClientItem*>(ci);
+
+            ServDescPtr srvPtr = m_session->getServiceByName(sci->getName());
+            string sessionName = m_session->getName();
+            if(srvPtr != NULL ) {
+               // service is there, if it part of this session, enable it, else do nothing
+                if(sessionName.compare(sci->getOwnerSessionName()) == 0) {
+                    // client is not active, but this session has owned it -> keep it as disabled
+                    sci->setEnabled(true);
+                }
+            }
+            else {
+                // service is not there, if it is part of this session, disable it, else remove it
+                if(sessionName.compare(sci->getOwnerSessionName()) == 0) {
+                    // client is not active, but this session has owned it -> keep it as disabled
+                    sci->setEnabled(false);
+                }
+                else {
+                    base->delContentItem(i);
+                    num_clients--;
+                }
+            }
+        }
+    }
+
+    if( *newSState == *sstate ) {
+        delete newSState;
+    }
+    else {
+        m_session->addSessionStateRev(newSState);
+    }
+
+
+
 }
 } // namespace muroa

@@ -76,13 +76,15 @@ std::pair<CRootItem*, std::string> CStreamClientHdl::addClientStateDiff(const CR
     newsci->setEnabled(true);
 
 
-	int pos = hasClient(addClient);
+	pair<int,int> pospair = hasClient(addClient);
+	int pos = pospair.first;
+	int insertbefore = pospair.second;
 	if(pos == -1) {
 		// streaming client is not known -> append it as available
-		oss << "@@ -0,0 +" << num_clients + 1 << ",1 @@" << endl;
+		oss << "@@ -" << insertbefore << ",0 +" << insertbefore + 1 << ",1 @@" << endl;
 		oss << "+" << base->getPath() << "\t" << newsci->serialize();
 
-		base->addChild(newsci);
+		base->addChild(newsci, insertbefore);
 	}
 	else
 	{
@@ -94,7 +96,7 @@ std::pair<CRootItem*, std::string> CStreamClientHdl::addClientStateDiff(const CR
 		newsci->setOwnerSessionName(sci->getOwnerSessionName());
 
 		if(*sci != *newsci) {
-			oss << "@@ -" << pos << ",1 +" << pos << ",1 @@" << endl;
+			oss << "@@ -" << pos + 1 << ",1 +" << pos + 1 << ",1 @@" << endl;
 			oss << "-" << base->getPath() << "\t" << sci->serialize();
 			oss << "+" << base->getPath() << "\t" << newsci->serialize();
 			base->delContentItem(pos);
@@ -112,7 +114,9 @@ std::pair<CRootItem*, std::string> CStreamClientHdl::addClientStateDiff(const CR
 std::pair<CRootItem*, std::string> CStreamClientHdl::rmClientStateDiff(const CRootItem* const curState, const std::string& rmClient)
 {
 
-	int pos = hasClient(rmClient);
+    pair<int,int> pospair = hasClient(rmClient);
+    int pos = pospair.first;
+    int insertbefore = pospair.second;
 	if(pos == -1) {
 		// streaming client is not known -> don't care if it disappeared
 		return make_pair((CRootItem*)0, string());
@@ -138,13 +142,13 @@ std::pair<CRootItem*, std::string> CStreamClientHdl::rmClientStateDiff(const CRo
         if( isOwnClient(rmsci) ) {
             if( rmsci->isEnabled() ) {
                 // it was enabled, disable it
-                oss << "@@ -" << pos << ",1 +" << pos << ",1 @@" << endl;
+                oss << "@@ -" << pos + 1 << ",1 +" << pos + 1 << ",1 @@" << endl;
                 oss << "-" << base->getPath() << "\t" << rmsci->serialize();
                 rmsci->setEnabled(false);
                 oss << "+" << base->getPath() << "\t" << rmsci->serialize();
             }
             else {
-                // it is our own client, but it was already dsbled -> do nothing
+                // it is our own client, but it was already disbled -> do nothing
                 // it was already disabled -> do nothing
                 delete newState;
                 return make_pair((CRootItem*)0, string());
@@ -152,8 +156,9 @@ std::pair<CRootItem*, std::string> CStreamClientHdl::rmClientStateDiff(const CRo
         }
         else {
             // client is known and disappeared now. As it is not owned by this session, just remove it.
-            oss << "@@ -" << pos << ",1 +" << "0,0 @@" << endl;
+            oss << "@@ -" << pos + 1 << ",1 +" << pos + 1 << ",0 @@" << endl;
             oss << "-" << base->getPath() << "\t" << rmsci->serialize();
+            base->delContentItem(pos);
         }
         return make_pair(newState, oss.str());
 	}
@@ -189,7 +194,9 @@ std::pair<CRootItem*, std::string> CStreamClientHdl::takeClientStateDiff(const C
 	newsci->setPort(srvPtr->getPortNr());
 	newsci->setOwnerSessionName(ownerSessionsName);
 
-	int pos = hasClient(name);
+    pair<int,int> pospair = hasClient(name);
+    int pos = pospair.first;
+    int insertbefore = pospair.second;
 	if(pos == -1) {
 		// streaming client is not known -> append it as available
 		int num_clients;
@@ -284,16 +291,20 @@ bool CStreamClientHdl::isOwnClient(CStreamClientItem* sci)
  *
  *  if yes, return its position in the "RenderClients" category of the session's state
  *
- *  \return position in the "RenderClients" category of the session's state if
+ *  \return pair of ints: first: position in the "RenderClients" category of the session's state if
  *          render client is already known, -1 if not.
+ *          second: if not found the insert position, -1 if found.
+ *          on error, both are -1.
  */
-int CStreamClientHdl::hasClient(string name, string category)
+pair<int,int> CStreamClientHdl::hasClient(string name, string category)
 {
 	CRootItem* curState = m_session->getSessionState();
 	CCategoryItem* base = curState->getCategoryPtr(category);
+	int foundpos = -1;
+	int insertpos = 0;
 
 	if(base == NULL) {
-		return -1;
+		return make_pair(-1, -1);
 	}
 
 	int num_clients = base->getNumContentItems();
@@ -302,13 +313,18 @@ int CStreamClientHdl::hasClient(string name, string category)
 		IContentItem *tmp = base->getContentItem(i);
 		CStreamClientItem *sci = reinterpret_cast<CStreamClientItem*>(tmp);
 
-		if(sci->getServiceName().compare(name) == 0)
+		string serviceName = sci->getServiceName();
+		int cmpres = name.compare(serviceName);
+		if(cmpres == 0)
 		{
-			return i;
+			return make_pair(i, -1);
+		}
+		if(cmpres > 0) {
+		    insertpos = i + 1;
 		}
 	}
 
-	return -1;
+	return make_pair(-1, insertpos);
 }
 
 } /* namespace muroa */

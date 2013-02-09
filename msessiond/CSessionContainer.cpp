@@ -150,7 +150,10 @@ void CSessionContainer::serviceAdded(ServDescPtr srvPtr) {
 		map<std::string, CSession*>::iterator it;
 		for(it = m_sessions.begin(); it != m_sessions.end(); it++)
 		{
-			it->second->addClient(name);
+		    if(it->second->getName().compare("createNewSession") != 0) {
+		        // sesion named "createNewSession" is a dummy, don't serve it
+		        it->second->addClient(name);
+		    }
 		}
 	}
 }
@@ -163,7 +166,10 @@ void CSessionContainer::serviceRemoved(ServDescPtr srvPtr) {
 		map<std::string, CSession*>::iterator it;
 		for(it = m_sessions.begin(); it != m_sessions.end(); it++)
 		{
-			it->second->rmClient(srvPtr->getServiceName());
+            if(it->second->getName().compare("createNewSession") != 0) {
+                // sesion named "createNewSession" is a dummy, don't serve it
+                it->second->rmClient(srvPtr->getServiceName());
+            }
 		}
 	}
 }
@@ -173,7 +179,10 @@ void CSessionContainer::serviceTaken(std::string seviceName, std::string ownerSe
 	map<std::string, CSession*>::iterator it;
 	for(it = m_sessions.begin(); it != m_sessions.end(); it++)
 	{
-		it->second->takeClient(seviceName, ownerSessionsName);
+        if(it->second->getName().compare("createNewSession") != 0) {
+            // sesion named "createNewSession" is a dummy, don't serve it
+            it->second->takeClient(seviceName, ownerSessionsName);
+        }
 	}
 }
 

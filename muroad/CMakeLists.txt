@@ -15,6 +15,9 @@ find_package(PkgConfig)
 set(Boost_USE_STATIC_LIBS   ON )
 set(Boost_USE_MULTITHREADED ON )
 find_package( Boost 1.36.0 COMPONENTS filesystem system date_time program_options REQUIRED )
+find_package( EXPAT REQUIRED )
+find_package( libavahiclient REQUIRED )
+find_package( libavahicommon REQUIRED )
 find_package ( ALSA REQUIRED )
 find_package ( LibSamplerate REQUIRED )
 find_package ( ZLIB REQUIRED )
@@ -66,7 +69,14 @@ include_directories(${SOURCE_DIR}
                     ${ALSA_INCLUDE_DIR}
                     ) 
 
-link_directories(${BINARY_DIR} 
+#
+#                 "/home/martin/raspi/tools/arm-bcm2708/gcc-linaro-arm-linux-gnueabihf-raspbian/arm-linux-gnueabihf/libc/lib"
+#                 "/home/martin/raspi/tools/arm-bcm2708/gcc-linaro-arm-linux-gnueabihf-raspbian/arm-linux-gnueabihf/libc/lib/arm-linux-gnueabihf"
+#                 "/home/martin/raspi/tools/sysroot/lib/arm-linux-gnueabihf"
+#
+                 
+link_directories(/home/martin/x-tools/arm-unknown-linux-gnueabi/arm-unknown-linux-gnueabi/sysroot/lib/arm-linux-gnueabihf
+                 ${BINARY_DIR} 
                  ${SQLITE_LIBRARY_DIRS} 
                  ${BOOST_LIBRARYDIR}
                  ${libavcodec_LIBRARY_DIRS}
@@ -86,9 +96,13 @@ TARGET_LINK_LIBRARIES(muroad       ${Boost_LIBRARIES}
                                    ${libavcodec_LIBRARIES} 
                                    ${libavformat_LIBRARIES} 
                                    ${libavavutil_LIBRARIES} 
-                                   ${LibSamplerate_LIBRARIES}
+                                   ${libsamplerate_LIBRARY}
                                    ${ALSA_LIBRARY}
                                    ${log4cplus_LIBRARY}
+                                   ${EXPAT_LIBRARIES}
+                                   ${libavahiclient_LIBRARY} 
+                                   ${libavahicommon_LIBRARY}
+                                   pthread
                                    sock++
                                    dsaudio
                                    muroadaemon

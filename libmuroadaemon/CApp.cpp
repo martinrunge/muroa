@@ -35,13 +35,13 @@ CSettings& CApp::settings() { return m_settings; }
 Logger& CApp::logger() { return m_logger; };
 
 
-CApp::CApp(int argc, char** argv) throw(configEx) : m_settings(this), m_logger(Logger::getInstance("main"))
+CApp::CApp(int argc, char** argv) throw(configEx) : m_settings(this)
 {
-	if( m_settings.parse(argc, argv) != 0) {
+    initLog();
+
+    if( m_settings.parse(argc, argv) != 0) {
     	throw configEx("error parsing commandline parameters");
     }
-
-	initLog();
 }
 
 CApp::~CApp() {}
@@ -59,6 +59,19 @@ void CApp::serviceChanged() {
 }
 
 void CApp::initLog() {
+    try
+    {
+        log4cplus::PropertyConfigurator::doConfigure("log.properties");
+    }
+    catch( ... )
+    {
+       std::cerr<<"Exception occured while opening log.properties\n";
+       BasicConfigurator config;
+       config.configure();
+    }
+
+    m_logger = Logger::getInstance("main");
+
 	SharedAppenderPtr logFileAppender(new FileAppender(m_settings.logfile()));
 	logFileAppender->setName("LogfileAppender");
 	std::auto_ptr<Layout> myLayout = std::auto_ptr<Layout>(new log4cplus::TTCCLayout());
@@ -146,6 +159,5 @@ int CApp::daemonize() {
     return 0;
 
 }
-
 
 } /* namespace muroa */

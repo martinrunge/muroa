@@ -2,11 +2,14 @@ cmake_minimum_required (VERSION 2.6)
 
 project (muroadaemon)
 
-set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake" ${CMAKE_MODULE_PATH})
+set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../msessiond/cmake" ${CMAKE_MODULE_PATH})
 
 set(Boost_USE_MULTITHREADED ON)
 find_package( Boost 1.36.0 COMPONENTS system  REQUIRED )
 find_package( EXPAT REQUIRED )
+find_package( libavahiclient REQUIRED )
+find_package( libavahicommon REQUIRED )
+
 
 add_definitions(  )
 
@@ -39,12 +42,23 @@ set( HEADERS       CTcpConnection.h
                    avahi/CServiceDesc.h
                    )
                    
-include_directories(${CMAKE_SOURCE_DIR} ${Boost_INCLUDE_DIRS} ${EXPAT_INCLUDE_DIRS})
+include_directories(${CMAKE_SOURCE_DIR} ${Boost_INCLUDE_DIRS} 
+                                        ${EXPAT_INCLUDE_DIRS}
+                                        ${log4cplus_INCLUDE_DIRS}
+                                        ${libavahiclient_INCLUDE_DIRS}
+                                        ${libavahicommon_INCLUDE_DIRS}
+                                        )
 
-link_directories(  )
+link_directories(   )
 
 add_library(  muroadaemon SHARED  ${SRC} ${HEADERS} )
-target_link_libraries( muroadaemon  ${Boost_LIBRARIES} ${EXPAT_LIBRARIES} log4cplus pthread avahi-client avahi-common)
+target_link_libraries( muroadaemon  ${Boost_LIBRARIES} 
+                                    ${EXPAT_LIBRARIES}
+                                    ${log4cplus_LIBRARY}
+                                    pthread 
+                                    ${libavahiclient_LIBRARY} 
+                                    ${libavahicommon_LIBRARY}
+                                    )
 set_target_properties( muroadaemon  PROPERTIES  COMPILE_FLAGS "-std=gnu++0x -pthread" ) 
 # SET_TARGET_PROPERTIES( muroad PROPERTIES  LINK_FLAGS -Wl,-shared-libgcc)
 ###################################################################################

@@ -39,7 +39,7 @@ public:
 
 	int isOwnClient(std::string name,std::string category=std::string("/RenderClients"));
     bool isOwnClient(CStreamClientItem* sci);
-	int hasClient(std::string name,std::string category=std::string("/RenderClients"));
+	std::pair<int,int> hasClient(std::string name,std::string category=std::string("/RenderClients"));
 
 
 private:
