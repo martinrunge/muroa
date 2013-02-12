@@ -11,6 +11,8 @@
 #include <string>
 #include <boost/filesystem.hpp>
 
+class CStream;
+
 namespace muroa {
 	class CApp;
 	class CSession;
@@ -26,7 +28,7 @@ public:
 	void savePlaylistRevs(long minRev, long maxRev);
 	void saveNextlistRevs(long minRev, long maxRev);
 	void saveSessionStateRevs(long minRev, long maxRev);
-	void restore();
+	void restore(CStream* stream);
 
 	void cleanup();
 
@@ -42,7 +44,7 @@ private:
 	void restoreMediaColRevs();
 	void restorePlaylistRevs();
 	void restoreNextlistRevs();
-	void restoreSessionStateRevs();
+	void restoreSessionStateRevs(CStream* stream);
 
 	void restoreRootItemRevs( std::string subdir_name );
 

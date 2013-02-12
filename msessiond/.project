@@ -5,6 +5,8 @@
 	<projects>
 		<project>libmuroa++</project>
 		<project>libmuroadaemon</project>
+		<project>libsock++</project>
+		<project>libstreamsrv</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>

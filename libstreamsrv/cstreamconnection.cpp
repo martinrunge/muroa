@@ -24,7 +24,7 @@
 
 using namespace std;
 
-CStreamConnection::CStreamConnection(CStreamServer* parent, unsigned short bind_port) : m_socket(SOCK_DGRAM, bind_port )
+CStreamConnection::CStreamConnection(CStreamServer* parent, const std::string& name, unsigned short bind_port) : m_socket(SOCK_DGRAM, bind_port ), m_name(name)
 {
   m_stream_server = parent;
   m_socket.setNonBlocking(0);

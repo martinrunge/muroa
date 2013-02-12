@@ -34,21 +34,25 @@ class CStreamServer;
 class CStreamConnection
 {
 public:
-    CStreamConnection(CStreamServer* parent, unsigned short bind_port = 0);
+    CStreamConnection(CStreamServer* parent, const std::string& name, unsigned short bind_port = 0);
 
     ~CStreamConnection();
     int connect(CIPv4Address* addr);
     int send(char* buffer, int len);
     CIPv4Address* getClientAddress();
 
+    // void setName(const std::string& name) {m_name = name; };
+    std::string getName(void) { return m_name; };
+
 private:
 
     CSocket m_socket;
     CRTPPacket m_rtp_packet;
     CStreamServer* m_stream_server;
-private:
+
     void handleReceivedPacket();
     CIPv4Address m_client_address;
+    const std::string m_name;
 };
 
 #endif

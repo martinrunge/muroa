@@ -12,6 +12,7 @@
 #include <IContentItem.h>
 #include <CStreamClientItem.h>
 #include "CSession.h"
+#include "mediaprocessing/CStream.h"
 #include <CUtils.h>
 
 #include <limits.h>
@@ -140,11 +141,11 @@ void CSessionStorage::saveSessionStateRevs(long minRev, long maxRev) {
 }
 
 
-void CSessionStorage::restore() {
+void CSessionStorage::restore(CStream* stream) {
 	restoreMediaColRevs();
 	restorePlaylistRevs();
 	restoreNextlistRevs();
-	restoreSessionStateRevs();
+	restoreSessionStateRevs(stream);
 }
 
 void CSessionStorage::cleanup() {
@@ -258,7 +259,7 @@ void CSessionStorage::restoreNextlistRevs() {
 	restoreRootItemRevs(nextlistSubdir);
 }
 
-void CSessionStorage::restoreSessionStateRevs() {
+void CSessionStorage::restoreSessionStateRevs(CStream* stream) {
 	restoreRootItemRevs(sessionStateSubdir);
 
 	// check if all render clients are in the same state as in last revision
@@ -280,13 +281,16 @@ void CSessionStorage::restoreSessionStateRevs() {
         if(ci->type() == CItemType::E_STREAM_CLIENT) {
             CStreamClientItem* sci = reinterpret_cast<CStreamClientItem*>(ci);
 
-            ServDescPtr srvPtr = m_session->getServiceByName(sci->getName());
+            ServDescPtr srvPtr = m_session->getServiceByName(sci->getServiceName());
             string sessionName = m_session->getName();
-            if(srvPtr != NULL ) {
+            if(srvPtr) {
                // service is there, if it part of this session, enable it, else do nothing
                 if(sessionName.compare(sci->getOwnerSessionName()) == 0) {
                     // client is not active, but this session has owned it -> keep it as disabled
                     sci->setEnabled(true);
+
+                    // add this render client to streamserver
+                    stream->addReceiver(srvPtr);
                 }
             }
             else {
@@ -303,13 +307,13 @@ void CSessionStorage::restoreSessionStateRevs() {
         }
     }
 
+
     if( *newSState == *sstate ) {
         delete newSState;
     }
     else {
         m_session->addSessionStateRev(newSState);
     }
-
 
 
 }

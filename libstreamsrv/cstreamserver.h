@@ -28,6 +28,7 @@ Class provides a server for a stream.
 
 #include <iostream>
 #include <list>
+#include <string>
 
 #include <sys/time.h>
 
@@ -41,6 +42,7 @@ Class provides a server for a stream.
 #include "cmutex.h"
 #include "crtppacket.h"
 
+#include "avahi/CServiceDesc.h"
 
 
 
@@ -55,15 +57,18 @@ public:
     void close();
 
     int write(char* buffer, int length);
+    int sendPacket(char* buffer, int length);
 
     void flush();
 
     std::list<CStreamConnection*>::iterator addStreamConnection(CStreamConnection* conn);
     CStreamConnection* removeStreamConnection(std::list<CStreamConnection*>::iterator conn_iterator);
 
-    void removeClient(CIPv4Address* addr);
+    void adjustReceiverList(std::vector<muroa::ServDescPtr> receivers);
+
+    void removeClient(const std::string& name);
     void removeClient(std::list<CStreamConnection*>::iterator iter);
-    std::list<CStreamConnection*>::iterator addClient(CIPv4Address* addr);
+    std::list<CStreamConnection*>::iterator addClient(CIPv4Address* addr, const std::string& name);
     CSync* getSyncObj(uint32_t session_id, uint32_t stream_id);
 
     /*!
@@ -72,7 +77,7 @@ public:
 
       This is done in two steps: first, search the connection list for client connections not listed any more in the new list and remove them. Second, search the new list for clients, that are not yet listed in the modified connection list and add them.
     */
-    void adjustClientListTo(std::list<std::string> clients);
+    // void adjustClientListTo(std::list<std::string> clients);
 
     void stdClientPort(int port);
     int stdClientPort(void);

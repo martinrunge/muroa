@@ -84,7 +84,7 @@ CSession::CSession(string name,
 	m_mediaScanner = new CMediaScannerCtrl(this, io_service);
 
 	m_sessionStorage = new CSessionStorage(this);
-	m_sessionStorage->restore();
+	m_sessionStorage->restore(&m_stream);
 }
 
 
@@ -605,6 +605,8 @@ void CSession::addClient(std::string name) {
 
 	CmdEditSessionState* cmd_edss = new CmdEditSessionState(curSessionStateRev, getMaxSessionStateRev(), stateDiff );
 	toAll(cmd_edss);
+
+	m_stream.addReceiver( getServiceByName(name) );
 }
 
 void CSession::rmClient(std::string name) {
@@ -617,6 +619,8 @@ void CSession::rmClient(std::string name) {
 
         CmdEditSessionState* cmd_edss = new CmdEditSessionState(curSessionStateRev, getMaxSessionStateRev(), stateDiff );
         toAll(cmd_edss);
+
+        m_stream.rmReceiver( name );
     }
 }
 

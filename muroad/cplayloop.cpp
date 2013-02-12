@@ -89,7 +89,7 @@ CPlayloop::CPlayloop(CPlayer* parent, CApp *app, CPacketRingBuffer* packet_ringb
 
   #ifndef FIXPOINT
   // m_resampler = new CResampler(m_ringbuffer, SRC_SINC_BEST_QUALITY, 2);
-  m_resampler = static_cast<CResampler*>(new CFloatResampler(m_ringbuffer, high, 2));
+  m_resampler = static_cast<CResampler*>(new CFloatResampler(m_ringbuffer, medium, 2));
   #else
   m_resampler = static_cast<CResampler*>(new CFixPointResampler(m_ringbuffer, best, 2));
   #endif
@@ -343,7 +343,7 @@ void CPlayloop::adjustResamplingFactor(int bytes_in_playback_ringbuffer)
     int post_delay = m_audio_sink->getDelay(); // number of frames in the playback buffer of the soundcard / sound driver
     int ringbuffer_frames = m_packet_ringbuffer->getRingbufferSize() * 256;   // one ringbuffer frame contains 256 frames
 
-    cerr << "Average time diff (clock - samples) = " << m_average_time_diff <<  " factor used = " << m_resample_factor * m_correction_factor << endl;
+    cerr << "Average time diff (clock - samples) = " << m_average_time_diff <<  " factor used = " << m_resample_factor * m_correction_factor << " RB size: " << ringbuffer_frames << endl;
 
 
     int diff_in_us = m_average_time_diff.fractional_seconds();

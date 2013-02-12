@@ -2,13 +2,14 @@
  * CStream.h
  *
  *  Created on: 13 Jun 2010
- *      Author: martin
+ *      Author: Martin Runge
  */
 
 #ifndef CSTREAM_H_
 #define CSTREAM_H_
 
 #include "CDecoder.h"
+#include "avahi/CServiceDesc.h"
 
 namespace std {
   class thread;
@@ -20,6 +21,8 @@ namespace muroa {
   class CSession;
   // class CMediaItem;
 }
+
+class CStreamServer;
 
 enum sessionState {
 	e_stopped = 0,
@@ -49,6 +52,10 @@ public:
 
 	void operator()();
 
+	void addReceiver(muroa::ServDescPtr srv_desc_ptr);
+	void rmReceiver(const std::string& name);
+
+	void adjustReceiverList(std::vector<muroa::ServDescPtr> receivers);
 
 private:
 	void startThread();
@@ -67,6 +74,9 @@ private:
 
 	std::thread* m_thread;
 	bool m_run;
+
+    CStreamServer *m_streamserver;
+
 };
 
 #endif /* CSTREAM_H_ */

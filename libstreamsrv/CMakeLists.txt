@@ -19,7 +19,10 @@ set( HEADERS       cstreamconnection.h
                    cstreamserver.h
                     )
                   
-include_directories(${CMAKE_SOURCE_DIR} ${Boost_INCLUDE_DIRS}  ../libsock++ ../libdsaudio )
+include_directories(${CMAKE_SOURCE_DIR} ${Boost_INCLUDE_DIRS}  
+				    ../libsock++ 
+				    ../libdsaudio
+				    ../libmuroadaemon )
 
 link_directories( "${CMAKE_SOURCE_DIR}/../libsock++/build_x86" 
                   "${CMAKE_SOURCE_DIR}/../libdsaudio/build_x86"

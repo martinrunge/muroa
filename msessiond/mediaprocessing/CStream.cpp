@@ -14,6 +14,8 @@
 #include "CAudioIOAlsa.h"
 #include "CSession.h"
 
+#include "cstreamserver.h"
+
 #include <cmds/CmdProgress.h>
 #include <cmds/CmdFinished.h>
 
@@ -27,16 +29,19 @@ using namespace std;
 CStream::CStream(CSession* session) : m_done(0), m_state(e_stopped), m_decoder(this), m_session(session), m_thread(0), m_run(false)
 {
     m_audioIO = new CAudioIoAlsa();
+    m_streamserver = new CStreamServer();
 }
 
 CStream::~CStream() {
 	stop();
 	delete m_audioIO;
+	delete m_streamserver;
 }
 
 int CStream::write(char* data, int size) const
 {
-	int amount = m_audioIO->write(data, size);
+    int amount = m_streamserver->write(data, size);
+//	int amount = m_audioIO->write(data, size);
 	return amount;
 }
 
@@ -101,6 +106,7 @@ void CStream::play()
 
 	    CMediaItem *item = m_session->getCurrentMediaItem();
 		m_decoder.open(item->getFilename());
+		m_streamserver->open();
 		startThread();
 		m_state = e_playing;
 		break;
@@ -140,6 +146,7 @@ void CStream::stop()
 
 		stopThread();
 		m_decoder.close();
+        m_streamserver->close();
 		m_state = e_stopped;
 		break;
 	}
@@ -163,5 +170,38 @@ void CStream::next() const
 {
 	CmdFinished* cmdFini = new CmdFinished();
 	m_session->postIncomingCmd(cmdFini);
+}
+
+
+void CStream::addReceiver(ServDescPtr srv_desc_ptr)
+{
+    CIPv4Address addr(srv_desc_ptr->getHostName(), srv_desc_ptr->getPortNr());
+    m_streamserver->addClient(&addr, srv_desc_ptr->getServiceName());
+}
+
+void CStream::rmReceiver(const string& name)
+{
+    m_streamserver->removeClient(name);
+}
+
+void CStream::adjustReceiverList(vector<ServDescPtr> receivers)
+{
+    CRootItem* ri = m_session->getSessionState();
+    CCategoryItem* base = ri->getCategoryPtr("/RenderClients");
+
+    for(int i = 0; i < base->getNumContentItems(); i++)
+    {
+        IContentItem* ci = base->getContentItem(i);
+        if(ci->type() == CItemType::E_STREAM_CLIENT)
+        {
+            CStreamClientItem *sci= reinterpret_cast<CStreamClientItem*>(ci);
+            ///TODO make these two lists equal
+
+        }
+
+
+    }
+
+
 }
 

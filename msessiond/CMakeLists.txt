@@ -82,10 +82,23 @@ set( HEADERS          sessionEx.h
                       )                    
 
 
-include_directories(${SOURCE_DIR} ${Boost_INCLUDE_DIRS} ${SQLITE_INCLUDE_DIR} 
-                    ${CMAKE_SOURCE_DIR} ${CMAKE_SOURCE_DIR}/../libmuroadaemon ${CMAKE_SOURCE_DIR}/../libmuroa++) 
+include_directories(${SOURCE_DIR} 
+                    ${Boost_INCLUDE_DIRS} 
+                    ${SQLITE_INCLUDE_DIR} 
+                    ${CMAKE_SOURCE_DIR} 
+                    ${CMAKE_SOURCE_DIR}/../libmuroadaemon 
+                    ${CMAKE_SOURCE_DIR}/../libmuroa++
+                    ${CMAKE_SOURCE_DIR}/../libstreamsrv
+                    ${CMAKE_SOURCE_DIR}/../libsock++
+                    ${CMAKE_SOURCE_DIR}/../libdsaudio) 
 
-link_directories(${BINARY_DIR} ${SQLITE_LIBRARY_DIRS} "${CMAKE_SOURCE_DIR}/../libmuroadaemon/build_x86" "${CMAKE_SOURCE_DIR}/../libmuroa++/build")
+link_directories(${BINARY_DIR} 
+                 ${SQLITE_LIBRARY_DIRS} 
+                 "${CMAKE_SOURCE_DIR}/../libmuroadaemon/build_x86" 
+                 "${CMAKE_SOURCE_DIR}/../libmuroa++/build"
+                 "${CMAKE_SOURCE_DIR}/../libstreamsrv/build_x86"
+                 "${CMAKE_SOURCE_DIR}/../libsock++/build_x86"
+                 )
 
 ADD_EXECUTABLE(msessiond main.cpp ${SRCS} ${HEADERS} )
 
@@ -95,6 +108,8 @@ set_target_properties( msessiond PROPERTIES  COMPILE_FLAGS "-std=gnu++0x" )
 
 TARGET_LINK_LIBRARIES(msessiond    muroadaemon
                                    muroa++
+                                   streamsrv
+                                   sock++
                                    ${Boost_LIBRARIES} 
                                    ${SQLITE_LIBRARIES}
                                    avformat
@@ -165,6 +180,8 @@ set_target_properties( msessiondtest PROPERTIES  COMPILE_FLAGS "-std=gnu++0x" )
 TARGET_LINK_LIBRARIES(msessiondtest  cppunit 
                                      muroa++
                                      muroadaemon
+                                     streamsrv
+                                     sock++
                                      ${Boost_LIBRARIES} 
                                      ${Taglib_LIBRARIES} 
                                      ${QT_LIBRARIES} 
