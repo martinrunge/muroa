@@ -301,8 +301,10 @@ void CStreamServer::removeClient(const string& name)
 {
     list<CStreamConnection*>::iterator iter;
     for(iter = m_connection_list.begin(); iter != m_connection_list.end(); iter++ ) {
-        if( name.compare( (*iter)->getName() ) == 0 ) {
+        CStreamConnection* sc = *iter;
+        if( name.compare( sc->getName() ) == 0 ) {
             removeClient(iter);
+            iter--;
         }
     }
 }
