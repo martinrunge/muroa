@@ -15,7 +15,12 @@ set( SRC           dsserver.cpp
 
 set( HEADERS       )
                   
-include_directories( ${CMAKE_SOURCE_DIR} ${Boost_INCLUDE_DIRS} ../libstreamsrv ../libdsaudio ../libsock++)
+include_directories( ${CMAKE_SOURCE_DIR} 
+                     ${Boost_INCLUDE_DIRS} 
+                     ../libstreamsrv 
+                     ../libdsaudio 
+                     ../libsock++
+                     ../libmuroadaemon)
 
 link_directories( "${CMAKE_SOURCE_DIR}/../libstreamsrv/build_x86"
                   "${CMAKE_SOURCE_DIR}/../libdsaudio/build_x86"
