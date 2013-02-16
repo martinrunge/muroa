@@ -60,10 +60,10 @@ CStreamServer::~CStreamServer()
  */
 int CStreamServer::open(int audio_bytes_per_second)
 {
-  ptime now = microsec_clock::universal_time();
+  m_last_send_time = microsec_clock::universal_time();
   m_last_payload_duration = not_a_date_time;
   
-  m_last_send_time = now;
+  ptime now = m_last_send_time;
 
   m_stream_id++;
 
@@ -301,8 +301,10 @@ void CStreamServer::removeClient(const string& name)
 {
     list<CStreamConnection*>::iterator iter;
     for(iter = m_connection_list.begin(); iter != m_connection_list.end(); iter++ ) {
-        if( name.compare( (*iter)->getName() ) == 0 ) {
+        CStreamConnection* sc = *iter;
+        if( name.compare( sc->getName() ) == 0 ) {
             removeClient(iter);
+            iter--;
         }
     }
 }
