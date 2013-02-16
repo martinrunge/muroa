@@ -48,6 +48,17 @@ Class provides a server for a stream.
 
 class CStreamServer{
 public:
+    /**
+     * @brief CStreamServer constructor.
+     *
+     * Creates a new stream server object. A stream server has a
+     * session_id and a stream_id. By calling close() and open(),
+     * a new stream_id will be generated.
+     *
+     * @param[in] session_id: the ID of the session. Increase it if you create a new CStreamServer object.
+     * @param[in] transport_buffer_size_in_ms: the size of the client's playback buffer in ms. Aka difference
+     * between send timestamp and presentation timestamp.
+     */
     CStreamServer(int session_id = 1, int transport_buffer_size_in_ms = 1500);
 
     ~CStreamServer();

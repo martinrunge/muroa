@@ -20,6 +20,7 @@
 
 #include <iostream>
 #include <sys/time.h>
+#include <getopt.h>
 
 #include <boost/date_time/posix_time/posix_time.hpp>
 
@@ -31,32 +32,98 @@
 #include "csync.h"
 #include "crtppacket.h"
 
+#include "cipv4address.h"
 #include "cstreamserver.h"
 
 using namespace std;
 using namespace boost::posix_time;
 
-int cppserver(int argc, char *argv[]);
+int cppserver(vector<string> clients, int sessionID, int streamID);
 int cserver(int argc, char *argv[]);
 
+void usage(string progname)
+{
+    cout << "usage: " << progname << " [options]" << endl
+         << "options: " << endl
+         << "  --client  -c <client1:port>   a render client in the form hostname:port, option can be repeated for two or more clients"  << endl
+         << "  --sessionid -S <num>   a numerical session id" << endl
+         << "  --streamid  -s <num>   a numerical stream  id" << endl;
+
+
+}
 
 int main(int argc, char *argv[]) {
 //  cserver(argc, argv);
-  cppserver(argc, argv);
+    char c;
+    int verbose_flag = 0;
+
+    vector<string> clients;
+    int sessionID = -1;
+    int streamID = -1;
+
+    while (1)
+      {
+        static struct option long_options[] =
+          {
+            /* These options set a flag. */
+            {"verbose", no_argument,       &verbose_flag, 1},
+            /* These options don't set a flag.
+               We distinguish them by their indices. */
+            {"clients",     required_argument, 0, 'c'},
+            {"sessionid",   required_argument, 0, 'S'},
+            {"streamid",    required_argument, 0, 's'},
+            {0, 0, 0, 0}
+          };
+        /* getopt_long stores the option index here. */
+        int option_index = 0;
+
+        c = getopt_long (argc, argv, "c:S:s:",
+                         long_options, &option_index);
+
+        /* Detect the end of the options. */
+        if (c == -1)
+          break;
+
+        switch (c)
+          {
+          case 0:
+            /* If this option set a flag, do nothing else now. */
+            if (long_options[option_index].flag != 0)
+              break;
+            printf ("option %s", long_options[option_index].name);
+            if (optarg)
+              printf (" with arg %s", optarg);
+            printf ("\n");
+            break;
+
+          case 'c':
+            cerr <<"option -c with value '" <<  optarg << "'"<< endl;
+            clients.push_back(optarg);
+            break;
+
+          case 'S':
+            sessionID = strtol(optarg, NULL, 10);
+            cerr << "option -S with value '"<< sessionID << "'" << endl;
+            break;
+
+          case 's':
+            streamID = strtol(optarg, NULL, 10);
+            cerr << "option -s with value '"<< streamID << "'" << endl;
+            break;
+
+          case 'h':
+          default:
+            usage(argv[0]);
+            exit(0);
+          }
+      }
+
+
+  cppserver(clients, sessionID, streamID);
   return 0;
 }
 
-int cppserver(int argc, char *argv[]) {
-
-
-  if(argc > 1 && strcmp(argv[1], "--help") == 0) {
-    cout << "usage:" << endl 
-         << "dsserver [client1] [client2] [client3] ... [client10]"  << endl
-         << "client0 will always be 'localhost', the others are optional." << endl;
-
-    exit(0);
-
-  } 
+int cppserver(vector<string> clients, int sessionID, int streamID) {
 
   unsigned long num;
   int buffersize = 1024;
@@ -64,16 +131,16 @@ int cppserver(int argc, char *argv[]) {
 
 
   CIPv4Address *addr;
-  CStreamServer streamserver;
+  CStreamServer streamserver(sessionID);
 
 //  clients[0] = "localhost";
 //  sockets[0] = new CSocket(SOCK_DGRAM);
 //  sockets[0]->connect("localhost", 4001);
 
 
-  for(int i = 1; i < argc; i++) {
-    addr = new CIPv4Address(argv[i], 4001);
-    streamserver.addClient(addr);
+  for(int i = 0; i < clients.size(); i++) {
+    addr = new CIPv4Address(clients[i], 4001);
+    streamserver.addClient(addr, clients[i]);
   }
 
   streamserver.open();

@@ -60,10 +60,10 @@ CStreamServer::~CStreamServer()
  */
 int CStreamServer::open(int audio_bytes_per_second)
 {
-  m_last_send_time = microsec_clock::universal_time();
+  ptime now = microsec_clock::universal_time();
   m_last_payload_duration = not_a_date_time;
   
-  ptime now = m_last_send_time;
+  m_last_send_time = now;
 
   m_stream_id++;
 

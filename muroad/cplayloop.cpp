@@ -140,7 +140,7 @@ CPlayloop::~CPlayloop()
 void CPlayloop::DoLoop() {
   
   if(m_packet_ringbuffer->getRingbufferSize() == 0) {
-     // cerr << "CPlayloop::DoLoop: buffer empty!" << endl;
+     cerr << "CPlayloop::DoLoop: buffer empty!" << endl;
      int retval = m_player->m_traffic_cond.Wait(1);
 
      if(retval == 0)
@@ -168,8 +168,8 @@ void CPlayloop::DoLoop() {
   
   
   CRTPPacket* rtp_packet = m_packet_ringbuffer->readPacket();
-  //cerr << "packet Buffer size: " << m_packet_ringbuffer->getRingbufferSize() << endl;
-  // cerr << "PayloadType " << rtp_packet->payloadType() << " size " << rtp_packet->usedPayloadBufferSize() << endl;
+  cerr << "packet Buffer size: " << m_packet_ringbuffer->getRingbufferSize() << endl;
+  cerr << "PayloadType " << rtp_packet->payloadType() << " size " << rtp_packet->usedPayloadBufferSize() << endl;
 
  
   switch( rtp_packet->payloadType() ) 
@@ -239,6 +239,7 @@ void CPlayloop::playAudio(CAudioFrame *frame) {
   }
   
   if(playbuffer != 0 && granulated_num_bytes != 0 && m_frames_to_discard == 0) {
+    cerr << "m_audio_sink->write(" << granulated_num_bytes << ")" << endl;
     retval = m_audio_sink->write(playbuffer, granulated_num_bytes);
   
     if(retval == 0 ) {
@@ -288,11 +289,11 @@ int CPlayloop::sync(void) {
   long sync_diff_in_frames = lrint(diff_in_frames);
   
   if(sync_diff_in_frames < 0) {
-    cerr << "sync: " << sync_diff_in_frames << " too late with playback. trowing away samples." << endl;
+    cerr << "sync: " << sync_diff_in_frames << " too late with playback. Throwing away samples." << endl;
     m_frames_to_discard = -sync_diff_in_frames;
   }
   else {
-    cerr << "sync: " << sync_diff_in_frames << " too early with playback. waiting while playing silence." << endl;
+    cerr << "sync: " << sync_diff_in_frames << " too early with playback. Waiting while playing silence." << endl;
     m_frames_to_discard = 0;
     sleep(sync_diff);
     // playSilence(sync_diff_in_frames);
