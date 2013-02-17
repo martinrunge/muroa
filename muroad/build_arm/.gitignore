@@ -1,7 +1,2 @@
 # ignore all generated files in build directory
-*~
-*.raw
-core
-core.*
-*.log
-
+*
