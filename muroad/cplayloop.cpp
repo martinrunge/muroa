@@ -145,7 +145,7 @@ void CPlayloop::DoLoop() {
 
      if(retval == 0)
      {
-       string audio_device = m_settings.getProptery(string("AudioDevice"), string("hw:0.0"));
+       string audio_device = m_settings.getProptery(string("AudioDevice"), string("hw:0,0"));
 
        m_audio_sink->open(audio_device, m_desired_sample_rate, m_num_channels);
        m_player->idleTime(0);
@@ -168,7 +168,7 @@ void CPlayloop::DoLoop() {
   
   
   CRTPPacket* rtp_packet = m_packet_ringbuffer->readPacket();
-  //cerr << "packet Buffer size: " << m_packet_ringbuffer->getRingbufferSize() << endl;
+  // cerr << "packet Buffer size: " << m_packet_ringbuffer->getRingbufferSize() << endl;
   // cerr << "PayloadType " << rtp_packet->payloadType() << " size " << rtp_packet->usedPayloadBufferSize() << endl;
 
  
@@ -288,11 +288,11 @@ int CPlayloop::sync(void) {
   long sync_diff_in_frames = lrint(diff_in_frames);
   
   if(sync_diff_in_frames < 0) {
-    cerr << "sync: " << sync_diff_in_frames << " too late with playback. trowing away samples." << endl;
+    cerr << "sync: " << sync_diff_in_frames << " too late with playback. Throwing away samples." << endl;
     m_frames_to_discard = -sync_diff_in_frames;
   }
   else {
-    cerr << "sync: " << sync_diff_in_frames << " too early with playback. waiting while playing silence." << endl;
+    cerr << "sync: " << sync_diff_in_frames << " too early with playback. Waiting while playing silence." << endl;
     m_frames_to_discard = 0;
     sleep(sync_diff);
     // playSilence(sync_diff_in_frames);
