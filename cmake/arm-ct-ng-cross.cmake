@@ -7,16 +7,18 @@ SET(CMAKE_SYSTEM_PROCESSOR arm)
 #this one not so much
 SET(CMAKE_SYSTEM_VERSION 1)
 
-
+set(ARCH "arm")
 set(HOME  $ENV{HOME})
 # specify the cross compiler
 SET(CMAKE_C_COMPILER   ${HOME}/x-tools/arm-unknown-linux-gnueabi/bin/arm-unknown-linux-gnueabi-gcc)
 SET(CMAKE_CXX_COMPILER ${HOME}/x-tools/arm-unknown-linux-gnueabi/bin/arm-unknown-linux-gnueabi-g++)
 
+set(CMAKE_LIBRARY_ARCHITECTURE arm-linux-gnueabihf)
+
 # where is the target environment
-SET(CMAKE_FIND_ROOT_PATH  /home/martin/rpi/sysroot)
+SET(CMAKE_FIND_ROOT_PATH  ${HOME}/x-tools/arm-unknown-linux-gnueabi/arm-unknown-linux-gnueabi/sysroot)
 # where is the target environment
-SET(SYSROOT_PATH  /home/martin/rpi/sysroot)
+SET(SYSROOT_PATH  ${HOME}/x-tools/arm-unknown-linux-gnueabi/arm-unknown-linux-gnueabi/sysroot)
 # SET(CMAKE_C_FLAGS   "-mfloat-abi=hard" CACHE STRING "-mfloat-abi=hard")
 # SET(CMAKE_CXX_FLAGS  "-mfloat-abi=hard"  CACHE STRING "-mfloat-abi=hard")
 # SET(LINK_FLAGS  "" CACHE STRING "--sysroot=${SYSROOT_PATH}")
