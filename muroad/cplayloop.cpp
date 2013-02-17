@@ -140,12 +140,12 @@ CPlayloop::~CPlayloop()
 void CPlayloop::DoLoop() {
   
   if(m_packet_ringbuffer->getRingbufferSize() == 0) {
-     cerr << "CPlayloop::DoLoop: buffer empty!" << endl;
+     // cerr << "CPlayloop::DoLoop: buffer empty!" << endl;
      int retval = m_player->m_traffic_cond.Wait(1);
 
      if(retval == 0)
      {
-       string audio_device = m_settings.getProptery(string("AudioDevice"), string("hw:0.0"));
+       string audio_device = m_settings.getProptery(string("AudioDevice"), string("hw:0,0"));
 
        m_audio_sink->open(audio_device, m_desired_sample_rate, m_num_channels);
        m_player->idleTime(0);
@@ -168,8 +168,8 @@ void CPlayloop::DoLoop() {
   
   
   CRTPPacket* rtp_packet = m_packet_ringbuffer->readPacket();
-  cerr << "packet Buffer size: " << m_packet_ringbuffer->getRingbufferSize() << endl;
-  cerr << "PayloadType " << rtp_packet->payloadType() << " size " << rtp_packet->usedPayloadBufferSize() << endl;
+  // cerr << "packet Buffer size: " << m_packet_ringbuffer->getRingbufferSize() << endl;
+  // cerr << "PayloadType " << rtp_packet->payloadType() << " size " << rtp_packet->usedPayloadBufferSize() << endl;
 
  
   switch( rtp_packet->payloadType() ) 
@@ -239,7 +239,6 @@ void CPlayloop::playAudio(CAudioFrame *frame) {
   }
   
   if(playbuffer != 0 && granulated_num_bytes != 0 && m_frames_to_discard == 0) {
-    cerr << "m_audio_sink->write(" << granulated_num_bytes << ")" << endl;
     retval = m_audio_sink->write(playbuffer, granulated_num_bytes);
   
     if(retval == 0 ) {

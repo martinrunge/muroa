@@ -43,6 +43,8 @@ int CAudioIoAlsa::close() {
     cerr << "closing audio device" << endl;
     snd_pcm_status_free(m_status_ptr);
     snd_pcm_close(m_playback_handle);
+
+    m_playback_handle = 0;
   }
   return 0;
 }
@@ -51,12 +53,13 @@ int CAudioIoAlsa::open(std::string device, int samplerate, int channels) {
 
   int err;
   snd_pcm_uframes_t periodsize = 1024;
+  // snd_pcm_uframes_t periodsize = 4096;
 
   if(m_open == true)
     return 0;
 
 
-  
+  cerr << "opening audio device :" << device << endl;
   if ((err = snd_pcm_open(&m_playback_handle, device.c_str(), SND_PCM_STREAM_PLAYBACK, 0)) < 0)
   {
     fprintf(stderr, "cannot open audio device %s (%s)\n", device.c_str(), snd_strerror(err));
