@@ -40,6 +40,8 @@ CNextlistItem::CNextlistItem(const CNextlistItem& other, CRootItem *root_item, C
     m_hash = other.m_hash;
     m_mediaitem_hash = other.m_mediaitem_hash;
     m_name = other.m_name;
+    m_text = other.m_text;
+
     m_root_item->setContentPtr(CItemType(CItemType::E_NEXTLISTITEM), this, m_hash );
 }
 
