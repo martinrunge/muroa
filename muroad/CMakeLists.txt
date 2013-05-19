@@ -8,7 +8,7 @@ MESSAGE("Setting ARCH to x86")
 SET(ARCH x86)
 endif( "${ARCH}" STREQUAL "")
 
-set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../msessiond/cmake" ${CMAKE_MODULE_PATH})
+set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../aux/cmake/Modules" ${CMAKE_MODULE_PATH})
 
 find_package(PkgConfig)
 
@@ -116,7 +116,7 @@ TARGET_LINK_LIBRARIES(muroad       ${Boost_LIBRARIES}
 
 add_custom_command(TARGET muroad
                    POST_BUILD  
-                   COMMAND  ${CMAKE_CURRENT_SOURCE_DIR}/../scripts/mkgdbindex.sh muroad 
+                   COMMAND  ${CMAKE_CURRENT_SOURCE_DIR}/../aux/scripts/mkgdbindex.sh muroad 
                    WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
                    COMMENT "building gdb index")
 

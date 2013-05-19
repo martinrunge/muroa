@@ -1,7 +1,7 @@
 cmake_minimum_required (VERSION 2.6)
 project (libmuroa++)
 
-set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake" ${CMAKE_MODULE_PATH})
+set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../aux/cmake/Modules" ${CMAKE_MODULE_PATH})
 
 add_subdirectory(unittest)
 add_subdirectory(util/rehash)
@@ -89,15 +89,14 @@ link_directories(  )
 add_library( muroa++ SHARED ${SRC} ${HEADERS} )
 target_link_libraries( muroa++  ${Boost_LIBRARIES} ${EXPAT_LIBRARIES})
 set_target_properties( muroa++  PROPERTIES  COMPILE_FLAGS "-std=gnu++0x" )
-# SET_TARGET_PROPERTIES( muroa++ PROPERTIES  LINK_FLAGS -Wl,--eh-frame-hdr)
-# SET_TARGET_PROPERTIES( muroa++ PROPERTIES  LINK_FLAGS -Wl,-shared-libgcc)
+
 ###################################################################################
 # This step merges a gdb_index section into the binary to speed up debugging.
 # Doing this by add_custom_command will become obsolete as soon as the linker does it. 
 ###################################################################################
 add_custom_command(TARGET muroa++
                    POST_BUILD  
-                   COMMAND  ${CMAKE_CURRENT_SOURCE_DIR}/../scripts/mkgdbindex.sh libmuroa++.so 
+                   COMMAND  ${CMAKE_CURRENT_SOURCE_DIR}/../aux/scripts/mkgdbindex.sh libmuroa++.so 
                    WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
                    COMMENT "building gdb index")
                                    

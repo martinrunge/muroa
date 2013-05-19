@@ -1,7 +1,7 @@
 cmake_minimum_required (VERSION 2.6)
 project (libdsaudio)
 
-set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake" ${CMAKE_MODULE_PATH})
+set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../aux/cmake/Modules" ${CMAKE_MODULE_PATH})
 
 find_package( Boost 1.36.0 COMPONENTS date_time REQUIRED )
 find_package ( ALSA REQUIRED )
@@ -42,7 +42,7 @@ set_target_properties( dsaudio  PROPERTIES  COMPILE_FLAGS "-std=gnu++0x -pthread
 ###################################################################################
 add_custom_command(TARGET dsaudio
                    POST_BUILD  
-                   COMMAND  ${CMAKE_CURRENT_SOURCE_DIR}/../scripts/mkgdbindex.sh libdsaudio.so 
+                   COMMAND  ${CMAKE_CURRENT_SOURCE_DIR}/../aux/scripts/mkgdbindex.sh libdsaudio.so 
                    WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
                    COMMENT "building gdb index")
                                    

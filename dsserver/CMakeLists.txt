@@ -1,7 +1,7 @@
 cmake_minimum_required (VERSION 2.6)
 project (dsserver)
 
-set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake" ${CMAKE_MODULE_PATH})
+set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../aux/cmake/Modules" ${CMAKE_MODULE_PATH})
 
 set(Boost_USE_STATIC_LIBS   ON )
 set(Boost_USE_MULTITHREADED ON )
@@ -36,7 +36,7 @@ set_target_properties( dsserver  PROPERTIES  COMPILE_FLAGS "-std=gnu++0x -pthrea
 ###################################################################################
 add_custom_command(TARGET dsserver
                    POST_BUILD  
-                   COMMAND  ${CMAKE_SOURCE_DIR}/../scripts/mkgdbindex.sh dsserver 
+                   COMMAND  ${CMAKE_SOURCE_DIR}/../aux/scripts/mkgdbindex.sh dsserver 
                    WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
                    COMMENT "building gdb index")
                                    

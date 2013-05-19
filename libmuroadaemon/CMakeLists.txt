@@ -2,7 +2,7 @@ cmake_minimum_required (VERSION 2.6)
 
 project (muroadaemon)
 
-set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../msessiond/cmake" ${CMAKE_MODULE_PATH})
+set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../aux/cmake/Modules" ${CMAKE_MODULE_PATH})
 
 set(Boost_USE_MULTITHREADED ON)
 find_package( Boost 1.36.0 COMPONENTS system  REQUIRED )
@@ -67,7 +67,7 @@ set_target_properties( muroadaemon  PROPERTIES  COMPILE_FLAGS "-std=gnu++0x -pth
 ###################################################################################
 add_custom_command(TARGET muroadaemon
                    POST_BUILD  
-                   COMMAND  ${CMAKE_CURRENT_SOURCE_DIR}/../scripts/mkgdbindex.sh libmuroadaemon.so 
+                   COMMAND  ${CMAKE_CURRENT_SOURCE_DIR}/../aux/scripts/mkgdbindex.sh libmuroadaemon.so 
                    WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
                    COMMENT "building gdb index")
                                    

@@ -1,7 +1,7 @@
 cmake_minimum_required (VERSION 2.6)
 project (mqtclient)
 
-set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake" ${CMAKE_MODULE_PATH})
+set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../aux/cmake/Modules" ${CMAKE_MODULE_PATH})
 
 find_package ( Qt4 COMPONENTS QtGui QtCore QtNetwork REQUIRED )
 
@@ -115,7 +115,7 @@ set_target_properties( mqtclient PROPERTIES  COMPILE_FLAGS "-std=gnu++0x" )
 ###################################################################################
 add_custom_command(TARGET mqtclient
                    POST_BUILD  
-                   COMMAND  ${CMAKE_CURRENT_SOURCE_DIR}/../scripts/mkgdbindex.sh mqtclient 
+                   COMMAND  ${CMAKE_CURRENT_SOURCE_DIR}/../aux/scripts/mkgdbindex.sh mqtclient 
                    WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
                    COMMENT "building gdb index")
                                    

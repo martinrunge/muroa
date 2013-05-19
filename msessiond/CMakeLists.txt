@@ -1,6 +1,6 @@
 cmake_minimum_required (VERSION 2.6)
 
-set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake" ${CMAKE_MODULE_PATH})
+set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../aux/cmake/Modules" ${CMAKE_MODULE_PATH})
 
 set(VERBOSE 1)
 
@@ -103,8 +103,6 @@ link_directories(${BINARY_DIR}
 ADD_EXECUTABLE(msessiond main.cpp ${SRCS} ${HEADERS} )
 
 set_target_properties( msessiond PROPERTIES  COMPILE_FLAGS "-std=gnu++0x" ) 
-# SET_TARGET_PROPERTIES( msessiond PROPERTIES  LINK_FLAGS -Wl,--eh-frame-hdr)
-# SET_TARGET_PROPERTIES( msessiond PROPERTIES  LINK_FLAGS -Wl,-shared-libgcc)
 
 TARGET_LINK_LIBRARIES(msessiond    muroadaemon
                                    muroa++
@@ -129,7 +127,7 @@ TARGET_LINK_LIBRARIES(msessiond    muroadaemon
 
 add_custom_command(TARGET msessiond
                    POST_BUILD  
-                   COMMAND  ${CMAKE_CURRENT_SOURCE_DIR}/../scripts/mkgdbindex.sh msessiond 
+                   COMMAND  ${CMAKE_CURRENT_SOURCE_DIR}/../aux/scripts/mkgdbindex.sh msessiond 
                    WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
                    COMMENT "building gdb index")
 
@@ -206,7 +204,7 @@ TARGET_LINK_LIBRARIES(msessiondtest  cppunit
 
 add_custom_command(TARGET msessiondtest
                    POST_BUILD  
-                   COMMAND  ${CMAKE_CURRENT_SOURCE_DIR}/../scripts/mkgdbindex.sh msessiondtest 
+                   COMMAND  ${CMAKE_CURRENT_SOURCE_DIR}/../aux/scripts/mkgdbindex.sh msessiondtest 
                    WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
                    COMMENT "building gdb index")
 

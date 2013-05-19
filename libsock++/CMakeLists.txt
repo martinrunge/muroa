@@ -1,7 +1,7 @@
 cmake_minimum_required (VERSION 2.6)
 project (libsock++)
 
-set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake" ${CMAKE_MODULE_PATH})
+set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../aux/cmake/Modules" ${CMAKE_MODULE_PATH})
 
 set(Boost_USE_MULTITHREADED ON)
 # find_package( Boost 1.36.0 COMPONENTS system regex REQUIRED )
@@ -44,7 +44,7 @@ set_target_properties( sock++  PROPERTIES  COMPILE_FLAGS "-std=gnu++0x -pthread"
 ###################################################################################
 add_custom_command(TARGET sock++
                    POST_BUILD  
-                   COMMAND  ${CMAKE_CURRENT_SOURCE_DIR}/../scripts/mkgdbindex.sh libsock++.so 
+                   COMMAND  ${CMAKE_CURRENT_SOURCE_DIR}/../aux/scripts/mkgdbindex.sh libsock++.so 
                    WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
                    COMMENT "building gdb index")
                                    
