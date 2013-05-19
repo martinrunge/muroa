@@ -85,19 +85,19 @@ set( HEADERS          sessionEx.h
 include_directories(${SOURCE_DIR} 
                     ${Boost_INCLUDE_DIRS} 
                     ${SQLITE_INCLUDE_DIR} 
-                    ${CMAKE_SOURCE_DIR} 
-                    ${CMAKE_SOURCE_DIR}/../libmuroadaemon 
-                    ${CMAKE_SOURCE_DIR}/../libmuroa++
-                    ${CMAKE_SOURCE_DIR}/../libstreamsrv
-                    ${CMAKE_SOURCE_DIR}/../libsock++
-                    ${CMAKE_SOURCE_DIR}/../libdsaudio) 
+                    ${CMAKE_CURRENT_SOURCE_DIR} 
+                    ${CMAKE_CURRENT_SOURCE_DIR}/../libmuroadaemon 
+                    ${CMAKE_CURRENT_SOURCE_DIR}/../libmuroa++
+                    ${CMAKE_CURRENT_SOURCE_DIR}/../libstreamsrv
+                    ${CMAKE_CURRENT_SOURCE_DIR}/../libsock++
+                    ${CMAKE_CURRENT_SOURCE_DIR}/../libdsaudio) 
 
 link_directories(${BINARY_DIR} 
                  ${SQLITE_LIBRARY_DIRS} 
-                 "${CMAKE_SOURCE_DIR}/../libmuroadaemon/build_x86" 
-                 "${CMAKE_SOURCE_DIR}/../libmuroa++/build"
-                 "${CMAKE_SOURCE_DIR}/../libstreamsrv/build_x86"
-                 "${CMAKE_SOURCE_DIR}/../libsock++/build_x86"
+                 "${CMAKE_CURRENT_BINARY_DIR}/../libmuroadaemon/build_x86" 
+                 "${CMAKE_CURRENT_BINARY_DIR}/../libmuroa++/build"
+                 "${CMAKE_CURRENT_BINARY_DIR}/../libstreamsrv/build_x86"
+                 "${CMAKE_CURRENT_BINARY_DIR}/../libsock++/build_x86"
                  )
 
 ADD_EXECUTABLE(msessiond main.cpp ${SRCS} ${HEADERS} )
@@ -129,7 +129,7 @@ TARGET_LINK_LIBRARIES(msessiond    muroadaemon
 
 add_custom_command(TARGET msessiond
                    POST_BUILD  
-                   COMMAND  ${CMAKE_SOURCE_DIR}/../scripts/mkgdbindex.sh msessiond 
+                   COMMAND  ${CMAKE_CURRENT_SOURCE_DIR}/../scripts/mkgdbindex.sh msessiond 
                    WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
                    COMMENT "building gdb index")
 
@@ -206,7 +206,7 @@ TARGET_LINK_LIBRARIES(msessiondtest  cppunit
 
 add_custom_command(TARGET msessiondtest
                    POST_BUILD  
-                   COMMAND  ${CMAKE_SOURCE_DIR}/../scripts/mkgdbindex.sh msessiondtest 
+                   COMMAND  ${CMAKE_CURRENT_SOURCE_DIR}/../scripts/mkgdbindex.sh msessiondtest 
                    WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
                    COMMENT "building gdb index")
 

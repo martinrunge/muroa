@@ -27,9 +27,9 @@
 #include <vector>
 #include <sstream>
 #include <fstream>
-#include "CUtils.h"
-#include "CRootItem.h"
-#include "CMediaItem.h"
+#include "../../CUtils.h"
+#include "../../CRootItem.h"
+#include "../../CMediaItem.h"
 #include <cstring>
 
 #include "boost/filesystem/operations.hpp"

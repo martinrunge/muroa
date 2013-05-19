@@ -16,7 +16,7 @@ set( HEADERS         )
 #include ( ${QT_USE_FILE} )
 #qt4_wrap_cpp( MOC_SOURCES ${MOC_H} ${MOC_MEDPROC_H} )
 
-include_directories(${CMAKE_SOURCE_DIR} ${Boost_INCLUDE_DIRS}) 
+include_directories(${CMAKE_CURRENT_SOURCE_DIR} ${Boost_INCLUDE_DIRS}) 
 
 link_directories(${BINARY_DIR} "${CMAKE_SOURCE_DIR}/../../build" )
 

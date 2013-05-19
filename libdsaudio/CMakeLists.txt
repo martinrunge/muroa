@@ -42,7 +42,7 @@ set_target_properties( dsaudio  PROPERTIES  COMPILE_FLAGS "-std=gnu++0x -pthread
 ###################################################################################
 add_custom_command(TARGET dsaudio
                    POST_BUILD  
-                   COMMAND  ${CMAKE_SOURCE_DIR}/../scripts/mkgdbindex.sh libdsaudio.so 
+                   COMMAND  ${CMAKE_CURRENT_SOURCE_DIR}/../scripts/mkgdbindex.sh libdsaudio.so 
                    WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
                    COMMENT "building gdb index")
                                    

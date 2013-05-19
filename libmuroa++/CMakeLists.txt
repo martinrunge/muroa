@@ -82,7 +82,7 @@ set( HEADERS       IItemModel.h
                    cmds/CmdRmStreamClient.h
                    )
                    
-include_directories(${CMAKE_SOURCE_DIR} ${Boost_INCLUDE_DIRS} ${EXPAT_INCLUDE_DIRS})
+include_directories(${CMAKE_CURRENT_SOURCE_DIR} ${Boost_INCLUDE_DIRS} ${EXPAT_INCLUDE_DIRS})
 
 link_directories(  )
 
@@ -97,7 +97,7 @@ set_target_properties( muroa++  PROPERTIES  COMPILE_FLAGS "-std=gnu++0x" )
 ###################################################################################
 add_custom_command(TARGET muroa++
                    POST_BUILD  
-                   COMMAND  ${CMAKE_SOURCE_DIR}/../scripts/mkgdbindex.sh libmuroa++.so 
+                   COMMAND  ${CMAKE_CURRENT_SOURCE_DIR}/../scripts/mkgdbindex.sh libmuroa++.so 
                    WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
                    COMMENT "building gdb index")
                                    

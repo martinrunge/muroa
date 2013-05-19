@@ -31,7 +31,7 @@ set( HEADERS       cipaddress.h
                    csocket.h
                    libsock++.h  )
                   
-include_directories(${CMAKE_SOURCE_DIR} )
+include_directories(${CMAKE_CURRENT_SOURCE_DIR} )
 
 link_directories(  )
 
@@ -44,7 +44,7 @@ set_target_properties( sock++  PROPERTIES  COMPILE_FLAGS "-std=gnu++0x -pthread"
 ###################################################################################
 add_custom_command(TARGET sock++
                    POST_BUILD  
-                   COMMAND  ${CMAKE_SOURCE_DIR}/../scripts/mkgdbindex.sh libsock++.so 
+                   COMMAND  ${CMAKE_CURRENT_SOURCE_DIR}/../scripts/mkgdbindex.sh libsock++.so 
                    WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
                    COMMENT "building gdb index")
                                    

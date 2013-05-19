@@ -9,6 +9,7 @@ find_package(PkgConfig)
 find_package( Boost 1.36.0 COMPONENTS filesystem system REQUIRED )
 find_package( TagLib REQUIRED )
 find_package( Sqlite REQUIRED )
+find_package( Threads REQUIRED )
 
 add_definitions( ${SQLITE_DEFINITIONS} )
 
@@ -57,7 +58,7 @@ set( HEADER  CMediaScanner.h
 
 
 include_directories(${SOURCE_DIR} ${Boost_INCLUDE_DIRS} ${Taglib_CFLAGS} ${SQLITE_INCLUDE_DIR} 
-                    "${CMAKE_CURRENT_SOURCE_DIR}/../msessiond" "${CMAKE_SOURCE_DIR}/../libmuroa++") 
+                    "${CMAKE_CURRENT_SOURCE_DIR}/../msessiond" "${CMAKE_CURRENT_SOURCE_DIR}/../libmuroa++") 
 
 link_directories(${BINARY_DIR} ${SQLITE_LIBRARY_DIRS} "${CMAKE_SOURCE_DIR}/../libmuroa++/build")
 
@@ -65,7 +66,7 @@ ADD_EXECUTABLE(mmscanner ${SRCS} )
 
 set_target_properties( mmscanner PROPERTIES  COMPILE_FLAGS "-std=gnu++0x" ) 
 
-TARGET_LINK_LIBRARIES(mmscanner  
+TARGET_LINK_LIBRARIES(mmscanner ${CMAKE_THREAD_LIBS_INIT} 
                                 ${Boost_LIBRARIES} 
                                 ${Taglib_LIBRARIES}  
                                 ${SQLITE_LIBRARIES} 
@@ -81,7 +82,7 @@ TARGET_LINK_LIBRARIES(mmscanner
 ###################################################################################
 add_custom_command(TARGET mmscanner
                    POST_BUILD  
-                   COMMAND  ${CMAKE_SOURCE_DIR}/../scripts/mkgdbindex.sh mmscanner 
+                   COMMAND  ${CMAKE_CURRENT_SOURCE_DIR}/../scripts/mkgdbindex.sh mmscanner 
                    WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
                    COMMENT "building gdb index")
                                    
@@ -106,6 +107,7 @@ set_target_properties( mmscannertest PROPERTIES  COMPILE_FLAGS "-std=gnu++0x" )
 
 TARGET_LINK_LIBRARIES(mmscannertest  cppunit 
                                      muroa++
+                                     ${CMAKE_THREAD_LIBS_INIT}
                                      ${Boost_LIBRARIES} 
                                      ${Taglib_LIBRARIES} 
                                      ${QT_LIBRARIES} 
@@ -128,7 +130,7 @@ TARGET_LINK_LIBRARIES(mmscannertest  cppunit
 
 add_custom_command(TARGET mmscannertest
                    POST_BUILD  
-                   COMMAND  ${CMAKE_SOURCE_DIR}/../scripts/mkgdbindex.sh mmscannertest 
+                   COMMAND  ${CMAKE_CURRENT_SOURCE_DIR}/../scripts/mkgdbindex.sh mmscannertest 
                    WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
                    COMMENT "building gdb index")
 

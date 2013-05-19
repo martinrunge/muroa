@@ -42,7 +42,7 @@ set( HEADERS       CTcpConnection.h
                    avahi/CServiceDesc.h
                    )
                    
-include_directories(${CMAKE_SOURCE_DIR} ${Boost_INCLUDE_DIRS} 
+include_directories(${CMAKE_CURRENT_SOURCE_DIR} ${Boost_INCLUDE_DIRS} 
                                         ${EXPAT_INCLUDE_DIRS}
                                         ${log4cplus_INCLUDE_DIRS}
                                         ${libavahiclient_INCLUDE_DIRS}
@@ -67,7 +67,7 @@ set_target_properties( muroadaemon  PROPERTIES  COMPILE_FLAGS "-std=gnu++0x -pth
 ###################################################################################
 add_custom_command(TARGET muroadaemon
                    POST_BUILD  
-                   COMMAND  ${CMAKE_SOURCE_DIR}/../scripts/mkgdbindex.sh libmuroadaemon.so 
+                   COMMAND  ${CMAKE_CURRENT_SOURCE_DIR}/../scripts/mkgdbindex.sh libmuroadaemon.so 
                    WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
                    COMMENT "building gdb index")
                                    

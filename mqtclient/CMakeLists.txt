@@ -94,12 +94,13 @@ QT4_ADD_RESOURCES( RCCS_SRC  ${RCCS} )
 include ( ${QT_USE_FILE} )
 qt4_wrap_cpp( MOC_SOURCES ${MOC_H} )
 
-include_directories( ${CMAKE_CURRENT_BINARY_DIR}  ${CMAKE_SOURCE_DIR} ${CMAKE_SOURCE_DIR}/../libmuroa++)
+include_directories( ${CMAKE_CURRENT_BINARY_DIR}  ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR}/../libmuroa++)
 
 link_directories( ${QT_LIB_DIR} "${CMAKE_SOURCE_DIR}/../libmuroa++/build")
 
 add_executable( mqtclient ${SRC} ${MOC_SOURCES} ${UIS_H} ${RCCS_SRC})
 target_link_libraries( mqtclient   avahi-client
+                                   avahi-common
                                    avahi-qt4
                                    muroa++
                                    xdiff
@@ -114,7 +115,7 @@ set_target_properties( mqtclient PROPERTIES  COMPILE_FLAGS "-std=gnu++0x" )
 ###################################################################################
 add_custom_command(TARGET mqtclient
                    POST_BUILD  
-                   COMMAND  ${CMAKE_SOURCE_DIR}/../scripts/mkgdbindex.sh mqtclient 
+                   COMMAND  ${CMAKE_CURRENT_SOURCE_DIR}/../scripts/mkgdbindex.sh mqtclient 
                    WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
                    COMMENT "building gdb index")
                                    

@@ -61,11 +61,11 @@ include_directories(${SOURCE_DIR}
                     ${libavcodec_INCLUDE_DIRS} 
                     ${libavformat_INCLUDE_DIRS} 
                     ${log4cplus_INCLUDE_DIRS}
-                    ${CMAKE_SOURCE_DIR} 
-                    ${CMAKE_SOURCE_DIR}/../libmuroadaemon 
-                    ${CMAKE_SOURCE_DIR}/../libmuroa++
-                    ${CMAKE_SOURCE_DIR}/../libsock++
-                    ${CMAKE_SOURCE_DIR}/../libdsaudio
+                    ${CMAKE_CURRENT_SOURCE_DIR} 
+                    ${CMAKE_CURRENT_SOURCE_DIR}/../libmuroadaemon 
+                    ${CMAKE_CURRENT_SOURCE_DIR}/../libmuroa++
+                    ${CMAKE_CURRENT_SOURCE_DIR}/../libsock++
+                    ${CMAKE_CURRENT_SOURCE_DIR}/../libdsaudio
                     ${ALSA_INCLUDE_DIR}
                     ) 
 
@@ -116,7 +116,7 @@ TARGET_LINK_LIBRARIES(muroad       ${Boost_LIBRARIES}
 
 add_custom_command(TARGET muroad
                    POST_BUILD  
-                   COMMAND  ${CMAKE_SOURCE_DIR}/../scripts/mkgdbindex.sh muroad 
+                   COMMAND  ${CMAKE_CURRENT_SOURCE_DIR}/../scripts/mkgdbindex.sh muroad 
                    WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
                    COMMENT "building gdb index")
 

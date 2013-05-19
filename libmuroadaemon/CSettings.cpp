@@ -119,6 +119,8 @@ int CSettings::parse(int argc, char** argv) throw(configEx) {
     }
     using boost::property_tree::ptree;
     try {
+        // beware of boost bug resolved in this changeset: https://svn.boost.org/trac/boost/changeset/78679
+        // came up with c++11
     	read_json(m_configfile, m_pt);
     }
     catch(boost::property_tree::json_parser::json_parser_error& err) {
