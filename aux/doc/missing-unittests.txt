@@ -1,0 +1,9 @@
+save and restore session in these cases:
+
+Min-Max Revision (media collection, playlist, nextlist):
+
+0 ->  always empty base revision
+0 ... n  -> without gap
+0,n...m  -> with gap, let's say, many old revisions are not needed any more and have been garbage collected
+
+

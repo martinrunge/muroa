@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<XMI verified="false" xmi.version="1.2" timestamp="2009-11-21T13:50:25" xmlns:UML="http://schema.omg.org/spec/UML/1.3" >
+ <XMI.header>
+  <XMI.documentation>
+   <XMI.exporter>umbrello uml modeller http://uml.sf.net</XMI.exporter>
+   <XMI.exporterVersion>1.5.8</XMI.exporterVersion>
+   <XMI.exporterEncoding>UnicodeUTF8</XMI.exporterEncoding>
+  </XMI.documentation>
+  <XMI.metamodel xmi.version="1.3" href="UML.xml" xmi.name="UML" />
+ </XMI.header>
+ <XMI.content>
+  <UML:Model isSpecification="false" isAbstract="false" isLeaf="false" xmi.id="m1" isRoot="false" name="UML Model" >
+   <UML:Namespace.ownedElement>
+    <UML:Stereotype visibility="public" isSpecification="false" namespace="m1" isAbstract="false" isLeaf="false" isRoot="false" xmi.id="folder" name="folder" />
+    <UML:Stereotype visibility="public" isSpecification="false" namespace="m1" isAbstract="false" isLeaf="false" isRoot="false" xmi.id="datatype" name="datatype" />
+    <UML:Model stereotype="folder" visibility="public" isSpecification="false" namespace="m1" isAbstract="false" isLeaf="false" isRoot="false" xmi.id="Logical View" name="Logical View" >
+     <UML:Namespace.ownedElement>
+      <UML:Package stereotype="folder" visibility="public" isSpecification="false" namespace="Logical View" isAbstract="false" isLeaf="false" isRoot="false" xmi.id="Datatypes" name="Datatypes" >
+       <UML:Namespace.ownedElement>
+        <UML:DataType stereotype="datatype" visibility="public" isSpecification="false" namespace="Datatypes" isAbstract="false" isLeaf="false" isRoot="false" xmi.id="EJFl4yY13lxj" name="int" />
+        <UML:DataType stereotype="datatype" visibility="public" isSpecification="false" namespace="Datatypes" isAbstract="false" isLeaf="false" isRoot="false" xmi.id="2nFa3ducp5YL" name="char" />
+        <UML:DataType stereotype="datatype" visibility="public" isSpecification="false" namespace="Datatypes" isAbstract="false" isLeaf="false" isRoot="false" xmi.id="hPgG7lcJ2p54" name="bool" />
+        <UML:DataType stereotype="datatype" visibility="public" isSpecification="false" namespace="Datatypes" isAbstract="false" isLeaf="false" isRoot="false" xmi.id="nb6qM1YNolvp" name="float" />
+        <UML:DataType stereotype="datatype" visibility="public" isSpecification="false" namespace="Datatypes" isAbstract="false" isLeaf="false" isRoot="false" xmi.id="OnSBr0WYOBoV" name="double" />
+        <UML:DataType stereotype="datatype" visibility="public" isSpecification="false" namespace="Datatypes" isAbstract="false" isLeaf="false" isRoot="false" xmi.id="wPoyEr00S6qn" name="short" />
+        <UML:DataType stereotype="datatype" visibility="public" isSpecification="false" namespace="Datatypes" isAbstract="false" isLeaf="false" isRoot="false" xmi.id="8MAu73kTrCei" name="long" />
+        <UML:DataType stereotype="datatype" visibility="public" isSpecification="false" namespace="Datatypes" isAbstract="false" isLeaf="false" isRoot="false" xmi.id="C9EYK13EQqAc" name="unsigned int" />
+        <UML:DataType stereotype="datatype" visibility="public" isSpecification="false" namespace="Datatypes" isAbstract="false" isLeaf="false" isRoot="false" xmi.id="fAc6FRrNlzFt" name="unsigned short" />
+        <UML:DataType stereotype="datatype" visibility="public" isSpecification="false" namespace="Datatypes" isAbstract="false" isLeaf="false" isRoot="false" xmi.id="2zMtBzbM8quS" name="unsigned long" />
+        <UML:DataType stereotype="datatype" visibility="public" isSpecification="false" namespace="Datatypes" isAbstract="false" isLeaf="false" isRoot="false" xmi.id="rwgFkopNySTD" name="string" />
+       </UML:Namespace.ownedElement>
+      </UML:Package>
+      <UML:Class visibility="public" isSpecification="false" namespace="Logical View" isAbstract="false" isLeaf="false" isRoot="false" xmi.id="QPYk97ngppzI" name="client" />
+      <UML:Class visibility="public" isSpecification="false" namespace="Logical View" isAbstract="false" isLeaf="false" isRoot="false" xmi.id="u7iJgQSlD7Y0" name="server" />
+      <UML:Class visibility="public" isSpecification="false" namespace="Logical View" isAbstract="false" isLeaf="false" isRoot="false" xmi.id="KHrDfI0Lgkoz" name="CSession" />
+      <UML:Class visibility="public" isSpecification="false" namespace="Logical View" isAbstract="false" isLeaf="false" isRoot="false" xmi.id="BltaV6ZzBeRF" name="CConnection" />
+      <UML:Class visibility="public" isSpecification="false" namespace="Logical View" isAbstract="false" isLeaf="false" isRoot="false" xmi.id="Be0vSz2qnlpn" name="CStateMachine" />
+     </UML:Namespace.ownedElement>
+     <XMI.extension xmi.extender="umbrello" >
+      <diagrams>
+       <diagram showopsig="1" linecolor="#ff0000" snapx="10" showattribassocs="1" snapy="10" linewidth="0" showattsig="1" showpubliconly="1" showpackage="1" showstereotype="1" name="join session" font="DejaVu Sans,9,-1,5,50,0,0,0,0,0" canvasheight="762" canvaswidth="816" localid="6o8E8nts12jl" snapcsgrid="0" showgrid="0" showops="1" usefillcolor="1" fillcolor="#ffff00" zoom="100" xmi.id="Y5Xi2IVLD4WW" documentation="" showscope="1" snapgrid="0" showatts="1" type="3" >
+        <widgets>
+         <objectwidget linecolor="#ff0000" usesdiagramfillcolor="0" linewidth="none" usesdiagramusefillcolor="1" instancename="" x="208" decon="0" showstereotype="1" y="48" font="DejaVu Sans,9,-1,5,50,0,1,0,0,0" localid="8AKefmG8rkNO" width="56" isinstance="0" multipleinstance="0" usefillcolor="1" fillcolor="#ffff00" xmi.id="QPYk97ngppzI" height="25" drawasactor="0" />
+         <objectwidget linecolor="#ff0000" usesdiagramfillcolor="0" linewidth="none" usesdiagramusefillcolor="1" instancename="" x="541" decon="0" showstereotype="1" y="48" font="DejaVu Sans,9,-1,5,50,0,1,0,0,0" localid="6o8E8nts12jl" width="78" isinstance="0" multipleinstance="0" usefillcolor="1" fillcolor="#ffff00" xmi.id="u7iJgQSlD7Y0" height="25" drawasactor="0" />
+         <boxwidget width="20" showstereotype="1" x="320" y="221" usesdiagramusefillcolor="1" usesdiagramfillcolor="1" isinstance="0" fillcolor="none" height="20" linecolor="#000000" xmi.id="J8VL0xU0QLmd" usefillcolor="1" linewidth="none" font="DejaVu Sans,9,-1,5,50,0,0,0,0,0" />
+         <boxwidget width="20" showstereotype="1" x="281" y="202" usesdiagramusefillcolor="1" usesdiagramfillcolor="1" isinstance="0" fillcolor="none" height="20" linecolor="#000000" xmi.id="BgcU0nyFPqKO" usefillcolor="1" linewidth="none" font="DejaVu Sans,9,-1,5,50,0,0,0,0,0" />
+         <floatingtext linecolor="none" usesdiagramfillcolor="1" linewidth="none" usesdiagramusefillcolor="1" x="46" showstereotype="1" y="189" text="" font="DejaVu Sans,9,-1,5,50,0,0,0,0,0" pretext="" role="700" width="8" isinstance="0" posttext="" usefillcolor="1" fillcolor="none" xmi.id="64G0ElHXtnss" height="19" />
+         <floatingtext linecolor="none" usesdiagramfillcolor="1" linewidth="none" usesdiagramusefillcolor="1" x="601" showstereotype="1" y="162" text="return list of sessions" font="DejaVu Sans,9,-1,5,50,0,0,0,0,0" pretext="" role="700" width="144" isinstance="0" posttext="" usefillcolor="1" fillcolor="none" xmi.id="EJd6496tVULc" height="19" />
+         <notewidget width="138" showstereotype="1" x="87" noteType="0" y="201" usesdiagramusefillcolor="1" usesdiagramfillcolor="1" isinstance="0" fillcolor="none" height="50" linecolor="none" xmi.id="uNSOi4NxMkst" usefillcolor="1" linewidth="none" font="DejaVu Sans,9,-1,5,50,0,0,0,0,0" text="User selects a session from list" />
+         <notewidget width="50" showstereotype="1" x="63" noteType="0" y="224" usesdiagramusefillcolor="1" usesdiagramfillcolor="1" isinstance="0" fillcolor="none" height="50" linecolor="none" xmi.id="shnB70Gswm19" usefillcolor="1" linewidth="none" font="DejaVu Sans,9,-1,5,50,0,0,0,0,0" text="" />
+         <notewidget width="50" showstereotype="1" x="53" noteType="0" y="227" usesdiagramusefillcolor="1" usesdiagramfillcolor="1" isinstance="0" fillcolor="none" height="50" linecolor="none" xmi.id="RwHttBGLXxNv" usefillcolor="1" linewidth="none" font="DejaVu Sans,9,-1,5,50,0,0,0,0,0" text="" />
+         <combinedFragmentwidget width="707" showstereotype="1" x="74" y="131" usesdiagramusefillcolor="1" usesdiagramfillcolor="1" isinstance="0" fillcolor="none" height="129" CombinedFragmenttype="1" linecolor="none" xmi.id="aziJaetqNdE4" combinedFragmentname="" usefillcolor="1" documentation="" linewidth="none" font="DejaVu Sans,9,-1,5,50,0,0,0,0,0" />
+        </widgets>
+        <messages>
+         <messagewidget linecolor="none" usesdiagramfillcolor="1" widgetbid="6o8E8nts12jl" textid="8UErZkJqLJ70" operation="request session list" linewidth="none" seqnum="2" usesdiagramusefillcolor="1" x="236" showstereotype="1" y="155" widgetaid="8AKefmG8rkNO" font="DejaVu Sans,9,-1,5,50,0,0,0,0,0" width="352" isinstance="0" usefillcolor="1" fillcolor="none" xmi.id="CnTxAY7sQ5qA" height="41" sequencemessagetype="1000" >
+          <floatingtext linecolor="none" usesdiagramfillcolor="1" linewidth="none" usesdiagramusefillcolor="1" x="241" showstereotype="1" y="136" text="2: request session list" font="DejaVu Sans,9,-1,5,50,0,0,0,0,0" pretext="" role="704" width="147" isinstance="0" posttext="" usefillcolor="1" fillcolor="none" xmi.id="8UErZkJqLJ70" height="19" />
+         </messagewidget>
+         <messagewidget linecolor="none" usesdiagramfillcolor="1" widgetbid="8AKefmG8rkNO" textid="wzHZxlhNoBE5" operation="find server via DNS-SD" linewidth="none" seqnum="1" xclicked="21" usesdiagramusefillcolor="1" x="22" showstereotype="1" y="109" widgetaid="8AKefmG8rkNO" yclicked="145" font="DejaVu Sans,9,-1,5,50,0,0,0,0,0" width="215" isinstance="0" usefillcolor="1" fillcolor="none" xmi.id="Np1VPTvzcpQw" height="10" sequencemessagetype="1004" >
+          <floatingtext linecolor="none" usesdiagramfillcolor="1" linewidth="none" usesdiagramusefillcolor="1" x="27" showstereotype="1" y="90" text="1: find server via DNS-SD" font="DejaVu Sans,9,-1,5,50,0,0,0,0,0" pretext="" role="705" width="162" isinstance="0" posttext="" usefillcolor="1" fillcolor="none" xmi.id="wzHZxlhNoBE5" height="19" />
+         </messagewidget>
+         <messagewidget linecolor="none" usesdiagramfillcolor="1" widgetbid="8AKefmG8rkNO" textid="hmKIqOAMuXOf" operation="quit" linewidth="none" seqnum="" xclicked="21" usesdiagramusefillcolor="1" x="22" showstereotype="1" y="578" widgetaid="8AKefmG8rkNO" yclicked="340" font="DejaVu Sans,9,-1,5,50,0,0,0,0,0" width="215" isinstance="0" usefillcolor="1" fillcolor="none" xmi.id="ywz770FabHms" height="10" sequencemessagetype="1003" >
+          <floatingtext linecolor="none" usesdiagramfillcolor="1" linewidth="none" usesdiagramusefillcolor="1" x="27" showstereotype="1" y="559" text=": quit" font="DejaVu Sans,9,-1,5,50,0,0,0,0,0" pretext="" role="705" width="40" isinstance="0" posttext="" usefillcolor="1" fillcolor="none" xmi.id="hmKIqOAMuXOf" height="19" />
+         </messagewidget>
+         <messagewidget linecolor="none" usesdiagramfillcolor="1" widgetbid="6o8E8nts12jl" textid="6ETW4ou8s996" operation="join session" linewidth="none" seqnum="3" usesdiagramusefillcolor="1" x="237" showstereotype="1" y="301" widgetaid="8AKefmG8rkNO" font="DejaVu Sans,9,-1,5,50,0,0,0,0,0" width="342" isinstance="0" usefillcolor="1" fillcolor="none" xmi.id="iLs6eehnIJGG" height="8" sequencemessagetype="1001" >
+          <floatingtext linecolor="none" usesdiagramfillcolor="1" linewidth="none" usesdiagramusefillcolor="1" x="242" showstereotype="1" y="282" text="3: join session" font="DejaVu Sans,9,-1,5,50,0,0,0,0,0" pretext="" role="704" width="98" isinstance="0" posttext="" usefillcolor="1" fillcolor="none" xmi.id="6ETW4ou8s996" height="19" />
+         </messagewidget>
+         <messagewidget linecolor="none" usesdiagramfillcolor="1" widgetbid="8AKefmG8rkNO" textid="OuTf0h6WmuPu" operation="send session state" linewidth="none" seqnum="4" usesdiagramusefillcolor="1" x="237" showstereotype="1" y="355" widgetaid="6o8E8nts12jl" font="DejaVu Sans,9,-1,5,50,0,0,0,0,0" width="342" isinstance="0" usefillcolor="1" fillcolor="none" xmi.id="k9ScpnUvQ6cD" height="8" sequencemessagetype="1001" >
+          <floatingtext linecolor="none" usesdiagramfillcolor="1" linewidth="none" usesdiagramusefillcolor="1" x="242" showstereotype="1" y="336" text="4: send session state" font="DejaVu Sans,9,-1,5,50,0,0,0,0,0" pretext="" role="704" width="144" isinstance="0" posttext="" usefillcolor="1" fillcolor="none" xmi.id="OuTf0h6WmuPu" height="19" />
+         </messagewidget>
+         <messagewidget linecolor="none" usesdiagramfillcolor="1" widgetbid="8AKefmG8rkNO" textid="coX3ZYxmWAIA" operation="Session state updates (initiated by other clients)" linewidth="none" seqnum="5" usesdiagramusefillcolor="1" x="237" showstereotype="1" y="394" widgetaid="6o8E8nts12jl" font="DejaVu Sans,9,-1,5,50,0,0,0,0,0" width="342" isinstance="0" usefillcolor="1" fillcolor="none" xmi.id="hjjFEDBpPBZS" height="8" sequencemessagetype="1001" >
+          <floatingtext linecolor="none" usesdiagramfillcolor="1" linewidth="none" usesdiagramusefillcolor="1" x="242" showstereotype="1" y="375" text="5: Session state updates (initiated by other clients)" font="DejaVu Sans,9,-1,5,50,0,0,0,0,0" pretext="" role="704" width="332" isinstance="0" posttext="" usefillcolor="1" fillcolor="none" xmi.id="coX3ZYxmWAIA" height="19" />
+         </messagewidget>
+         <messagewidget linecolor="none" usesdiagramfillcolor="1" widgetbid="6o8E8nts12jl" textid="9rphocBwsKPi" operation="Change Session (e.g. add song to playlist)" linewidth="none" seqnum="6:" usesdiagramusefillcolor="1" x="237" showstereotype="1" y="463" widgetaid="8AKefmG8rkNO" font="DejaVu Sans,9,-1,5,50,0,0,0,0,0" width="342" isinstance="0" usefillcolor="1" fillcolor="none" xmi.id="asBn3yBEWboI" height="8" sequencemessagetype="1001" >
+          <floatingtext linecolor="none" usesdiagramfillcolor="1" linewidth="none" usesdiagramusefillcolor="1" x="242" showstereotype="1" y="444" text="6:: Change Session (e.g. add song to playlist)" font="DejaVu Sans,9,-1,5,50,0,0,0,0,0" pretext="" role="704" width="294" isinstance="0" posttext="" usefillcolor="1" fillcolor="none" xmi.id="9rphocBwsKPi" height="19" />
+         </messagewidget>
+         <messagewidget linecolor="none" usesdiagramfillcolor="1" widgetbid="8AKefmG8rkNO" textid="K2T1r5BlvVBe" operation="Session state update (==self made changes)" linewidth="none" seqnum="7" usesdiagramusefillcolor="1" x="237" showstereotype="1" y="511" widgetaid="6o8E8nts12jl" font="DejaVu Sans,9,-1,5,50,0,0,0,0,0" width="342" isinstance="0" usefillcolor="1" fillcolor="none" xmi.id="fBsRCpcQLDDd" height="8" sequencemessagetype="1001" >
+          <floatingtext linecolor="none" usesdiagramfillcolor="1" linewidth="none" usesdiagramusefillcolor="1" x="242" showstereotype="1" y="492" text="7: Session state update (==self made changes)" font="DejaVu Sans,9,-1,5,50,0,0,0,0,0" pretext="" role="704" width="312" isinstance="0" posttext="" usefillcolor="1" fillcolor="none" xmi.id="K2T1r5BlvVBe" height="19" />
+         </messagewidget>
+        </messages>
+        <associations/>
+       </diagram>
+       <diagram showopsig="1" linecolor="#ff0000" snapx="10" showattribassocs="1" snapy="10" linewidth="0" showattsig="1" showpubliconly="1" showpackage="1" showstereotype="1" name="Muroa Client Architecture" font="DejaVu Sans,9,-1,5,50,0,0,0,0,0" canvasheight="582" canvaswidth="833" localid="" snapcsgrid="0" showgrid="0" showops="1" usefillcolor="1" fillcolor="#ffff00" zoom="100" xmi.id="ebBGCmuQmFzU" documentation="" showscope="1" snapgrid="0" showatts="1" type="1" >
+        <widgets>
+         <classwidget linecolor="none" usesdiagramfillcolor="1" linewidth="none" showoperations="1" usesdiagramusefillcolor="1" showpubliconly="1" showpackage="1" x="104" showattsigs="601" showstereotype="1" y="80" showattributes="1" font="DejaVu Sans,9,-1,5,75,0,0,0,0,0" width="75" isinstance="0" usefillcolor="1" fillcolor="none" xmi.id="KHrDfI0Lgkoz" showscope="1" height="29" showopsigs="601" />
+         <classwidget linecolor="none" usesdiagramfillcolor="1" linewidth="none" showoperations="1" usesdiagramusefillcolor="1" showpubliconly="1" showpackage="1" x="127" showattsigs="601" showstereotype="1" y="219" showattributes="1" font="DejaVu Sans,9,-1,5,75,0,0,0,0,0" width="99" isinstance="0" usefillcolor="1" fillcolor="none" xmi.id="BltaV6ZzBeRF" showscope="1" height="29" showopsigs="601" />
+         <classwidget linecolor="none" usesdiagramfillcolor="1" linewidth="none" showoperations="1" usesdiagramusefillcolor="1" showpubliconly="1" showpackage="1" x="313" showattsigs="601" showstereotype="1" y="219" showattributes="1" font="DejaVu Sans,9,-1,5,75,0,0,0,0,0" width="117" isinstance="0" usefillcolor="1" fillcolor="none" xmi.id="Be0vSz2qnlpn" showscope="1" height="29" showopsigs="601" />
+        </widgets>
+        <messages/>
+        <associations/>
+       </diagram>
+      </diagrams>
+     </XMI.extension>
+    </UML:Model>
+    <UML:Model stereotype="folder" visibility="public" isSpecification="false" namespace="m1" isAbstract="false" isLeaf="false" isRoot="false" xmi.id="Use Case View" name="Use Case View" >
+     <UML:Namespace.ownedElement/>
+    </UML:Model>
+    <UML:Model stereotype="folder" visibility="public" isSpecification="false" namespace="m1" isAbstract="false" isLeaf="false" isRoot="false" xmi.id="Component View" name="Component View" >
+     <UML:Namespace.ownedElement/>
+    </UML:Model>
+    <UML:Model stereotype="folder" visibility="public" isSpecification="false" namespace="m1" isAbstract="false" isLeaf="false" isRoot="false" xmi.id="Deployment View" name="Deployment View" >
+     <UML:Namespace.ownedElement/>
+    </UML:Model>
+    <UML:Model stereotype="folder" visibility="public" isSpecification="false" namespace="m1" isAbstract="false" isLeaf="false" isRoot="false" xmi.id="Entity Relationship Model" name="Entity Relationship Model" >
+     <UML:Namespace.ownedElement/>
+    </UML:Model>
+   </UML:Namespace.ownedElement>
+  </UML:Model>
+ </XMI.content>
+ <XMI.extensions xmi.extender="umbrello" >
+  <docsettings viewid="Y5Xi2IVLD4WW" uniqueid="K2T1r5BlvVBe" documentation="" />
+  <listview>
+   <listitem open="1" type="800" label="Views" >
+    <listitem open="1" type="801" id="Logical View" >
+     <listitem open="0" type="807" id="ebBGCmuQmFzU" label="Muroa Client Architecture" />
+     <listitem open="0" type="810" id="Y5Xi2IVLD4WW" label="join session" />
+     <listitem open="1" type="813" id="BltaV6ZzBeRF" />
+     <listitem open="1" type="813" id="KHrDfI0Lgkoz" />
+     <listitem open="1" type="813" id="Be0vSz2qnlpn" />
+     <listitem open="1" type="813" id="QPYk97ngppzI" />
+     <listitem open="1" type="813" id="u7iJgQSlD7Y0" />
+     <listitem open="0" type="830" id="Datatypes" >
+      <listitem open="1" type="829" id="hPgG7lcJ2p54" />
+      <listitem open="1" type="829" id="2nFa3ducp5YL" />
+      <listitem open="1" type="829" id="OnSBr0WYOBoV" />
+      <listitem open="1" type="829" id="nb6qM1YNolvp" />
+      <listitem open="1" type="829" id="EJFl4yY13lxj" />
+      <listitem open="1" type="829" id="8MAu73kTrCei" />
+      <listitem open="1" type="829" id="wPoyEr00S6qn" />
+      <listitem open="1" type="829" id="rwgFkopNySTD" />
+      <listitem open="1" type="829" id="C9EYK13EQqAc" />
+      <listitem open="1" type="829" id="2zMtBzbM8quS" />
+      <listitem open="1" type="829" id="fAc6FRrNlzFt" />
+     </listitem>
+    </listitem>
+    <listitem open="1" type="802" id="Use Case View" />
+    <listitem open="1" type="821" id="Component View" />
+    <listitem open="1" type="827" id="Deployment View" />
+    <listitem open="1" type="836" id="Entity Relationship Model" />
+   </listitem>
+  </listview>
+  <codegeneration>
+   <codegenerator language="C++" />
+  </codegeneration>
+ </XMI.extensions>
+</XMI>
