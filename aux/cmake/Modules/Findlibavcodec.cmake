@@ -30,7 +30,7 @@ include(FindPackageHandleStandardArgs)
 find_package_handle_standard_args(libavcodec  DEFAULT_MSG
                                   libavcodec_LIBRARY libavcodec_INCLUDE_DIR)
                                   
-MESSAGE( libavcodec: "${libavcodec_LIBRARY}")
+# MESSAGE( libavcodec: "${libavcodec_LIBRARY}")
 
 mark_as_advanced(libavcodec_INCLUDE_DIR libavcodec_LIBRARY )
 

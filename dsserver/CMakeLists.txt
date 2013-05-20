@@ -3,6 +3,8 @@ project (dsserver)
 
 set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../aux/cmake/Modules" ${CMAKE_MODULE_PATH})
 
+find_package( Threads REQUIRED )
+
 set(Boost_USE_STATIC_LIBS   ON )
 set(Boost_USE_MULTITHREADED ON )
 find_package( Boost 1.36.0 COMPONENTS filesystem system date_time program_options REQUIRED )
@@ -28,7 +30,11 @@ link_directories( "${CMAKE_SOURCE_DIR}/../libstreamsrv/build_x86"
                   ${BOOST_LIBRARYDIR} )
 
 ADD_EXECUTABLE( dsserver  ${SRC} ${HEADERS} )
-target_link_libraries( dsserver pthread ${Boost_LIBRARIES} sock++ dsaudio streamsrv )
+target_link_libraries( dsserver ${CMAKE_THREAD_LIBS_INIT} 
+                                ${Boost_LIBRARIES} 
+                                sock++ 
+                                dsaudio 
+                                streamsrv )
 set_target_properties( dsserver  PROPERTIES  COMPILE_FLAGS "-std=gnu++0x -pthread" ) 
 ###################################################################################
 # This step merges a gdb_index section into the binary to speed up debugging.

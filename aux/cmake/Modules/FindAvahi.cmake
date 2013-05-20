@@ -1,58 +1,88 @@
-# Remmina - The GTK+ Remote Desktop Client
 #
-# Copyright (C) 2011 Marc-Andre Moreau
+# Try to find Avahi client side libraries:
 #
-# This program is free software; you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation; either version 2 of the License, or
-# (at your option) any later version.
+#   - avahi-client
+#   - avahi-common
+#   - avahi-qt4
 #
-# This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
+#  find_package(Avahi COMPONENTS client common qt4)
+# 
+# Once done, this will define
 #
-# You should have received a copy of the GNU General Public License
-# along with this program; if not, write to the Free Software
-# Foundation, Inc., 59 Temple Place, Suite 330, 
-# Boston, MA 02111-1307, USA.
+#  Avahi_FOUND - system has libavformat libs
+#  Avahi_INCLUDE_DIRS - the libavformat include directories
+#  Avahi_LIBRARIES - link these to use libavformat
+#
 
-include(FindPkgConfig)
+# Use find_package( Avahi COMPONENTS ... ) to enable modules
+if( Avahi_FIND_COMPONENTS )
+  foreach( component ${Avahi_FIND_COMPONENTS} )
+    string( TOUPPER ${component} _COMPONENT )
+    set( AVAHI_USE_${_COMPONENT} 1 )
+  endforeach()
+endif()
 
+include(FindPackageHandleStandardArgs)
+
+find_package( PkgConfig )
 if(PKG_CONFIG_FOUND)
-	pkg_check_modules(PC_AVAHI_CLIENT avahi-client)
-	if(GTK3_FOUND)
-		set(_AVAHI_UI_LIB_NAME avahi-ui-gtk3)
-		set(_AVAHI_UI_PKG_NAME avahi-ui-gtk3>=0.6.30 avahi-client>=0.6.30)
-	else()
-		set(_AVAHI_UI_LIB_NAME avahi-ui)
-		set(_AVAHI_UI_PKG_NAME avahi-ui>=0.6.30 avahi-client>=0.6.30)
-	endif()
-	pkg_check_modules(PC_AVAHI_UI ${_AVAHI_UI_PKG_NAME})
-endif()
+
+  if(AVAHI_USE_COMMON)
+    # Use pkg-config to get hints about paths
+    pkg_check_modules(libavahicommon_PKGCONF  QUIET libavahicommon)
+
+    find_path(libavahicommon_INCLUDE_DIR avahi-common/thread-watch.h
+              HINTS ${libavahicommon_PKGCONF_INCLUDEDIR} ${libavahicommon_PKGCONF_INCLUDE_DIRS}
+              PATH_SUFFIXES libavahicommon )
+
+    find_library(libavahicommon_LIBRARY NAMES libavahi-common avahi-common
+                 HINTS ${libavahicommon_PKGCONF__LIBDIR} ${libavahicommon_PKGCONF_LIBRARY_DIRS} )
+
+    mark_as_advanced(libavahicommon_INCLUDE_DIR libavahicommon_LIBRARY )
+        
+  endif(AVAHI_USE_COMMON)
+    
+  if(AVAHI_USE_CLIENT)
+    # Use pkg-config to get hints about paths
+    pkg_check_modules(libavahiclient_PKGCONF  QUIET libavahiclient)
+
+    find_path(libavahiclient_INCLUDE_DIR avahi-client/client.h
+              HINTS ${libavahiclient_PKGCONF_INCLUDEDIR} ${libavahiclient_PKGCONF_INCLUDE_DIRS}
+              PATH_SUFFIXES libavahiclient )
+
+    find_library(libavahiclient_LIBRARY NAMES libavahi-client avahi-client
+                 HINTS ${libavahiclient_PKGCONF__LIBDIR} ${libavahiclient_PKGCONF_LIBRARY_DIRS} )
+
+    mark_as_advanced(libavahiclient_INCLUDE_DIR libavahiclient_LIBRARY )
+                 
+  endif(AVAHI_USE_CLIENT)
+
+  if(AVAHI_USE_QT4)
+    pkg_check_modules(libavahiqt4_PKGCONF  QUIET libavahiqt4)
+
+    find_path(libavahiqt4_INCLUDE_DIR avahi-qt4/qt-watch.h
+              HINTS ${libavahiqt4_PKGCONF_INCLUDEDIR} ${libavahiqt4_PKGCONF_INCLUDE_DIRS}
+              PATH_SUFFIXES libavahiqt4 )
+
+    find_library(libavahiqt4_LIBRARY NAMES libavahi-qt4 avahi-qt4
+                 HINTS ${libavahiqt4_PKGCONF__LIBDIR} ${libavahiqt4_PKGCONF_LIBRARY_DIRS} )
+          
+    mark_as_advanced(libavahiqt4_INCLUDE_DIR libavahiqt4_LIBRARY )
+                 
+  endif(AVAHI_QT4)
+    
+endif(PKG_CONFIG_FOUND)
 
 
-find_library(AVAHI_COMMON_LIBRARY NAMES avahi-common PATHS ${PC_AVAHI_CLIENT_LIBRARY_DIRS})
-if(AVAHI_COMMON_LIBRARY)
-	set(AVAHI_COMMON_FOUND TRUE)
-endif()
+set(Avahi_LIBRARIES ${libavahicommon_LIBRARY} ${libavahiclient_LIBRARY} ${libavahiqt4_LIBRARY} )
+set(Avahi_INCLUDE_DIRS ${libavahicommon_INCLUDE_DIR} ${libavahiclient_INCLUDE_DIR} ${libavahiqt4_INCLUDE_DIR} )
 
-find_library(AVAHI_CLIENT_LIBRARY NAMES avahi-client PATHS ${PC_AVAHI_CLIENT_LIBRARY_DIRS})
-if(AVAHI_CLIENT_LIBRARY)
-	set(AVAHI_CLIENT_FOUND TRUE)
-endif()
+# handle the QUIETLY and REQUIRED arguments and set LIBXML2_FOUND to TRUE
+# if all listed variables are TRUE
+find_package_handle_standard_args(Avahi  DEFAULT_MSG
+                                  libavahiqt4_LIBRARY libavahiclient_LIBRARY libavahicommon_LIBRARY 
+                                  libavahiqt4_INCLUDE_DIR libavahiclient_INCLUDE_DIR libavahicommon_INCLUDE_DIR)
+                                  
+# MESSAGE( libavahiclient: "${libavahiclient_LIBRARY}")
 
-find_path(AVAHI_UI_INCLUDE_DIR avahi-ui/avahi-ui.h PATHS ${PC_AVAHI_UI_INCLUDE_DIRS})
-find_library(AVAHI_UI_LIBRARY NAMES ${_AVAHI_UI_LIB_NAME} PATHS ${PC_AVAHI_UI_LIBRARY_DIRS})
-if(AVAHI_UI_INCLUDE_DIR AND AVAHI_UI_LIBRARY)
-	set(AVAHI_UI_FOUND TRUE)
-endif()
 
-FIND_PACKAGE_HANDLE_STANDARD_ARGS(AVAHI DEFAULT_MSG AVAHI_COMMON_FOUND AVAHI_CLIENT_FOUND AVAHI_UI_FOUND)
-
-if (AVAHI_FOUND)
-	set(AVAHI_INCLUDE_DIRS ${AVAHI_UI_INCLUDE_DIR})
-	set(AVAHI_LIBRARIES ${AVAHI_COMMON_LIBRARY} ${AVAHI_CLIENT_LIBRARY} ${AVAHI_UI_LIBRARY})
-endif()
-
-mark_as_advanced(AVAHI_INCLUDE_DIRS AVAHI_LIBRARIES)

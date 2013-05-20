@@ -21,8 +21,8 @@ find_path(log4cplus_INCLUDE_DIR log4cplus/logger.h
 find_library(log4cplus_LIBRARY NAMES log4cplus avutil
              HINTS ${log4cplus_PKGCONF__LIBDIR} ${log4cplus_PKGCONF_LIBRARY_DIRS} )
 
-# set(LIBXML2_LIBRARIES ${LIBXML2_LIBRARY} )
-# set(LIBXML2_INCLUDE_DIRS ${LIBXML2_INCLUDE_DIR} )
+set(log4cplus_LIBRARIES ${log4cplus_LIBRARY} )
+set(log4cplus_INCLUDE_DIRS ${log4cplus_INCLUDE_DIR} )
 
 include(FindPackageHandleStandardArgs)
 # handle the QUIETLY and REQUIRED arguments and set LIBXML2_FOUND to TRUE
@@ -30,7 +30,7 @@ include(FindPackageHandleStandardArgs)
 find_package_handle_standard_args(log4cplus  DEFAULT_MSG
                                   log4cplus_LIBRARY log4cplus_INCLUDE_DIR)
                                   
-MESSAGE( log4cplus: "${log4cplus_LIBRARY}")
+# MESSAGE( log4cplus: "${log4cplus_LIBRARY}")
 
 mark_as_advanced(log4cplus_INCLUDE_DIR log4cplus_LIBRARY )
 

@@ -3,6 +3,8 @@ project (libsock++)
 
 set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../aux/cmake/Modules" ${CMAKE_MODULE_PATH})
 
+find_package( Threads REQUIRED )
+
 set(Boost_USE_MULTITHREADED ON)
 # find_package( Boost 1.36.0 COMPONENTS system regex REQUIRED )
 # find_package( EXPAT REQUIRED )
@@ -36,7 +38,10 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR} )
 link_directories(  )
 
 add_library(  sock++ SHARED  ${SRC} ${HEADERS} )
-target_link_libraries( sock++ ${ALSA_LIBRARY} pthread )
+
+target_link_libraries( sock++ ${CMAKE_THREAD_LIBS_INIT} 
+                              ${ALSA_LIBRARY} )
+                              
 set_target_properties( sock++  PROPERTIES  COMPILE_FLAGS "-std=gnu++0x -pthread" ) 
 ###################################################################################
 # This step merges a gdb_index section into the binary to speed up debugging.

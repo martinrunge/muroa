@@ -30,7 +30,7 @@ include(FindPackageHandleStandardArgs)
 find_package_handle_standard_args(libsamplerate  DEFAULT_MSG
                                   libsamplerate_LIBRARY libsamplerate_INCLUDE_DIR)
                                   
-MESSAGE( libsamplerate: "${libsamplerate_LIBRARY}")
+# MESSAGE( libsamplerate: "${libsamplerate_LIBRARY}")
 
 mark_as_advanced(libsamplerate_INCLUDE_DIR libsamplerate_LIBRARY )
 

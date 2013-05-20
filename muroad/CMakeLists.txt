@@ -12,6 +12,8 @@ set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../aux/cmake/Modules" ${CMAKE
 
 find_package(PkgConfig)
 
+find_package( Threads REQUIRED )
+
 set(Boost_USE_STATIC_LIBS   ON )
 set(Boost_USE_MULTITHREADED ON )
 find_package( Boost 1.36.0 COMPONENTS filesystem system date_time program_options REQUIRED )
@@ -92,17 +94,17 @@ set_target_properties( muroad PROPERTIES  COMPILE_FLAGS "-std=gnu++0x" )
 # SET_TARGET_PROPERTIES( msessiond PROPERTIES  LINK_FLAGS -Wl,--eh-frame-hdr)
 # SET_TARGET_PROPERTIES( msessiond PROPERTIES  LINK_FLAGS -Wl,-shared-libgcc)
 
-TARGET_LINK_LIBRARIES(muroad       ${Boost_LIBRARIES}
+TARGET_LINK_LIBRARIES(muroad       ${CMAKE_THREAD_LIBS_INIT} 
+                                   ${Boost_LIBRARIES}
                                    ${libavcodec_LIBRARIES} 
                                    ${libavformat_LIBRARIES} 
                                    ${libavavutil_LIBRARIES} 
                                    ${libsamplerate_LIBRARY}
                                    ${ALSA_LIBRARY}
-                                   ${log4cplus_LIBRARY}
+                                   ${log4cplus_LIBRARIES}
                                    ${EXPAT_LIBRARIES}
                                    ${libavahiclient_LIBRARY} 
                                    ${libavahicommon_LIBRARY}
-                                   pthread
                                    sock++
                                    dsaudio
                                    muroadaemon

@@ -5,7 +5,6 @@
 #  libavahiclient_INCLUDE_DIRS - the libavformat include directories
 #  libavahiclient_LIBRARY - link these to use libavformat
 
-# include(LibFindMacros)
 find_package( PkgConfig )
 
 # Use pkg-config to get hints about paths
@@ -31,7 +30,7 @@ include(FindPackageHandleStandardArgs)
 find_package_handle_standard_args(libavahiclient  DEFAULT_MSG
                                   libavahiclient_LIBRARY libavahiclient_INCLUDE_DIR)
                                   
-MESSAGE( libavahiclient: "${libavahiclient_LIBRARY}")
+# MESSAGE( libavahiclient: "${libavahiclient_LIBRARY}")
 
 mark_as_advanced(libavformat_INCLUDE_DIR libavahiclient_LIBRARY )
 

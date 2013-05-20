@@ -5,6 +5,7 @@ project (muroadaemon)
 set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../aux/cmake/Modules" ${CMAKE_MODULE_PATH})
 
 set(Boost_USE_MULTITHREADED ON)
+find_package( Threads )
 find_package( Boost 1.36.0 COMPONENTS system  REQUIRED )
 find_package( EXPAT REQUIRED )
 find_package( libavahiclient REQUIRED )
@@ -52,10 +53,10 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR} ${Boost_INCLUDE_DIRS}
 link_directories(   )
 
 add_library(  muroadaemon SHARED  ${SRC} ${HEADERS} )
-target_link_libraries( muroadaemon  ${Boost_LIBRARIES} 
+target_link_libraries( muroadaemon  ${CMAKE_THREAD_LIBS_INIT} 
+                                    ${Boost_LIBRARIES} 
                                     ${EXPAT_LIBRARIES}
                                     ${log4cplus_LIBRARY}
-                                    pthread 
                                     ${libavahiclient_LIBRARY} 
                                     ${libavahicommon_LIBRARY}
                                     )

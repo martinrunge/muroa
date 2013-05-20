@@ -30,7 +30,7 @@ include(FindPackageHandleStandardArgs)
 find_package_handle_standard_args(libavformat  DEFAULT_MSG
                                   libavformat_LIBRARY libavformat_INCLUDE_DIR)
                                   
-MESSAGE( libavformat: "${libavformat_LIBRARY}")
+# MESSAGE( libavformat: "${libavformat_LIBRARY}")
 
 mark_as_advanced(libavformat_INCLUDE_DIR libavformat_LIBRARY )
 

@@ -12,7 +12,8 @@ set(Boost_USE_MULTITHREADED ON )
 find_package( Boost 1.36.0 COMPONENTS filesystem system regex REQUIRED )
 find_package( Sqlite REQUIRED )
 find_package( TagLib REQUIRED )
-find_package ( ALSA REQUIRED )
+find_package( ALSA REQUIRED )
+find_package( log4cplus REQUIRED )
 
 
 # add_subdirectory(unittest)
@@ -85,6 +86,7 @@ set( HEADERS          sessionEx.h
 include_directories(${SOURCE_DIR} 
                     ${Boost_INCLUDE_DIRS} 
                     ${SQLITE_INCLUDE_DIR} 
+                    ${log4cplus_INCLUDE_DIRS}
                     ${CMAKE_CURRENT_SOURCE_DIR} 
                     ${CMAKE_CURRENT_SOURCE_DIR}/../libmuroadaemon 
                     ${CMAKE_CURRENT_SOURCE_DIR}/../libmuroa++
@@ -116,7 +118,7 @@ TARGET_LINK_LIBRARIES(msessiond    muroadaemon
                                    ${ALSA_LIBRARY}
                                    ao
                                    xdiff
-                                   log4cplus
+                                   ${log4cplus_LIBRARIES}                              
                                    )
                                    
                                    

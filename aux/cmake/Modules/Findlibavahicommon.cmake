@@ -31,7 +31,7 @@ include(FindPackageHandleStandardArgs)
 find_package_handle_standard_args(libavahicommon  DEFAULT_MSG
                                   libavahicommon_LIBRARY libavahicommon_INCLUDE_DIR)
                                   
-MESSAGE( libavahicommon: "${libavahicommon_LIBRARY}")
+# MESSAGE( libavahicommon: "${libavahicommon_LIBRARY}")
 
 mark_as_advanced(libavformat_INCLUDE_DIR libavahicommon_LIBRARY )
 
