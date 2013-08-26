@@ -5,3 +5,7 @@ core
 core.*
 *.log
 
+
+CMakeFiles
+cmake_install.cmake
+Makefile

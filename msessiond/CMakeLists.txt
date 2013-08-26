@@ -13,6 +13,7 @@ find_package( Boost 1.36.0 COMPONENTS filesystem system regex REQUIRED )
 find_package( Sqlite REQUIRED )
 find_package( TagLib REQUIRED )
 find_package( ALSA REQUIRED )
+find_package( LibAO )
 find_package( log4cplus REQUIRED )
 
 
