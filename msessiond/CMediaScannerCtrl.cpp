@@ -6,7 +6,7 @@
  */
 
 #include "CMediaScannerCtrl.h"
-
+#include "CApp.h"
 #include "CSession.h"
 #include "sessionEx.h"
 
@@ -49,7 +49,9 @@ void CMediaScannerCtrl::start() {
 
 	vector<string> args;
 
-	pid_t pid = CSubProcess::start("../mmscanner/build/mmscanner" , args ,0 ,0);
+	string mmscannerbin = CApp::settings().getProperty("mmscanner_binary", "mmscanner/mmscanner");
+
+	pid_t pid = CSubProcess::start(mmscannerbin , args ,0 ,0);
 
 	if(pid == -5) {
 		// already running, this is no error.
@@ -57,7 +59,10 @@ void CMediaScannerCtrl::start() {
 	}
 
 	if(pid < 0) {
-		cerr << "could not start mediascanner" << endl;
+		ostringstream oss;
+		oss << "Could not start mediascanner (tried '" << mmscannerbin << "')" << endl;
+		cerr << oss.str();
+		LOG4CPLUS_ERROR(CApp::logger(), oss.str());
 	}
 }
 
@@ -152,6 +157,7 @@ void CMediaScannerCtrl::fromStdout(const char* buffer, int length) {
 void CMediaScannerCtrl::fromStderr(const char* buffer, int length) {
 	string errormsg(buffer, length);
 	cerr << "childs stderr: " << errormsg;
+	LOG4CPLUS_ERROR(CApp::logger(), "mmscanner's stderr: " << errormsg << endl );
 }
 
 

@@ -45,8 +45,13 @@ int main(int argc, char *argv[])
     muroa::CApp* app;
 
 	try {
-    	app = muroa::CApp::getInstPtr(argc, argv);
-
+		try {
+			app = muroa::CApp::getInstPtr(argc, argv);
+		}
+		catch (muroa::configEx& ex) {
+			cerr << "got exception configEx: " << ex.what() << endl;
+			return EXIT_FAILURE;
+		}
     	if(!app->settings().foreground()) {
     		app->daemonize();
     	}
@@ -57,36 +62,15 @@ int main(int argc, char *argv[])
 		sigPtr->start();
 
 		LOG4CPLUS_DEBUG(app->logger(), "starting io_service");
-
 	    CPlayer player(app, io_service);
 	    player.start();
 
 	    io_service.run();
 
 	} catch (std::exception& e) {
-		LOG4CPLUS_ERROR(app->logger(), "Uncaught exception from mainloop: " << e.what());
+		cerr << "Uncaught exception from mainloop: " << e.what() << endl;
+		return EXIT_FAILURE;
 	}
-
-//  try
-//  {
-//    Cmuroad muroad(argc, argv);
-//    muroad.daemonize();
-//
-//
-//
-//    CPlayer player(&muroad);
-//    player.start();
-//
-//    cin >> c;
-//
-//  }
-//  catch(string except)
-//  {
-//    if(except.compare("help") == 0)
-//      exit(0);
-//    else
-//      cerr << except << endl;
-//  }
 
   return EXIT_SUCCESS;
 }

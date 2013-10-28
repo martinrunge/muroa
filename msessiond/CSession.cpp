@@ -19,6 +19,7 @@
 #include <CPlaylistItem.h>
 
 #include <CTcpServer.h>
+#include "CUtils.h"
 #include "CMediaScannerCtrl.h"
 #include "CApp.h"
 #include "CStateDB.h"
@@ -29,6 +30,8 @@
 #include <boost/algorithm/string.hpp>
 #include <boost/algorithm/string/split.hpp>
 #include <boost/algorithm/string/join.hpp>
+
+#include <boost/filesystem.hpp>
 
 #include "CCmdDispatcher.h"
 
@@ -451,13 +454,19 @@ void CSession::scanCollection(CConnection* initiator, uint32_t jobID) {
 	m_job_initiators.insert(std::pair<uint32_t, CConnection*>(jobID, initiator));
 
 	m_mediaScanner->start();
-	CMsgOpenDb* dbmsg = new CMsgOpenDb( getProperty("sessions_storage_dir", "./") + getName() + "/mediacol" );
+	boost::filesystem::path dbpath = CApp::settings().getProperty("msessiond.sessions_storage_dir", "./") + getName() + "/mediacol";
+	dbpath = CUtils::expandvars(dbpath);
+	CMsgOpenDb* dbmsg = new CMsgOpenDb( dbpath.string() );
 	m_mediaScanner->sendMsg(dbmsg);
 	addOutstandingMsg(dbmsg);
 
-	CMsgScanDir* sdmsg = new CMsgScanDir("/home/martin/Desktop");
+	boost::filesystem::path mediapath = CApp::settings().getProperty("media_path", "~/Desktop");
+	mediapath = CUtils::expandvars(mediapath);
+	CMsgScanDir* sdmsg = new CMsgScanDir( mediapath.string() );
 	m_mediaScanner->sendMsg(sdmsg);
 	addOutstandingMsg(sdmsg);
+
+	LOG4CPLUS_INFO(m_app->logger(), "scan collegion: searching for media files in '" << mediapath << "'" << endl );
 
 	setClientCmdIdBySubprocessCmdID(sdmsg->getID(), initiator, jobID );
 }
@@ -566,13 +575,13 @@ void CSession::toAll( Cmd* cmd, bool deleteCmd ) {
 
 string CSession::getProperty(string key, string defaultVal) {
 	string privKey = privatePropertyKey(key);
-	string value = m_app->settings().getProptery(privKey, defaultVal);
+	string value = m_app->settings().getProperty(privKey, defaultVal);
 	return value;
 }
 
 void CSession::setProperty(string key, string val) {
 	string privKey = privatePropertyKey(key);
-	m_app->settings().setProptery(privKey, val);
+	m_app->settings().setProperty(privKey, val);
 }
 
 int CSession::getProperty(string key, int defaultVal) {

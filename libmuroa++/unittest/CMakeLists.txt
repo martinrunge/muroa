@@ -11,7 +11,8 @@ find_package( Boost 1.36.0 COMPONENTS filesystem REQUIRED )
 
 add_definitions( ${QT4_DEFINITIONS} -D__STDC_CONSTANT_MACROS)
 
-set( unittests_SRCS   CCollectionTest.cpp
+set( unittests_SRCS   CUtilsTest.cpp
+                      CCollectionTest.cpp
                       CDiffTest.cpp
                       CRootItemDiffTest.cpp
                       CIteratorTest.cpp
@@ -23,7 +24,8 @@ set( unittests_SRCS   CCollectionTest.cpp
 set( unittests_H   
                       )
                     
- set( HEADERS         CCollectionTest.h
+ set( HEADERS         CUtilsTest.h
+                      CCollectionTest.h
                       CDiffTest.h
                       CRootItemDiffTest.h
                       CIteratorTest.h

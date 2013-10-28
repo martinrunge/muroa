@@ -44,6 +44,7 @@ public:
 	virtual ~CSettings() throw();
 
 	int parse(int argc, char** argv) throw(muroa::configEx);
+	int readConfigFile() throw(muroa::configEx);
 
 	inline bool foreground() { return m_foreground; };
     inline int debuglevel() { return m_debuglevel; };
@@ -60,8 +61,8 @@ public:
     inline std::string serviceType() {return m_service_type; };
     inline void setServiceType(std::string service_type) { m_service_type = service_type; };
 
-    std::string getProptery(const std::string& key, const std::string& defaultVal);
-    void setProptery(const std::string& key, const std::string& val);
+    std::string getProperty(const std::string& key, const std::string& defaultVal);
+    void setProperty(const std::string& key, const std::string& val);
 
     int getProptery(const std::string& key, const int& defaultVal);
     void setProptery(const std::string& key, const int& val);

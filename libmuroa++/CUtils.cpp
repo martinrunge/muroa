@@ -30,6 +30,7 @@
 #include <vector>
 
 using namespace std;
+using namespace boost::filesystem;
 
 CUtils::CUtils() {
 }
@@ -107,3 +108,25 @@ uint32_t CUtils::str2uint32(std::string str) throw(std::invalid_argument) {
 	return iVal;
 }
 
+path CUtils::expandvars(path p) {
+	path rp;
+	path::iterator it = p.begin();
+	while (it != p.end()) {
+		cerr << *it << endl;
+		string elem(it->string());
+		if(elem.compare("~") == 0) {
+			elem = string(getenv("HOME"));
+		}
+		if(elem.find_first_of('$') == 0) {
+			const char* envvar = getenv( elem.substr(1).c_str() );
+			if(envvar != NULL) {
+				elem = envvar;
+			}
+		}
+
+		rp /= elem;
+		cerr << "   " << rp << endl;
+		++it;
+	}
+	return rp;
+}

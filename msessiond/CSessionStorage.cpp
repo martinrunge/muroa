@@ -31,8 +31,11 @@ const string CSessionStorage::mcrev_file_extension(".mcrev");
 CSessionStorage::CSessionStorage(CSession* session)  : m_app(muroa::CApp::getInstPtr()),
                                                        m_session(session)
 {
-	m_storage_path = m_app->settings().getProptery("msessiond.sessions_storage_dir", "");
+	m_storage_path = m_app->settings().getProperty("msessiond.sessions_storage_dir", "");
+	m_storage_path = CUtils::expandvars(m_storage_path);
 	m_storage_path/=m_session->getName();
+
+	LOG4CPLUS_INFO(m_app->logger(), "session storage in " << m_storage_path <<  endl );
 
 	if(!exists(m_storage_path) || !is_directory(m_storage_path)) {
 		create_directories(m_storage_path);

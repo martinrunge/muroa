@@ -94,7 +94,7 @@ void CTcpConnection::handle_write(const boost::system::error_code& error, size_t
         onClose();
     }
     else {
-    	LOG4CPLUS_DEBUG(m_logger, "handle_write: " << bytes_transferred << " Bytes transferred");
+    	// LOG4CPLUS_DEBUG(m_logger, "handle_write: " << bytes_transferred << " Bytes transferred");
     }
 }
 

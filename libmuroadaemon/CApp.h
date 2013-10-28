@@ -24,8 +24,11 @@ public:
 	static CApp* getInstPtr(int argc = 0, char** argv = NULL) throw(configEx);
 	virtual ~CApp();
 
-	CSettings& settings();
-	log4cplus::Logger& logger();
+	static CSettings& settings();
+	static log4cplus::Logger& logger();
+
+	CSettings& getSettingsRef();
+	log4cplus::Logger& getLoggerRef();
 
 	void serviceChanged();
 	int daemonize();

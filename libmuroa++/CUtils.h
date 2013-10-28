@@ -28,6 +28,8 @@
 #include <cstdint>
 #include <stdexcept>
 
+#include <boost/filesystem.hpp>
+
 class CUtils {
 public:
 	CUtils();
@@ -37,6 +39,8 @@ public:
 
 	static long str2long(std::string str) throw(std::invalid_argument);
 	static uint32_t str2uint32(std::string str) throw(std::invalid_argument);
+
+	static boost::filesystem::path expandvars(boost::filesystem::path path);
 
 };
 

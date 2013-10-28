@@ -9,7 +9,7 @@ add_subdirectory(util/rehash)
 find_package( Threads REQUIRED )
 
 set(Boost_USE_MULTITHREADED ON)
-find_package( Boost 1.36.0 COMPONENTS system regex REQUIRED )
+find_package( Boost 1.36.0 COMPONENTS system filesystem regex REQUIRED )
 find_package( EXPAT REQUIRED )
 
 add_definitions(  )

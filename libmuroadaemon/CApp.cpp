@@ -31,17 +31,21 @@ CApp* CApp::m_inst_ptr = 0;
 std::mutex CApp::m_mutex;
 
 
-CSettings& CApp::settings() { return m_settings; }
-Logger& CApp::logger() { return m_logger; };
+CSettings& CApp::settings() { return CApp::getInstPtr()->m_settings; }
+Logger& CApp::logger() { return CApp::getInstPtr()->m_logger; };
 
+CSettings& CApp::getSettingsRef() { return m_settings; }
+log4cplus::Logger& CApp::getLoggerRef() { return m_logger; }
 
 CApp::CApp(int argc, char** argv) throw(configEx) : m_settings(this)
 {
-    initLog();
-
     if( m_settings.parse(argc, argv) != 0) {
     	throw configEx("error parsing commandline parameters");
     }
+
+    initLog();
+
+    m_settings.readConfigFile();
 }
 
 CApp::~CApp() {}

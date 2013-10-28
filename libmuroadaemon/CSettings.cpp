@@ -117,6 +117,19 @@ int CSettings::parse(int argc, char** argv) throw(configEx) {
             printf("%s ", argv[optind++]);
         printf("\n");
     }
+//    using boost::property_tree::ptree;
+//    try {
+//        // beware of boost bug resolved in this changeset: https://svn.boost.org/trac/boost/changeset/78679
+//        // came up with c++11
+//    	read_json(m_configfile, m_pt);
+//    }
+//    catch(boost::property_tree::json_parser::json_parser_error& err) {
+//    	LOG4CPLUS_ERROR( m_app->getLoggerRef() , "failed to load config file '" << m_configfile << "': " << err.what() );
+//    }
+    return 0;
+}
+
+int CSettings::readConfigFile() throw(muroa::configEx) {
     using boost::property_tree::ptree;
     try {
         // beware of boost bug resolved in this changeset: https://svn.boost.org/trac/boost/changeset/78679
@@ -124,11 +137,15 @@ int CSettings::parse(int argc, char** argv) throw(configEx) {
     	read_json(m_configfile, m_pt);
     }
     catch(boost::property_tree::json_parser::json_parser_error& err) {
-    	LOG4CPLUS_ERROR( m_app->logger() , "failed to load config file '" << m_configfile << "': " << err.what() );
+    	char pwdpath[256];
+    	LOG4CPLUS_ERROR( m_app->getLoggerRef() , "failed to load config file '" << m_configfile << "': " << err.what() << endl );
+    	ostringstream oss;
+    	oss << "failed to load config file (pwd='" << getcwd(pwdpath, 256) << "'): " << err.what() << endl;
+    	throw configEx(oss.str());
     }
     return 0;
-
 }
+
 
 unsigned short CSettings::port() {
 	return m_port;
@@ -138,11 +155,11 @@ void CSettings::setPort(unsigned short port) {
 	m_port = port;
 }
 
-string CSettings::getProptery(const string& key, const string& defaultVal) {
+string CSettings::getProperty(const string& key, const string& defaultVal) {
 	return m_pt.get(key, defaultVal);
 }
 
-void CSettings::setProptery(const string& key, const string& val) {
+void CSettings::setProperty(const string& key, const string& val) {
 	m_pt.put(key, val);
 }
 
