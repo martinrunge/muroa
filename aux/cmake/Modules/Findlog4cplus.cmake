@@ -18,7 +18,7 @@ find_path(log4cplus_INCLUDE_DIR log4cplus/logger.h
           HINTS ${log4cplus_PKGCONF_INCLUDEDIR} ${log4cplus_PKGCONF_INCLUDE_DIRS}
           PATH_SUFFIXES log4cplus )
 
-find_library(log4cplus_LIBRARY NAMES log4cplus avutil
+find_library(log4cplus_LIBRARY NAMES log4cplus
              HINTS ${log4cplus_PKGCONF__LIBDIR} ${log4cplus_PKGCONF_LIBRARY_DIRS} )
 
 set(log4cplus_LIBRARIES ${log4cplus_LIBRARY} )
