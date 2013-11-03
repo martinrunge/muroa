@@ -37,7 +37,7 @@ set( unittests_H
 include ( ${QT_USE_FILE} )
 qt4_wrap_cpp( MOC_SOURCES ${MOC_H} ${MOC_MEDPROC_H} )
 
-include_directories(${SOURCE_DIR} .. ${Boost_INCLUDE_DIRS} ${CMAKE_CURRENT_BINARY_DIR}/..) 
+include_directories(${SOURCE_DIR} .. ${Boost_INCLUDE_DIRS} ${libxdiff_INCLUDE_DIRS} ${CMAKE_CURRENT_BINARY_DIR}/..) 
 
 link_directories(${BINARY_DIR}  ${QT_LIB_DIR} "${CMAKE_SOURCE_DIR}/../build" )
 
@@ -49,7 +49,7 @@ TARGET_LINK_LIBRARIES(libmuroatest cppunit
                                    muroa++
                                    ${Boost_LIBRARIES} 
                                    ${QT_LIBRARIES} 
-                                   xdiff
+                                   ${libxdiff_LIBRARIES}
                                    qxcppunitd 
                                    qxrunnerd
                                    )

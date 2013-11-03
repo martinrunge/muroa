@@ -56,7 +56,7 @@ add_library( xdiff SHARED ${SRC} ${HEADERS} )
 # This step merges a gdb_index section into the binary to speed up debugging.
 # Doing this by add_custom_command will become obsolete as soon as the linker does it. 
 ###################################################################################
-add_custom_command(TARGET muroa++
+add_custom_command(TARGET xdiff
                    POST_BUILD  
                    COMMAND  ${CMAKE_CURRENT_SOURCE_DIR}/../../aux/scripts/mkgdbindex.sh libxdiff.so 
                    WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
