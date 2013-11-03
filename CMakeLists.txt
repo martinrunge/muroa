@@ -11,6 +11,7 @@ option( mqtclient "build the Qt based GUI client"        "yes")
 
 
 if( ${msessiond} )
+  add_subdirectory (3rdparty/libxdiff-0.23)
   add_subdirectory (libstreamsrv)
   add_subdirectory (mmscanner)
   add_subdirectory (msessiond)

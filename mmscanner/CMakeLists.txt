@@ -8,7 +8,7 @@ set(Boost_USE_MULTITHREADED ON )
 find_package(PkgConfig)
 find_package( Boost 1.36.0 COMPONENTS filesystem system REQUIRED )
 find_package( TagLib REQUIRED )
-# find_package( Sqlite REQUIRED )
+find_package( Sqlite REQUIRED )
 find_package( Threads REQUIRED )
 
 add_definitions( ${SQLITE_DEFINITIONS} )
@@ -71,8 +71,8 @@ TARGET_LINK_LIBRARIES(mmscanner ${CMAKE_THREAD_LIBS_INIT}
                                 ${Taglib_LIBRARIES}  
                                 ${SQLITE_LIBRARIES} 
                                 muroa++
-                                xdiff
-                                log4cplus
+                                ${libxdiff_LIBRARIES}
+                                ${liblog4cplus_LIBRARIES}
                                 )
 
                               

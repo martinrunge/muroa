@@ -11,6 +11,7 @@ find_package( Threads REQUIRED )
 set(Boost_USE_MULTITHREADED ON)
 find_package( Boost 1.36.0 COMPONENTS system filesystem regex REQUIRED )
 find_package( EXPAT REQUIRED )
+find_package( libxdiff REQUIRED )
 
 add_definitions(  )
 
@@ -84,12 +85,18 @@ set( HEADERS       IItemModel.h
                    cmds/CmdRmStreamClient.h
                    )
                    
-include_directories(${CMAKE_CURRENT_SOURCE_DIR} ${Boost_INCLUDE_DIRS} ${EXPAT_INCLUDE_DIRS})
+include_directories(${CMAKE_CURRENT_SOURCE_DIR} 
+                    ${Boost_INCLUDE_DIRS} 
+                    ${EXPAT_INCLUDE_DIRS}
+                    ${libxdiff_INCLUDE_DIRS} 
+                   )
 
 link_directories(  )
 
 add_library( muroa++ SHARED ${SRC} ${HEADERS} )
-target_link_libraries( muroa++  ${Boost_LIBRARIES} ${EXPAT_LIBRARIES})
+target_link_libraries( muroa++  ${Boost_LIBRARIES} 
+                                ${EXPAT_LIBRARIES} 
+                                ${LIBXDIFF_LIBRARIES} )
 set_target_properties( muroa++  PROPERTIES  COMPILE_FLAGS "-std=gnu++0x" )
 
 ###################################################################################

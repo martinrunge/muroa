@@ -8,7 +8,7 @@
 <listAttribute key="org.eclipse.cdt.dsf.gdb.AUTO_SOLIB_LIST"/>
 <stringAttribute key="org.eclipse.cdt.dsf.gdb.DEBUG_NAME" value="gdb"/>
 <booleanAttribute key="org.eclipse.cdt.dsf.gdb.DEBUG_ON_FORK" value="false"/>
-<stringAttribute key="org.eclipse.cdt.dsf.gdb.GDB_INIT" value="../msessiond/gdbinit"/>
+<stringAttribute key="org.eclipse.cdt.dsf.gdb.GDB_INIT" value="/home/martin/git/muroa/msessiond/gdbinit"/>
 <booleanAttribute key="org.eclipse.cdt.dsf.gdb.NON_STOP" value="false"/>
 <booleanAttribute key="org.eclipse.cdt.dsf.gdb.REVERSE" value="false"/>
 <listAttribute key="org.eclipse.cdt.dsf.gdb.SOLIB_PATH"/>
@@ -20,11 +20,11 @@
 <stringAttribute key="org.eclipse.cdt.launch.DEBUGGER_START_MODE" value="run"/>
 <booleanAttribute key="org.eclipse.cdt.launch.DEBUGGER_STOP_AT_MAIN" value="false"/>
 <stringAttribute key="org.eclipse.cdt.launch.DEBUGGER_STOP_AT_MAIN_SYMBOL" value="main"/>
-<stringAttribute key="org.eclipse.cdt.launch.PROGRAM_NAME" value="build/mqtclient"/>
-<stringAttribute key="org.eclipse.cdt.launch.PROJECT_ATTR" value="mqtclient"/>
-<stringAttribute key="org.eclipse.cdt.launch.PROJECT_BUILD_CONFIG_ID_ATTR" value="cdt.managedbuild.toolchain.gnu.cross.base.1481587168"/>
+<stringAttribute key="org.eclipse.cdt.launch.PROGRAM_NAME" value="mqtclient/mqtclient"/>
+<stringAttribute key="org.eclipse.cdt.launch.PROJECT_ATTR" value="[X-build-x86]"/>
+<stringAttribute key="org.eclipse.cdt.launch.PROJECT_BUILD_CONFIG_ID_ATTR" value=""/>
 <listAttribute key="org.eclipse.debug.core.MAPPED_RESOURCE_PATHS">
-<listEntry value="/mqtclient"/>
+<listEntry value="/[X-build-x86]"/>
 </listAttribute>
 <listAttribute key="org.eclipse.debug.core.MAPPED_RESOURCE_TYPES">
 <listEntry value="4"/>

@@ -10,10 +10,10 @@ find_package(PkgConfig)
 set(Boost_USE_STATIC_LIBS   ON )
 set(Boost_USE_MULTITHREADED ON )
 find_package( Boost 1.36.0 COMPONENTS filesystem system regex REQUIRED )
-# find_package( Sqlite REQUIRED )
+find_package( Sqlite REQUIRED )
 find_package( TagLib REQUIRED )
 find_package( ALSA REQUIRED )
-# find_package( LibAO )
+find_package( LibAO REQUIRED)
 find_package( log4cplus REQUIRED )
 find_package( libxdiff REQUIRED )
 
@@ -89,9 +89,11 @@ set( HEADERS          sessionEx.h
 include_directories(${SOURCE_DIR} 
                     ${Boost_INCLUDE_DIRS} 
                     ${log4cplus_INCLUDE_DIRS}
-                    ${LIBXDIFF_INCLUDE_DIRS}
+                    ${SQLITE_INCLUDE_DIRS}
+                    ${libxdiff_INCLUDE_DIRS}
                     ${libavcodec_INCLUDE_DIR}
                     ${libavformat_INCLUDE_DIR}
+                    ${LIBAO_INCLUDE_DIRS}
                     ${CMAKE_CURRENT_SOURCE_DIR} 
                     ${CMAKE_CURRENT_SOURCE_DIR}/../libmuroadaemon 
                     ${CMAKE_CURRENT_SOURCE_DIR}/../libmuroa++
@@ -114,12 +116,14 @@ TARGET_LINK_LIBRARIES(msessiond    muroadaemon
                                    muroa++
                                    streamsrv
                                    sock++
-                                   ${Boost_LIBRARIES} 
+                                   ${Boost_LIBRARIES}
+                                   ${SQLITE_LIBRARIES}
                                    ${libavformat_LIBRARY}
-                                   ${libavavcodec_LIBRARY}
+                                   ${libavcodec_LIBRARY}
                                    avutil 
                                    ${ALSA_LIBRARY}
-                                   ${LIBXDIFF_LIBRARIES}
+                                   ${LIBAO_LIBRARIES}
+                                   ${libxdiff_LIBRARIES}
                                    ${log4cplus_LIBRARIES}                              
                                    )
                                    
@@ -190,10 +194,11 @@ TARGET_LINK_LIBRARIES(msessiondtest  cppunit
                                      ${SQLITE_LIBRARIES} 
                                      ${libxdiff_LIBRARIES}
                                      ${ALSA_LIBRARY}
+                                     ${LIBAO_LIBRARIES}
                                      avahi-client
                                      avahi-qt4
                                      ${libavformat_LIBRARY}
-                                     ${libavavcodec_LIBRARY}
+                                     ${libavcodec_LIBRARY}
                                      avutil 
                                      ${log4cplus_LIBRARIES}                              
                                      qxcppunitd 
