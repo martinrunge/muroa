@@ -57,7 +57,7 @@ set( HEADER  CMediaScanner.h
              )
 
 
-include_directories(${SOURCE_DIR} ${Boost_INCLUDE_DIRS} ${Taglib_CFLAGS} ${SQLITE_INCLUDE_DIR} 
+include_directories(${SOURCE_DIR} ${Boost_INCLUDE_DIRS} ${TagLib_INCLUDE_DIRS} ${SQLITE_INCLUDE_DIR} 
                     "${CMAKE_CURRENT_SOURCE_DIR}/../msessiond" "${CMAKE_CURRENT_SOURCE_DIR}/../libmuroa++") 
 
 link_directories(${BINARY_DIR} ${SQLITE_LIBRARY_DIRS} "${CMAKE_SOURCE_DIR}/../libmuroa++/build")
@@ -68,7 +68,7 @@ set_target_properties( mmscanner PROPERTIES  COMPILE_FLAGS "-std=gnu++0x" )
 
 TARGET_LINK_LIBRARIES(mmscanner ${CMAKE_THREAD_LIBS_INIT} 
                                 ${Boost_LIBRARIES} 
-                                ${Taglib_LIBRARIES}  
+                                ${TagLib_LIBRARIES}  
                                 ${SQLITE_LIBRARIES} 
                                 muroa++
                                 ${libxdiff_LIBRARIES}
@@ -109,7 +109,7 @@ TARGET_LINK_LIBRARIES(mmscannertest  cppunit
                                      muroa++
                                      ${CMAKE_THREAD_LIBS_INIT}
                                      ${Boost_LIBRARIES} 
-                                     ${Taglib_LIBRARIES} 
+                                     ${TagLib_LIBRARIES} 
                                      ${QT_LIBRARIES} 
                                      ${SQLITE_LIBRARIES} 
                                      xdiff
