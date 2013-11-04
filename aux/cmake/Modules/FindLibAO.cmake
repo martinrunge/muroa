@@ -1,23 +1,21 @@
-# I found a GPL2 licensed FindLibAO.cmake here: 
-# https://github.com/dahnielson/iola
-# 
 
-FIND_PATH(LIBAO_INCLUDE_DIRS ao.h /usr/include/ao /usr/local/include/ao)
+MESSAGE(STATUS "Looking for LibAO")
 
-FIND_LIBRARY(LIBAO_LIBRARIES NAMES ao PATH /usr/lib /usr/local/lib) 
+FIND_PATH(LibAO_INCLUDE_DIR ao.h /usr/include/ao /usr/local/include/ao)
+FIND_LIBRARY(LibAO_LIBRARY NAMES ao PATH /usr/lib /usr/local/lib) 
 
-IF (LIBAO_INCLUDE_DIRS AND LIBAO_LIBRARIES)
-  SET(LIBAO_FOUND TRUE)
-ENDIF (LIBAO_INCLUDE_DIRS AND LIBAO_LIBRARIES)
+
+# handle the QUIETLY and REQUIRED arguments and set LIBAO_FOUND to TRUE
+# if all listed variables are TRUE
+include(FindPackageHandleStandardArgs)
+find_package_handle_standard_args(LibAO  DEFAULT_MSG
+                                  LibAO_LIBRARY LibAO_INCLUDE_DIR)
 
 IF (LIBAO_FOUND)
-   IF (NOT LIBAO_FIND_QUIETLY)
-      MESSAGE(STATUS "Found libao: ${LIBAO_LIBRARIES}")
-   ENDIF (NOT LIBAO_FIND_QUIETLY)
-   MARK_AS_ADVANCED(LIBAO_LIBRARIES)
-   MARK_AS_ADVANCED(LIBAO_INCLUDE_DIRS)
-ELSE (LIBAO_FOUND)
-   IF (LIBAO_FIND_REQUIRED)
-      MESSAGE(FATAL_ERROR "Could not find libao")
-   ENDIF (LIBAO_FIND_REQUIRED)
+   set(LibAO_LIBRARIES ${LibAO_LIBRARY})
+   set(LibAO_INCLUDE_DIRS ${LibAO_INCLUDE_DIR})
+   
+   MARK_AS_ADVANCED(LibAO_LIBRARIES)
+   MARK_AS_ADVANCED(LibAO_INCLUDE_DIRS)
+   
 ENDIF (LIBAO_FOUND)
