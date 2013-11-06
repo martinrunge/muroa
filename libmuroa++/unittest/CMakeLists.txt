@@ -4,12 +4,13 @@ set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../cmake" ${CMAKE_MODULE_PATH
 set(VERBOSE 1)
 
 find_package ( Qt4 REQUIRED COMPONENTS QtCore QtGui )
+find_package ( CppUnit REQUIRED )
 
 set(Boost_USE_STATIC_LIBS   ON )
 set(Boost_USE_MULTITHREADED ON )
 find_package( Boost 1.36.0 COMPONENTS filesystem REQUIRED )
 
-add_definitions( ${QT4_DEFINITIONS} -D__STDC_CONSTANT_MACROS)
+add_definitions( ${QT4_DEFINITIONS} -D__STDC_CONSTANT_MACROS ${CPPUNIT_DEFINITIONS})
 
 set( unittests_SRCS   CUtilsTest.cpp
                       CCollectionTest.cpp
@@ -37,7 +38,11 @@ set( unittests_H
 include ( ${QT_USE_FILE} )
 qt4_wrap_cpp( MOC_SOURCES ${MOC_H} ${MOC_MEDPROC_H} )
 
-include_directories(${SOURCE_DIR} .. ${Boost_INCLUDE_DIRS} ${libxdiff_INCLUDE_DIRS} ${CMAKE_CURRENT_BINARY_DIR}/..) 
+include_directories(${SOURCE_DIR} .. 
+                    ${Boost_INCLUDE_DIRS} 
+                    ${libxdiff_INCLUDE_DIRS} 
+                    ${CMAKE_CURRENT_BINARY_DIR}/..
+                    ${CPPUNIT_INCLUDE_DIRS} ) 
 
 link_directories(${BINARY_DIR}  ${QT_LIB_DIR} "${CMAKE_SOURCE_DIR}/../build" )
 
@@ -45,7 +50,7 @@ ADD_EXECUTABLE(libmuroatest ${unittests_SRCS} ${unittests_H} ${HEADERS} )
 
 set_target_properties( libmuroatest PROPERTIES  COMPILE_FLAGS "-std=gnu++0x" ) 
 
-TARGET_LINK_LIBRARIES(libmuroatest cppunit 
+TARGET_LINK_LIBRARIES(libmuroatest ${CPPUNIT_LIBRARIES} 
                                    muroa++
                                    ${Boost_LIBRARIES} 
                                    ${QT_LIBRARIES} 

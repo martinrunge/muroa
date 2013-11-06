@@ -10,6 +10,7 @@ find_package( Boost 1.36.0 COMPONENTS filesystem system REQUIRED )
 find_package( TagLib REQUIRED )
 find_package( Sqlite REQUIRED )
 find_package( Threads REQUIRED )
+find_package( CppUnit REQUIRED )
 
 add_definitions( ${SQLITE_DEFINITIONS} )
 
@@ -101,11 +102,11 @@ set(unittest_SRCS      unittest/CCategorizerTest.cpp
 set(unittests_HEADERS  unittest/CCategorizerTest.h 
                        )
                                    
-ADD_EXECUTABLE(mmscannertest ${unittests_SRCS} ${unittests_HEADERS} ${SRCS} ${HEADERS} )
+ADD_EXECUTABLE(mmscannertest ${unittests_SRCS} ${unittests_HEADERS} ${SRCS} ${HEADERS} ${CPPUNIT_INCLUDE_DIRS})
 
 set_target_properties( mmscannertest PROPERTIES  COMPILE_FLAGS "-std=gnu++0x" ) 
 
-TARGET_LINK_LIBRARIES(mmscannertest  cppunit 
+TARGET_LINK_LIBRARIES(mmscannertest  ${CPPUNIT_LIBRARIES} 
                                      muroa++
                                      ${CMAKE_THREAD_LIBS_INIT}
                                      ${Boost_LIBRARIES} 
