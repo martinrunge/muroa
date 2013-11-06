@@ -179,11 +179,11 @@ set(unittests_HEADERS  unittest/CFakeMediaCollection.h
                        ../mmscanner/CMediaItemCategorizer.h
                        )
                                    
-ADD_EXECUTABLE(msessiondtest ${unittests_SRCS} ${unittests_HEADERS} ${SRCS} ${HEADERS} )
+ADD_EXECUTABLE(msessiondtest ${unittests_SRCS} ${unittests_HEADERS} ${SRCS} ${HEADERS} ${CPPUNIT_INCLUDE_DIRS})
 
 set_target_properties( msessiondtest PROPERTIES  COMPILE_FLAGS "-std=gnu++0x" ) 
 
-TARGET_LINK_LIBRARIES(msessiondtest  cppunit 
+TARGET_LINK_LIBRARIES(msessiondtest  ${CPPUNIT_LIBRARIES} 
                                      muroa++
                                      muroadaemon
                                      streamsrv
