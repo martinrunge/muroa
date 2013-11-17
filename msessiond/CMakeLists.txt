@@ -93,7 +93,7 @@ include_directories(${SOURCE_DIR}
                     ${libxdiff_INCLUDE_DIRS}
                     ${libavcodec_INCLUDE_DIR}
                     ${libavformat_INCLUDE_DIR}
-                    ${LIBAO_INCLUDE_DIRS}
+                    ${LibAO_INCLUDE_DIRS}
                     ${CMAKE_CURRENT_SOURCE_DIR} 
                     ${CMAKE_CURRENT_SOURCE_DIR}/../libmuroadaemon 
                     ${CMAKE_CURRENT_SOURCE_DIR}/../libmuroa++
@@ -122,7 +122,7 @@ TARGET_LINK_LIBRARIES(msessiond    muroadaemon
                                    ${libavcodec_LIBRARY}
                                    avutil 
                                    ${ALSA_LIBRARY}
-                                   ${LIBAO_LIBRARIES}
+                                   ${LibAO_LIBRARIES}
                                    ${libxdiff_LIBRARIES}
                                    ${log4cplus_LIBRARIES}                              
                                    )
@@ -195,7 +195,7 @@ if( ${unittests} )
                                          ${SQLITE_LIBRARIES} 
                                          ${libxdiff_LIBRARIES}
                                          ${ALSA_LIBRARY}
-                                         ${LIBAO_LIBRARIES}
+                                         ${LibAO_LIBRARIES}
                                          avahi-client
                                          avahi-qt4
                                          ${libavformat_LIBRARY}

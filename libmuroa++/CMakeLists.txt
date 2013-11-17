@@ -6,7 +6,7 @@ set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../aux/cmake/Modules" ${CMAKE
 if(${unittests})
   add_subdirectory(unittest)
   add_subdirectory(util/rehash)
-endif(${unnittests})
+endif(${unittests})
 
 find_package( Threads REQUIRED )
 
