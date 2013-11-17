@@ -142,80 +142,82 @@ add_custom_command(TARGET msessiond
 ###############################################################################                                   
                                    
                                    
-                                   
-find_package ( Qt4 REQUIRED COMPONENTS QtCore QtGui QtNetwork QtXml QtDbus )
+if( ${unittests} )
 
-include ( ${QT_USE_FILE} )
-                                   
-set(unittests_SRCS     unittest/SessionTest.cpp
-                       unittest/CFakeMediaCollection.cpp 
-                       unittest/CDecoderTest.cpp 
-                       # unittest/CMediaFileTest.cpp 
-                       unittest/CDataBaseTest.cpp
-                       # unittest/CTimeTest.cpp
-                       # unittest/CSubProcessTest.cpp
-                       # unittest/CMediaScannerTest.cpp
-                       ../mmscanner/CStateDbUpdater.cpp
-                       ../mmscanner/CMediaColUpdater.cpp
-                       ../mmscanner/CFsScanner.cpp
-                       ../mmscanner/CMediaScanner.cpp
-                       ../mmscanner/CEventLoop.cpp
-                       ../mmscanner/CMediaItemCategorizer.cpp
-                       )
-
-set(unittests_HEADERS  unittest/CFakeMediaCollection.h 
-                       unittest/CDecoderTest.h
-                       # unittest/CMediaFileTest.h 
-                       unittest/CDataBaseTest.h
-                       
-                       # unittest/CTimeTest.h
-                       # unittest/CSubProcessTest.h
-                       # unittest/CMediaScannerTest.h
-                       ../mmscanner/CStateDbUpdater.h
-                       ../mmscanner/CMediaColUpdater.h
-                       ../mmscanner/CFsScanner.h
-                       ../mmscanner/CMediaScanner.h
-                       ../mmscanner/CEventLoop.h
-                       ../mmscanner/CMediaItemCategorizer.h
-                       )
-                                   
-ADD_EXECUTABLE(msessiondtest ${unittests_SRCS} ${unittests_HEADERS} ${SRCS} ${HEADERS} ${CPPUNIT_INCLUDE_DIRS})
-
-set_target_properties( msessiondtest PROPERTIES  COMPILE_FLAGS "-std=gnu++0x" ) 
-
-TARGET_LINK_LIBRARIES(msessiondtest  ${CPPUNIT_LIBRARIES} 
-                                     muroa++
-                                     muroadaemon
-                                     streamsrv
-                                     sock++
-                                     ${Boost_LIBRARIES} 
-                                     ${Taglib_LIBRARIES} 
-                                     ${QT_LIBRARIES} 
-                                     ${SQLITE_LIBRARIES} 
-                                     ${libxdiff_LIBRARIES}
-                                     ${ALSA_LIBRARY}
-                                     ${LIBAO_LIBRARIES}
-                                     avahi-client
-                                     avahi-qt4
-                                     ${libavformat_LIBRARY}
-                                     ${libavcodec_LIBRARY}
-                                     avutil 
-                                     ${log4cplus_LIBRARIES}                              
-                                     qxcppunitd 
-                                     qxrunnerd
-                                     )
-                                     
-################################################################################
-# This step merges a gdb_index section into the binary to speed up debugging.
-# Doing this by add_custom_command will become obsolete as soon as the linker does it. 
-################################################################################
-
-add_custom_command(TARGET msessiondtest
-                   POST_BUILD  
-                   COMMAND  ${CMAKE_CURRENT_SOURCE_DIR}/../aux/scripts/mkgdbindex.sh msessiondtest 
-                   WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-                   COMMENT "building gdb index")
-
-################################################################################                                     
-                                   
+    find_package ( Qt4 REQUIRED COMPONENTS QtCore QtGui QtNetwork QtXml QtDbus )
+    
+    include ( ${QT_USE_FILE} )
+                                       
+    set(unittests_SRCS     unittest/SessionTest.cpp
+                           unittest/CFakeMediaCollection.cpp 
+                           unittest/CDecoderTest.cpp 
+                           # unittest/CMediaFileTest.cpp 
+                           unittest/CDataBaseTest.cpp
+                           # unittest/CTimeTest.cpp
+                           # unittest/CSubProcessTest.cpp
+                           # unittest/CMediaScannerTest.cpp
+                           ../mmscanner/CStateDbUpdater.cpp
+                           ../mmscanner/CMediaColUpdater.cpp
+                           ../mmscanner/CFsScanner.cpp
+                           ../mmscanner/CMediaScanner.cpp
+                           ../mmscanner/CEventLoop.cpp
+                           ../mmscanner/CMediaItemCategorizer.cpp
+                           )
+    
+    set(unittests_HEADERS  unittest/CFakeMediaCollection.h 
+                           unittest/CDecoderTest.h
+                           # unittest/CMediaFileTest.h 
+                           unittest/CDataBaseTest.h
+                           
+                           # unittest/CTimeTest.h
+                           # unittest/CSubProcessTest.h
+                           # unittest/CMediaScannerTest.h
+                           ../mmscanner/CStateDbUpdater.h
+                           ../mmscanner/CMediaColUpdater.h
+                           ../mmscanner/CFsScanner.h
+                           ../mmscanner/CMediaScanner.h
+                           ../mmscanner/CEventLoop.h
+                           ../mmscanner/CMediaItemCategorizer.h
+                           )
+                                       
+    ADD_EXECUTABLE(msessiondtest ${unittests_SRCS} ${unittests_HEADERS} ${SRCS} ${HEADERS} ${CPPUNIT_INCLUDE_DIRS})
+    
+    set_target_properties( msessiondtest PROPERTIES  COMPILE_FLAGS "-std=gnu++0x" ) 
+    
+    TARGET_LINK_LIBRARIES(msessiondtest  ${CPPUNIT_LIBRARIES} 
+                                         muroa++
+                                         muroadaemon
+                                         streamsrv
+                                         sock++
+                                         ${Boost_LIBRARIES} 
+                                         ${Taglib_LIBRARIES} 
+                                         ${QT_LIBRARIES} 
+                                         ${SQLITE_LIBRARIES} 
+                                         ${libxdiff_LIBRARIES}
+                                         ${ALSA_LIBRARY}
+                                         ${LIBAO_LIBRARIES}
+                                         avahi-client
+                                         avahi-qt4
+                                         ${libavformat_LIBRARY}
+                                         ${libavcodec_LIBRARY}
+                                         avutil 
+                                         ${log4cplus_LIBRARIES}                              
+                                         qxcppunitd 
+                                         qxrunnerd
+                                         )
+                                         
+    ################################################################################
+    # This step merges a gdb_index section into the binary to speed up debugging.
+    # Doing this by add_custom_command will become obsolete as soon as the linker does it. 
+    ################################################################################
+    
+    add_custom_command(TARGET msessiondtest
+                       POST_BUILD  
+                       COMMAND  ${CMAKE_CURRENT_SOURCE_DIR}/../aux/scripts/mkgdbindex.sh msessiondtest 
+                       WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+                       COMMENT "building gdb index")
+    
+    ################################################################################                                     
+                                       
+endif( ${unittests} )
                                    

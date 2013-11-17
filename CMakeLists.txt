@@ -5,9 +5,10 @@ project ( muroa )
 # cause another cmake executable to run. The same process will walk through 
 # the project's entire directory structure. 
 
-option( msessiond "build the muroa session daemon"       "yes")
-option( muroad "build the muroa audio streaming daemon"  "yes")
-option( mqtclient "build the Qt based GUI client"        "yes")
+option( msessiond "build the muroa session daemon"            "yes")
+option( muroad    "build the muroa audio streaming daemon"    "yes")
+option( mqtclient "build the Qt based GUI client"             "yes")
+option( unittests "build unittests"                           "no" )
 
 set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/aux/cmake/Modules" ${CMAKE_MODULE_PATH})
 
