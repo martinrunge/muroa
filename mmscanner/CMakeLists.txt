@@ -10,7 +10,6 @@ find_package( Boost 1.36.0 COMPONENTS filesystem system REQUIRED )
 find_package( TagLib REQUIRED )
 find_package( Sqlite REQUIRED )
 find_package( Threads REQUIRED )
-find_package( CppUnit REQUIRED )
 
 add_definitions( ${SQLITE_DEFINITIONS} )
 
@@ -92,50 +91,52 @@ add_custom_command(TARGET mmscanner
 
 
 
-find_package ( Qt4 REQUIRED COMPONENTS QtCore QtGui QtNetwork QtXml QtDbus )
-
-include ( ${QT_USE_FILE} )
-                                   
-set(unittest_SRCS      unittest/CCategorizerTest.cpp
-                       )
-
-set(unittests_HEADERS  unittest/CCategorizerTest.h 
-                       )
-                                   
-ADD_EXECUTABLE(mmscannertest ${unittests_SRCS} ${unittests_HEADERS} ${SRCS} ${HEADERS} ${CPPUNIT_INCLUDE_DIRS})
-
-set_target_properties( mmscannertest PROPERTIES  COMPILE_FLAGS "-std=gnu++0x" ) 
-
-TARGET_LINK_LIBRARIES(mmscannertest  ${CPPUNIT_LIBRARIES} 
-                                     muroa++
-                                     ${CMAKE_THREAD_LIBS_INIT}
-                                     ${Boost_LIBRARIES} 
-                                     ${TagLib_LIBRARIES} 
-                                     ${QT_LIBRARIES} 
-                                     ${SQLITE_LIBRARIES} 
-                                     xdiff
-                                     ${ALSA_LIBRARY}
-                                     avahi-client
-                                     avahi-qt4
-                                     avformat
-                                     avcodec
-                                     avutil  
-                                     qxcppunitd 
-                                     qxrunnerd
-                                     )
-                                     
-################################################################################
-# This step merges a gdb_index section into the binary to speed up debugging.
-# Doing this by add_custom_command will become obsolete as soon as the linker does it. 
-################################################################################
-
-add_custom_command(TARGET mmscannertest
-                   POST_BUILD  
-                   COMMAND  ${CMAKE_CURRENT_SOURCE_DIR}/../aux/scripts/mkgdbindex.sh mmscannertest 
-                   WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-                   COMMENT "building gdb index")
-
-################################################################################                                     
-                                   
-                             
-                                
+if(${unittests})
+    find_package( CppUnit REQUIRED )
+    find_package ( Qt4 REQUIRED COMPONENTS QtCore QtGui QtNetwork QtXml QtDbus )
+    
+    include ( ${QT_USE_FILE} )
+                                       
+    set(unittest_SRCS      unittest/CCategorizerTest.cpp
+                           )
+    
+    set(unittests_HEADERS  unittest/CCategorizerTest.h 
+                           )
+                                       
+    ADD_EXECUTABLE(mmscannertest ${unittests_SRCS} ${unittests_HEADERS} ${SRCS} ${HEADERS} ${CPPUNIT_INCLUDE_DIRS})
+    
+    set_target_properties( mmscannertest PROPERTIES  COMPILE_FLAGS "-std=gnu++0x" ) 
+    
+    TARGET_LINK_LIBRARIES(mmscannertest  ${CPPUNIT_LIBRARIES} 
+                                         muroa++
+                                         ${CMAKE_THREAD_LIBS_INIT}
+                                         ${Boost_LIBRARIES} 
+                                         ${TagLib_LIBRARIES} 
+                                         ${QT_LIBRARIES} 
+                                         ${SQLITE_LIBRARIES} 
+                                         xdiff
+                                         ${ALSA_LIBRARY}
+                                         avahi-client
+                                         avahi-qt4
+                                         avformat
+                                         avcodec
+                                         avutil  
+                                         qxcppunitd 
+                                         qxrunnerd
+                                         )
+                                         
+    ################################################################################
+    # This step merges a gdb_index section into the binary to speed up debugging.
+    # Doing this by add_custom_command will become obsolete as soon as the linker does it. 
+    ################################################################################
+    
+    add_custom_command(TARGET mmscannertest
+                       POST_BUILD  
+                       COMMAND  ${CMAKE_CURRENT_SOURCE_DIR}/../aux/scripts/mkgdbindex.sh mmscannertest 
+                       WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+                       COMMENT "building gdb index")
+    
+    ################################################################################                                     
+                                                                    
+endif(${unittests})                    
+            

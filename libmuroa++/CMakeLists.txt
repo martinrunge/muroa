@@ -3,8 +3,10 @@ project (libmuroa++)
 
 set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../aux/cmake/Modules" ${CMAKE_MODULE_PATH})
 
-add_subdirectory(unittest)
-add_subdirectory(util/rehash)
+if(${unittests})
+  add_subdirectory(unittest)
+  add_subdirectory(util/rehash)
+endif(${unnittests})
 
 find_package( Threads REQUIRED )
 
