@@ -20,7 +20,7 @@ if( Avahi_FIND_COMPONENTS )
     string( TOUPPER ${component} _COMPONENT )
     set( AVAHI_USE_${_COMPONENT} 1 )
   endforeach()
-endif()
+endif( Avahi_FIND_COMPONENTS )
 
 include(FindPackageHandleStandardArgs)
 
@@ -39,6 +39,10 @@ if(PKG_CONFIG_FOUND)
                  HINTS ${libavahicommon_PKGCONF__LIBDIR} ${libavahicommon_PKGCONF_LIBRARY_DIRS} )
 
     mark_as_advanced(libavahicommon_INCLUDE_DIR libavahicommon_LIBRARY )
+
+    # handle the QUIETLY and REQUIRED arguments and set LIBXML2_FOUND to TRUE
+    # if all listed variables are TRUE
+    find_package_handle_standard_args(Avahi  DEFAULT_MSG libavahicommon_LIBRARY libavahicommon_INCLUDE_DIR)
         
   endif(AVAHI_USE_COMMON)
     
@@ -54,6 +58,10 @@ if(PKG_CONFIG_FOUND)
                  HINTS ${libavahiclient_PKGCONF__LIBDIR} ${libavahiclient_PKGCONF_LIBRARY_DIRS} )
 
     mark_as_advanced(libavahiclient_INCLUDE_DIR libavahiclient_LIBRARY )
+
+    # handle the QUIETLY and REQUIRED arguments and set LIBXML2_FOUND to TRUE
+    # if all listed variables are TRUE
+    find_package_handle_standard_args(Avahi  DEFAULT_MSG libavahiclient_LIBRARY libavahiclient_INCLUDE_DIR)
                  
   endif(AVAHI_USE_CLIENT)
 
@@ -63,13 +71,22 @@ if(PKG_CONFIG_FOUND)
     find_path(libavahiqt4_INCLUDE_DIR avahi-qt4/qt-watch.h
               HINTS ${libavahiqt4_PKGCONF_INCLUDEDIR} ${libavahiqt4_PKGCONF_INCLUDE_DIRS}
               PATH_SUFFIXES libavahiqt4 )
+              
+    message(STATUS "libavahiqt4_INCLUDE_DIR: $libavahiqt4_INCLUDE_DIR")
 
     find_library(libavahiqt4_LIBRARY NAMES libavahi-qt4 avahi-qt4
                  HINTS ${libavahiqt4_PKGCONF__LIBDIR} ${libavahiqt4_PKGCONF_LIBRARY_DIRS} )
+
+    message(STATUS "libavahiqt4_LIBRARY: $libavahiqt4_LIBRARY")
           
     mark_as_advanced(libavahiqt4_INCLUDE_DIR libavahiqt4_LIBRARY )
+  
+    # handle the QUIETLY and REQUIRED arguments and set LIBXML2_FOUND to TRUE
+    # if all listed variables are TRUE
+    find_package_handle_standard_args(Avahi DEFAULT_MSG libavahiqt4_LIBRARY libavahiqt4_INCLUDE_DIR )
+    
                  
-  endif(AVAHI_QT4)
+  endif(AVAHI_USE_QT4)
     
 endif(PKG_CONFIG_FOUND)
 
@@ -79,9 +96,8 @@ set(Avahi_INCLUDE_DIRS ${libavahicommon_INCLUDE_DIR} ${libavahiclient_INCLUDE_DI
 
 # handle the QUIETLY and REQUIRED arguments and set LIBXML2_FOUND to TRUE
 # if all listed variables are TRUE
-find_package_handle_standard_args(Avahi  DEFAULT_MSG
-                                  libavahiqt4_LIBRARY libavahiclient_LIBRARY libavahicommon_LIBRARY 
-                                  libavahiqt4_INCLUDE_DIR libavahiclient_INCLUDE_DIR libavahicommon_INCLUDE_DIR)
+find_package_handle_standard_args(Avahi  DEFAULT_MSG Avahi_LIBRARIES Avahi_INCLUDE_DIRS )
+
                                   
 # MESSAGE( libavahiclient: "${libavahiclient_LIBRARY}")
 

@@ -11,11 +11,14 @@ set(Boost_USE_STATIC_LIBS   ON )
 set(Boost_USE_MULTITHREADED ON )
 find_package( Boost 1.36.0 COMPONENTS filesystem system regex REQUIRED )
 find_package( Sqlite REQUIRED )
+find_package( libavcodec REQUIRED )
+find_package( libavformat REQUIRED )
 find_package( TagLib REQUIRED )
 find_package( ALSA REQUIRED )
 find_package( LibAO REQUIRED)
 find_package( log4cplus REQUIRED )
 find_package( libxdiff REQUIRED )
+find_package( Avahi COMPONENTS common client REQUIRED ) 
 
 
 
@@ -120,7 +123,7 @@ TARGET_LINK_LIBRARIES(msessiond    muroadaemon
                                    ${SQLITE_LIBRARIES}
                                    ${libavformat_LIBRARY}
                                    ${libavcodec_LIBRARY}
-                                   avutil 
+                                   ${libavutil_LIBRARY}
                                    ${ALSA_LIBRARY}
                                    ${LibAO_LIBRARIES}
                                    ${libxdiff_LIBRARIES}
@@ -200,7 +203,7 @@ if( ${unittests} )
                                          avahi-qt4
                                          ${libavformat_LIBRARY}
                                          ${libavcodec_LIBRARY}
-                                         avutil 
+                                         ${libavutil_LIBRARY} 
                                          ${log4cplus_LIBRARIES}                              
                                          qxcppunitd 
                                          qxrunnerd
