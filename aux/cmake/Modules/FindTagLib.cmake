@@ -29,7 +29,7 @@ if (NOT TagLib_SEARCHED)
              HINTS ${PC_TagLib_LIBDIR} ${PC_TagLib_LIBRARY_DIRS} )
 
     set(TagLib_LIBRARIES ${TagLib_LIBRARY} )
-    set(TagLib_INCLUDE_DIRS ${LIBXML2_INCLUDE_DIR} )
+    set(TagLib_INCLUDE_DIRS ${TagLib_INCLUDE_DIR} )
 
     include(FindPackageHandleStandardArgs)
     # handle the QUIETLY and REQUIRED arguments and set LIBXML2_FOUND to TRUE
@@ -41,14 +41,14 @@ if (NOT TagLib_SEARCHED)
     
     if (TAGLIB_FOUND)
       if (NOT TAGLIB_FIND_QUIETLY)
-        message(STATUS "Found Taglib in: ${Taglib_LIBRARIES}")
+        message(STATUS "Found TagLib in: ${TagLib_LIBRARIES}")
       endif (NOT TAGLIB_FIND_QUIETLY)
     else (TAGLIB_FOUND)
       if (TAGLIB_FIND_REQUIRED)
-        message(FATAL_ERROR "Could not find the library containing Taglib")
+        message(FATAL_ERROR "Could not find the library containing TagLib")
       endif (TAGLIB_FIND_REQUIRED)
     endif (TAGLIB_FOUND)
 
-    mark_as_advanced(Taglib_LIBRARIES)
-    mark_as_advanced(Taglib_INCLUDE_DIRS)
+    mark_as_advanced(TagLib_LIBRARIES)
+    mark_as_advanced(TagLib_INCLUDE_DIRS)
 endif(NOT TagLib_SEARCHED)
