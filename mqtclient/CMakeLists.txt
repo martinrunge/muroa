@@ -4,6 +4,8 @@ project (mqtclient)
 set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../aux/cmake/Modules" ${CMAKE_MODULE_PATH})
 
 find_package ( Qt4 COMPONENTS QtGui QtCore QtNetwork REQUIRED )
+find_package( Avahi COMPONENTS common client qt4 REQUIRED ) 
+
 
 add_definitions( ${QT4_DEFINITIONS} )
 
@@ -94,16 +96,18 @@ QT4_ADD_RESOURCES( RCCS_SRC  ${RCCS} )
 include ( ${QT_USE_FILE} )
 qt4_wrap_cpp( MOC_SOURCES ${MOC_H} )
 
-include_directories( ${CMAKE_CURRENT_BINARY_DIR}  ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR}/../libmuroa++)
+include_directories( ${CMAKE_CURRENT_BINARY_DIR}  
+                     ${CMAKE_CURRENT_SOURCE_DIR} 
+                     ${CMAKE_CURRENT_SOURCE_DIR}/../libmuroa++
+                     ${Avahi_INCLUDE_DIRS} 
+                     ${libxdiff_INCLUDE_DIRS} )
 
 link_directories( ${QT_LIB_DIR} "${CMAKE_SOURCE_DIR}/../libmuroa++/build")
 
 add_executable( mqtclient ${SRC} ${MOC_SOURCES} ${UIS_H} ${RCCS_SRC})
-target_link_libraries( mqtclient   avahi-client
-                                   avahi-common
-                                   avahi-qt4
-                                   muroa++
-                                   xdiff
+target_link_libraries( mqtclient   muroa++
+                                   ${Avahi_LIBRARIES}
+                                   ${libxdiff_LIBRARIES}
                                    ${QT_LIBRARIES} )
 
 set_target_properties( mqtclient PROPERTIES  COMPILE_FLAGS "-std=gnu++0x" ) 
