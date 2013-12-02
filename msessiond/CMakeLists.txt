@@ -7,7 +7,6 @@ set(VERBOSE 1)
 find_package(PkgConfig)
 
 
-set(Boost_USE_STATIC_LIBS   ON )
 set(Boost_USE_MULTITHREADED ON )
 find_package( Boost 1.36.0 COMPONENTS filesystem system regex REQUIRED )
 find_package( Sqlite REQUIRED )
