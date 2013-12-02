@@ -14,7 +14,6 @@ find_package(PkgConfig)
 
 find_package( Threads REQUIRED )
 
-set(Boost_USE_STATIC_LIBS   ON )
 set(Boost_USE_MULTITHREADED ON )
 find_package( Boost 1.36.0 COMPONENTS filesystem system date_time program_options REQUIRED )
 #find_package( EXPAT REQUIRED )

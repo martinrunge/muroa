@@ -72,13 +72,9 @@ if(PKG_CONFIG_FOUND)
               HINTS ${libavahiqt4_PKGCONF_INCLUDEDIR} ${libavahiqt4_PKGCONF_INCLUDE_DIRS}
               PATH_SUFFIXES libavahiqt4 )
               
-    message(STATUS "libavahiqt4_INCLUDE_DIR: $libavahiqt4_INCLUDE_DIR")
-
     find_library(libavahiqt4_LIBRARY NAMES libavahi-qt4 avahi-qt4
                  HINTS ${libavahiqt4_PKGCONF__LIBDIR} ${libavahiqt4_PKGCONF_LIBRARY_DIRS} )
 
-    message(STATUS "libavahiqt4_LIBRARY: $libavahiqt4_LIBRARY")
-          
     mark_as_advanced(libavahiqt4_INCLUDE_DIR libavahiqt4_LIBRARY )
   
     # handle the QUIETLY and REQUIRED arguments and set LIBXML2_FOUND to TRUE

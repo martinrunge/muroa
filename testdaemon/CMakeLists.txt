@@ -3,7 +3,6 @@ cmake_minimum_required (VERSION 2.6)
 set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../cmake" ${CMAKE_MODULE_PATH})
 set(VERBOSE 1)
 
-set(Boost_USE_STATIC_LIBS   ON )
 set(Boost_USE_MULTITHREADED ON )
 find_package( Boost 1.36.0 COMPONENTS filesystem system REQUIRED )
 

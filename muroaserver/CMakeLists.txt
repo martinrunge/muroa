@@ -8,7 +8,6 @@ find_package(PkgConfig)
 find_package ( Qt4 REQUIRED )
 find_package ( ALSA REQUIRED )
 
-set(Boost_USE_STATIC_LIBS   ON)
 set(Boost_USE_MULTITHREADED ON)
 find_package( Boost 1.36.0 COMPONENTS filesystem system REQUIRED )
 find_package( TagLib REQUIRED)

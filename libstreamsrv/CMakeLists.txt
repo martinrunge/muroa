@@ -6,7 +6,6 @@ set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../aux/cmake/Modules" ${CMAKE
 
 find_package( Threads REQUIRED )
 
-set(Boost_USE_STATIC_LIBS   ON )
 set(Boost_USE_MULTITHREADED ON )
 find_package( Boost 1.36.0 COMPONENTS filesystem system date_time program_options REQUIRED )
 
