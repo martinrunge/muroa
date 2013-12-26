@@ -13,6 +13,8 @@
 
 #include "avahi/CDnsSdAvahi.h"
 
+#include <log4cplus/loggingmacros.h>
+
 #include "CSession.h"
 #include <boost/asio.hpp>
 #include <boost/algorithm/string.hpp>

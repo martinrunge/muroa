@@ -17,6 +17,8 @@
 
 #include <limits.h>
 
+#include <log4cplus/loggingmacros.h>
+
 using namespace std;
 using namespace boost::filesystem;
 namespace muroa {

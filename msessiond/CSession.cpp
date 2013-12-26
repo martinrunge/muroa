@@ -41,6 +41,8 @@
 #include <sstream>
 #include <string>
 
+#include <log4cplus/loggingmacros.h>
+
 
 using namespace std;
 

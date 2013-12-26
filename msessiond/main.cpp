@@ -28,6 +28,7 @@
 #include <string.h>
 
 #include <log4cplus/logger.h>
+#include <log4cplus/loggingmacros.h>
 
 #include "CApp.h"
 #include "CSettings.h"

@@ -17,7 +17,8 @@
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
  *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
+ *   Free Software Foundation, Inc.
+/usr/include/boost/property_tree/detail/ptree_implementation.hpp:362:9: note: ,                                       *
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
 
@@ -25,6 +26,7 @@
 #include "CApp.h"
 
 #include <getopt.h>
+#include <log4cplus/loggingmacros.h>
 
 using namespace std;
 using namespace log4cplus;

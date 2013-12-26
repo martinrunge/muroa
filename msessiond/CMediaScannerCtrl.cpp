@@ -25,6 +25,8 @@
 
 #include "../mmscanner/CMsgError.h"
 
+#include <log4cplus/loggingmacros.h>
+
 using namespace std;
 using namespace boost::asio;
 
