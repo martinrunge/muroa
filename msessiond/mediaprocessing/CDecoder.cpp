@@ -125,9 +125,6 @@ void CDecoder::close()
 
 int CDecoder::decode() {
 	// prepare a buffer to store the decoded samples in
-	const int sampleBufSize = 2 * AVCODEC_MAX_AUDIO_FRAME_SIZE;
-	static int16_t sampleBuffer[sampleBufSize];
-
 	AVFrame *av_frame = avcodec_alloc_frame();
 
 	bool end_of_stream = false;
@@ -160,7 +157,6 @@ int CDecoder::decode() {
 	// on return the number of produced samples is stored here. bytes_used
 	// indicates how many bytes of the data was used for decoding. When
 	// provided with a self contained packet, it should be used completely.
-	int sb = sampleBufSize;
 	int bytesUsed;
 	int got_frame;
 	//bytesUsed = avcodec_decode_audio3(m_pCodecCtx, sampleBuffer, &sb, &m_packet);
@@ -186,7 +182,7 @@ int CDecoder::decode() {
 		}
 	}
 
-	return sb;
+	return bytesUsed;
 }
 
 
