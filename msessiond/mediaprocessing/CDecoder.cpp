@@ -46,11 +46,11 @@ void CDecoder::open(string filename)
 	// The last three parameters specify the file format, buffer size and format parameters;
 	// by simply specifying NULL or 0 we ask libavformat to auto-detect the format and
 	// use a default buffer size.
-	if(av_open_input_file(&m_pFormatCtx, filename.c_str(), NULL, 0, NULL) != 0 )
+	if(avformat_open_input(&m_pFormatCtx, filename.c_str(), NULL, NULL) != 0 )
 		cout << " Couldn't open file " << filename << endl;
 
 	// Next, we need to retrieve information about the streams contained in the file:
-	if(av_find_stream_info(m_pFormatCtx) < 0 )
+	if(avformat_find_stream_info(m_pFormatCtx, NULL) < 0 )
 		cerr << "Couldn't find stream information in file " << filename << endl;
 
 	// dump_format(m_pFormatCtx, 0, filename, false);
@@ -94,7 +94,7 @@ void CDecoder::open(string filename)
 		cerr << "Codec type " <<  m_pCodecCtx->codec_id << " not found." << endl;
 
 	// Open the codec found suitable for this stream in the last step
-	if(avcodec_open(m_pCodecCtx, m_pCodec) < 0)
+	if(avcodec_open2(m_pCodecCtx, m_pCodec, NULL) < 0)
 		cerr << " Could not open codec." << endl;
 
 	m_open = true;
@@ -116,36 +116,37 @@ void CDecoder::close()
 
     // Close the video file
     if(m_pFormatCtx != 0 ) {
-    	av_close_input_file(m_pFormatCtx);
+    	avformat_close_input(&m_pFormatCtx);
     	m_pFormatCtx = 0;
     }
     m_open = false;
     m_filename = string();
 }
 
-int CDecoder::decode()
-{
-    // prepare a buffer to store the decoded samples in
-    const int sampleBufSize = 2 * AVCODEC_MAX_AUDIO_FRAME_SIZE;
-    static int16_t sampleBuffer[sampleBufSize];
+int CDecoder::decode() {
+	// prepare a buffer to store the decoded samples in
+	const int sampleBufSize = 2 * AVCODEC_MAX_AUDIO_FRAME_SIZE;
+	static int16_t sampleBuffer[sampleBufSize];
 
- 	bool end_of_stream = false;
+	AVFrame *av_frame = avcodec_alloc_frame();
+
+	bool end_of_stream = false;
 
 // read and forget packets until a packet with the
 	// right stream ID (audioStreamID defined above) is found.
 	do {
 		// Free old packet
-		if(m_packet.data != NULL) {
+		if (m_packet.data != NULL) {
 			av_free_packet(&m_packet);
 			m_packet.data = NULL;
 		}
 
 		// Read new frame
-		if(av_read_frame(m_pFormatCtx, &m_packet) < 0) {
+		if (av_read_frame(m_pFormatCtx, &m_packet) < 0) {
 			end_of_stream = true;
 			return -1;
 		}
-	} while(m_packet.stream_index != m_audioStreamID);
+	} while (m_packet.stream_index != m_audioStreamID);
 	// here, a new audio packet from the stream is available
 
 	// cerr << "packetsize = " << m_packet.size << endl;
@@ -161,20 +162,30 @@ int CDecoder::decode()
 	// provided with a self contained packet, it should be used completely.
 	int sb = sampleBufSize;
 	int bytesUsed;
-	bytesUsed = avcodec_decode_audio3(m_pCodecCtx, sampleBuffer, &sb, &m_packet);
+	int got_frame;
+	//bytesUsed = avcodec_decode_audio3(m_pCodecCtx, sampleBuffer, &sb, &m_packet);
+	bytesUsed = avcodec_decode_audio4(m_pCodecCtx, av_frame, &got_frame, &m_packet);
 
-	// only call m_streamPtr->setProgress every second
-	int64_t tmp = m_packet.pts * m_timeBase.num;
-	int playedInSecs = tmp / m_timeBase.den;
+	if (got_frame) {
 
-	if( playedInSecs > m_posInSecs) {
-		m_posInSecs = playedInSecs;
-		m_streamPtr->setProgress( m_posInSecs, m_durationInSecs );
+		/* if a frame has been decoded, output it */
+		int data_size = av_samples_get_buffer_size(NULL,
+				                                   m_pCodecCtx->channels,
+				                                   av_frame->nb_samples,
+				                                   m_pCodecCtx->sample_fmt,
+				                                   1);
+
+		m_streamPtr->write((char*) av_frame->data[0], data_size);
+
+		// only call m_streamPtr->setProgress every second
+		int64_t tmp = m_packet.pts * m_timeBase.num;
+		int playedInSecs = tmp / m_timeBase.den;
+		if (playedInSecs > m_posInSecs) {
+			m_posInSecs = playedInSecs;
+			m_streamPtr->setProgress(m_posInSecs, m_durationInSecs);
+		}
 	}
 
-	// write the decoded data to the output file.
-	// fwrite(sampleBuffer, sb, 1, outfile);
-	m_streamPtr->write((char*)sampleBuffer, sb);
 	return sb;
 }
 
