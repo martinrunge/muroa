@@ -12,6 +12,7 @@ find_package( Boost 1.36.0 COMPONENTS filesystem system regex REQUIRED )
 find_package( Sqlite REQUIRED )
 find_package( libavcodec REQUIRED )
 find_package( libavformat REQUIRED )
+find_package( libavutil REQUIRED )
 find_package( TagLib REQUIRED )
 find_package( ALSA REQUIRED )
 find_package( LibAO REQUIRED)
@@ -95,6 +96,7 @@ include_directories(${SOURCE_DIR}
                     ${libxdiff_INCLUDE_DIRS}
                     ${libavcodec_INCLUDE_DIR}
                     ${libavformat_INCLUDE_DIR}
+                    ${libavutil_INCLUDE_DIR}
                     ${LibAO_INCLUDE_DIRS}
                     ${CMAKE_CURRENT_SOURCE_DIR} 
                     ${CMAKE_CURRENT_SOURCE_DIR}/../libmuroadaemon 

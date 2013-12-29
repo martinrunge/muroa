@@ -20,6 +20,7 @@
 #include <cmds/CmdFinished.h>
 
 #include <log4cplus/logger.h>
+#include <log4cplus/loggingmacros.h>
 #include "CApp.h"
 
 using namespace log4cplus;
