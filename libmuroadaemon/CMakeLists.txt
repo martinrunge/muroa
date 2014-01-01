@@ -60,7 +60,7 @@ target_link_libraries( muroadaemon  ${CMAKE_THREAD_LIBS_INIT}
                                     ${libavahiclient_LIBRARY} 
                                     ${libavahicommon_LIBRARY}
                                     )
-set_target_properties( muroadaemon  PROPERTIES  COMPILE_FLAGS "-std=gnu++0x -pthread" ) 
+set_target_properties( muroadaemon  PROPERTIES  COMPILE_FLAGS "-std=c++11 -pthread" ) 
 # SET_TARGET_PROPERTIES( muroad PROPERTIES  LINK_FLAGS -Wl,-shared-libgcc)
 ###################################################################################
 # This step merges a gdb_index section into the binary to speed up debugging.
