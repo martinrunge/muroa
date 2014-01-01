@@ -10,6 +10,7 @@ find_package( Boost 1.36.0 COMPONENTS system  REQUIRED )
 find_package( EXPAT REQUIRED )
 find_package( libavahiclient REQUIRED )
 find_package( libavahicommon REQUIRED )
+find_package( log4cplus REQUIRED )
 
 
 add_definitions(  )
