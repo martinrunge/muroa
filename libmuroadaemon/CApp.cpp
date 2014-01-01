@@ -167,3 +167,23 @@ int CApp::daemonize() {
 }
 
 } /* namespace muroa */
+
+
+#ifdef LOG4CPLUS_C++11_HACK
+namespace log4cplus {
+Logger::Logger (Logger && rhs)
+{
+    value = rhs.value;
+    rhs.value = 0;
+}
+
+
+Logger &
+Logger::operator = (Logger && rhs)
+{
+    Logger (std::move (rhs)).swap (*this);
+    return *this;
+}
+}
+#endif
+
