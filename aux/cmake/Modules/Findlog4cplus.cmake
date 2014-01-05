@@ -2,6 +2,8 @@
 # Once done, this will define
 #
 #  log4cplus_FOUND - system has log4cplus libs
+#  log4cplus_DEFINITIONS - log4cplus #defines (especially if Logger::Logger(Logger&&) and Logger::operator=(Logger&&) 
+#                          are included in the lib or if they need to be faked to be able to use C++11
 #  log4cplus_INCLUDE_DIRS - the log4cplus include directories
 #  log4cplus_LIBRARIES - link these to use log4cplus
 
@@ -32,8 +34,21 @@ find_package_handle_standard_args(log4cplus  DEFAULT_MSG
                                   
 MESSAGE( log4cplus: "${log4cplus_LIBRARY}")
 
-#INCLUDE (CheckLibraryExists) 
-#CHECK_LIBRARY_EXISTS(${log4cplus_LIBRARY}  log4cplus::Logger::Logger (Logger &&) "" LOG4CPLUS_HAS_RVAL_CTOR) 
-#MESSAGE(STATUS "LOG4CPLUS_HAS_RVAL_CTOR: ${LOG4CPLUS_HAS_RVAL_CTOR}")
+set(CMAKE_REQUIRED_FLAGS "-std=c++11")
+set(CMAKE_REQUIRED_DEFINITIONS "")
+INCLUDE (CheckLog4cplusCXX11) 
+CHECK_LOG4CPLUS_CXX11(${log4cplus_LIBRARY}  "" LOG4CPLUS_HAS_RVAL_CTOR)
+
+MESSAGE( STATUS "LOG4CPLUS_HAS_RVAL_CTOR: ${LOG4CPLUS_HAS_RVAL_CTOR}")
+if( NOT LOG4CPLUS_HAS_RVAL_CTOR  )
+message( WARNING "${log4cplus_LIBRARY} 
+was not compiled with C++11 support! 
+The following methods are defined in log4cplus headers if compiled with -std=c++11:
+  - Logger::Logger(Logger&&)
+  - Logger::operator=(Logger&&)
+Faking them to avoid link errors!!! Rebuild liblog4cplus with 'CXXFLAGS=-std=c++11' to be clean.")
+set( MUROA_FAKE_LOG4CPLUS_RVALREF  "yes") 
+endif( NOT LOG4CPLUS_HAS_RVAL_CTOR )
+
 mark_as_advanced(log4cplus_INCLUDE_DIR log4cplus_LIBRARY )
 
