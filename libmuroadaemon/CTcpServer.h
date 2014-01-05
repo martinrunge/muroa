@@ -63,7 +63,6 @@ private:
   tcp::acceptor m_acceptor;
   IConnectionManager* m_connectionManager;
   factory_ptr_t m_connection_factory;
-  log4cplus::Logger m_logger;
 
   CApp* m_app;
 };

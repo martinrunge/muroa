@@ -33,7 +33,6 @@ CTcpServer::CTcpServer(boost::asio::io_service& io_service, IConnectionManager* 
 
                      : m_acceptor(io_service),
                        m_connectionManager(cm),
-	                   m_logger(Logger::getInstance("main")),
 	                   m_app(app),
  	                   m_connection_factory(connection_factory)
 

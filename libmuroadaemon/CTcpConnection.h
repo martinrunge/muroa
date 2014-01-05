@@ -82,8 +82,6 @@ private:
   /// Buffer for incoming data.
   boost::array<char, 8192> m_buffer;
 
-  log4cplus::Logger m_logger;
-
 };
 
 }

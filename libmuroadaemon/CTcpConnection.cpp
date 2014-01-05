@@ -31,22 +31,22 @@ using namespace log4cplus;
 
 namespace muroa {
 
-CTcpConnection::CTcpConnection(boost::asio::io_service& io_service) : m_socket(io_service), m_logger(Logger::getInstance("main")) {
+CTcpConnection::CTcpConnection(boost::asio::io_service& io_service) : m_socket(io_service) {
 }
 
 CTcpConnection::~CTcpConnection() {
-    LOG4CPLUS_INFO(m_logger, "closed connection to: " << remoteEndpointStr());
+    LOG4CPLUS_INFO(CApp->logger(), "closed connection to: " << remoteEndpointStr());
 }
 
 
 void CTcpConnection::start() {
-    LOG4CPLUS_INFO(m_logger, "new connection accepted from: " << remoteEndpointStr());
+    LOG4CPLUS_INFO(CApp->logger(), "new connection accepted from: " << remoteEndpointStr());
 
 	start_read();
 }
 
 void CTcpConnection::stop() {
-    LOG4CPLUS_INFO(m_logger, "stopping connection to: " << remoteEndpointStr() << " Closing socket now.");
+    LOG4CPLUS_INFO(CApp->logger(), "stopping connection to: " << remoteEndpointStr() << " Closing socket now.");
 	m_socket.close();
 }
 
@@ -92,11 +92,11 @@ void CTcpConnection::dataReceived( boost::array<char, 8192> /*buffer*/, int /*le
 
 void CTcpConnection::handle_write(const boost::system::error_code& error, size_t bytes_transferred) {
     if (error) {
-        LOG4CPLUS_ERROR(m_logger, "error in handle_write:  " << error.message());
+        LOG4CPLUS_ERROR(CApp->logger(), "error in handle_write:  " << error.message());
         onClose();
     }
     else {
-    	// LOG4CPLUS_DEBUG(m_logger, "handle_write: " << bytes_transferred << " Bytes transferred");
+    	// LOG4CPLUS_DEBUG(CApp->logger(), "handle_write: " << bytes_transferred << " Bytes transferred");
     }
 }
 
@@ -119,7 +119,7 @@ void CTcpConnection::handle_read(const boost::system::error_code& error, size_t 
     		onClose();
 
     	}
-    	LOG4CPLUS_ERROR(m_logger, "error in handle_read:  " << error.message());
+    	LOG4CPLUS_ERROR(CApp->logger(), "error in handle_read:  " << error.message());
     	// delete this;
     }
 }
