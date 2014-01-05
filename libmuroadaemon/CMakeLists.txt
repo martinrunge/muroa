@@ -4,7 +4,6 @@ project (muroadaemon)
 
 set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../aux/cmake/Modules" ${CMAKE_MODULE_PATH})
 
-set_target_properties( muroadaemon  PROPERTIES  COMPILE_FLAGS "-std=c++11 -pthread" ) 
 
 set(Boost_USE_MULTITHREADED ON)
 find_package( Threads )
@@ -63,6 +62,9 @@ target_link_libraries( muroadaemon  ${CMAKE_THREAD_LIBS_INIT}
                                     ${libavahiclient_LIBRARY} 
                                     ${libavahicommon_LIBRARY}
                                     )
+
+set_target_properties( muroadaemon  PROPERTIES  COMPILE_FLAGS "-std=c++11 -pthread" ) 
+
 # SET_TARGET_PROPERTIES( muroad PROPERTIES  LINK_FLAGS -Wl,-shared-libgcc)
 ###################################################################################
 # This step merges a gdb_index section into the binary to speed up debugging.

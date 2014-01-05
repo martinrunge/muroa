@@ -32,9 +32,8 @@ find_package_handle_standard_args(log4cplus  DEFAULT_MSG
                                   
 MESSAGE( log4cplus: "${log4cplus_LIBRARY}")
 
-INCLUDE (CheckLibraryExists) 
-CHECK_LIBRARY_EXISTS(${log4cplus_LIBRARY}  log4cplus::Logger::Logger (Logger &&) "" LOG4CPLUS_HAS_RVAL_CTOR) 
-
-MESSAGE(STATUS "LOG4CPLUS_HAS_RVAL_CTOR: ${LOG4CPLUS_HAS_RVAL_CTOR}")
+#INCLUDE (CheckLibraryExists) 
+#CHECK_LIBRARY_EXISTS(${log4cplus_LIBRARY}  log4cplus::Logger::Logger (Logger &&) "" LOG4CPLUS_HAS_RVAL_CTOR) 
+#MESSAGE(STATUS "LOG4CPLUS_HAS_RVAL_CTOR: ${LOG4CPLUS_HAS_RVAL_CTOR}")
 mark_as_advanced(log4cplus_INCLUDE_DIR log4cplus_LIBRARY )
 
