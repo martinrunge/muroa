@@ -25,6 +25,7 @@ find_library(log4cplus_LIBRARY NAMES log4cplus
 
 set(log4cplus_LIBRARIES ${log4cplus_LIBRARY} )
 set(log4cplus_INCLUDE_DIRS ${log4cplus_INCLUDE_DIR} )
+set(log4cplus_DEFINITIONS "")
 
 include(FindPackageHandleStandardArgs)
 # handle the QUIETLY and REQUIRED arguments and set LIBXML2_FOUND to TRUE
@@ -41,14 +42,15 @@ CHECK_LOG4CPLUS_CXX11(${log4cplus_LIBRARY}  "" LOG4CPLUS_HAS_RVAL_CTOR)
 
 MESSAGE( STATUS "LOG4CPLUS_HAS_RVAL_CTOR: ${LOG4CPLUS_HAS_RVAL_CTOR}")
 if( NOT LOG4CPLUS_HAS_RVAL_CTOR  )
-message( WARNING "${log4cplus_LIBRARY} 
-was not compiled with C++11 support! 
-The following methods are defined in log4cplus headers if compiled with -std=c++11:
+message( WARNING "${log4cplus_LIBRARY} was not compiled with C++11 support!
+  The following methods are defined in log4cplus headers if compiled with -std=c++11:
   - Logger::Logger(Logger&&)
   - Logger::operator=(Logger&&)
-Faking them to avoid link errors!!! Rebuild liblog4cplus with 'CXXFLAGS=-std=c++11' to be clean.")
+  Faking them to avoid link errors!!! Rebuild liblog4cplus with 'CXXFLAGS=-std=c++11' to be clean. 
+")
 set( MUROA_FAKE_LOG4CPLUS_RVALREF  "yes") 
+set( log4cplus_DEFINITIONS "-DMUROA_FAKE_LOG4CPLUS_RVALREF")
 endif( NOT LOG4CPLUS_HAS_RVAL_CTOR )
 
-mark_as_advanced(log4cplus_INCLUDE_DIR log4cplus_LIBRARY )
-
+mark_as_advanced(log4cplus_DEFINITIONS log4cplus_INCLUDE_DIR log4cplus_LIBRARY )
+                 

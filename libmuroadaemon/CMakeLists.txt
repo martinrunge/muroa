@@ -13,8 +13,9 @@ find_package( libavahiclient REQUIRED )
 find_package( libavahicommon REQUIRED )
 find_package( log4cplus REQUIRED )
 
+MESSAGE(STATUS "log4cplus_DEFINITIONS: ${log4cplus_DEFINITIONS}")
 
-add_definitions(  )
+add_definitions( ${log4cplus_DEFINITIONS} )
 
 
 set( SRC           CTcpConnection.cpp
