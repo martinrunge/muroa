@@ -7,14 +7,14 @@ set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../aux/cmake/Modules" ${CMAKE
 
 set(Boost_USE_MULTITHREADED ON)
 find_package( Threads )
-find_package( Boost 1.36.0 COMPONENTS system  REQUIRED )
+find_package( Boost 1.36.0 COMPONENTS system filesystem  REQUIRED )
 find_package( EXPAT REQUIRED )
 find_package( libavahiclient REQUIRED )
 find_package( libavahicommon REQUIRED )
 find_package( log4cplus REQUIRED )
 
 
-add_definitions(  )
+add_definitions( ${log4cplus_DEFINITIONS} )
 
 
 set( SRC           CTcpConnection.cpp
@@ -24,6 +24,7 @@ set( SRC           CTcpConnection.cpp
                    CSettings.cpp
                    Exceptions.cpp
                    CApp.cpp
+                   CAppenderErrorHandler.cpp
                    # main.cpp
                    # avahi/asio-watch.cpp
                    avahi/CDnsSdBase.cpp
@@ -39,6 +40,7 @@ set( HEADERS       CTcpConnection.h
                    CSettings.h
                    Exceptions.h
                    CApp.h
+                   CAppenderErrorHandler.h
                    # avahi/asio-watch.h
                    avahi/CDnsSdBase.h
                    avahi/CDnsSdAvahi.h

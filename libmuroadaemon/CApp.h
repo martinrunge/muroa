@@ -13,6 +13,7 @@
 
 #include "Exceptions.h"
 #include "CSettings.h"
+#include "CAppenderErrorHandler.h"
 
 namespace muroa {
 
@@ -33,6 +34,18 @@ public:
 	void serviceChanged();
 	int daemonize();
 
+	const boost::filesystem::path& getAbsProgDir() const {
+		return m_abs_prog_dir;
+	}
+
+	const boost::filesystem::path& getCalledFromPath() const {
+		return m_called_from_path;
+	}
+
+	const std::string& getProgName() const {
+		return m_prog_name;
+	}
+
 private:
 	static CApp* m_inst_ptr;
 	static std::mutex m_mutex;
@@ -42,6 +55,13 @@ private:
 
 	void initLog();
 
+	std::auto_ptr<log4cplus::ErrorHandler> m_error_handler_ptr;
+
+	bool accessible(std::string logfile_name);
+
+    boost::filesystem::path m_abs_prog_dir;
+    boost::filesystem::path m_called_from_path;
+    std::string m_prog_name;
 };
 
 } /* namespace muroa */

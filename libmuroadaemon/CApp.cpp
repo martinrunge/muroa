@@ -13,6 +13,7 @@
 #include <log4cplus/layout.h>
 #include <log4cplus/configurator.h>
 #include <log4cplus/fileappender.h>
+#include <log4cplus/consoleappender.h>
 #include <log4cplus/ndc.h>
 
 #include <iostream>
@@ -23,11 +24,15 @@
 #include <errno.h>
 
 #include <string.h>
+#include <boost/filesystem/operations.hpp>
+#include <boost/system/error_code.hpp>
 
 namespace muroa {
 
-using namespace log4cplus;
 using namespace std;
+using namespace log4cplus;
+
+namespace bfs = boost::filesystem;
 
 CApp* CApp::m_inst_ptr = 0;
 std::mutex CApp::m_mutex;
@@ -41,10 +46,22 @@ log4cplus::Logger& CApp::getLoggerRef() { return m_logger; }
 
 CApp::CApp(int argc, char** argv) throw(configEx) : m_settings(this)
 {
+    m_called_from_path = bfs::current_path();
+
+    bfs::path abs_prog_path(argv[0]);
+    if( abs_prog_path.is_relative()) {
+    	abs_prog_path = m_called_from_path / abs_prog_path;
+    }
+
+    m_prog_name = abs_prog_path.filename().string();
+    abs_prog_path.remove_filename();
+    m_abs_prog_dir = bfs::canonical(abs_prog_path);
+
     if( m_settings.parse(argc, argv) != 0) {
     	throw configEx("error parsing commandline parameters");
     }
 
+    m_error_handler_ptr = auto_ptr<log4cplus::ErrorHandler>(new CAppenderErrorHandler);
     initLog();
 
     m_settings.readConfigFile();
@@ -77,14 +94,73 @@ void CApp::initLog() {
     }
 
     m_logger = Logger::getInstance("main");
+    Appender* appender;
+    bool logfile_accessible = accessible(m_settings.logfile());
+    if( logfile_accessible ) {
+        appender = new FileAppender(m_settings.logfile());
+        appender->setErrorHandler(m_error_handler_ptr);
+    }
+    else {
+    	appender = new ConsoleAppender();
+    	appender->setErrorHandler(m_error_handler_ptr);
+        //SharedAppenderPtr log_appender(console_appender);
 
-	SharedAppenderPtr logFileAppender(new FileAppender(m_settings.logfile()));
-	logFileAppender->setName("LogfileAppender");
+    }
+    SharedAppenderPtr log_appender(appender);
+	log_appender->setName("LogAppender");
 	std::auto_ptr<Layout> myLayout = std::auto_ptr<Layout>(new log4cplus::TTCCLayout());
-	logFileAppender->setLayout(myLayout);
-	m_logger.addAppender(logFileAppender);
+	log_appender->setLayout(myLayout);
+
+	m_logger.addAppender(log_appender);
     // logger.setLogLevel ( DEBUG_LOG_LEVEL );
 	m_logger.setLogLevel ( m_settings.debuglevel() );
+    if( !logfile_accessible ) {
+    	LOG4CPLUS_WARN(m_logger, "Could not open logfile '" << m_settings.logfile() << "'. Logging to console instead." << endl
+    			                  << "Pass '--logfile </path/to/file.log>' to specify a logfile writable by '" << m_prog_name << "'.");
+    }
+}
+
+
+bool CApp::accessible(string logfile_name) {
+	bfs::path lf(logfile_name);
+	if(bfs::is_directory(lf)) {
+		return false;
+	}
+	else {
+		int rc = access(logfile_name.c_str(), R_OK|W_OK);
+		if(rc == 0) {
+			return true;
+		}
+		else {
+			switch (errno) {
+			case EACCES:
+			case EROFS:
+				return false;
+
+			case ENOENT:
+			{
+				// try to create parent path, if not yet there:
+				boost::system::error_code ec;
+				create_directories(lf.parent_path(), ec);
+				if( ec ) {
+					// could not create path to logfile
+					return false;
+				}
+				int wr_fd = open(logfile_name.c_str(), O_RDWR|O_CREAT|FD_CLOEXEC, S_IRUSR|S_IWUSR|S_IRGRP|S_IWGRP|S_IROTH);
+				if(wr_fd == -1) {
+					return false;
+				}
+				else {
+					close(wr_fd);
+					return true;
+				}
+			}
+			default:
+				return false;
+			}
+		}
+	}
+	return false;
 }
 
 int CApp::daemonize() {
@@ -93,6 +169,8 @@ int CApp::daemonize() {
     	if (pid > 0) {
     		// in the parent process, exit.
     		//
+    		LOG4CPLUS_INFO(logger(), "forking to background ...");
+    		cout << "forking to background ..." << endl;
     		exit(0);
     	}
     	else {

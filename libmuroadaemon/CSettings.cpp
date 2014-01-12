@@ -28,8 +28,12 @@
 #include <getopt.h>
 #include <log4cplus/loggingmacros.h>
 
+#include "boost/filesystem/operations.hpp"
+
 using namespace std;
 using namespace log4cplus;
+
+namespace fs = boost::filesystem;
 
 namespace muroa {
 
@@ -39,7 +43,6 @@ CSettings::CSettings(CApp* app) throw() : m_foreground(false),
                                           m_app(app) {
 
     applyDefaults();
-
 }
 
 
@@ -57,7 +60,6 @@ int CSettings::parse(int argc, char** argv) throw(configEx) {
         {"help", 0, 0, '?'},
         {0, 0, 0, 0}
     };
-
 
     while (1) {
         int this_option_optind = optind ? optind : 1;
@@ -133,18 +135,49 @@ int CSettings::parse(int argc, char** argv) throw(configEx) {
 
 int CSettings::readConfigFile() throw(muroa::configEx) {
     using boost::property_tree::ptree;
-    try {
-        // beware of boost bug resolved in this changeset: https://svn.boost.org/trac/boost/changeset/78679
-        // came up with c++11
-    	read_json(m_configfile, m_pt);
+    bool config_success = false;
+
+    string current_config_file;
+	if(!m_configfile.empty()) {
+		// a config file was given as program argument -> try it and none else.
+		while(!m_search_config_file.empty()) {
+			m_search_config_file.pop();
+		}
+		m_search_config_file.push(m_configfile);
+	}
+
+    do {
+    	try { // try to load the config file from the next possible location
+    		current_config_file = m_search_config_file.top();
+    		m_search_config_file.pop();
+    		// beware of boost bug resolved in this changeset: https://svn.boost.org/trac/boost/changeset/78679
+			// came up with c++11
+			read_json(current_config_file, m_pt);
+			// if no exception occurred ...
+			config_success = true;
+			m_configfile = current_config_file;
+			LOG4CPLUS_INFO( m_app->getLoggerRef() , "Successfully loaded config file '" << current_config_file << "'.");
+			break;
+		}
+		catch(boost::property_tree::json_parser::json_parser_error& err) {
+			LOG4CPLUS_INFO( m_app->getLoggerRef() , "failed to load config file '" << current_config_file << "': " << err.what());
+		}
     }
-    catch(boost::property_tree::json_parser::json_parser_error& err) {
-    	char pwdpath[256];
-    	LOG4CPLUS_ERROR( m_app->getLoggerRef() , "failed to load config file '" << m_configfile << "': " << err.what() << endl );
+	while(!m_search_config_file.empty());
+
+    if( config_success == false) {
     	ostringstream oss;
-    	oss << "failed to load config file (pwd='" << getcwd(pwdpath, 256) << "'): " << err.what() << endl;
+    	if(m_configfile.empty()) {
+    		oss << "Config file not found at any of its default locations." << endl
+    			<< " please use '--configfile </path/to/configfile>' to pass a valid config file to '" << m_app->getProgName() << "'";
+    	}
+    	else {
+    		oss << "Given config file '" << m_configfile << "' could not be read.";
+    	}
+		LOG4CPLUS_ERROR( m_app->getLoggerRef() , oss );
     	throw configEx(oss.str());
     }
+
     return 0;
 }
 
@@ -191,7 +224,10 @@ void CSettings::usage(string appname) {
 
 void CSettings::applyDefaults() {
 	m_logfile = "/var/log/muroad.log";
-	m_configfile = "/etc/muroa.conf";
+
+	m_search_config_file.push("muroa.conf");
+	m_search_config_file.push("etc/muroa.conf");
+	m_search_config_file.push("/etc/muroa.conf");
 
     m_service_name = "Muroa streaming client";
     m_service_type = "_muroad._udp";

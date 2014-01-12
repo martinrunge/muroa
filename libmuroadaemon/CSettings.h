@@ -30,6 +30,8 @@
 #include <boost/property_tree/ptree.hpp>
 #include <boost/property_tree/json_parser.hpp>
 
+#include "boost/filesystem/path.hpp"
+
 #include <string>
 
 #include "Exceptions.h"
@@ -72,6 +74,8 @@ private:
 	void applyDefaults();
 
     std::string m_configfile;
+    std::string m_logfile;
+
     bool m_foreground;
     int m_debuglevel;
     unsigned short m_port;
@@ -80,10 +84,11 @@ private:
     std::string m_service_name;
     std::string m_service_type;
 
-    std::string m_logfile;
 
     unsigned short m_ip_version;
     boost::property_tree::ptree m_pt;
+
+    std::stack<std::string> m_search_config_file;
 
     CApp* m_app;
 };
