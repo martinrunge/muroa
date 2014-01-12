@@ -245,10 +245,8 @@ int CApp::daemonize() {
 }
 
 } /* namespace muroa */
-#if 0
-// #define LOG4CPLUS_C++11_HACK
 
-#ifdef LOG4CPLUS_C++11_HACK
+#ifdef MUROA_FAKE_LOG4CPLUS_RVALREF
 namespace log4cplus {
 Logger::Logger (Logger && rhs)
 {
@@ -265,4 +263,4 @@ Logger::operator = (Logger && rhs)
 }
 }
 #endif
-#endif
+

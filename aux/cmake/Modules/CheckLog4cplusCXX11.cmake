@@ -36,7 +36,6 @@ macro(CHECK_LOG4CPLUS_CXX11 LIBRARY LOCATION VARIABLE)
         ${LIBRARY} ${CMAKE_REQUIRED_LIBRARIES})
     endif()
 
-    message(STATUS "CMAKE_CURRENT_LIST_DIR  ${CMAKE_CURRENT_LIST_DIR}")
     try_compile(${VARIABLE}
       ${CMAKE_BINARY_DIR}
       ${CMAKE_CURRENT_LIST_DIR}/CheckLog4cplusCXX11.cpp
@@ -48,17 +47,17 @@ macro(CHECK_LOG4CPLUS_CXX11 LIBRARY LOCATION VARIABLE)
       OUTPUT_VARIABLE OUTPUT)
 
     if(${VARIABLE})
-      message(STATUS "Looking for ${FUNCTION} in ${LIBRARY} - found")
-      set(${VARIABLE} 1 CACHE INTERNAL "Have library ${LIBRARY}")
+      message(STATUS "Trying to link ${LIBRARY} against sources compiled with C++11 support - success")
+      set(${VARIABLE} 1 CACHE INTERNAL "Can link C++11 sources ${LIBRARY}")
       file(APPEND ${CMAKE_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/CMakeOutput.log
-        "Determining if the function ${FUNCTION} exists in the ${LIBRARY} "
+        "Trying to link ${LIBRARY} against sources compiled with C++11 support "
         "passed with the following output:\n"
         "${OUTPUT}\n\n")
     else()
-      message(STATUS "Looking for ${FUNCTION} in ${LIBRARY} - not found")
-      set(${VARIABLE} "" CACHE INTERNAL "Have library ${LIBRARY}")
+      message(STATUS "Trying to link ${LIBRARY} against sources compiled with C++11 support - failed")
+      set(${VARIABLE} "" CACHE INTERNAL "Can link C++11 sources ${LIBRARY}")
       file(APPEND ${CMAKE_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/CMakeError.log
-        "Determining if the function ${FUNCTION} exists in the ${LIBRARY} "
+        "Trying to link ${LIBRARY} against sources compiled with C++11 support "
         "failed with the following output:\n"
         "${OUTPUT}\n\n")
     endif()
