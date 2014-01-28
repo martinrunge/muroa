@@ -1,0 +1,13 @@
+To test resampling algorithms:
+
+create a Mono sweep wav file:
+sndfile-generate-chirp -from 200 -to 22050  44100 20 /path/to/sweep.wav
+
+
+resample it (it will be resampled to 48000 Hz)
+build/resamplertest -i /path/to/sweep.wav -o  /path/to/sweep.speexresampled.wav
+
+
+see the sepctrum:
+sndfile-spectrogram /path/to/sweep.speexresampled.wav 1024 768 sweep.speexresampled.png
+
