@@ -23,13 +23,21 @@
 
 #include <string>
 #include <sndfile.hh>
+#include <map>
+
 
 class IResamplerBase {
 public:
-	IResamplerBase(std::string name);
-	virtual ~IResamplerBase();
 
-	std::string getName() { return m_name; };
+	typedef enum {
+		E_SPEEX,
+		E_SOX,
+		E_MUROAFP
+	} resampler_type_t;
+
+	static IResamplerBase* factory(resampler_type_t res_type);
+
+	virtual ~IResamplerBase();
 
 	int openInfile(std::string infile);
 	int openOutfile(std::string outfile, int sampleRate);
@@ -41,8 +49,11 @@ public:
 	void closeOutfile();
 
 	virtual void resample() = 0;
+	int createSweep();
+
 protected:
-	const std::string m_name;
+	IResamplerBase();
+
 	std::string m_infile_name;
 	std::string m_outfile_name;
 
@@ -61,6 +72,8 @@ protected:
 
 	SndfileHandle *m_infile;
 	SndfileHandle *m_outfile;
+
+private:
 
 };
 

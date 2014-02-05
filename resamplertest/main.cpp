@@ -25,7 +25,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "CSpeexResampler.h"
 
-#include <math.h>
+
 
 using namespace std;
 
@@ -38,6 +38,7 @@ int main(int argc, char** argv)
 
 	int c;
     int digit_optind = 0;
+    bool create_sweep = false;
 
     string m_infile, m_outfile, m_resampler;
 
@@ -45,6 +46,7 @@ int main(int argc, char** argv)
         {"infile", 1, 0, 'i'},
         {"outfile", 1, 0, 'o'},
         {"resampler", 1, 0, 'r'},
+        {"sweep", 0, 0, 's'},
         {"help", 0, 0, '?'},
         {0, 0, 0, 0}
     };
@@ -53,7 +55,7 @@ int main(int argc, char** argv)
         int this_option_optind = optind ? optind : 1;
         int option_index = 0;
 
-        c = getopt_long(argc, argv, "i:o:r:?", long_options, &option_index);
+        c = getopt_long(argc, argv, "i:o:r:s?", long_options, &option_index);
         if (c == -1)
             break;
 
@@ -88,6 +90,10 @@ int main(int argc, char** argv)
             }
             break;
 
+        case 's':
+        	create_sweep = true;
+        	break;
+
         case '?':
         	usage(argv[0]);
         	return 1;
@@ -108,16 +114,22 @@ int main(int argc, char** argv)
 
     int sampleRate = 48000;
 
-    CSpeexResampler* resampler = new CSpeexResampler();
-    resampler->openInfile(m_infile);
-    resampler->openOutfile(m_outfile, sampleRate);
+    if(create_sweep) {
+    	IResamplerBase* resampler = IResamplerBase::factory(IResamplerBase::E_SPEEX);
+		resampler->openOutfile(m_outfile, sampleRate);
+		resampler->createSweep();
+		resampler->closeOutfile();
+    }
+    else {
+    	IResamplerBase* resampler = IResamplerBase::factory(IResamplerBase::E_SPEEX);
+    	resampler->openInfile(m_infile);
+		resampler->openOutfile(m_outfile, sampleRate);
 
-    resampler->resample();
+		resampler->resample();
 
-    resampler->closeInfile();
-    resampler->closeOutfile();
-
-    // createSweep("sweep.wav");
+		resampler->closeInfile();
+		resampler->closeOutfile();
+    }
 }
 
 
@@ -127,29 +139,7 @@ void usage(string appname) {
 	cout << "  --infile      -i  \tfile with input samples" << endl;
 	cout << "  --outfile     -o  \tfile to store resampled samples" << endl;
 	cout << "  --resampler   -r  \tresampler to use" << endl;
+	cout << "  --sweep       -s  \tcreate a sweep, need to specify --outfile, too" << endl;
 	cout << "  --help        -?  \tthis message" << endl;
 }
 
-int createSweep(string filename) {
-    int sampleRate = 44100;
-
-    CSpeexResampler* resampler = new CSpeexResampler();
-    resampler->openOutfile(filename, sampleRate);
-
-    const int size = sampleRate * 20;
-    int16_t samples[size];
-
-    double startfreq = 100;
-    double endfreq = 20000;
-    double maxfactor = endfreq / startfreq;
-    double stepfactor = pow(maxfactor, (double)1.0/size);
-    double freq = startfreq;
-
-    for (int i=0; i<size; i++) {
-    	freq *= stepfactor; //1.00001;
-    	samples[i] = INT16_MAX * sin(float(i) * 2 * M_PI * freq / sampleRate);
-    }
-    // resampler->writeOutfile(samples, size);
-
-    delete resampler;
-}

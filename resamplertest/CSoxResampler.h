@@ -23,11 +23,15 @@
 
 #include "IResamplerBase.h"
 
-
 class CSoxResampler: public IResamplerBase {
 public:
 	CSoxResampler();
 	virtual ~CSoxResampler();
+
+	static std::string name();
+
+	void resample();
+
 };
 
 #endif /* CSOXRESAMPLER_H_ */

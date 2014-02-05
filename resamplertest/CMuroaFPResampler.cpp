@@ -20,12 +20,17 @@
 
 #include "CMuroaFPResampler.h"
 
-CMuroaFPResampler::CMuroaFPResampler() : IResamplerBase("muroafp") {
-	// TODO Auto-generated constructor stub
+using namespace std;
 
+string CMuroaFPResampler::name() { return string("muroafp"); };
+
+CMuroaFPResampler::CMuroaFPResampler() : IResamplerBase() {
+	// TODO Auto-generated constructor stub
 }
 
 CMuroaFPResampler::~CMuroaFPResampler() {
 	// TODO Auto-generated destructor stub
 }
 
+void CMuroaFPResampler::resample() {
+}

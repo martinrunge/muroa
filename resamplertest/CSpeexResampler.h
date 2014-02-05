@@ -31,6 +31,8 @@ public:
 	virtual ~CSpeexResampler();
 
 	void resample();
+	static std::string name();
+
 private:
 	SpeexResamplerState *m_resampler;
 };

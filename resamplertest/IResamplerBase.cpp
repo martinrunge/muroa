@@ -22,10 +22,17 @@
 
 #include <cstdint>
 #include <iostream>
+#include <map>
+
+#include "CSpeexResampler.h"
+#include "CSoxResampler.h"
+#include "CMuroaFPResampler.h"
+
+#include <math.h>
 
 using namespace std;
 
-IResamplerBase::IResamplerBase(std::string name) : m_name(name) {
+IResamplerBase::IResamplerBase() {
 	m_infile = 0;
 	m_outfile = 0;
 	m_use_float = true;
@@ -34,6 +41,7 @@ IResamplerBase::IResamplerBase(std::string name) : m_name(name) {
 	m_inbuffer_i16 = 0;
 	m_outbuffer_f = 0;
 	m_outbuffer_i16 = 0;
+
 }
 
 IResamplerBase::~IResamplerBase() {
@@ -57,7 +65,7 @@ int IResamplerBase::openInfile(std::string infile) {
     cout << "SFC_GET_SIGNAL_MAX: " << max_peak << endl;
 
     int usescale = 0x7FFF;
-    int scale = m_infile->command(SFC_SET_SCALE_FLOAT_INT_READ, NULL, SF_FALSE);
+    int scale = m_infile->command(SFC_SET_SCALE_FLOAT_INT_READ, &usescale, sizeof(usescale));
     cout << "SFC_SET_SCALE_FLOAT_INT_READ: " << scale << endl;
 }
 
@@ -66,8 +74,13 @@ int IResamplerBase::openOutfile(std::string outfile, int sampleRate) {
 	if(m_outfile != 0) {
 		delete m_outfile;
 	}
-    const int format=SF_FORMAT_WAV | SF_FORMAT_PCM_16;
-//  const int format=SF_FORMAT_WAV | SF_FORMAT_FLOAT;
+	int format;
+	if(m_use_float) {
+		format=SF_FORMAT_WAV | SF_FORMAT_FLOAT;
+	} else {
+	    format=SF_FORMAT_WAV | SF_FORMAT_PCM_16;
+	}
+
     const int channels=1;
     m_out_sample_rate = sampleRate;
 
@@ -145,3 +158,60 @@ void IResamplerBase::closeOutfile() {
 	delete m_outfile;
 	m_outfile = 0;
 }
+
+IResamplerBase* IResamplerBase::factory(IResamplerBase::resampler_type_t res_type) {
+	IResamplerBase* resamplerPtr;
+
+	switch(res_type) {
+	case E_SPEEX:
+		resamplerPtr = new CSpeexResampler();
+		break;
+	case E_SOX:
+		resamplerPtr = new CSoxResampler();
+		break;
+	case E_MUROAFP:
+		resamplerPtr = new CMuroaFPResampler();
+		break;
+	default:
+		resamplerPtr = 0;
+	}
+	return resamplerPtr;
+}
+
+
+int IResamplerBase::createSweep() {
+    int sampleRate = 44100;
+
+    const int size = sampleRate * 20;
+
+    double startfreq = 100;
+    double endfreq = 20000;
+    double maxfactor = endfreq / startfreq;
+    double stepfactor = pow(maxfactor, (double)1.0/size);
+    double freq = startfreq;
+
+    if(m_use_float) {
+		if(m_outbuffer_f == 0) {
+			m_outbuffer_f = new float[size];
+			m_out_buffer_size = size;
+		}
+		for (int i=0; i<size; i++) {
+			freq *= stepfactor; //1.00001;
+			m_outbuffer_f[i] = sin(float(i) * 2 * M_PI * freq / sampleRate);
+		}
+    }
+    else {
+		if(m_outbuffer_i16 == 0) {
+			m_outbuffer_i16 = new int16_t[size];
+			m_out_buffer_size = size;
+		}
+		for (int i=0; i<size; i++) {
+			freq *= stepfactor; //1.00001;
+			m_outbuffer_i16[i] = INT16_MAX * sin(float(i) * 2 * M_PI * freq / sampleRate);
+		}
+    }
+    m_num_out_frames = m_out_buffer_size;
+    writeOutfile();
+    return 0;
+}
+

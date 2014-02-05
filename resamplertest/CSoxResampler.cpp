@@ -20,8 +20,11 @@
 
 #include "CSoxResampler.h"
 
+using namespace std;
 
-CSoxResampler::CSoxResampler() : IResamplerBase("sox") {
+string CSoxResampler::name() { return string("sox"); };
+
+CSoxResampler::CSoxResampler() : IResamplerBase() {
 	// TODO Auto-generated constructor stub
 
 }
@@ -30,3 +33,5 @@ CSoxResampler::~CSoxResampler() {
 	// TODO Auto-generated destructor stub
 }
 
+void CSoxResampler::resample() {
+}

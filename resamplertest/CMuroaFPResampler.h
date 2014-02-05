@@ -27,6 +27,11 @@ class CMuroaFPResampler: public IResamplerBase {
 public:
 	CMuroaFPResampler();
 	virtual ~CMuroaFPResampler();
+
+	static std::string name();
+
+	void resample();
+
 };
 
 #endif /* CMUROAFPRESAMPLER_H_ */
