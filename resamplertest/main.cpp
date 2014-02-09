@@ -40,7 +40,7 @@ int main(int argc, char** argv)
     int digit_optind = 0;
     bool create_sweep = false;
 
-    string m_infile, m_outfile, m_resampler;
+    string infile, outfile, resampler_name;
 
     static struct option long_options[] = {
         {"infile", 1, 0, 'i'},
@@ -62,7 +62,7 @@ int main(int argc, char** argv)
         switch (c) {
         case 'i':
             if (optarg) {
-                m_infile = optarg;
+                infile = optarg;
             }
             else {
             	cerr << "--infile option requires an argument" << endl;
@@ -72,7 +72,7 @@ int main(int argc, char** argv)
 
         case 'o':
             if (optarg) {
-                m_outfile = optarg;
+                outfile = optarg;
             }
             else {
             	cerr << "--outfile option requires an argument" << endl;
@@ -82,7 +82,7 @@ int main(int argc, char** argv)
 
         case 'r':
             if (optarg) {
-                m_resampler = optarg;
+            	resampler_name = optarg;
             }
             else {
             	cerr << "--resampler option requires an argument" << endl;
@@ -116,14 +116,14 @@ int main(int argc, char** argv)
 
     if(create_sweep) {
     	IResamplerBase* resampler = IResamplerBase::factory(IResamplerBase::E_SPEEX);
-		resampler->openOutfile(m_outfile, sampleRate);
+		resampler->openOutfile(outfile, sampleRate);
 		resampler->createSweep();
 		resampler->closeOutfile();
     }
     else {
-    	IResamplerBase* resampler = IResamplerBase::factory(IResamplerBase::E_SPEEX);
-    	resampler->openInfile(m_infile);
-		resampler->openOutfile(m_outfile, sampleRate);
+    	IResamplerBase* resampler = IResamplerBase::factory(resampler_name);
+    	resampler->openInfile(infile);
+		resampler->openOutfile(outfile, sampleRate);
 
 		resampler->resample();
 
@@ -138,8 +138,8 @@ void usage(string appname) {
 	cout << appname << " <options>" << endl;
 	cout << "  --infile      -i  \tfile with input samples" << endl;
 	cout << "  --outfile     -o  \tfile to store resampled samples" << endl;
-	cout << "  --resampler   -r  \tresampler to use" << endl;
-	cout << "  --sweep       -s  \tcreate a sweep, need to specify --outfile, too" << endl;
+	cout << "  --resampler   -r  \tresampler to use. [speex|sox|muroafp]" << endl;
+	cout << "  --sweep       -s  \tcreate a sweep in wav, need to specify --outfile, too" << endl;
 	cout << "  --help        -?  \tthis message" << endl;
 }
 

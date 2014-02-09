@@ -19,18 +19,40 @@
  */
 
 #include "CMuroaFPResampler.h"
+#include "muroafp/cfixpointresampler.h"
 
 using namespace std;
 
 string CMuroaFPResampler::name() { return string("muroafp"); };
 
 CMuroaFPResampler::CMuroaFPResampler() : IResamplerBase() {
-	// TODO Auto-generated constructor stub
+	m_use_float = false;
+	m_blocksize = 8196;
 }
 
 CMuroaFPResampler::~CMuroaFPResampler() {
-	// TODO Auto-generated destructor stub
 }
 
 void CMuroaFPResampler::resample() {
+	int err = readInfile();
+	m_muroafp_resampler = new CFixPointResampler(m_outbuffer_i16, m_out_buffer_size, best, 1);
+	uint32_t inframes_left = m_num_in_frames;
+	int inframes;
+	int16_t* ptr = m_inbuffer_i16 - m_blocksize;
+	int16_t* outbuffer = m_outbuffer_i16;
+	m_num_out_frames = 0;
+
+	do  {
+		ptr += m_blocksize;
+		inframes = (inframes_left >= m_blocksize) ? m_blocksize : inframes_left;
+		int num_out_frames = m_muroafp_resampler->resampleFrame( ptr, inframes, outbuffer, (double)48000.0/44100.0);
+
+		inframes_left -= inframes;
+		outbuffer += num_out_frames;
+		m_num_out_frames += num_out_frames;
+	} while(inframes_left > 0);
+
+	err = writeOutfile();
+	delete m_muroafp_resampler;
+
 }

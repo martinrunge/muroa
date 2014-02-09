@@ -19,6 +19,8 @@ add_definitions(-D__STDC_CONSTANT_MACROS)
 set( SRCS           main.cpp 
                     CSpeexResampler.cpp
                     CMuroaFPResampler.cpp
+                    muroafp/cfixpointresampler.cpp
+                    muroafp/cfilterdef.cpp
                     CSoxResampler.cpp
                     IResamplerBase.cpp
                     ) 
@@ -26,6 +28,10 @@ set( SRCS           main.cpp
 
 set( HEADERS        IResamplerBase.h
                     CMuroaFPResampler.h
+                    muroafp/cfixpointresampler.h
+                    muroafp/CFixPointResamplerLargeFilter.h
+                    muroafp/CFixPointResamplerSmallFilter.h
+                    muroafp/cfilterdef.h
                     CSpeexResampler.h
                     CSoxResampler.h
                     )                    

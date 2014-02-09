@@ -32,6 +32,42 @@
 
 using namespace std;
 
+IResamplerBase* IResamplerBase::factory(std::string name) {
+	if(name.compare("speex") == 0) {
+		return IResamplerBase::factory(E_SPEEX);
+	}
+	else if(name.compare("sox") == 0) {
+		return IResamplerBase::factory(E_SOX);
+	}
+	else if(name.compare("muroafp") == 0) {
+		return IResamplerBase::factory(E_MUROAFP);
+	}
+	else {
+		return 0;
+	}
+
+
+}
+
+IResamplerBase* IResamplerBase::factory(IResamplerBase::resampler_type_t res_type) {
+	IResamplerBase* resamplerPtr;
+
+	switch(res_type) {
+	case E_SPEEX:
+		resamplerPtr = new CSpeexResampler();
+		break;
+	case E_SOX:
+		resamplerPtr = new CSoxResampler();
+		break;
+	case E_MUROAFP:
+		resamplerPtr = new CMuroaFPResampler();
+		break;
+	default:
+		resamplerPtr = 0;
+	}
+	return resamplerPtr;
+}
+
 IResamplerBase::IResamplerBase() {
 	m_infile = 0;
 	m_outfile = 0;
@@ -159,24 +195,6 @@ void IResamplerBase::closeOutfile() {
 	m_outfile = 0;
 }
 
-IResamplerBase* IResamplerBase::factory(IResamplerBase::resampler_type_t res_type) {
-	IResamplerBase* resamplerPtr;
-
-	switch(res_type) {
-	case E_SPEEX:
-		resamplerPtr = new CSpeexResampler();
-		break;
-	case E_SOX:
-		resamplerPtr = new CSoxResampler();
-		break;
-	case E_MUROAFP:
-		resamplerPtr = new CMuroaFPResampler();
-		break;
-	default:
-		resamplerPtr = 0;
-	}
-	return resamplerPtr;
-}
 
 
 int IResamplerBase::createSweep() {

@@ -35,6 +35,7 @@ public:
 		E_MUROAFP
 	} resampler_type_t;
 
+	static IResamplerBase* factory(std::string name);
 	static IResamplerBase* factory(resampler_type_t res_type);
 
 	virtual ~IResamplerBase();

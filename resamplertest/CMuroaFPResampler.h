@@ -23,6 +23,8 @@
 
 #include "IResamplerBase.h"
 
+class CFixPointResampler;
+
 class CMuroaFPResampler: public IResamplerBase {
 public:
 	CMuroaFPResampler();
@@ -32,6 +34,9 @@ public:
 
 	void resample();
 
+private:
+	CFixPointResampler* m_muroafp_resampler;
+	int m_blocksize;
 };
 
 #endif /* CMUROAFPRESAMPLER_H_ */
