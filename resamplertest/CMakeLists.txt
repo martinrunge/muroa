@@ -10,6 +10,10 @@ find_package(PkgConfig)
 find_package( libavcodec REQUIRED )
 find_package( libavformat REQUIRED )
 find_package( libavutil REQUIRED )
+find_package( ZLIB REQUIRED )
+find_package( BZip2 REQUIRED )
+find_package( GCRYPT REQUIRED )
+
 find_package( LibAO REQUIRED)
 find_package( LibSndFile REQUIRED)
 find_package( LibSpeex REQUIRED)
@@ -52,7 +56,7 @@ link_directories(${BINARY_DIR}
 
 ADD_EXECUTABLE(resamplertest ${SRCS} ${HEADERS} )
 
-set_target_properties( resamplertest PROPERTIES  COMPILE_FLAGS  "-std=gnu++11") 
+set_target_properties( resamplertest PROPERTIES  COMPILE_FLAGS  "-std=gnu++0x") 
 set_property( SOURCE speex/resample.c APPEND PROPERTY  COMPILE_FLAGS "-DFLOATING_POINT -DEXPORT" ) 
 
 
@@ -61,5 +65,8 @@ TARGET_LINK_LIBRARIES(resamplertest    ${libavformat_LIBRARY}
                                        ${libavutil_LIBRARY}
                                        ${LIBSNDFILE_LIBRARY}
                                        ${LibSpeex_LIBRARY}
+                                       ${ZLIB_LIBRARY}
+                                       ${BZIP2_LIBRARIES}
+                                       ${GCRYPT_LIBRARIES}
                                        )                                   
                                    
