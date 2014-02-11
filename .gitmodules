@@ -1,0 +1,3 @@
+[submodule "resamplertest/tools/pywavefile"]
+	path = resamplertest/tools/pywavefile
+	url = https://github.com/vokimon/python-wavefile.git
