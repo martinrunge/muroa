@@ -62,6 +62,8 @@ CTcpServer::CTcpServer(boost::asio::io_service& io_service, IConnectionManager* 
 		}
 		else {
 			found = true;
+			tcp::endpoint local_endpoint = m_acceptor.local_endpoint();
+			portNr = local_endpoint.port();
 		}
 
 	}

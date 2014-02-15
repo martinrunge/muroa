@@ -27,7 +27,7 @@ string CSpeexResampler::name() {return string("speex"); };
 
 CSpeexResampler::CSpeexResampler() : IResamplerBase() {
 	int err;
-	m_resampler = speex_resampler_init(1, 44100, 48000, 7, &err);
+	m_resampler = speex_resampler_init(1, 44100, 48000, 9, &err);
 	m_use_float = true;
 
 }

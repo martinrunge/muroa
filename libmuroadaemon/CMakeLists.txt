@@ -66,7 +66,7 @@ target_link_libraries( muroadaemon  ${CMAKE_THREAD_LIBS_INIT}
                                     ${libavahicommon_LIBRARY}
                                     )
 
-set_target_properties( muroadaemon  PROPERTIES  COMPILE_FLAGS "-std=c++11 -pthread" ) 
+set_target_properties( muroadaemon  PROPERTIES  COMPILE_FLAGS "-std=c++0x -pthread" ) 
 
 # SET_TARGET_PROPERTIES( muroad PROPERTIES  LINK_FLAGS -Wl,-shared-libgcc)
 ###################################################################################

@@ -65,7 +65,7 @@ int CSettings::parse(int argc, char** argv) throw(configEx) {
         int this_option_optind = optind ? optind : 1;
         int option_index = 0;
 
-        c = getopt_long(argc, argv, "c:fl:p:?", long_options, &option_index);
+        c = getopt_long(argc, argv, "c:fsl:p:?", long_options, &option_index);
         if (c == -1)
             break;
 
