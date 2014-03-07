@@ -18,6 +18,7 @@
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
 #include "cstreamserver.h"
+#include "cmds/CmdStreamReset.h"
 
 using namespace std;
 using namespace boost::posix_time;
@@ -104,6 +105,16 @@ void CStreamServer::close()
 
     /// @todo implement me
     // send end of stream packet
+}
+
+/*!
+    \fn CStreamServer::flush()
+ */
+void CStreamServer::flush()
+{
+	CmdStreamReset cmd_rst(m_session_id, m_stream_id, 0, 0);
+	CRTPPacket *pkt = cmd_rst.toRTP();
+	sendToAllClients(pkt);
 }
 
 
@@ -195,13 +206,6 @@ int CStreamServer::sendPacket(char* buffer, int length) {
 }
 
 
-/*!
-    \fn CStreamServer::flush()
- */
-void CStreamServer::flush()
-{
-    /// @todo implement me
-}
 
 
 list<CStreamConnection*>::iterator CStreamServer::addStreamConnection(CStreamConnection* conn) {

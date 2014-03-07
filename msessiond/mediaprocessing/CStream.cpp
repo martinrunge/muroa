@@ -147,6 +147,7 @@ void CStream::stop()
 
 		stopThread();
 		m_decoder.close();
+		m_streamserver->flush();
         m_streamserver->close();
 		m_state = e_stopped;
 		break;
@@ -169,8 +170,14 @@ void CStream::stop()
 
 void CStream::next() const
 {
+	m_streamserver->flush();
+	m_streamserver->open();
+
 	CmdFinished* cmdFini = new CmdFinished();
 	m_session->postIncomingCmd(cmdFini);
+
+	CmdProgress* progCmd = new CmdProgress(m_done, m_total);
+	m_session->postIncomingCmd(progCmd);
 }
 
 

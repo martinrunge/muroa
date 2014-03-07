@@ -184,6 +184,10 @@ int CFloatResampler::copyResampledFramesToRingbuffer()
     void* start_addr = m_src_data->data_in + m_src_data->input_frames_used * m_num_channels;
     
     // assert that mem areas do not overlap!
+    if(frames_to_copy < m_src_data->input_frames_used) {
+    	cerr << "frames_to_copy = " << frames_to_copy << endl;
+    	cerr << "m_src_data->input_frames_used = " << m_src_data->input_frames_used << endl;
+    }
     assert(frames_to_copy < m_src_data->input_frames_used);
     memcpy(m_src_data->data_in, start_addr, frames_to_copy * m_size_of_float_multichannel_sample); 
 

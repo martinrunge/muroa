@@ -64,13 +64,12 @@ public:
     ~CStreamServer();
 
     int open(int audio_bytes_per_second = 2 * 2 * 44100);
-
     void close();
+    void flush();
 
     int write(char* buffer, int length);
     int sendPacket(char* buffer, int length);
 
-    void flush();
 
     std::list<CStreamConnection*>::iterator addStreamConnection(CStreamConnection* conn);
     CStreamConnection* removeStreamConnection(std::list<CStreamConnection*>::iterator conn_iterator);

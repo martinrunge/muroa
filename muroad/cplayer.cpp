@@ -166,8 +166,16 @@ void CPlayer::requestSync(int session_id, int stream_id)
 
     delete sync_req;
     delete tmp_packet;     
-
   }
+}
+
+void CPlayer::onResetStream(const CmdStreamReset& cmd_rst) {
+    cerr << "CPlayer::onResetStream: sessionID: " << cmd_rst.getOldSessionId()
+         << " streamID: " << cmd_rst.getOldStreamId() << endl
+         << " newSessionID: " << cmd_rst.getNewSessionId()
+         << " newStreamID: " << cmd_rst.getNewStreamId() << endl;
+	m_packet_ringbuffer->clearContent(cmd_rst.getOldSessionId(), cmd_rst.getOldStreamId());
+	m_playloop->reset(cmd_rst.getOldSessionId(), cmd_rst.getOldStreamId());
 }
 
 

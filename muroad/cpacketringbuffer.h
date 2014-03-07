@@ -30,6 +30,7 @@ ringbuffer implementation that takes RTP packets as input and audio frames as ou
 
 #include "cmutex.h"
 #include <stdio.h>
+#include <cstdint>
 
 class CAudioFrame;
 class CRTPPacket;
@@ -42,8 +43,9 @@ public:
     void appendRTPPacket(CRTPPacket* packet);
     
     CRTPPacket* readPacket(void);
-
     int getRingbufferSize();
+
+    int clearContent(uint32_t oldSessionID, uint32_t oldStreamID);
 private:
   
     std::list<CRTPPacket*> m_packet_list;

@@ -59,6 +59,7 @@ union rtp_header_t {
 enum payload_type_t {
   PAYLOAD_UNKNOWN,
   PAYLOAD_SYNC_OBJ,
+  PAYLOAD_RESET_STREAM,
   PAYLOAD_PCM,
   PAYLOAD_VORBIS,
   PAYLOAD_MP3,

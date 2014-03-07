@@ -15,7 +15,11 @@ set( SRC           caudioframe.cpp
                    iaudioio.cpp
                    caudioioalsa.cpp
                    ccalibratedac.cpp
-                   csync.cpp  )
+                   csync.cpp  
+                   IRenderCmds.cpp  
+                   cmds/CmdStreamBase.cpp
+                   cmds/CmdStreamReset.cpp
+                   )
                   
 
 set( HEADERS       caudioframe.h
@@ -24,9 +28,13 @@ set( HEADERS       caudioframe.h
                    iaudioio.h
                    caudioioalsa.h
                    ccalibratedac.h
-                   csync.h )
+                   csync.h 
+                   IRenderCmds.h
+                   cmds/CmdStreamBase.h
+                   cmds/CmdStreamReset.h
+                   )
                   
-include_directories(${CMAKE_SOURCE_DIR}
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}
                     ${Boost_INCLUDE_DIRS} 
                     ${ALSA_INCLUDE_DIR})
 

@@ -28,7 +28,11 @@
 using namespace std;
 using namespace muroa;
 
-CRecvloop::CRecvloop(CPlayer* parent, CApp* app, CPacketRingBuffer* packet_ringbuffer): CThreadSlave(), m_app(app), m_settings(app->settings())
+CRecvloop::CRecvloop(CPlayer* parent, CApp* app, CPacketRingBuffer* packet_ringbuffer):
+		CThreadSlave(),
+		m_app(app),
+		m_settings(app->settings()),
+		m_rtp_packet(0)
 {
 
   m_player = parent;
@@ -43,21 +47,22 @@ CRecvloop::CRecvloop(CPlayer* parent, CApp* app, CPacketRingBuffer* packet_ringb
 
   m_socket->recordSenderWithRecv(true);
 
-  m_rtp_packet = new CRTPPacket();
-
 }
 
 
 CRecvloop::~CRecvloop()
 {
   delete m_socket;
-  delete m_rtp_packet;  
+  if(m_rtp_packet) {
+	  delete m_rtp_packet;
+  }
   
 }
 
 
 void CRecvloop::DoLoop()
 {
+  m_rtp_packet = new CRTPPacket();
   int num = m_socket->read(m_rtp_packet->bufferPtr(), m_rtp_packet->bufferSize()); 
   m_rtp_packet->commit(num);
 
@@ -78,7 +83,6 @@ void CRecvloop::DoLoop()
         else {
           // beginning of next stream. put sync object into the packet ringbuffer
           m_packet_ringbuffer->appendRTPPacket(m_rtp_packet);
-          m_rtp_packet = new CRTPPacket();           
         }
 
         // wake up playback thread
@@ -88,13 +92,20 @@ void CRecvloop::DoLoop()
         
         break;
 
+      case PAYLOAD_RESET_STREAM:
+      {
+    	  CmdStreamReset* cmd_rst = new CmdStreamReset(m_rtp_packet);
+    	  delete m_rtp_packet;
+    	  m_player->onResetStream(*cmd_rst);
+    	  delete cmd_rst;
+    	  break;
+      }
       case PAYLOAD_PCM:
       case PAYLOAD_MP3:
       case PAYLOAD_VORBIS:
       case PAYLOAD_FLAC:
         // m_rtp_packet->BufferSize(num);
         m_packet_ringbuffer->appendRTPPacket(m_rtp_packet);
-        m_rtp_packet = new CRTPPacket(); 
         // cerr << "Sender was: " << m_socket->latestSender()->ipAddress() << " port " << m_socket->latestSender()->port() << endl;
         
         // wake up playback thread
@@ -108,7 +119,6 @@ void CRecvloop::DoLoop()
         
     }
   }
-          
 
 }
 

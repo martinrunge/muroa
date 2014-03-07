@@ -29,6 +29,8 @@ Class encapsulates all the playback functioinalty. It inplements an interface to
 #include <string>
 #include "csync.h"
 #include "cposixcond.h"
+#include "IRenderCmds.h"
+// #include "cmds/CmdStreamReset.h"
 
 #include <boost/asio.hpp>
 
@@ -38,6 +40,7 @@ namespace muroa
   class CApp;
   class CSettings;
   class CDnsSdAvahi;
+  class CmdStreamReset;
 }
 
 class CRecvloop;
@@ -47,7 +50,7 @@ class CPThread;
 class CPacketRingBuffer;
 
 
-class CPlayer{
+class CPlayer : public muroa::IRenderCmds {
 public:
     CPlayer(muroa::CApp *app, boost::asio::io_service& io_service);
 
@@ -55,6 +58,11 @@ public:
     void start();
     void stop();
     void sendRTPPacket(CRTPPacket* packet);
+
+    void onResetStream(const muroa::CmdStreamReset& cmd_rst);
+	void onJoinMulticastGroup() {};
+	void onLeaveMutlicastGroup() {};
+
 
     inline CSync* syncObj() {return &m_sync_obj; };
     void setSyncObj(CRTPPacket* rtp_packet);
@@ -67,7 +75,6 @@ public:
     void requestSync(int session_id, int stream_id);
     void setRequestedSyncObj(CRTPPacket* rtp_packet);
 
-    
     void idleTime ( int theValue )
     {
         m_idle_time = theValue;

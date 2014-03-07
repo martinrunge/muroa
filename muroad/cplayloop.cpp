@@ -569,7 +569,6 @@ bool CPlayloop::checkStream(CRTPPacket* packet)
 }
 
 
-
 /*!
     \fn CPlayer::initSoundSystem()
  */
@@ -590,23 +589,6 @@ IAudioIO* CPlayloop::initSoundSystem()
   }
   return ptr;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 void CPlayloop::handleSyncObj(CSync* sync_obj) {
@@ -637,16 +619,11 @@ void CPlayloop::handleSyncObj(CSync* sync_obj) {
     }
     
     int retval = nanosleep( &ts_to_sleep, &ts_remaining);
-    if(retval != 0)
+    if(retval != 0) {
       cerr << "nanosleep returned early due to a signal!" << endl;
-    
+    }
   }
-        
 }  
-
-
-
-
 
 /*!
     \fn CPlayloop::setSync(CSync* sync_obj)
@@ -663,3 +640,8 @@ void CPlayloop::setSync(CSync* sync_obj)
   m_stream_id = sync_obj->streamId();
 
 }
+
+void CPlayloop::reset(uint32_t oldSessionID, uint32_t oldStreamId) {
+
+}
+

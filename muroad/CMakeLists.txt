@@ -41,8 +41,8 @@ set( SRCS             cpacketringbuffer.cpp
                       main.cpp
                       cplayer.cpp
                       crecvloop.cpp
-                      cringbuffer.cpp  ) 
-                  
+                      cringbuffer.cpp 
+                      )
 
 set( HEADERS          cpacketringbuffer.h
                       cplayloop.h
@@ -109,6 +109,9 @@ TARGET_LINK_LIBRARIES(muroad       ${CMAKE_THREAD_LIBS_INIT}
                                    muroadaemon
                                    )
                                    
+
+file(COPY   muroa.conf  DESTINATION .)                              
+      
                                    
 ################################################################################
 # This step merges a gdb_index section into the binary to speed up debugging.

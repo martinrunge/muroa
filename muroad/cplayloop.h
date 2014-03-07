@@ -35,6 +35,7 @@
 #include <boost/date_time/posix_time/posix_time.hpp>
 #include <boost/date_time/time_duration.hpp>
 
+#include <cstdint>
 #include <list>
 #include <string>
 
@@ -68,6 +69,8 @@ public:
     int sync(void);
 
     void setSync(CSync* sync_obj);
+
+    void reset(uint32_t oldSessionID, uint32_t oldStreamId);
 
 
 //    void appendAudioFrame(CAudioFrame* frame);

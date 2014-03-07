@@ -161,3 +161,21 @@ int CPacketRingBuffer::getRingbufferSize() {
   
   return size;
 }
+
+int CPacketRingBuffer::clearContent(uint32_t oldSessionID, uint32_t oldStreamID) {
+	m_mutex.Lock();
+	list<CRTPPacket*>::iterator iter;
+	for(iter = m_packet_list.begin(); iter != m_packet_list.end(); iter++) {
+		CRTPPacket* pkt = *iter;
+		if( pkt->sessionID() == oldSessionID && pkt->streamID() == oldStreamID) {
+			delete *iter;
+			iter = m_packet_list.erase(iter);
+			iter--;
+		}
+		else {
+			cerr << "keeping packet in ringbuffer: sessionID: " << pkt->sessionID()
+					<< " streamID: " << pkt->streamID()  << endl;
+		}
+	}
+	m_mutex.UnLock();
+}
