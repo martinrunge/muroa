@@ -35,6 +35,8 @@
 #include <boost/date_time/posix_time/posix_time.hpp>
 #include <boost/date_time/time_duration.hpp>
 
+#include <log4cplus/logger.h>
+
 #include <cstdint>
 #include <list>
 #include <string>
@@ -112,7 +114,7 @@ private:
 
 
 private:
-    void adjustResamplingFactor(int bytes_in_playback_ringbuffer);
+    void adjustResamplingFactor(int multichannel_samples_in_playback_ringbuffer);
 
     int getDelayInMultiChannelSamples();
     boost::posix_time::time_duration calcSoundCardDelay();
@@ -144,6 +146,8 @@ private:
     
     int m_secs_idle;
     int m_max_idle;
+
+    log4cplus::Logger m_timing_logger;
 
   private:
     bool checkStream(CRTPPacket* packet);

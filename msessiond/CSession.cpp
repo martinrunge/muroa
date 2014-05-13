@@ -462,7 +462,7 @@ void CSession::scanCollection(CConnection* initiator, uint32_t jobID) {
 	m_mediaScanner->sendMsg(dbmsg);
 	addOutstandingMsg(dbmsg);
 
-	boost::filesystem::path mediapath = CApp::settings().getProperty("media_path", "~/Desktop");
+	boost::filesystem::path mediapath = CApp::settings().getProperty("msessiond.media_path", "~/Desktop");
 	mediapath = CUtils::expandvars(mediapath);
 	CMsgScanDir* sdmsg = new CMsgScanDir( mediapath.string() );
 	m_mediaScanner->sendMsg(sdmsg);

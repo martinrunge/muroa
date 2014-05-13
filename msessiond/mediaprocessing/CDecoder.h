@@ -11,6 +11,7 @@
 extern "C" {
 #include <libavformat/avformat.h>
 #include <libavcodec/avcodec.h>
+#include <libavresample/avresample.h>
 }
 
 using namespace std;
@@ -47,6 +48,7 @@ private:
 	AVFormatContext *m_pFormatCtx;
     AVCodecContext *m_pCodecCtx;
     AVCodec *m_pCodec;
+//    AVAudioResampleContext *m_pResamplerCtx;
 
     // struct AVPacket: defined in avformat.h:
 	// most important attributes in the strcture:
@@ -70,6 +72,11 @@ private:
 
 	bool m_open;
 
+	uint8_t* m_frame_buffer;
+	int  m_frame_buffer_size;
+
+	uint8_t* m_res_frame_buffer;
+	int m_res_frame_buffer_size;
 };
 
 #endif /* CDECODER_H_ */

@@ -43,13 +43,15 @@
 #include <math.h>
 #include <sys/stat.h>
 
-
+#include <log4cplus/loggingmacros.h>
+#include <log4cplus/loglevel.h>
 
 
 
 using namespace std;
 using namespace boost::posix_time;
 using namespace muroa;
+using namespace log4cplus;
 /** C-tor */
 
 CPlayloop::CPlayloop(CPlayer* parent, CApp *app, CPacketRingBuffer* packet_ringbuffer)
@@ -58,6 +60,8 @@ CPlayloop::CPlayloop(CPlayer* parent, CApp *app, CPacketRingBuffer* packet_ringb
 
   m_player = parent;
   
+  m_timing_logger = Logger::getInstance("timing");
+
   m_desired_sample_rate = 48000;
   m_frames_to_discard = 0;
 
@@ -74,7 +78,7 @@ CPlayloop::CPlayloop(CPlayer* parent, CApp *app, CPacketRingBuffer* packet_ringb
 
   // m_audio_sink = new CAudioIoAlsa();  
   m_audio_sink = initSoundSystem();
-  string audio_device = m_settings.getProperty(string("muroad.AudioDevice"), string("hw:0,0"));
+  string audio_device = m_settings.getProperty(string("muroa.AudioDevice"), string("hw:0,0"));
   m_audio_sink->open(audio_device, m_desired_sample_rate, m_num_channels);
 
   int actual_sample_rate = m_audio_sink->getActualSampleRate();
@@ -221,7 +225,7 @@ void CPlayloop::playAudio(CAudioFrame *frame) {
   
 
   ///@TODO check timestamp and compare to num of frames in resampler + ringbufer + soundcard. If neccessary, 
-  /// call sync() to through away som frames from the ringbuffer, of wait in playing silence samples, to get in sync again.
+  /// call sync() to through away some frames from the ringbuffer, of wait in playing silence samples, to get in sync again.
 
 
 
@@ -246,7 +250,7 @@ void CPlayloop::playAudio(CAudioFrame *frame) {
       sync();
     }
     else {
-      adjustResamplingFactor(m_ringbuffer->size());
+      adjustResamplingFactor( m_ringbuffer->sizeInMultiChannelSamples()  );
     }
   }
   delete[] playbuffer;
@@ -261,12 +265,13 @@ void CPlayloop::playAudio(CAudioFrame *frame) {
 int CPlayloop::sync(void) {
  
  
+	LOG4CPLUS_DEBUG(m_timing_logger, "sync");
   // this is the difference in time between the clock and the time calculated 
-  // from played samples. It sould be zero.
+  // from played samples. It should be zero.
   // sync_diff > 0:
-  //   we are late, e.g. due tu a soundcard playback underrun. 
-  //   now, there are more samples available than needed.
-  //   take the diff in time, calc the diff in frames and through away that amount 
+  //   we are late, e.g. due to a soundcard playback underrun.
+  //   Now, there are more samples available than needed.
+  //   Take the diff in time, calc the diff in frames and through away that amount
   //   of samples from the ringbuffer.
   // sync_diff < 0:
   //   we are to early. not enough data to playback arrived. calc the amount of 
@@ -311,14 +316,12 @@ int CPlayloop::sync(void) {
 /*!
     \fn CPlayloop::adjustResamplingFactor()
  */
-void CPlayloop::adjustResamplingFactor(int bytes_in_playback_ringbuffer)
+void CPlayloop::adjustResamplingFactor(int multichannel_samples_in_playback_ringbuffer)
 {
   // calculation of the drift:
-  // measure clock time and time by consumed sampes in every loop run.
+  // measure clock time and time by consumed samples in every loop run.
   // build an average value every 10 loop runs.
-
-  m_num_multi_channel_samples_played = m_num_multi_channel_samples_arrived - bytes_in_playback_ringbuffer - m_audio_sink->getDelay();   // resampled_frame will be playback rungbuffer 
-
+  m_num_multi_channel_samples_played = m_num_multi_channel_samples_arrived - multichannel_samples_in_playback_ringbuffer - m_audio_sink->getDelay();   // resampled_frame will be playback ringbuffer
 
   ptime now = microsec_clock::universal_time();
     
@@ -327,9 +330,8 @@ void CPlayloop::adjustResamplingFactor(int bytes_in_playback_ringbuffer)
   time_duration time_diff = play_time_from_clock - play_time_from_samples;
 
   m_average_time_diff += time_diff;
-
   m_counter++;
-  if(m_counter > m_average_size) {
+  if(m_counter >= m_average_size) {
     
     //    measure the quality of the below usleep calculation
     // ptime now = microsec_clock::universal_time();
@@ -338,13 +340,12 @@ void CPlayloop::adjustResamplingFactor(int bytes_in_playback_ringbuffer)
 
     // m_last_send_time = now;    
     
-    m_average_time_diff /= m_average_size;
+    m_average_time_diff /= m_counter;
 
     int post_delay = m_audio_sink->getDelay(); // number of frames in the playback buffer of the soundcard / sound driver
     int ringbuffer_frames = m_packet_ringbuffer->getRingbufferSize() * 256;   // one ringbuffer frame contains 256 frames
 
     cerr << "Average time diff (clock - samples) = " << m_average_time_diff <<  " factor used = " << m_resample_factor * m_correction_factor << " RB size: " << ringbuffer_frames << endl;
-
 
     int diff_in_us = m_average_time_diff.fractional_seconds();
     

@@ -11,6 +11,8 @@
 
 #include "CStream.h"
 
+#include <libavutil/opt.h>
+
 CDecoder::CDecoder(const CStream* streamPtr) : m_streamPtr(streamPtr),
                                                m_pFormatCtx(0),
                                                m_pCodecCtx(0),
@@ -25,10 +27,18 @@ CDecoder::CDecoder(const CStream* streamPtr) : m_streamPtr(streamPtr),
     // there's usually no reason why you would have to do that.
 	av_register_all();
 	av_init_packet(&m_packet);
+
+	m_frame_buffer_size = AVCODEC_MAX_AUDIO_FRAME_SIZE + FF_INPUT_BUFFER_PADDING_SIZE;
+	m_frame_buffer = new uint8_t[m_frame_buffer_size];
+
+	m_res_frame_buffer_size = m_frame_buffer_size;
+	m_res_frame_buffer = new uint8_t[m_res_frame_buffer_size];
 }
 
 CDecoder::~CDecoder() {
 	if(m_open) close();
+	delete [] m_res_frame_buffer;
+	delete [] m_frame_buffer;
 }
 
 
@@ -89,6 +99,8 @@ void CDecoder::open(string filename)
 		m_streamPtr->setProgress( m_posInSecs, m_durationInSecs );
 	}
 
+	av_dump_format(m_pFormatCtx,0,filename.c_str(),false);
+
 	m_pCodec=avcodec_find_decoder(m_pCodecCtx->codec_id);
 	if(m_pCodec==NULL)
 		cerr << "Codec type " <<  m_pCodecCtx->codec_id << " not found." << endl;
@@ -96,6 +108,14 @@ void CDecoder::open(string filename)
 	// Open the codec found suitable for this stream in the last step
 	if(avcodec_open2(m_pCodecCtx, m_pCodec, NULL) < 0)
 		cerr << " Could not open codec." << endl;
+
+//	m_pResamplerCtx = avresample_alloc_context();
+//	av_opt_set_int(m_pResamplerCtx, "in_channel_layout",  AV_CH_LAYOUT_STEREO,  0);
+//	av_opt_set_int(m_pResamplerCtx, "out_channel_layout", AV_CH_LAYOUT_STEREO,  0);
+//	av_opt_set_int(m_pResamplerCtx, "in_sample_rate",     44100,                0);
+//	av_opt_set_int(m_pResamplerCtx, "out_sample_rate",    44100,                0);
+//	av_opt_set_int(m_pResamplerCtx, "in_sample_fmt",      AV_SAMPLE_FMT_S16P,   0);
+//	av_opt_set_int(m_pResamplerCtx, "out_sample_fmt",     AV_SAMPLE_FMT_S16,    0);
 
 	m_open = true;
 }
@@ -129,7 +149,7 @@ int CDecoder::decode() {
 
 	bool end_of_stream = false;
 
-// read and forget packets until a packet with the
+    // read and forget packets until a packet with the
 	// right stream ID (audioStreamID defined above) is found.
 	do {
 		// Free old packet
@@ -163,15 +183,44 @@ int CDecoder::decode() {
 	bytesUsed = avcodec_decode_audio4(m_pCodecCtx, av_frame, &got_frame, &m_packet);
 
 	if (got_frame) {
-
+		int plane_size;
 		/* if a frame has been decoded, output it */
-		int data_size = av_samples_get_buffer_size(NULL,
+		int data_size = av_samples_get_buffer_size(&plane_size,
 				                                   m_pCodecCtx->channels,
 				                                   av_frame->nb_samples,
 				                                   m_pCodecCtx->sample_fmt,
-				                                   1);
+				                                   0);
 
-		m_streamPtr->write((char*) av_frame->data[0], data_size);
+//		avresample_convert	(	m_pResamplerCtx,
+//								&m_res_frame_buffer,
+//								1,
+//								data_size,
+//								av_frame->data,
+//								plane_size,
+//								data_size );
+        uint16_t *out = (uint16_t *)m_res_frame_buffer;
+        int write_p=0;
+
+		switch (m_pCodecCtx->sample_fmt){
+
+			case AV_SAMPLE_FMT_S16P:
+				for (int nb=0;nb<plane_size/sizeof(uint16_t);nb++){
+					for (int ch = 0; ch < m_pCodecCtx->channels; ch++) {
+						out[write_p] = ((uint16_t *) av_frame->extended_data[ch])[nb];
+						write_p++;
+					}
+				}
+				m_streamPtr->write((char*) out, data_size);
+				break;
+
+			case AV_SAMPLE_FMT_S16:
+				m_streamPtr->write((char*)av_frame->data[0], data_size);
+				break;
+
+			default:
+				break;
+		}
+
 
 		// only call m_streamPtr->setProgress every second
 		int64_t tmp = m_packet.pts * m_timeBase.num;

@@ -50,7 +50,6 @@ public:
     void sendRTPPacket(CRTPPacket* packet);
 
 private:
-    CRTPPacket *m_rtp_packet;
     CSocket *m_socket;
 
     CPacketRingBuffer *m_packet_ringbuffer;

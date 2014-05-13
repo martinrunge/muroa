@@ -61,12 +61,12 @@ void CParserStateMachine::onEndDocument()
 
 void CParserStateMachine::onStartElement(const std::string& name, const char** attributes)
 {
-	std::cerr << "start node name=" << name << std::endl;
+	// std::cerr << "start node name=" << name << std::endl;
 
 	// Print attributes:
 	for(int i=0; attributes[i]; i+=2)
 	{
-		std::cerr << attributes[i] << " = " << attributes[i + 1] << std::endl;
+		// std::cerr << attributes[i] << " = " << attributes[i + 1] << std::endl;
 	}
 	switch (m_state.root_state) {
 		case IN_SESSION_STATE:
@@ -95,7 +95,7 @@ void CParserStateMachine::onStartElement(const std::string& name, const char** a
 
 void CParserStateMachine::onEndElement(const std::string& name)
 {
-	std::cerr << "on_end_element()" << std::endl;
+	// std::cerr << "on_end_element()" << std::endl;
 	const char **null_ptr( 0 );
 
 	switch (m_state.root_state) {
@@ -145,19 +145,18 @@ void CParserStateMachine::onCharacters(const std::string& text)
 		m_edit_text += text;
 		break;
 	default:
-		std::cerr << "unexpected characters: " << text << std::endl;
-
+		break;
 	}
 }
 
 void CParserStateMachine::onComment(const std::string& text)
 {
-	std::cerr << "on_comment(): " << text << std::endl;
+	//std::cerr << "on_comment(): " << text << std::endl;
 }
 
 void CParserStateMachine::onWarning(const std::string& text)
 {
-	std::cerr << "on_warning(): " << text << std::endl;
+	//std::cerr << "on_warning(): " << text << std::endl;
 }
 
 void CParserStateMachine::onError(const std::string& text)
@@ -168,7 +167,7 @@ void CParserStateMachine::onError(const std::string& text)
 
 int CParserStateMachine::sessionState(const action_flag& init_start_end, const std::string& name, const char** attrs) {
 
-	std::cerr << "CParserStateMachine::sessionState" << std::endl;
+	// std::cerr << "CParserStateMachine::sessionState" << std::endl;
 	switch (init_start_end) {
 	case INIT:
 		m_xml_tag_depth = 1;
@@ -400,7 +399,7 @@ int CParserStateMachine::parseListSessionArgs(const char** attrs) {
 		value = attrs[i + 1];
 
 		if(name.compare("name") == 0) {
-			cerr << name << endl;
+			// cerr << name << endl;
 			sessionList.push_back(value);
 		}
 	}
@@ -418,7 +417,7 @@ int CParserStateMachine::parseJoinArgs(const char** attrs) {
 		value = attrs[i + 1];
 
 		if(name.compare("name") == 0) {
-			cerr << name << endl;
+			// cerr << name << endl;
 			sessionName = value;
 			// get pos to PlaylistAddCall
 			cerr << "CParserStateMachine::stateMachine join: sessionName = '" << sessionName << "'" << endl;
