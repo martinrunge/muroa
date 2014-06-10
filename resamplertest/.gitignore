@@ -4,8 +4,8 @@
 core
 core.*
 *.log
-*.wav 
-*.png 
+*.wav
+*.png
 
 
 CMakeFiles
