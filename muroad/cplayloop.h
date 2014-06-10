@@ -151,6 +151,7 @@ private:
 
   private:
     bool checkStream(CRTPPacket* packet);
+    bool m_after_sync;
 };
 
 #endif

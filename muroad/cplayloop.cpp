@@ -55,7 +55,7 @@ using namespace log4cplus;
 /** C-tor */
 
 CPlayloop::CPlayloop(CPlayer* parent, CApp *app, CPacketRingBuffer* packet_ringbuffer)
- : CThreadSlave(), m_counter(0), m_average_size(32), m_app(app), m_settings(app->settings())
+ : CThreadSlave(), m_counter(0), m_average_size(32), m_app(app), m_settings(app->settings()), m_after_sync(false)
 {
 
   m_player = parent;
@@ -243,8 +243,11 @@ void CPlayloop::playAudio(CAudioFrame *frame) {
   }
   
   if(playbuffer != 0 && granulated_num_bytes != 0 && m_frames_to_discard == 0) {
+	if(m_after_sync) {
+      LOG4CPLUS_DEBUG(m_timing_logger, "starting to play: m_audio_sink->write(" << granulated_num_bytes << ")" );
+      m_after_sync = false;
+	}
     retval = m_audio_sink->write(playbuffer, granulated_num_bytes);
-  
     if(retval == 0 ) {
       cerr << "syncing due to buffer underrun!" << endl;
       sync();
@@ -265,7 +268,7 @@ void CPlayloop::playAudio(CAudioFrame *frame) {
 int CPlayloop::sync(void) {
  
  
-	LOG4CPLUS_DEBUG(m_timing_logger, "sync");
+  LOG4CPLUS_DEBUG(m_timing_logger, "sync ..." );
   // this is the difference in time between the clock and the time calculated 
   // from played samples. It should be zero.
   // sync_diff > 0:
@@ -277,8 +280,13 @@ int CPlayloop::sync(void) {
   //   we are to early. not enough data to playback arrived. calc the amount of 
   //   silence samples to play for waiting, or call nanosleep. Whatever gives the 
   //  better results.
+
+  m_session_id = m_player->syncObj()->sessionId();
+  m_stream_id = m_player->syncObj()->streamId();
+
   time_duration sync_diff = getPlaybackDiffFromTime();
 
+  LOG4CPLUS_DEBUG(m_timing_logger, "sync diff: " << sync_diff );
   cerr << "CPlayloop::sync: sync_diff = " << sync_diff << endl;
 
   double diff_in_s = sync_diff.seconds() + 60 * sync_diff.minutes() + 60 * 60 * sync_diff.hours();
@@ -297,16 +305,16 @@ int CPlayloop::sync(void) {
     m_frames_to_discard = -sync_diff_in_frames;
   }
   else {
-    cerr << "sync: " << sync_diff_in_frames << " too early with playback. Waiting while playing silence." << endl;
+    cerr << "sync: " << sync_diff_in_frames << " too early with playback. Sleeping..." << endl;
     m_frames_to_discard = 0;
     sleep(sync_diff);
     // playSilence(sync_diff_in_frames);
   }
 
-  m_session_id = m_player->syncObj()->sessionId();
-  m_stream_id = m_player->syncObj()->streamId();
-
-  cerr << "CPlayloop::sync: should be in sync now: sync_diff = " << getPlaybackDiffFromTime() << endl;
+  time_duration sync_diff2 = getPlaybackDiffFromTime();
+  // cerr << "CPlayloop::sync: should be in sync now: sync_diff = " << sync_diff2 << endl;
+  LOG4CPLUS_DEBUG(m_timing_logger, "should be in sync now: sync_diff = " << sync_diff2 );
+  m_after_sync = true;
 
   return 0;
 }
@@ -506,6 +514,7 @@ int CPlayloop::sleep(time_duration duration)
 
   if( !duration.is_negative() )
   {
+    LOG4CPLUS_DEBUG(m_timing_logger, "about to sleep for " << duration );
     struct timespec ts_to_sleep, ts_remaining;
     ts_to_sleep.tv_sec = duration.total_seconds();
     ts_to_sleep.tv_nsec = duration.fractional_seconds();
@@ -518,7 +527,9 @@ int CPlayloop::sleep(time_duration duration)
     int retval = nanosleep( &ts_to_sleep, &ts_remaining);
     if(retval != 0)
       cerr << "nanosleep returned early due to a signal!" << endl;
-    
+
+    LOG4CPLUS_DEBUG(m_timing_logger, " ... waking up again ");
+
   }
     
   return retval;  

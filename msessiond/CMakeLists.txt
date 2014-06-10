@@ -131,7 +131,8 @@ TARGET_LINK_LIBRARIES(msessiond    muroadaemon
                                    ${log4cplus_LIBRARIES}                              
                                    )
                                    
-file(COPY   etc/muroa.conf  DESTINATION etc)                              
+file(COPY   etc/muroa.conf  DESTINATION etc)
+file(COPY   log.properties  DESTINATION .)                                                            
                                    
 ################################################################################
 # This step merges a gdb_index section into the binary to speed up debugging.

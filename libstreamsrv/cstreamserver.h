@@ -44,6 +44,7 @@ Class provides a server for a stream.
 
 #include "avahi/CServiceDesc.h"
 
+#include <log4cplus/logger.h>
 
 
 class CStreamServer{
@@ -118,6 +119,8 @@ private:
     boost::posix_time::time_duration m_total_play_time;
 
     boost::posix_time::time_duration m_transport_buffer_duration;
+
+    log4cplus::Logger m_timing_logger;
   
     CRTPPacket *m_rtp_packet;
     CSync m_syncobj;

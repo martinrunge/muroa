@@ -20,14 +20,20 @@
 #include "cstreamserver.h"
 #include "cmds/CmdStreamReset.h"
 
+#include <log4cplus/loggingmacros.h>
+#include <log4cplus/loglevel.h>
+
 using namespace std;
 using namespace boost::posix_time;
 using namespace muroa;
+using namespace log4cplus;
 
 CStreamServer::CStreamServer(int session_id, int transport_buffer_size_in_ms) : 
             m_first_send_time(not_a_date_time), 
             m_send_time(not_a_date_time), 
             m_last_send_time(not_a_date_time) {
+
+  m_timing_logger = Logger::getInstance("timing");
 
   m_session_id = session_id;
   m_stream_id = 0;
@@ -90,9 +96,12 @@ int CStreamServer::open(int audio_bytes_per_second)
        << " session/stream id = (" << m_session_id << "/" << m_stream_id << ")" 
        << " time = " << now << endl;
 
+  LOG4CPLUS_DEBUG(m_timing_logger, "open stream " << m_transport_buffer_duration.total_milliseconds() << " ms." );
+
   sendToAllClients(m_rtp_packet);
 
-  return 0;
+  return 0;	LOG4CPLUS_DEBUG(m_timing_logger, "sync");
+
 }
 
 

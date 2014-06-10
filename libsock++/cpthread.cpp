@@ -20,6 +20,7 @@
 #include "cthreadslave.h"
 
 #include <iostream>
+#include <string.h>
 
 using namespace std;
 
@@ -36,31 +37,46 @@ CPThread::~CPThread() {
 
 int CPThread::StartThread(bool realtime) {
 
-    int retval;
-    Run(true);
+	Run(true);
     if(realtime) {
       struct sched_param s_param;
       s_param.sched_priority = 50;
-  
+
       pthread_attr_init(&m_thread_attr);
-      retval = pthread_attr_setschedpolicy(&m_thread_attr, SCHED_FIFO);
-      if(retval != ENOTSUP) {
+      pthread_attr_setinheritsched(&m_thread_attr, PTHREAD_EXPLICIT_SCHED);
+  
+      int retval = pthread_attr_setschedpolicy(&m_thread_attr, SCHED_FIFO);
+      if(retval == 0) {
         // setschedpolicy suceeded. We have the neccessary rights.
-        retval = pthread_attr_setschedparam(&m_thread_attr, &s_param);
-        if (retval != EPERM) {
-          cerr << "Realtime priority set." << endl;
-          retval = pthread_create(&m_thread_id, &m_thread_attr, (start_routine_ptr)CPThread::ThreadMainLoop, (void*) this);
-          return retval;
+        int retval2 = pthread_attr_setschedparam(&m_thread_attr, &s_param);
+        if (retval2 == 0) {
+          cerr << "Realtime priority set!" << endl;
+          int retval3  = pthread_create(&m_thread_id, &m_thread_attr, (start_routine_ptr)CPThread::ThreadMainLoop, (void*) this);
+          return retval3;
+        }
+        else {
+        	if( retval2 == EPERM ) {
+                cerr << "No permission to set scheduler priority to " << s_param.sched_priority << ": " << strerror(retval2) << endl;
+        	}
+        	else {
+                cerr << "Could not set scheduler priority to " << s_param.sched_priority << ": " << strerror(retval2) << endl;
+        	}
         }
       }
-      else {
-        // we do not have super-user provilegs!
-        cerr << "ERROR setting realtime priority. Binary must be set UID root." << endl;
+      else { // retval = pthread_attr_setschedpolicy
+    	if( retval == ENOTSUP ) {
+    		cerr << "ERROR: setting realtime priority is not supported: " << strerror(retval) << endl;
+    	}
+    	else {
+    		cerr << "ERROR: setting realtime priority failed: " << strerror(retval) << endl;
+    	}
       }
+      pthread_attr_destroy(&m_thread_attr);
 
     }
      
-    retval = pthread_create(&m_thread_id, NULL, (start_routine_ptr)CPThread::ThreadMainLoop, (void*) this);
+    // no realtime prio
+    int retval = pthread_create(&m_thread_id, NULL, (start_routine_ptr)CPThread::ThreadMainLoop, (void*) this);
     
     return retval;
 }

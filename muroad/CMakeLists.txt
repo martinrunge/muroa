@@ -110,7 +110,8 @@ TARGET_LINK_LIBRARIES(muroad       ${CMAKE_THREAD_LIBS_INIT}
                                    )
                                    
 
-file(COPY   muroa.conf  DESTINATION .)                              
+file(COPY   muroa.conf      DESTINATION .)                              
+file(COPY   log.properties  DESTINATION .)                              
       
                                    
 ################################################################################
