@@ -31,6 +31,19 @@ CAudioOSS::~CAudioOSS() {
    if(m_is_open) close();
 }
 
+int CAudioOSS::start() {
+	return 0;
+}
+
+int CAudioOSS::state() {
+	return 0;
+}
+
+
+int CAudioOSS::stop() {
+	return 0;
+}
+
 int CAudioOSS::close() {
     int retval;
     retval = ::close(m_snd_dev);
@@ -123,6 +136,11 @@ int CAudioOSS::getOutOverflows() {
     \fn CAudioOSS::getDelay();
  */
 int CAudioOSS::getDelay()
+{
+    return -1;    /// @todo implement me
+}
+
+int CAudioOSS::getSpace()
 {
     return -1;    /// @todo implement me
 }

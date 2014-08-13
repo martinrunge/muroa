@@ -100,6 +100,11 @@ char* CRingBuffer::read(int bytes)
     return buffer;
 }
 
+char* CRingBuffer::readFrames(int num_frames) {
+	return read(num_frames * m_num_channels * sizeof(uint16_t));
+}
+
+
 
 /*!
     \fn CRingBuffer::size()
@@ -116,7 +121,7 @@ int CRingBuffer::size()
 }
 
 int CRingBuffer::sizeInMultiChannelSamples() {
-  return size() / (m_num_channels * sizeof(short));
+   return size() / (m_num_channels * sizeof(short));
 }
 
 

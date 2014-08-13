@@ -48,18 +48,12 @@ CStreamServer::CStreamServer(int session_id, int transport_buffer_size_in_ms) :
   
   m_rtp_packet = new CRTPPacket(m_session_id, m_stream_id, m_payload_size);
 
-
   m_frames_in_sync_period = 0;
-
-
 }
-
 
 CStreamServer::~CStreamServer()
 {
 }
-
-
 
 
 /*!
@@ -250,9 +244,12 @@ CStreamConnection* CStreamServer::removeStreamConnection(list<CStreamConnection*
 void CStreamServer::sendToAllClients(CRTPPacket* packet)
 {
     list<CStreamConnection*>::iterator iter;
+    m_connection_list_mutex.Lock();
     for(iter = m_connection_list.begin(); iter != m_connection_list.end(); iter++ ) {
       (*iter)->send(packet->bufferPtr(), packet->usedBufferSize()); 
     }
+    m_connection_list_mutex.UnLock();
+
 }
 
 
@@ -441,7 +438,10 @@ void CStreamServer::listClients(void)
 {
   list<CStreamConnection*>::iterator iter;
   cerr << "List of clients in session: " << endl;
+  m_connection_list_mutex.Lock();
   for(iter = m_connection_list.begin(); iter != m_connection_list.end(); iter++ ) {
     cerr << *(*iter)->getClientAddress() << endl;
   }
+  m_connection_list_mutex.UnLock();
+
 }

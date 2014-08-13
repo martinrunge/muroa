@@ -91,8 +91,11 @@ private:
     //CAudioIoAlsa *m_audio_sink;
     IAudioIO *m_audio_sink;
 
+    /// write granularity in frames
+    int m_write_granularity;
 
-    void playAudio(CAudioFrame *frame);
+
+//    void playAudio(CAudioFrame *frame);
     IAudioIO* initSoundSystem();
 
     void handleSyncObj(CSync* sync_obj);
@@ -111,11 +114,16 @@ private:
     int m_average_size;
 
 //    std::list<CAudioFrame*> m_frame_list;
+    int stopStream();
 
 
 private:
-    void adjustResamplingFactor(int multichannel_samples_in_playback_ringbuffer);
+    CAudioFrame* getAudioPacket(bool block);
+    bool waitForData();
+    int addPacket2RingBuffer(bool block);
+    int startStream();
 
+    void adjustResamplingFactor(int multichannel_samples_in_playback_ringbuffer);
     int getDelayInMultiChannelSamples();
     boost::posix_time::time_duration calcSoundCardDelay();
     boost::posix_time::time_duration calcResamplerDelay();
@@ -124,6 +132,8 @@ private:
     boost::posix_time::time_duration getPlaybackDiff();
     boost::posix_time::time_duration getPlaybackDiffFromTime();
     
+    boost::posix_time::time_duration m_last_start_stream_error;
+
     int sleep(boost::posix_time::time_duration duration);
     int adjustFramesToDiscard(int num_frames_discarded);
 
@@ -134,6 +144,8 @@ private:
     int m_sample_size;
     int m_frames_per_second_pre_resampler;
     int m_frames_per_second_post_resampler;
+
+    int m_periods_to_start;
 
     short *m_silence_buffer;
     int m_frames_to_discard;

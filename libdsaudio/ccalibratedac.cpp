@@ -18,7 +18,7 @@
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
 #include "ccalibratedac.h"
-#include "caudiooss.h"
+#include "caudioioalsa.h"
 
 #include "time.h"
 
@@ -39,7 +39,7 @@ CCalibrateDAC::CCalibrateDAC() {
 
   m_bytes_per_sec = m_sample_rate * m_num_channels * m_sample_size;
   
-  m_audio = new CAudioOSS();
+  m_audio = new CAudioIoAlsa();
   m_testbuffer = new short[m_num_channels * m_num_test_samples];
   
   m_testbuffer_size = m_num_channels * m_num_test_samples * m_sample_size;

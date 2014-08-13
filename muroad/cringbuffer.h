@@ -49,6 +49,7 @@ public:
 
     char* getWriteBuffer();
     char* read(int bytes);
+    char* readFrames(int num_frames);
 
     int size();
 
@@ -59,6 +60,7 @@ public:
     void write(short* buffer, int num_samples);
 
     int sizeInMultiChannelSamples();
+    int sizeInFrames() { sizeInMultiChannelSamples(); };
     int write(int16_t** per_channel_buffers, int start_offset, int end_offset );
     int capacity(void);
     int available(void);

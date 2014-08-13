@@ -65,10 +65,11 @@ CPlayloop::CPlayloop(CPlayer* parent, CApp *app, CPacketRingBuffer* packet_ringb
   m_desired_sample_rate = 48000;
   m_frames_to_discard = 0;
 
+  m_periods_to_start = 4;
 
   m_packet_ringbuffer = packet_ringbuffer;
 
-  m_ringbuffer = new CRingBuffer(4096);
+  m_ringbuffer = new CRingBuffer(2*40960);
 
   m_sample_size = sizeof(short);
   m_num_channels = 2;
@@ -83,7 +84,7 @@ CPlayloop::CPlayloop(CPlayer* parent, CApp *app, CPacketRingBuffer* packet_ringb
 
   int actual_sample_rate = m_audio_sink->getActualSampleRate();
   cerr << "CPlayloop::CPlayloop: open audio sink: try " << m_desired_sample_rate << " ... succeeded with " << actual_sample_rate << endl;
-
+  m_write_granularity = m_audio_sink->getWriteGranularity();
 
   m_frames_per_second_pre_resampler = 44100;
   m_frames_per_second_post_resampler = actual_sample_rate;
@@ -140,127 +141,170 @@ CPlayloop::~CPlayloop()
   // fclose(m_debug_fd1);
 }
 
-/** the main loop for this thread */
-void CPlayloop::DoLoop() {
-  
-  if(m_packet_ringbuffer->getRingbufferSize() == 0) {
-     // cerr << "CPlayloop::DoLoop: buffer empty!" << endl;
-     int retval = m_player->m_traffic_cond.Wait(1);
+CAudioFrame* CPlayloop::getAudioPacket(bool block) {
+	  CAudioFrame* frame = 0;
 
-     if(retval == 0)
-     {
-       string audio_device = m_settings.getProperty(string("muroa.AudioDevice"), string("hw:0,0"));
+	  do {
+		  if(m_packet_ringbuffer->getRingbufferSize() == 0) {
+			  if(block) {
+				  int dataAvail = false;
+				  do {
+					  dataAvail = waitForData();
+				  } while(!dataAvail);
+			  } else {
+				  return 0;
+			  }
+		  }
 
-       m_audio_sink->open(audio_device, m_desired_sample_rate, m_num_channels);
-       m_player->idleTime(0);
-     }
-     else
-     {
-       if(retval == ETIMEDOUT) {
-         m_player->idleTime( m_player->idleTime() + 1);
-       }
-     }
-     if(m_player->idleTime() > m_max_idle)
-     {
-       m_audio_sink->close();
-     }
-     return;
-  }
-  CAudioFrame* frame;
+		  CRTPPacket* rtp_packet = m_packet_ringbuffer->readPacket();
 
-  m_player->idleTime(0);
-  
-  
-  CRTPPacket* rtp_packet = m_packet_ringbuffer->readPacket();
-  // cerr << "packet Buffer size: " << m_packet_ringbuffer->getRingbufferSize() << endl;
-  // cerr << "PayloadType " << rtp_packet->payloadType() << " size " << rtp_packet->usedPayloadBufferSize() << endl;
+		  switch( rtp_packet->payloadType() )
+		  {
+			case PAYLOAD_SYNC_OBJ:
+			  m_player->setSyncObj(rtp_packet);
+			  delete rtp_packet;
+			  break;
 
- 
-  switch( rtp_packet->payloadType() ) 
-  {
-    case PAYLOAD_SYNC_OBJ:
-      m_player->setSyncObj(rtp_packet);
-      sync();
-        
-      delete rtp_packet;
-      break;
+			case PAYLOAD_PCM:
+			case PAYLOAD_MP3:
+			case PAYLOAD_VORBIS:
+			case PAYLOAD_FLAC:
+			  if(checkStream(rtp_packet)) {
+				frame = new CAudioFrame(rtp_packet);
+			  }
+			  delete rtp_packet;
+			  break;
 
-
-    case PAYLOAD_PCM:
-    case PAYLOAD_MP3:
-    case PAYLOAD_VORBIS:
-    case PAYLOAD_FLAC:
-      if(checkStream(rtp_packet)) {
-        frame = new CAudioFrame(rtp_packet);
-        playAudio(frame);        
-        delete frame;
-      }
-      delete rtp_packet;
-      
-      break;
-
-    default:
-      cerr << "unknown payload type!" << endl;
-      delete rtp_packet;
-      break;
-  }
-
+			default:
+			  cerr << "unknown payload type!" << endl;
+			  delete rtp_packet;
+			  break;
+		  }
+	  }while(frame == 0);
+	  return frame;
 }
 
+/**
+ * waitForData() waits until RTP packets arrive or timeout.
+ * returns true if at least one new packet arrived, false otherwise.
+ */
+bool CPlayloop::waitForData() {
 
-void CPlayloop::playAudio(CAudioFrame *frame) {
+	int retval = m_player->m_traffic_cond.Wait(1);
+    if(retval == 0) {
+      string audio_device = m_settings.getProperty(string("muroa.AudioDevice"), string("hw:0,0"));
 
-
-  int retval;
-  // if(m_num_multi_channel_samples_arrived != frame->firstSampleNr())
-  //  cerr << "multi channel samples arrived = " << m_num_multi_channel_samples_arrived << " but rtp timestamp says : " << frame->firstSampleNr() << endl;
-  
-  // m_num_multi_channel_samples_arrived += frame->dataSize() / (2 * sizeof(short));
-  m_num_multi_channel_samples_arrived = frame->firstFrameNr();
-  
-  m_nr_of_last_frame_decoded = frame->firstFrameNr() + frame->sizeInMultiChannelSamples() - 1;
-
-  // fwrite(frame->dataPtr(), 1, frame->dataSize(), m_debug_fd1);
-  int num_single_chan_samples = m_resampler->resampleFrame(frame, m_resample_factor * m_correction_factor);
-  
-
-  ///@TODO check timestamp and compare to num of frames in resampler + ringbufer + soundcard. If neccessary, 
-  /// call sync() to through away some frames from the ringbuffer, of wait in playing silence samples, to get in sync again.
-
-
-
-  int rb_size = m_ringbuffer->size();
-
-  // cerr << num_single_chan_samples * 2 << " bytes written to ringbuffer. size in byte now: " << rb_size << endl;
-  int granulated_num_bytes = rb_size - (rb_size % m_audio_sink->getWriteGranularity());
-  
-  char* playbuffer = m_ringbuffer->read(granulated_num_bytes);
-
- 
-  if(m_frames_to_discard > 0) {
-    //delete playbuffer;
-    adjustFramesToDiscard(granulated_num_bytes / (m_sample_size * m_num_channels));
-  }
-  
-  if(playbuffer != 0 && granulated_num_bytes != 0 && m_frames_to_discard == 0) {
-	if(m_after_sync) {
-      LOG4CPLUS_DEBUG(m_timing_logger, "starting to play: m_audio_sink->write(" << granulated_num_bytes << ")" );
-      m_after_sync = false;
-	}
-    retval = m_audio_sink->write(playbuffer, granulated_num_bytes);
-    if(retval == 0 ) {
-      cerr << "syncing due to buffer underrun!" << endl;
-      sync();
+      m_audio_sink->open(audio_device, m_desired_sample_rate, m_num_channels);
+      m_write_granularity = m_audio_sink->getWriteGranularity();
+      m_player->idleTime(0);
     }
     else {
-      adjustResamplingFactor( m_ringbuffer->sizeInMultiChannelSamples()  );
+      if(retval == ETIMEDOUT) {
+        m_player->idleTime( m_player->idleTime() + 1);
+      }
     }
-  }
-  delete[] playbuffer;
+    if(m_player->idleTime() > m_max_idle) {
+      m_audio_sink->close();
+    }
+
+    return (retval==0)?true:false;
+}
+
+int CPlayloop::addPacket2RingBuffer(bool block) {
+	  CAudioFrame* frame = getAudioPacket(block);
+	  if(frame) {
+		  m_num_multi_channel_samples_arrived = frame->firstFrameNr();
+		  m_nr_of_last_frame_decoded = frame->firstFrameNr() + frame->sizeInMultiChannelSamples() - 1;
+		  int num_frames = m_resampler->resampleFrame(frame, m_resample_factor * m_correction_factor);
+		  delete frame;
+		  return num_frames;
+	  }
+	  else {
+		  return 0;
+	  }
+}
+
+int CPlayloop::startStream() {
+
+	// first: fill soundcard buffer with as many data as possible
+	int rc = 1;
+	int num_frames_writable = m_audio_sink->getSpace();
+
+	while(m_ringbuffer->sizeInFrames() < m_write_granularity * m_periods_to_start) {
+		addPacket2RingBuffer(true);
+	}
+
+	LOG4CPLUS_INFO(m_timing_logger, "filling soundcard buffer [frames]: " <<  m_write_granularity * m_periods_to_start);
+	assert(m_ringbuffer->sizeInFrames() >= m_write_granularity * m_periods_to_start);
+	for( int i = 0; i < m_periods_to_start; i++)
+	{
+		char* playbuffer = m_ringbuffer->readFrames(m_write_granularity);
+		// attention, this __should__ never block!!!
+		LOG4CPLUS_DEBUG(m_timing_logger, "  Frames writable now: " <<  m_audio_sink->getSpace() << " state: " << m_audio_sink->state());
+		int frame_size = m_num_channels * m_sample_size;
+		int written = m_audio_sink->write(playbuffer, m_write_granularity * frame_size);
+		LOG4CPLUS_DEBUG(m_timing_logger, "    Frames written: " <<  written);
+		delete [] playbuffer;
+	}
+
+	// second: wait for starting time
+	sync();
+	LOG4CPLUS_INFO(m_timing_logger, "  Frames writable now: " <<  m_audio_sink->getSpace() << " state: " << m_audio_sink->state());
+    LOG4CPLUS_INFO(m_timing_logger, "start stream");
+
+    // third: start playback
+	rc = m_audio_sink->start();
+	m_last_start_stream_error = getPlaybackDiffFromTime();
+
+	LOG4CPLUS_INFO(m_timing_logger, "stream started: " << m_last_start_stream_error );
+	return rc;
+}
+
+int CPlayloop::stopStream() {
 
 }
 
-/** called whenever the a resync is neccesarry. For example at the start of e new stream of if the soundcard had an unterrun.   
+
+/** the main loop for this thread */
+void CPlayloop::DoLoop() {
+  CAudioFrame* frame;
+  int pb_state = m_audio_sink->state();
+
+  if(pb_state != IAudioIO::E_RUNNING) {
+	  int rc = startStream();
+	  if(rc) {
+		  // stream could not be started, possibly bestartStreamcause not enough packets were available. Try again
+		  LOG4CPLUS_WARN(m_timing_logger, "  could not start stream. Possibly not enough data available ");
+		  return;
+	  }
+  }
+
+  // if possibly, read as many packets out of the packet ringbuffer as neccessary to fill soundcard ringbuffer
+  // completely, but do not block if there are not enough packets available.
+  int frames_writable = m_audio_sink->getSpace();
+  int num_frames;
+  while( m_ringbuffer->sizeInFrames() < m_write_granularity) {
+	  num_frames = addPacket2RingBuffer(false);
+	  // LOG4CPLUS_DEBUG(m_timing_logger, "  ringbuffer was low (" << m_ringbuffer->sizeInFrames() << "), added " << num_frames << " frames.");
+  }
+
+  char* playbuffer = m_ringbuffer->readFrames(m_write_granularity);
+
+  int retval = m_audio_sink->write(playbuffer, m_write_granularity * m_num_channels * m_sample_size);
+  delete[] playbuffer;
+  if(retval == 0 ) {
+      LOG4CPLUS_WARN(m_timing_logger, "*** soundcard buffer underrun ***");
+	  return;
+  }
+  else {
+	  LOG4CPLUS_DEBUG(m_timing_logger, "  wrote chunk of " << retval << " frames. Space for: " <<  m_audio_sink->getSpace() << " frames left. state: " << m_audio_sink->state());
+  }
+  adjustResamplingFactor( m_ringbuffer->sizeInMultiChannelSamples()  );
+}
+
+
+
+/** called whenever the a resync is necessary. For example at the start of e new stream of if the soundcard had an underrun.
   Two possibilities:                                                                                                          
   - Time is proceeding and audio data was not played. -> Audio data must be thrown away because to get into sync again        
   - Audio data is missing (e.g. playback underrun). Wait for enough audio data to arrive and start the sound device then.      */ 
@@ -488,14 +532,14 @@ time_duration CPlayloop::getPlaybackDiffFromTime() {
   
  
   // this is the difference in time between the clock and the time calculated 
-  // from played samples. It sould be zero.
+  // from played samples. It should be zero.
   // sync_diff > 0:
-  //   we are late, e.g. due tu a soundcard playback underrun. 
+  //   we are late, e.g. due to a soundcard playback underrun.
   //   now, there are more samples available than needed.
   //   take the diff in time, calc the diff in frames and through away that amount 
   //   of samples from the ringbuffer.
   // sync_diff < 0:
-  //   we are to early. not enough data to playback arrived. calc the amount of 
+  //   we are to early. Not enough data to playback arrived. Calc the amount of
   //   silence samples to play for waiting, or call nanosleep. Whatever gives the 
   //  better results.
   time_duration sync_diff = post_ringbuffer - pre_soundcard;
@@ -650,10 +694,9 @@ void CPlayloop::setSync(CSync* sync_obj)
   }
   m_session_id = sync_obj->sessionId();
   m_stream_id = sync_obj->streamId();
-
 }
 
 void CPlayloop::reset(uint32_t oldSessionID, uint32_t oldStreamId) {
-
+	m_audio_sink->stop();
 }
 
