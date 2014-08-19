@@ -29,6 +29,8 @@ synchronisation objects which transport a timestamp at which a sample in a speci
 #include <boost/date_time/posix_time/posix_time.hpp>
 #include <linux/types.h>
 
+#include <ostream>
+
 class CRTPPacket;
 
 enum sync_type_t {
@@ -93,6 +95,7 @@ public:
     inline boost::posix_time::ptime* getPtimePtr() { return m_local_time; };
     void setTimeToNow();
 
+    friend std::ostream& operator<< (std::ostream &out, CSync &so);
 
 private:
 

@@ -71,7 +71,6 @@ public:
     int sync(void);
 
     void setSync(CSync* sync_obj);
-
     void reset(uint32_t oldSessionID, uint32_t oldStreamId);
 
 
@@ -112,6 +111,7 @@ private:
 
     boost::posix_time::time_duration m_average_time_diff;
     int m_average_size;
+    boost::posix_time::time_duration m_restart_duration;
 
 //    std::list<CAudioFrame*> m_frame_list;
     int stopStream();
@@ -122,6 +122,8 @@ private:
     bool waitForData();
     int addPacket2RingBuffer(bool block);
     int startStream();
+    void adjustStreamForResync();
+    void resync();
 
     void adjustResamplingFactor(int multichannel_samples_in_playback_ringbuffer);
     int getDelayInMultiChannelSamples();
@@ -135,9 +137,16 @@ private:
     boost::posix_time::time_duration m_last_start_stream_error;
 
     int sleep(boost::posix_time::time_duration duration);
+    int sleepuntil(boost::posix_time::ptime wakeup_time);
+
     int adjustFramesToDiscard(int num_frames_discarded);
 
+    // nr of last audio frame that was not yet resampled. To get the presentation timestamp of this frame,
+    // it is save to simply interpolate:
+    // pts = syncObj->pts() + (m_last_frame_pre_resampler - syncObj->frameNr() ) * stream_frame_rate
     long long m_nr_of_last_frame_decoded;
+    //uint64_t m_last_frame_pre_resampler;
+
 
     int m_desired_sample_rate;
     int m_num_channels;

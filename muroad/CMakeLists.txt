@@ -107,6 +107,7 @@ TARGET_LINK_LIBRARIES(muroad       ${CMAKE_THREAD_LIBS_INIT}
                                    sock++
                                    dsaudio
                                    muroadaemon
+                                   rt
                                    )
                                    
 

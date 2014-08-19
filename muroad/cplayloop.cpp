@@ -74,7 +74,7 @@ CPlayloop::CPlayloop(CPlayer* parent, CApp *app, CPacketRingBuffer* packet_ringb
   m_sample_size = sizeof(short);
   m_num_channels = 2;
 
-  m_max_idle = m_settings.getProptery("MaxIdle", 10);
+  m_max_idle = m_settings.getProptery("MaxIdle", 100);
 
 
   // m_audio_sink = new CAudioIoAlsa();  
@@ -108,6 +108,8 @@ CPlayloop::CPlayloop(CPlayer* parent, CApp *app, CPacketRingBuffer* packet_ringb
 
   cerr << "Audio sink granularity = " << m_audio_sink->getWriteGranularity() << endl;
   
+  m_restart_duration = milliseconds(500);
+
   m_seqnum = 0;
   
   m_stream_id = 0;
@@ -147,7 +149,7 @@ CAudioFrame* CPlayloop::getAudioPacket(bool block) {
 	  do {
 		  if(m_packet_ringbuffer->getRingbufferSize() == 0) {
 			  if(block) {
-				  int dataAvail = false;
+				  bool dataAvail = false;
 				  do {
 					  dataAvail = waitForData();
 				  } while(!dataAvail);
@@ -230,6 +232,12 @@ int CPlayloop::startStream() {
 	int rc = 1;
 	int num_frames_writable = m_audio_sink->getSpace();
 
+	LOG4CPLUS_INFO(m_timing_logger, "startStream: m_resample_factor: " <<  m_resample_factor);
+
+	// throw away frames that have a presentation timestamp before a reachable start time
+	// (now + what it takes until m_audio_sink->start() gets called at the end of this method)
+	adjustStreamForResync();
+
 	while(m_ringbuffer->sizeInFrames() < m_write_granularity * m_periods_to_start) {
 		addPacket2RingBuffer(true);
 	}
@@ -248,7 +256,7 @@ int CPlayloop::startStream() {
 	}
 
 	// second: wait for starting time
-	sync();
+	resync();
 	LOG4CPLUS_INFO(m_timing_logger, "  Frames writable now: " <<  m_audio_sink->getSpace() << " state: " << m_audio_sink->state());
     LOG4CPLUS_INFO(m_timing_logger, "start stream");
 
@@ -302,6 +310,56 @@ void CPlayloop::DoLoop() {
   adjustResamplingFactor( m_ringbuffer->sizeInMultiChannelSamples()  );
 }
 
+
+/** called by startStream() whenever the a resync is necessary to start or restart a stream
+ *  Add time probably needed for resync to current time and calculate the frame number to start with.  */
+void CPlayloop::resync() {
+	  LOG4CPLUS_DEBUG(m_timing_logger, "resync ..." );
+
+	  ptime* pts = m_player->syncObj()->getPtimePtr();
+	  uint32_t pts_frame_nr = m_player->syncObj()->frameNr();
+	  LOG4CPLUS_DEBUG(m_timing_logger, "resync: pts for frame " << pts_frame_nr << ": " << *pts);
+
+	  // time and frame diff between last sync and stream state just before the resampler
+	  uint64_t pre_resampler_frame_diff = m_nr_of_last_frame_decoded - pts_frame_nr;
+	  int64_t tmp = pre_resampler_frame_diff * 1000000; // to get microseconds after division next line
+	  time_duration pre_resampler_diff = microseconds( tmp / m_frames_per_second_pre_resampler);
+	  ptime pre_resampler_pts = *pts + pre_resampler_diff;
+
+	  LOG4CPLUS_DEBUG(m_timing_logger, "pre_resampler_frame_diff: " << pre_resampler_frame_diff << " (m_last_frame_decoded=" << m_nr_of_last_frame_decoded << ")");
+	  LOG4CPLUS_DEBUG(m_timing_logger, "m_ringbuffer->sizeInFrames():" << m_ringbuffer->sizeInFrames() << "  m_periods_to_start: " << m_periods_to_start << " m_write_granularity: " << m_write_granularity );
+
+	  int64_t frames_post_resampler = m_ringbuffer->sizeInFrames() + m_periods_to_start * m_write_granularity;
+	  LOG4CPLUS_ERROR(m_timing_logger, "frames post resampler: " << frames_post_resampler);
+
+	  tmp = 1000000 * frames_post_resampler;
+	  LOG4CPLUS_ERROR(m_timing_logger, "post_resampler_diff in microsec: " << tmp / m_frames_per_second_post_resampler);
+
+	  time_duration post_resampler_diff = microseconds( tmp / m_frames_per_second_post_resampler);
+	  // start_frame_pts: presentation timestamp for the first frame in soundcard's buffer waiting to be started
+	  ptime start_frame_pts = pre_resampler_pts - post_resampler_diff;
+
+	  LOG4CPLUS_DEBUG(m_timing_logger, "pre_resampler_pts: " << pre_resampler_pts << "  post_resampler_diff: " << post_resampler_diff);
+	  LOG4CPLUS_ERROR(m_timing_logger, "about to restart: restart_frame's pts: " << start_frame_pts);
+
+	  int rc = sleepuntil(start_frame_pts);
+	  if(rc) {
+		  LOG4CPLUS_DEBUG(m_timing_logger, "CPlayloop::sleepuntil() retuned error" );
+	  }
+	  else {
+		  LOG4CPLUS_DEBUG(m_timing_logger, "should be in sync now." );
+	  }
+	  m_after_sync = true;
+
+	  return;
+}
+
+/**
+ * If neccessary, throw away frames from ringbuffer and packet buffer to get a starting frame in the near future from now
+ */
+void CPlayloop::adjustStreamForResync() {
+
+}
 
 
 /** called whenever the a resync is necessary. For example at the start of e new stream of if the soundcard had an underrun.
@@ -548,6 +606,38 @@ time_duration CPlayloop::getPlaybackDiffFromTime() {
 
 }
 
+int CPlayloop::sleepuntil(boost::posix_time::ptime wakeup_time) {
+	struct timespec wakeup;
+	struct timespec now;
+
+	ptime ptime_now = microsec_clock::universal_time();
+	clock_gettime(CLOCK_MONOTONIC, &now);
+
+	time_duration diff = wakeup_time - ptime_now;
+
+	uint64_t diff_nsec = diff.total_nanoseconds();
+	uint64_t diff_sec = diff_nsec / 1000000000;
+	diff_nsec -= diff_sec * 1000000000;
+
+	wakeup.tv_sec = now.tv_sec + diff_sec;
+	wakeup.tv_nsec = now.tv_nsec + diff_nsec;
+	if(wakeup.tv_nsec > 1000000000) {
+		uint64_t tmp_sec = wakeup.tv_nsec / 1000000000;
+		wakeup.tv_sec += tmp_sec;
+		wakeup.tv_nsec  -= tmp_sec * 1000000000;
+	}
+
+    LOG4CPLUS_DEBUG(m_timing_logger, "CPlayloop::sleepuntil(): tv_sec: " << wakeup.tv_sec << " tv_nsec:" << wakeup.tv_nsec );
+
+
+	int rc;
+	do {
+		rc = clock_nanosleep(CLOCK_MONOTONIC, TIMER_ABSTIME, &wakeup, NULL);
+	} while(rc == EINTR);
+
+}
+
+
 /*!
     \fn CPlayloop::sleep(int duration)
  */
@@ -686,7 +776,7 @@ void CPlayloop::handleSyncObj(CSync* sync_obj) {
  */
 void CPlayloop::setSync(CSync* sync_obj)
 {
-  cerr << "CPlayloop::setSync" << endl;
+  LOG4CPLUS_INFO(m_timing_logger, "CPlayloop::setSync " << *sync_obj);
   if(m_stream_id != sync_obj->streamId() || m_session_id != sync_obj->sessionId()) {
     // new stream: set m_nr_of_last_frame_decoded to the 
     // frame nr specified in the sync obj (usually 0)

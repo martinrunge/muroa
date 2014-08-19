@@ -147,5 +147,13 @@ void CSync::deserialize(CRTPPacket* sync_packet)
 
   memcpy(m_serialization_buffer.raw_buffer, sync_packet->payloadBufferPtr(), sizeof(m_serialization_buffer));
   deserialize();
-  print();
+  // print();
+}
+
+ostream& operator<< (ostream &out, CSync &so)
+{
+    out << "session/stream ID (" << so.m_session_id << "/" << so.m_stream_id << ") frame nr "
+         << so.frameNr() << " at " << *(so.m_local_time);
+
+    return out;
 }

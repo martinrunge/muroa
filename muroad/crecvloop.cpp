@@ -25,8 +25,14 @@
 
 #include "CApp.h"
 
+#include <log4cplus/loggingmacros.h>
+#include <log4cplus/loglevel.h>
+
+
 using namespace std;
 using namespace muroa;
+using namespace log4cplus;
+
 
 CRecvloop::CRecvloop(CPlayer* parent, CApp* app, CPacketRingBuffer* packet_ringbuffer):
 		CThreadSlave(),
@@ -35,6 +41,7 @@ CRecvloop::CRecvloop(CPlayer* parent, CApp* app, CPacketRingBuffer* packet_ringb
 {
 
   m_player = parent;
+  m_timing_logger = Logger::getInstance("timing");
   
   m_packet_ringbuffer = packet_ringbuffer;
 
@@ -69,8 +76,8 @@ void CRecvloop::DoLoop()
 
     switch( rtp_packet->payloadType() ) {
       case PAYLOAD_SYNC_OBJ:
-        cerr << "CRecvloop::DoLoop got SyncObj:";
-        m_tmp_sync_obj.deserialize(rtp_packet);
+          m_tmp_sync_obj.deserialize(rtp_packet);
+          LOG4CPLUS_INFO(m_timing_logger, "Received SyncObj: " << m_tmp_sync_obj);
         if(m_tmp_sync_obj.streamId() == m_player->syncRequestedForStreamID()) {
           // this sync object has been requested by the client. Use it immediately
           m_player->setRequestedSyncObj(rtp_packet);
@@ -82,9 +89,9 @@ void CRecvloop::DoLoop()
         }
 
         // wake up playback thread
-        if(m_player->idleTime() > m_max_idle && m_max_idle != 0) {
-           m_player->m_traffic_cond.Signal();
-        }
+        //if(m_player->idleTime() > m_max_idle && m_max_idle != 0) {
+        m_player->m_traffic_cond.Signal();
+        //}
         
         break;
 
@@ -105,9 +112,9 @@ void CRecvloop::DoLoop()
         // cerr << "Sender was: " << m_socket->latestSender()->ipAddress() << " port " << m_socket->latestSender()->port() << endl;
         
         // wake up playback thread
-        if(m_player->idleTime() > m_max_idle && m_max_idle != 0) {
-           m_player->m_traffic_cond.Signal();
-        }
+        //if(m_player->idleTime() > m_max_idle && m_max_idle != 0) {
+        m_player->m_traffic_cond.Signal();
+        //}
 
         break;
       default:

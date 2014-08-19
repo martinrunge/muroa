@@ -22,6 +22,8 @@
 
 #include <cthreadslave.h>
 
+#include <log4cplus/logger.h>
+
 #include "csync.h"
 #include "cmuroad.h"
 /**
@@ -52,6 +54,7 @@ public:
 private:
     CSocket *m_socket;
 
+    log4cplus::Logger m_timing_logger;
     CPacketRingBuffer *m_packet_ringbuffer;
     CPlayer* m_player;
     muroa::CApp* m_app;
