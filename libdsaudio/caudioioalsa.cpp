@@ -228,6 +228,8 @@ int CAudioIoAlsa::write(char* data, int length) {
     if (frames_written < 0) {
       if(abs(frames_written) == EBADFD)
         cerr << "EBADFD" << endl;
+      cerr << "length = " << length << " but only " << frames_written << " frames written." << endl;
+
       if(abs(frames_written) == EPIPE)
         cerr << "EPIPE" << endl;
       if(abs(frames_written) == ESTRPIPE)

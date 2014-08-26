@@ -26,11 +26,13 @@ using namespace std;
 using namespace boost::posix_time;
 
 
-CSync::CSync(enum sync_type_t sync_type)
+CSync::CSync(enum sync_type_t sync_type) : m_session_id(numeric_limits<uint32_t>::max()),
+		                                   m_stream_id(numeric_limits<uint32_t>::max()),
+		                                   m_frame_nr(numeric_limits<uint32_t>::max())
 {
   cerr << "CSync::CSync(enum)" << endl;
   m_sync_type = sync_type;
-  m_local_time = new ptime(microsec_clock::universal_time());
+  m_utc_time = new ptime(microsec_clock::universal_time());
   print();
 
 }
@@ -40,7 +42,7 @@ CSync::CSync(CRTPPacket* rtp_packet)
   if(rtp_packet->payloadType() != PAYLOAD_SYNC_OBJ) return;
 
   cerr << "CSync::CSync(CRTPPacket*) (test) " ;
-  m_local_time = new ptime(from_iso_string("19700101T000000"));  // just a dummy to feed the c-tor. The value is never used!
+  m_utc_time = new ptime(from_iso_string("19700101T000000"));  // just a dummy to feed the c-tor. The value is never used!
   memcpy(m_serialization_buffer.raw_buffer, rtp_packet->payloadBufferPtr(), sizeof(m_serialization_buffer));
   deserialize();
   print();
@@ -48,7 +50,7 @@ CSync::CSync(CRTPPacket* rtp_packet)
 
 CSync::~CSync()
 {
-  delete m_local_time;
+  delete m_utc_time;
 }
 
 
@@ -65,7 +67,7 @@ char* CSync::serialize()
 
   m_serialization_buffer.serialisation_vars.frame_nr = htonl(m_frame_nr);
 
-  strcpy((char*)m_serialization_buffer.serialisation_vars.timestamp, to_simple_string(*m_local_time).c_str() );
+  strcpy((char*)m_serialization_buffer.serialisation_vars.timestamp, to_simple_string(*m_utc_time).c_str() );
 
   return m_serialization_buffer.raw_buffer;    
 }
@@ -84,7 +86,7 @@ void CSync::deserialize(void)
 
   m_frame_nr = ntohl( m_serialization_buffer.serialisation_vars.frame_nr );
 
-  *m_local_time = time_from_string( m_serialization_buffer.serialisation_vars.timestamp );
+  *m_utc_time = time_from_string( m_serialization_buffer.serialisation_vars.timestamp );
 }
 
 
@@ -112,7 +114,7 @@ char* CSync::getSerialisationBufferPtr()
 void CSync::print()
 {
   cerr << "session/stream ID (" << sessionId() << "/" << streamId() << ") frame nr " 
-       << frameNr() << " at " << *m_local_time << endl;
+       << frameNr() << " at " << *m_utc_time << endl;
 }
 
 
@@ -121,7 +123,7 @@ void CSync::print()
  */
 void CSync::addDuration(boost::posix_time::time_duration duration)
 {
-  *m_local_time += duration;
+  *m_utc_time += duration;
 }
 
 
@@ -130,7 +132,7 @@ void CSync::addDuration(boost::posix_time::time_duration duration)
  */
 void CSync::setTimeToNow()
 {
-  *m_local_time = microsec_clock::universal_time();
+  *m_utc_time = microsec_clock::universal_time();
 }
 
 
@@ -153,7 +155,7 @@ void CSync::deserialize(CRTPPacket* sync_packet)
 ostream& operator<< (ostream &out, CSync &so)
 {
     out << "session/stream ID (" << so.m_session_id << "/" << so.m_stream_id << ") frame nr "
-         << so.frameNr() << " at " << *(so.m_local_time);
+         << so.frameNr() << " at " << *(so.m_utc_time);
 
     return out;
 }

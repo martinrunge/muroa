@@ -90,7 +90,7 @@ CPlayloop::CPlayloop(CPlayer* parent, CApp *app, CPacketRingBuffer* packet_ringb
   m_frames_per_second_post_resampler = actual_sample_rate;
 
 
-  m_nr_of_last_frame_decoded = 0;
+  m_nr_of_last_frame_decoded = -1;
 
   #ifndef FIXPOINT
   // m_resampler = new CResampler(m_ringbuffer, SRC_SINC_BEST_QUALITY, 2);
@@ -150,9 +150,9 @@ CAudioFrame* CPlayloop::getAudioPacket(bool block) {
 		  if(m_packet_ringbuffer->getRingbufferSize() == 0) {
 			  if(block) {
 				  bool dataAvail = false;
-				  do {
+				  while(!dataAvail || m_packet_ringbuffer->getRingbufferSize() == 0) {
 					  dataAvail = waitForData();
-				  } while(!dataAvail);
+				  };
 			  } else {
 				  return 0;
 			  }
@@ -232,6 +232,7 @@ int CPlayloop::startStream() {
 	int rc = 1;
 	int num_frames_writable = m_audio_sink->getSpace();
 
+	LOG4CPLUS_INFO(m_timing_logger, "");
 	LOG4CPLUS_INFO(m_timing_logger, "startStream: m_resample_factor: " <<  m_resample_factor);
 
 	// throw away frames that have a presentation timestamp before a reachable start time
@@ -358,6 +359,52 @@ void CPlayloop::resync() {
  * If neccessary, throw away frames from ringbuffer and packet buffer to get a starting frame in the near future from now
  */
 void CPlayloop::adjustStreamForResync() {
+	  while(m_nr_of_last_frame_decoded == -1 || (!m_player->syncObj()->isValid())) {
+		  addPacket2RingBuffer(true);
+	  }
+	  ptime* pts = m_player->syncObj()->getPtimePtr();
+	  uint32_t pts_frame_nr = m_player->syncObj()->frameNr();
+	  LOG4CPLUS_DEBUG(m_timing_logger, "adjustStreamForResync: pts for frame " << pts_frame_nr << ": " << *pts);
+
+	  // time and frame diff between last sync and stream state just before the resampler
+	  int64_t pre_resampler_frame_diff = m_nr_of_last_frame_decoded - pts_frame_nr;
+	  int64_t tmp = pre_resampler_frame_diff * 1000000; // to get microseconds after division next line
+	  time_duration pre_resampler_diff = microseconds( tmp / m_frames_per_second_pre_resampler);
+	  ptime pre_resampler_pts = *pts + pre_resampler_diff;
+
+	  LOG4CPLUS_DEBUG(m_timing_logger, "   pre_resampler_frame_diff: " << pre_resampler_frame_diff << " (m_last_frame_decoded=" << m_nr_of_last_frame_decoded << ")");
+	  LOG4CPLUS_DEBUG(m_timing_logger, "   m_ringbuffer->sizeInFrames():" << m_ringbuffer->sizeInFrames() );
+
+	  int64_t frames_post_resampler = m_ringbuffer->sizeInFrames();
+	  LOG4CPLUS_ERROR(m_timing_logger, "   frames post resampler: " << frames_post_resampler);
+
+	  tmp = 1000000 * frames_post_resampler;
+	  LOG4CPLUS_DEBUG(m_timing_logger, "   post_resampler_diff in microsec: " << tmp / m_frames_per_second_post_resampler);
+
+	  time_duration post_resampler_diff = microseconds( tmp / m_frames_per_second_post_resampler);
+	  // start_frame_pts: presentation timestamp for the first frame in soundcard's buffer waiting to be started
+	  ptime first_frames_pts = pre_resampler_pts - post_resampler_diff;
+
+
+	  ptime now = microsec_clock::universal_time();
+	  time_duration restart_diff = now - first_frames_pts;
+	  int64_t frames_to_discard = restart_diff.total_milliseconds() * ( m_frames_per_second_post_resampler / 1000);
+
+	  LOG4CPLUS_DEBUG(m_timing_logger, "   first frame's pts: " << first_frames_pts << " discarding " << frames_to_discard << "frames");
+
+	  while(frames_to_discard > 0) {
+		  while( m_ringbuffer->sizeInFrames() < m_write_granularity) {
+			  int num_frames = addPacket2RingBuffer(false);
+			  if(num_frames == 0) {
+				  LOG4CPLUS_ERROR(m_timing_logger, "   frames should be discarded to get in sync, but there were none in the packetbuffer.");
+			  }
+		  }
+
+		  int num = ( frames_to_discard > m_write_granularity) ? m_write_granularity : frames_to_discard;
+		  char* playbuffer = m_ringbuffer->readFrames(num);
+		  delete [] playbuffer;
+		  frames_to_discard -= num;
+	  }
 
 }
 
@@ -615,19 +662,21 @@ int CPlayloop::sleepuntil(boost::posix_time::ptime wakeup_time) {
 
 	time_duration diff = wakeup_time - ptime_now;
 
-	uint64_t diff_nsec = diff.total_nanoseconds();
-	uint64_t diff_sec = diff_nsec / 1000000000;
+	int64_t diff_nsec = diff.total_nanoseconds();
+	int64_t diff_sec = diff_nsec / 1000000000;
 	diff_nsec -= diff_sec * 1000000000;
 
 	wakeup.tv_sec = now.tv_sec + diff_sec;
 	wakeup.tv_nsec = now.tv_nsec + diff_nsec;
 	if(wakeup.tv_nsec > 1000000000) {
-		uint64_t tmp_sec = wakeup.tv_nsec / 1000000000;
+		int64_t tmp_sec = wakeup.tv_nsec / 1000000000;
 		wakeup.tv_sec += tmp_sec;
 		wakeup.tv_nsec  -= tmp_sec * 1000000000;
 	}
 
-    LOG4CPLUS_DEBUG(m_timing_logger, "CPlayloop::sleepuntil(): tv_sec: " << wakeup.tv_sec << " tv_nsec:" << wakeup.tv_nsec );
+	LOG4CPLUS_DEBUG(m_timing_logger, "    sleepuntil( " << wakeup_time << "):");
+    LOG4CPLUS_DEBUG(m_timing_logger, "       now:   tv_sec: " << now.tv_sec << " tv_nsec:" << now.tv_nsec );
+    LOG4CPLUS_DEBUG(m_timing_logger, "       wakeup tv_sec: " << wakeup.tv_sec << " tv_nsec:" << wakeup.tv_nsec );
 
 
 	int rc;

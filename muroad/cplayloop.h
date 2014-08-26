@@ -144,7 +144,7 @@ private:
     // nr of last audio frame that was not yet resampled. To get the presentation timestamp of this frame,
     // it is save to simply interpolate:
     // pts = syncObj->pts() + (m_last_frame_pre_resampler - syncObj->frameNr() ) * stream_frame_rate
-    long long m_nr_of_last_frame_decoded;
+    int64_t m_nr_of_last_frame_decoded;
     //uint64_t m_last_frame_pre_resampler;
 
 

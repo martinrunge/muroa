@@ -30,6 +30,7 @@ synchronisation objects which transport a timestamp at which a sample in a speci
 #include <linux/types.h>
 
 #include <ostream>
+#include <limits>
 
 class CRTPPacket;
 
@@ -83,6 +84,10 @@ public:
     inline uint32_t frameNr(void) { return m_frame_nr; };
     inline void frameNr(uint32_t frame_nr) { m_frame_nr = frame_nr; };
 
+    inline bool isValid() { return (m_session_id != std::numeric_limits<uint32_t>::max() &&
+    		                        m_stream_id  != std::numeric_limits<uint32_t>::max() &&
+    		                        m_frame_nr   != std::numeric_limits<uint32_t>::max() ); };
+
     char* serialize();
     void deserialize();
     void deserialize(CRTPPacket* sync_packet);
@@ -92,7 +97,7 @@ public:
     void print();
     void addDuration(boost::posix_time::time_duration duration);
 
-    inline boost::posix_time::ptime* getPtimePtr() { return m_local_time; };
+    inline boost::posix_time::ptime* getPtimePtr() { return m_utc_time; };
     void setTimeToNow();
 
     friend std::ostream& operator<< (std::ostream &out, CSync &so);
@@ -113,7 +118,7 @@ private:
   uint32_t m_frame_nr;
 
   /** point of time at which the specified sample number should be played back */
-  boost::posix_time::ptime *m_local_time;
+  boost::posix_time::ptime *m_utc_time;
 
 
   serialization_buffer_t m_serialization_buffer;

@@ -127,7 +127,7 @@ void CPlayer::sync()
 
 void CPlayer::setSyncObj(CRTPPacket* rtp_packet) {
   m_sync_obj.deserialize( rtp_packet);
-  m_playloop->setSync(&m_sync_obj); 
+  m_playloop->setSync(&m_sync_obj);
 }
 
 
