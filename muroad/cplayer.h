@@ -66,7 +66,7 @@ public:
 
     inline CSync* syncObj() {return &m_sync_obj; };
     void setSyncObj(CRTPPacket* rtp_packet);
-    void sync();
+    // void sync();
 
     inline int syncRequestedForStreamID(void) { 
       return m_sync_requested_for_stream_id;

@@ -117,13 +117,13 @@ void CPlayer::sendRTPPacket(CRTPPacket* packet)
 }
 
 
-/*!
-    \fn CPlayer::sync()
- */
-void CPlayer::sync()
-{
-  m_playloop->sync();    
-}
+///*!
+//    \fn CPlayer::sync()
+// */
+//void CPlayer::sync()
+//{
+//  // m_playloop->sync();
+//}
 
 void CPlayer::setSyncObj(CRTPPacket* rtp_packet) {
   m_sync_obj.deserialize( rtp_packet);
@@ -175,7 +175,7 @@ void CPlayer::onResetStream(const CmdStreamReset& cmd_rst) {
          << " newSessionID: " << cmd_rst.getNewSessionId()
          << " newStreamID: " << cmd_rst.getNewStreamId() << endl;
 	m_packet_ringbuffer->clearContent(cmd_rst.getOldSessionId(), cmd_rst.getOldStreamId());
-	m_playloop->reset(cmd_rst.getOldSessionId(), cmd_rst.getOldStreamId());
+	m_playloop->resetStream(cmd_rst.getOldSessionId(), cmd_rst.getOldStreamId());
 }
 
 

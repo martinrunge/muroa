@@ -55,7 +55,7 @@ using namespace log4cplus;
 /** C-tor */
 
 CPlayloop::CPlayloop(CPlayer* parent, CApp *app, CPacketRingBuffer* packet_ringbuffer)
- : CThreadSlave(), m_counter(0), m_average_size(32), m_app(app), m_settings(app->settings()), m_after_sync(false)
+ : CThreadSlave(), m_counter(0), m_average_size(32), m_app(app), m_settings(app->settings()), m_after_sync(false), m_stream_reset_threshold(0.2f)
 {
 
   m_player = parent;
@@ -226,53 +226,6 @@ int CPlayloop::addPacket2RingBuffer(bool block) {
 	  }
 }
 
-int CPlayloop::startStream() {
-
-	// first: fill soundcard buffer with as many data as possible
-	int rc = 1;
-	int num_frames_writable = m_audio_sink->getSpace();
-
-	LOG4CPLUS_INFO(m_timing_logger, "");
-	LOG4CPLUS_INFO(m_timing_logger, "startStream: m_resample_factor: " <<  m_resample_factor);
-
-	// throw away frames that have a presentation timestamp before a reachable start time
-	// (now + what it takes until m_audio_sink->start() gets called at the end of this method)
-	adjustStreamForResync();
-
-	while(m_ringbuffer->sizeInFrames() < m_write_granularity * m_periods_to_start) {
-		addPacket2RingBuffer(true);
-	}
-
-	LOG4CPLUS_INFO(m_timing_logger, "filling soundcard buffer [frames]: " <<  m_write_granularity * m_periods_to_start);
-	assert(m_ringbuffer->sizeInFrames() >= m_write_granularity * m_periods_to_start);
-	for( int i = 0; i < m_periods_to_start; i++)
-	{
-		char* playbuffer = m_ringbuffer->readFrames(m_write_granularity);
-		// attention, this __should__ never block!!!
-		LOG4CPLUS_DEBUG(m_timing_logger, "  Frames writable now: " <<  m_audio_sink->getSpace() << " state: " << m_audio_sink->state());
-		int frame_size = m_num_channels * m_sample_size;
-		int written = m_audio_sink->write(playbuffer, m_write_granularity * frame_size);
-		LOG4CPLUS_DEBUG(m_timing_logger, "    Frames written: " <<  written);
-		delete [] playbuffer;
-	}
-
-	// second: wait for starting time
-	resync();
-	LOG4CPLUS_INFO(m_timing_logger, "  Frames writable now: " <<  m_audio_sink->getSpace() << " state: " << m_audio_sink->state());
-    LOG4CPLUS_INFO(m_timing_logger, "start stream");
-
-    // third: start playback
-	rc = m_audio_sink->start();
-	m_last_start_stream_error = getPlaybackDiffFromTime();
-
-	LOG4CPLUS_INFO(m_timing_logger, "stream started: " << m_last_start_stream_error );
-	return rc;
-}
-
-int CPlayloop::stopStream() {
-
-}
-
 
 /** the main loop for this thread */
 void CPlayloop::DoLoop() {
@@ -306,92 +259,94 @@ void CPlayloop::DoLoop() {
 	  return;
   }
   else {
-	  LOG4CPLUS_DEBUG(m_timing_logger, "  wrote chunk of " << retval << " frames. Space for: " <<  m_audio_sink->getSpace() << " frames left. state: " << m_audio_sink->state());
+	  // LOG4CPLUS_DEBUG(m_timing_logger, "  wrote chunk of " << retval << " frames. Space for: " <<  m_audio_sink->getSpace() << " frames left. state: " << m_audio_sink->state());
   }
-  adjustResamplingFactor( m_ringbuffer->sizeInMultiChannelSamples()  );
+  adjustResamplingFactor();
 }
 
 
-/** called by startStream() whenever the a resync is necessary to start or restart a stream
- *  Add time probably needed for resync to current time and calculate the frame number to start with.  */
-void CPlayloop::resync() {
-	  LOG4CPLUS_DEBUG(m_timing_logger, "resync ..." );
+int CPlayloop::startStream() {
 
-	  ptime* pts = m_player->syncObj()->getPtimePtr();
-	  uint32_t pts_frame_nr = m_player->syncObj()->frameNr();
-	  LOG4CPLUS_DEBUG(m_timing_logger, "resync: pts for frame " << pts_frame_nr << ": " << *pts);
+	// first: fill soundcard buffer with as many data as possible
+	int rc = 1;
+	int num_frames_writable = m_audio_sink->getSpace();
+	m_correction_factor = 1.0f;
+	LOG4CPLUS_INFO(m_timing_logger, "");
+	LOG4CPLUS_INFO(m_timing_logger, "startStream: m_resample_factor: " <<  m_resample_factor * m_correction_factor);
 
-	  // time and frame diff between last sync and stream state just before the resampler
-	  uint64_t pre_resampler_frame_diff = m_nr_of_last_frame_decoded - pts_frame_nr;
-	  int64_t tmp = pre_resampler_frame_diff * 1000000; // to get microseconds after division next line
-	  time_duration pre_resampler_diff = microseconds( tmp / m_frames_per_second_pre_resampler);
-	  ptime pre_resampler_pts = *pts + pre_resampler_diff;
+	// throw away frames that have a presentation time stamp before a reachable start time (e.g. in the past)
+	// (now + what it takes until m_audio_sink->start() gets called at the end of this method)
+	ptime first_frames_pts = discardPastPTSFrames();
 
-	  LOG4CPLUS_DEBUG(m_timing_logger, "pre_resampler_frame_diff: " << pre_resampler_frame_diff << " (m_last_frame_decoded=" << m_nr_of_last_frame_decoded << ")");
-	  LOG4CPLUS_DEBUG(m_timing_logger, "m_ringbuffer->sizeInFrames():" << m_ringbuffer->sizeInFrames() << "  m_periods_to_start: " << m_periods_to_start << " m_write_granularity: " << m_write_granularity );
+	while(m_ringbuffer->sizeInFrames() < m_write_granularity * m_periods_to_start) {
+		addPacket2RingBuffer(true);
+	}
 
-	  int64_t frames_post_resampler = m_ringbuffer->sizeInFrames() + m_periods_to_start * m_write_granularity;
-	  LOG4CPLUS_ERROR(m_timing_logger, "frames post resampler: " << frames_post_resampler);
+	LOG4CPLUS_INFO(m_timing_logger, "step 2: filling soundcard buffer with: " <<  m_write_granularity * m_periods_to_start << " frames (writable: " <<  m_audio_sink->getSpace() << ", state: " << m_audio_sink->state() << ")");
+	assert(m_ringbuffer->sizeInFrames() >= m_write_granularity * m_periods_to_start);
+	for( int i = 0; i < m_periods_to_start; i++)
+	{
+		char* playbuffer = m_ringbuffer->readFrames(m_write_granularity);
+		// attention, this __should__ never block!!!
+		// LOG4CPLUS_DEBUG(m_timing_logger, "  Frames writable now: " <<  m_audio_sink->getSpace() << " state: " << m_audio_sink->state());
+		int frame_size = m_num_channels * m_sample_size;
+		int written = m_audio_sink->write(playbuffer, m_write_granularity * frame_size);
+		// LOG4CPLUS_DEBUG(m_timing_logger, "    Frames written: " <<  written);
+		delete [] playbuffer;
+	}
+	LOG4CPLUS_DEBUG(m_timing_logger, "   ... done. Frames writable now: " <<  m_audio_sink->getSpace() << " state: " << m_audio_sink->state());
 
-	  tmp = 1000000 * frames_post_resampler;
-	  LOG4CPLUS_ERROR(m_timing_logger, "post_resampler_diff in microsec: " << tmp / m_frames_per_second_post_resampler);
+	// second: wait for starting time
+	waitForStartPTS();
+	LOG4CPLUS_INFO(m_timing_logger, "  Frames writable now: " <<  m_audio_sink->getSpace() << " state: " << m_audio_sink->state());
+    LOG4CPLUS_INFO(m_timing_logger, "start stream");
 
-	  time_duration post_resampler_diff = microseconds( tmp / m_frames_per_second_post_resampler);
-	  // start_frame_pts: presentation timestamp for the first frame in soundcard's buffer waiting to be started
-	  ptime start_frame_pts = pre_resampler_pts - post_resampler_diff;
+    // third: start playback
+	rc = m_audio_sink->start();
+	m_last_start_stream_error = getPlaybackDiffFromTime();
 
-	  LOG4CPLUS_DEBUG(m_timing_logger, "pre_resampler_pts: " << pre_resampler_pts << "  post_resampler_diff: " << post_resampler_diff);
-	  LOG4CPLUS_ERROR(m_timing_logger, "about to restart: restart_frame's pts: " << start_frame_pts);
-
-	  int rc = sleepuntil(start_frame_pts);
-	  if(rc) {
-		  LOG4CPLUS_DEBUG(m_timing_logger, "CPlayloop::sleepuntil() retuned error" );
-	  }
-	  else {
-		  LOG4CPLUS_DEBUG(m_timing_logger, "should be in sync now." );
-	  }
-	  m_after_sync = true;
-
-	  return;
+	LOG4CPLUS_INFO(m_timing_logger, "stream started: " << m_last_start_stream_error << " (new method: " << getCurrentPTSDeviation() << ")");
+	return rc;
 }
+
 
 /**
- * If neccessary, throw away frames from ringbuffer and packet buffer to get a starting frame in the near future from now
+ * All audio frames with PTS in the past may not be played any more. Discard them.
  */
-void CPlayloop::adjustStreamForResync() {
+ptime CPlayloop::discardPastPTSFrames() {
 	  while(m_nr_of_last_frame_decoded == -1 || (!m_player->syncObj()->isValid())) {
 		  addPacket2RingBuffer(true);
 	  }
 	  ptime* pts = m_player->syncObj()->getPtimePtr();
 	  uint32_t pts_frame_nr = m_player->syncObj()->frameNr();
-	  LOG4CPLUS_DEBUG(m_timing_logger, "adjustStreamForResync: pts for frame " << pts_frame_nr << ": " << *pts);
+	  LOG4CPLUS_DEBUG(m_timing_logger, "step 1: discard frames with PTS in the past: reference pts for frame " << pts_frame_nr << ": " << *pts);
 
 	  // time and frame diff between last sync and stream state just before the resampler
 	  int64_t pre_resampler_frame_diff = m_nr_of_last_frame_decoded - pts_frame_nr;
-	  int64_t tmp = pre_resampler_frame_diff * 1000000; // to get microseconds after division next line
-	  time_duration pre_resampler_diff = microseconds( tmp / m_frames_per_second_pre_resampler);
+	  int64_t tmp = pre_resampler_frame_diff * 1000; // to get milliseconds after division next line
+	  time_duration pre_resampler_diff = milliseconds( tmp / m_frames_per_second_pre_resampler);
 	  ptime pre_resampler_pts = *pts + pre_resampler_diff;
 
-	  LOG4CPLUS_DEBUG(m_timing_logger, "   pre_resampler_frame_diff: " << pre_resampler_frame_diff << " (m_last_frame_decoded=" << m_nr_of_last_frame_decoded << ")");
-	  LOG4CPLUS_DEBUG(m_timing_logger, "   m_ringbuffer->sizeInFrames():" << m_ringbuffer->sizeInFrames() );
+	  LOG4CPLUS_DEBUG(m_timing_logger, "   pre_resampler_frame_diff: " << pre_resampler_frame_diff << " (m_nr_of_last_frame_decoded=" << m_nr_of_last_frame_decoded << ")");
+	  LOG4CPLUS_DEBUG(m_timing_logger, "   (reference pts -> last frame decoded ) pre_resampler_diff: " << pre_resampler_diff << " (" << pre_resampler_frame_diff << " frames)");
 
 	  int64_t frames_post_resampler = m_ringbuffer->sizeInFrames();
 	  LOG4CPLUS_ERROR(m_timing_logger, "   frames post resampler: " << frames_post_resampler);
 
 	  tmp = 1000000 * frames_post_resampler;
-	  LOG4CPLUS_DEBUG(m_timing_logger, "   post_resampler_diff in microsec: " << tmp / m_frames_per_second_post_resampler);
-
 	  time_duration post_resampler_diff = microseconds( tmp / m_frames_per_second_post_resampler);
 	  // start_frame_pts: presentation timestamp for the first frame in soundcard's buffer waiting to be started
-	  ptime first_frames_pts = pre_resampler_pts - post_resampler_diff;
+	  LOG4CPLUS_DEBUG(m_timing_logger, "   post_resampler_diff : " << post_resampler_diff);
 
+	  ptime first_frames_pts = pre_resampler_pts - post_resampler_diff;
 
 	  ptime now = microsec_clock::universal_time();
 	  time_duration restart_diff = now - first_frames_pts;
 	  int64_t frames_to_discard = restart_diff.total_milliseconds() * ( m_frames_per_second_post_resampler / 1000);
 
-	  LOG4CPLUS_DEBUG(m_timing_logger, "   first frame's pts: " << first_frames_pts << " discarding " << frames_to_discard << "frames");
+	  LOG4CPLUS_DEBUG(m_timing_logger, "   first frame's pts: " << first_frames_pts << " discarding " << frames_to_discard << " frames");
 
+	  uint32_t frames_discarded = 0;
 	  while(frames_to_discard > 0) {
 		  while( m_ringbuffer->sizeInFrames() < m_write_granularity) {
 			  int num_frames = addPacket2RingBuffer(false);
@@ -404,127 +359,100 @@ void CPlayloop::adjustStreamForResync() {
 		  char* playbuffer = m_ringbuffer->readFrames(num);
 		  delete [] playbuffer;
 		  frames_to_discard -= num;
+		  frames_discarded += num;
 	  }
 
+	  if(frames_discarded > 0) {
+		  tmp = 1000000 * frames_discarded;
+		  time_duration discard_diff = microseconds( tmp / m_frames_per_second_post_resampler);
+		  first_frames_pts += discard_diff;
+	  }
+
+	  return first_frames_pts;
 }
 
+/** called by startStream() whenever the a waitForStartPTS is necessary to start or restart a stream
+ *  Add time probably needed for waitForStartPTS to current time and calculate the frame number to start with.  */
+void CPlayloop::waitForStartPTS() {
+	  LOG4CPLUS_DEBUG(m_timing_logger, "step 3: wait for start pts ..." );
 
-/** called whenever the a resync is necessary. For example at the start of e new stream of if the soundcard had an underrun.
-  Two possibilities:                                                                                                          
-  - Time is proceeding and audio data was not played. -> Audio data must be thrown away because to get into sync again        
-  - Audio data is missing (e.g. playback underrun). Wait for enough audio data to arrive and start the sound device then.      */ 
+	  ptime* pts = m_player->syncObj()->getPtimePtr();
+	  uint32_t pts_frame_nr = m_player->syncObj()->frameNr();
+	  LOG4CPLUS_DEBUG(m_timing_logger, "   pts for frame " << pts_frame_nr << ": " << *pts);
 
-int CPlayloop::sync(void) {
- 
- 
-  LOG4CPLUS_DEBUG(m_timing_logger, "sync ..." );
-  // this is the difference in time between the clock and the time calculated 
-  // from played samples. It should be zero.
-  // sync_diff > 0:
-  //   we are late, e.g. due to a soundcard playback underrun.
-  //   Now, there are more samples available than needed.
-  //   Take the diff in time, calc the diff in frames and through away that amount
-  //   of samples from the ringbuffer.
-  // sync_diff < 0:
-  //   we are to early. not enough data to playback arrived. calc the amount of 
-  //   silence samples to play for waiting, or call nanosleep. Whatever gives the 
-  //  better results.
+	  // time and frame diff between last sync and stream state just before the resampler
+	  uint64_t pre_resampler_frame_diff = m_nr_of_last_frame_decoded - pts_frame_nr;
+	  int64_t tmp = pre_resampler_frame_diff * 1000000; // to get microseconds after division next line
+	  time_duration pre_resampler_diff = microseconds( tmp / m_frames_per_second_pre_resampler);
+	  ptime pre_resampler_pts = *pts + pre_resampler_diff;
 
-  m_session_id = m_player->syncObj()->sessionId();
-  m_stream_id = m_player->syncObj()->streamId();
+	  LOG4CPLUS_DEBUG(m_timing_logger, "   pre_resampler_frame_diff: " << pre_resampler_frame_diff << " (m_last_frame_decoded=" << m_nr_of_last_frame_decoded << ")");
+	  LOG4CPLUS_DEBUG(m_timing_logger, "   m_ringbuffer->sizeInFrames():" << m_ringbuffer->sizeInFrames() << "  m_periods_to_start: " << m_periods_to_start << " m_write_granularity: " << m_write_granularity );
 
-  time_duration sync_diff = getPlaybackDiffFromTime();
+	  int64_t frames_post_resampler = m_ringbuffer->sizeInFrames() + m_periods_to_start * m_write_granularity;
+	  LOG4CPLUS_ERROR(m_timing_logger, "   frames post resampler: " << frames_post_resampler);
 
-  LOG4CPLUS_DEBUG(m_timing_logger, "sync diff: " << sync_diff );
-  cerr << "CPlayloop::sync: sync_diff = " << sync_diff << endl;
+	  tmp = 1000000 * frames_post_resampler;
+	  LOG4CPLUS_ERROR(m_timing_logger, "   post_resampler_diff in microsec: " << tmp / m_frames_per_second_post_resampler);
 
-  double diff_in_s = sync_diff.seconds() + 60 * sync_diff.minutes() + 60 * 60 * sync_diff.hours();
-  long fractional_secs = sync_diff.fractional_seconds();
-  // if the resolution off fractional_seconds() id nano sec, then convert it to micro sec
-  if (time_duration::resolution() == boost::date_time::nano) {
-    fractional_secs /= 1000;
-  }
-  diff_in_s += 0.000001 * fractional_secs; 
+	  time_duration post_resampler_diff = microseconds( tmp / m_frames_per_second_post_resampler);
+	  // start_frame_pts: presentation timestamp for the first frame in soundcard's buffer waiting to be started
+	  ptime start_frame_pts = pre_resampler_pts - post_resampler_diff;
 
-  double diff_in_frames = diff_in_s * m_frames_per_second_post_resampler;
-  long sync_diff_in_frames = lrint(diff_in_frames);
-  
-  if(sync_diff_in_frames < 0) {
-    cerr << "sync: " << sync_diff_in_frames << " too late with playback. Throwing away samples." << endl;
-    m_frames_to_discard = -sync_diff_in_frames;
-  }
-  else {
-    cerr << "sync: " << sync_diff_in_frames << " too early with playback. Sleeping..." << endl;
-    m_frames_to_discard = 0;
-    sleep(sync_diff);
-    // playSilence(sync_diff_in_frames);
-  }
+	  LOG4CPLUS_DEBUG(m_timing_logger, "   pre_resampler_pts: " << pre_resampler_pts << "  post_resampler_diff: " << post_resampler_diff);
+	  LOG4CPLUS_ERROR(m_timing_logger, "   about to restart: restart_frame's pts: " << start_frame_pts);
 
-  time_duration sync_diff2 = getPlaybackDiffFromTime();
-  // cerr << "CPlayloop::sync: should be in sync now: sync_diff = " << sync_diff2 << endl;
-  LOG4CPLUS_DEBUG(m_timing_logger, "should be in sync now: sync_diff = " << sync_diff2 );
-  m_after_sync = true;
+	  int rc = sleepuntil(start_frame_pts);
+	  if(rc) {
+		  LOG4CPLUS_DEBUG(m_timing_logger, "   CPlayloop::sleepuntil() retuned error" );
+	  }
+	  else {
+		  LOG4CPLUS_DEBUG(m_timing_logger, "   should be in sync now." );
+	  }
+	  m_after_sync = true;
 
-  return 0;
+	  return;
 }
-
 
 
 /*!
     \fn CPlayloop::adjustResamplingFactor()
  */
-void CPlayloop::adjustResamplingFactor(int multichannel_samples_in_playback_ringbuffer)
+void CPlayloop::adjustResamplingFactor()
 {
-  // calculation of the drift:
-  // measure clock time and time by consumed samples in every loop run.
-  // build an average value every 10 loop runs.
-  m_num_multi_channel_samples_played = m_num_multi_channel_samples_arrived - multichannel_samples_in_playback_ringbuffer - m_audio_sink->getDelay();   // resampled_frame will be playback ringbuffer
 
-  ptime now = microsec_clock::universal_time();
-    
-  time_duration play_time_from_clock = now - *(m_player->syncObj()->getPtimePtr());
-  time_duration play_time_from_samples = millisec((m_num_multi_channel_samples_played * 10) / 441);  
-  time_duration time_diff = play_time_from_clock - play_time_from_samples;
 
-  m_average_time_diff += time_diff;
+  m_average_time_diff += getCurrentPTSDeviation();
   m_counter++;
   if(m_counter >= m_average_size) {
-    
-    //    measure the quality of the below usleep calculation
-    // ptime now = microsec_clock::universal_time();
-    // interval = now - (*m_start_time);
-    // cerr << "interval: " << interval << endl;
-
-    // m_last_send_time = now;    
-    
     m_average_time_diff /= m_counter;
 
-    int post_delay = m_audio_sink->getDelay(); // number of frames in the playback buffer of the soundcard / sound driver
-    int ringbuffer_frames = m_packet_ringbuffer->getRingbufferSize() * 256;   // one ringbuffer frame contains 256 frames
+    int diff_in_us = m_average_time_diff.total_microseconds();
+    double diff_in_s = 0.000001 * diff_in_us;
 
-    cerr << "Average time diff (clock - samples) = " << m_average_time_diff <<  " factor used = " << m_resample_factor * m_correction_factor << " RB size: " << ringbuffer_frames << endl;
+    m_correction_factor = 1.0 - diff_in_s * 0.1;
 
-    int diff_in_us = m_average_time_diff.fractional_seconds();
-    
-    // if the resolution off fractional_seconds() id nano sec, then convert it to micro sec
-    if (time_duration::resolution() == boost::date_time::nano) {
-      diff_in_us /= 1000;
-    }
-  
-    diff_in_us += m_average_time_diff.total_seconds() * 1000000;
+    cerr << "Average time diff (clock - samples) = " << m_average_time_diff <<  " factor used = " << m_resample_factor * m_correction_factor << " RB size: " << m_ringbuffer->sizeInFrames() << endl;
 
-    double diff_in_s = 0.000001 * diff_in_us * 0.1;
-
-    m_correction_factor = 1.0 - diff_in_s;  
-
-    // cerr << "total: " << ringbuffer_frames + post_delay << " frames. Alsa(" << post_delay << ")" << endl;
     m_average_time_diff = seconds(0);
     m_counter = 0;
+
+    // if resampling factor would speed up or slow down music too much, prefer a stream reset to get in sync again.
+    float up_th = 1.0f + m_stream_reset_threshold;
+    float low_th = 1.0f - m_stream_reset_threshold;
+
+    if(m_correction_factor < low_th || m_correction_factor > up_th ) {
+  	  LOG4CPLUS_WARN( m_timing_logger, " correction factor '"<< m_correction_factor <<"' is outside desired range of [" << low_th << "," << up_th<< "]");
+  	  resetStream(m_session_id, m_stream_id);
+  	  startStream();
+    }
   }
 }
 
 
-int CPlayloop::getDelayInMultiChannelSamples() {
+
+
+int CPlayloop::getDelayInFrames() {
   int delay;
 
   delay = m_resampler->sizeInMultiChannelSamples();
@@ -540,9 +468,8 @@ int CPlayloop::getDelayInMultiChannelSamples() {
 time_duration CPlayloop::calcSoundCardDelay()
 {
     time_duration latency;
-    int tmp = m_frames_per_second_post_resampler / 1000;
-    latency = millisec(m_audio_sink->getDelay() / tmp);
-
+    int64_t tmp = m_audio_sink->getDelay() * 1000;
+    latency = millisec(tmp / m_frames_per_second_post_resampler);
     return latency;
 }
 
@@ -553,9 +480,8 @@ time_duration CPlayloop::calcSoundCardDelay()
 time_duration CPlayloop::calcResamplerDelay()
 {
     time_duration latency;
-    int tmp = m_frames_per_second_pre_resampler / 1000;
-    latency = millisec(m_resampler->sizeInMultiChannelSamples() / tmp);
-
+    int64_t tmp = m_resampler->sizeInMultiChannelSamples() * 1000;
+    latency = millisec( tmp / m_frames_per_second_pre_resampler);
     return latency;
 }
 
@@ -565,93 +491,25 @@ time_duration CPlayloop::calcResamplerDelay()
 time_duration CPlayloop::calcRingbufferDelay()
 {
     time_duration latency;
-    int tmp = m_frames_per_second_post_resampler / 1000;
-    latency = millisec(m_ringbuffer->sizeInMultiChannelSamples() / tmp);
-
+    int64_t tmp = m_ringbuffer->sizeInMultiChannelSamples() * 1000;
+    latency = millisec(tmp / m_frames_per_second_post_resampler);
     return latency;
 }
 
+time_duration CPlayloop::getCurrentPTSDeviation() {
+	ptime pre_resampler_pts = getPreResamplerPTS();
 
-/*!
-    \fn CPlayloop::playSilence(int num_frames)
- */
-void CPlayloop::playSilence(int num_frames)
-{
-  int granul_in_frames = m_audio_sink->getWriteGranularity() * m_num_channels * sizeof(short);     
-  int num_blocks = num_frames / granul_in_frames;
-  
-  m_frames_to_discard = 0;
+	time_duration rb_duration = calcRingbufferDelay();
+	time_duration resampler_duration = calcResamplerDelay();
+	time_duration sc_duration = calcSoundCardDelay();
+	// current_pts: the frame currently played should be played at this time to be in sync.
+	ptime current_pts = pre_resampler_pts - resampler_duration - rb_duration - sc_duration;
 
-  for(int i = 0; i < num_blocks; i++)
-    m_audio_sink->write((char*)m_silence_buffer, m_audio_sink->getWriteGranularity()); 
-    
+	ptime now = microsec_clock::universal_time();
+	time_duration deviation = now - current_pts;
+	return deviation;
 }
 
-
-/*!
-    \fn CPlayloop::getPlaybackDiff()
- */
-time_duration CPlayloop::getPlaybackDiff()
-{
-    m_num_multi_channel_samples_played = m_num_multi_channel_samples_arrived 
-                                       - m_ringbuffer->sizeInMultiChannelSamples() 
-                                       - m_audio_sink->getDelay();   // resampled_frame will be playback rungbuffer 
-
-
-  ptime now = microsec_clock::universal_time();
-    
-  time_duration play_time_from_clock = now - (*m_player->syncObj()->getPtimePtr());
-  time_duration play_time_from_samples = millisec((m_num_multi_channel_samples_played * 10) / 441);  
-  time_duration time_diff = play_time_from_clock - play_time_from_samples;
-
-  return time_diff;
-}
-
-
-time_duration CPlayloop::getPlaybackDiffFromTime() {
-
-  long long tmp;
-
-  ptime now = microsec_clock::universal_time();
-
-  ptime pre_soundcard = now - calcSoundCardDelay();
-
-  // from last sync object -> calc time for m_timestamp_of_last_sample
-  // sub delay of the buffers 
-
-  if(m_nr_of_last_frame_decoded < m_player->syncObj()->frameNr()) {
-    cerr << "CPlayloop::sync: ERROR: m_nr_of_last_frame_decoded < m_sync_obj->frameNr(). Possibly missed a sync object." << endl; 
-  }
-  assert(m_nr_of_last_frame_decoded >= m_player->syncObj()->frameNr());
-
-
-  long long diff_in_frames = m_nr_of_last_frame_decoded - m_player->syncObj()->frameNr();
-  ptime synctime(*m_player->syncObj()->getPtimePtr());
-
-  tmp = m_frames_per_second_pre_resampler / 1000;
-  ptime post_packet_ringbuffer = synctime + millisec(diff_in_frames / tmp);
-  
-  ptime post_ringbuffer = post_packet_ringbuffer 
-                        + calcResamplerDelay() 
-                        + calcRingbufferDelay(); 
-  
- 
-  // this is the difference in time between the clock and the time calculated 
-  // from played samples. It should be zero.
-  // sync_diff > 0:
-  //   we are late, e.g. due to a soundcard playback underrun.
-  //   now, there are more samples available than needed.
-  //   take the diff in time, calc the diff in frames and through away that amount 
-  //   of samples from the ringbuffer.
-  // sync_diff < 0:
-  //   we are to early. Not enough data to playback arrived. Calc the amount of
-  //   silence samples to play for waiting, or call nanosleep. Whatever gives the 
-  //  better results.
-  time_duration sync_diff = post_ringbuffer - pre_soundcard;
-  
-  return sync_diff;
-
-}
 
 int CPlayloop::sleepuntil(boost::posix_time::ptime wakeup_time) {
 	struct timespec wakeup;
@@ -687,60 +545,6 @@ int CPlayloop::sleepuntil(boost::posix_time::ptime wakeup_time) {
 }
 
 
-/*!
-    \fn CPlayloop::sleep(int duration)
- */
-int CPlayloop::sleep(time_duration duration)
-{
-  int retval = 0;
-
-
-  if( !duration.is_negative() )
-  {
-    LOG4CPLUS_DEBUG(m_timing_logger, "about to sleep for " << duration );
-    struct timespec ts_to_sleep, ts_remaining;
-    ts_to_sleep.tv_sec = duration.total_seconds();
-    ts_to_sleep.tv_nsec = duration.fractional_seconds();
-    
-    //boost::date_time::time_resolutions 
-    if (time_duration::resolution() == boost::date_time::micro) {
-      ts_to_sleep.tv_nsec *= 1000;
-    }
-    
-    int retval = nanosleep( &ts_to_sleep, &ts_remaining);
-    if(retval != 0)
-      cerr << "nanosleep returned early due to a signal!" << endl;
-
-    LOG4CPLUS_DEBUG(m_timing_logger, " ... waking up again ");
-
-  }
-    
-  return retval;  
-}
-
-int CPlayloop::adjustFramesToDiscard(int num_frames_discarded) {
-  // cerr << "CPlayloop::adjustFramesToDiscard(" << num_frames_discarded << ")" << endl;
-
-  if(m_frames_to_discard < num_frames_discarded) {
-    cerr << "CPlayloop::adjustFramesToDiscard: ERROR: m_frames_to_discard < num_frames_discarded. " << endl;
-    m_frames_to_discard = 0;
-    return -1;  
-  }
-
-  m_frames_to_discard -= num_frames_discarded;
-
-  if(m_frames_to_discard < m_ringbuffer->sizeInMultiChannelSamples()) {
-    char *discard_ptr = m_ringbuffer->read( m_frames_to_discard * m_num_channels * m_sample_size);
-    delete discard_ptr;
-
-    m_frames_to_discard = 0;
-
-  }
-
-  // cerr << "CPlayloop::adjustFramesToDiscard: still " << m_frames_to_discard << " frames left to discard. RB size = " << m_ringbuffer->sizeInMultiChannelSamples() << endl;
-
-  return m_frames_to_discard;
-}
 
 /**
     CPlayloop::checkStream(CRTPPacket* packet)
@@ -786,39 +590,6 @@ IAudioIO* CPlayloop::initSoundSystem()
 }
 
 
-void CPlayloop::handleSyncObj(CSync* sync_obj) {
-
-  cerr << "got sync obj: ";  
-  m_player->syncObj()->print();
-  
-  if(m_player->syncObj()->streamId() != m_stream_id || m_player->syncObj()->sessionId() != m_session_id) {
-    // this is a sync obj for a new stream !!!!
-    if(m_start_time != 0)  delete m_start_time;
-    m_start_time = new ptime(microsec_clock::universal_time());
-  }
-  
-  time_duration sleep_time = (*m_player->syncObj()->getPtimePtr()) - (*m_start_time);
-  cerr << "sleep time calculated from sync obj: " << sleep_time << endl;
-  
-  // sleep_time -= milliseconds(100);
-
-  if( !sleep_time.is_negative() )
-  {
-    struct timespec ts_to_sleep, ts_remaining;
-    ts_to_sleep.tv_sec = sleep_time.total_seconds();
-    ts_to_sleep.tv_nsec = sleep_time.fractional_seconds();
-    
-    //boost::date_time::time_resolutions 
-    if (time_duration::resolution() == boost::date_time::micro) {
-      ts_to_sleep.tv_nsec *= 1000;
-    }
-    
-    int retval = nanosleep( &ts_to_sleep, &ts_remaining);
-    if(retval != 0) {
-      cerr << "nanosleep returned early due to a signal!" << endl;
-    }
-  }
-}  
 
 /*!
     \fn CPlayloop::setSync(CSync* sync_obj)
@@ -835,7 +606,144 @@ void CPlayloop::setSync(CSync* sync_obj)
   m_stream_id = sync_obj->streamId();
 }
 
-void CPlayloop::reset(uint32_t oldSessionID, uint32_t oldStreamId) {
+void CPlayloop::resetStream(uint32_t oldSessionID, uint32_t oldStreamId) {
 	m_audio_sink->stop();
 }
 
+/*** get the presentation time stamp of the audio frame just before the resampler
+ * based on the reference time stamp of the current sync object.
+ */
+ptime CPlayloop::getPreResamplerPTS() {
+	ptime* pts = m_player->syncObj()->getPtimePtr();
+	uint32_t pts_frame_nr = m_player->syncObj()->frameNr();
+
+	// time and frame diff between last sync and stream state just before the resampler
+	int64_t pre_resampler_frame_diff = m_nr_of_last_frame_decoded - pts_frame_nr;
+	int64_t tmp = pre_resampler_frame_diff * 1000; // to get milliseconds after division next line
+	time_duration pre_resampler_diff = milliseconds( tmp / m_frames_per_second_pre_resampler);
+	ptime pre_resampler_pts = *pts + pre_resampler_diff;
+
+	return pre_resampler_pts;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+time_duration CPlayloop::getPlaybackDiffFromTime() {
+
+  int64_t tmp;
+
+  ptime now = microsec_clock::universal_time();
+
+  ptime pre_soundcard = now - calcSoundCardDelay();
+
+  // from last sync object -> calc time for m_timestamp_of_last_sample
+  // sub delay of the buffers
+
+  if(m_nr_of_last_frame_decoded < m_player->syncObj()->frameNr()) {
+    cerr << "CPlayloop::sync: ERROR: m_nr_of_last_frame_decoded < m_sync_obj->frameNr(). Possibly missed a sync object." << endl;
+  }
+  assert(m_nr_of_last_frame_decoded >= m_player->syncObj()->frameNr());
+
+
+  long long diff_in_frames = m_nr_of_last_frame_decoded - m_player->syncObj()->frameNr();
+  ptime synctime(*m_player->syncObj()->getPtimePtr());
+
+  tmp = m_frames_per_second_pre_resampler / 1000;
+  ptime post_packet_ringbuffer = synctime + millisec(diff_in_frames / tmp);
+
+  ptime post_ringbuffer = post_packet_ringbuffer
+                        + calcResamplerDelay()
+                        + calcRingbufferDelay();
+
+
+  // this is the difference in time between the clock and the time calculated
+  // from played samples. It should be zero.
+  // sync_diff > 0:
+  //   we are late, e.g. due to a soundcard playback underrun.
+  //   now, there are more samples available than needed.
+  //   take the diff in time, calc the diff in frames and through away that amount
+  //   of samples from the ringbuffer.
+  // sync_diff < 0:
+  //   we are to early. Not enough data to playback arrived. Calc the amount of
+  //   silence samples to play for waiting, or call nanosleep. Whatever gives the
+  //  better results.
+  time_duration sync_diff = post_ringbuffer - pre_soundcard;
+
+  return sync_diff;
+
+}
+
+
+/*!
+    \fn CPlayloop::adjustResamplingFactor()
+ */
+void CPlayloop::adjustResamplingFactor(int multichannel_samples_in_playback_ringbuffer)
+{
+  // calculation of the drift:
+  // measure clock time and time by consumed samples in every loop run.
+  // build an average value every 10 loop runs.
+  m_num_multi_channel_samples_played = m_num_multi_channel_samples_arrived - multichannel_samples_in_playback_ringbuffer - m_audio_sink->getDelay();   // resampled_frame will be playback ringbuffer
+
+  ptime now = microsec_clock::universal_time();
+
+  time_duration play_time_from_clock = now - *(m_player->syncObj()->getPtimePtr());
+  time_duration play_time_from_samples = millisec((m_num_multi_channel_samples_played * 10) / 441);
+  time_duration time_diff = play_time_from_clock - play_time_from_samples;
+
+  m_average_time_diff += time_diff;
+  m_counter++;
+  if(m_counter >= m_average_size) {
+
+    //    measure the quality of the below usleep calculation
+    // ptime now = microsec_clock::universal_time();
+    // interval = now - (*m_start_time);
+    // cerr << "interval: " << interval << endl;
+
+    // m_last_send_time = now;
+
+    m_average_time_diff /= m_counter;
+
+    int post_delay = m_audio_sink->getDelay(); // number of frames in the playback buffer of the soundcard / sound driver
+    int ringbuffer_frames = m_packet_ringbuffer->getRingbufferSize() * 256;   // one ringbuffer frame contains 256 frames
+
+    cerr << "Average time diff (clock - samples) = " << m_average_time_diff <<  " factor used = " << m_resample_factor * m_correction_factor << " RB size: " << ringbuffer_frames << endl;
+
+    int diff_in_us = m_average_time_diff.fractional_seconds();
+
+    // if the resolution off fractional_seconds() is nano sec, then convert it to micro sec
+    if (time_duration::resolution() == boost::date_time::nano) {
+      diff_in_us /= 1000;
+    }
+
+    diff_in_us += m_average_time_diff.total_seconds() * 1000000;
+
+    double diff_in_s = 0.000001 * diff_in_us * 0.1;
+
+    m_correction_factor = 1.0 - diff_in_s;
+
+    // cerr << "total: " << ringbuffer_frames + post_delay << " frames. Alsa(" << post_delay << ")" << endl;
+    m_average_time_diff = seconds(0);
+    m_counter = 0;
+
+    // if resampling factor would speed up or slow down music too much, prefer a stream reset to get in sync again.
+    float up_th = 1.0f + m_stream_reset_threshold;
+    float low_th = 1.0f - m_stream_reset_threshold;
+
+    if(m_correction_factor < low_th || m_correction_factor > up_th ) {
+  	  LOG4CPLUS_WARN( m_timing_logger, " correction factor '"<< m_correction_factor <<"' is outside desired range of [" << low_th << "," << up_th<< "]");
+  	  //resetStream(m_session_id, m_stream_id);
+  	  //startStream();
+    }
+
+  }
+
+}
