@@ -110,7 +110,6 @@ private:
     int sleepuntil(boost::posix_time::ptime wakeup_time);
 
     void adjustResamplingFactor();
-    void adjustResamplingFactor(int multichannel_samples_in_playback_ringbuffer);
     int getDelayInFrames();
 
     boost::posix_time::ptime getPreResamplerPTS();
@@ -120,7 +119,6 @@ private:
     boost::posix_time::time_duration calcRingbufferDelay();
 
     boost::posix_time::time_duration getCurrentPTSDeviation();
-    boost::posix_time::time_duration getPlaybackDiffFromTime();
     
     boost::posix_time::time_duration m_last_start_stream_error;
 

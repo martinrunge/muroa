@@ -59,8 +59,7 @@ public:
     void write(float* src, int num_samples);
     void write(short* buffer, int num_samples);
 
-    int sizeInMultiChannelSamples();
-    int sizeInFrames() { sizeInMultiChannelSamples(); };
+    int sizeInFrames();
     int write(int16_t** per_channel_buffers, int start_offset, int end_offset );
     int capacity(void);
     int available(void);

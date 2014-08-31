@@ -43,10 +43,10 @@ public:
     CResampler(CRingBuffer *ringbuffer, enum converter_quality quality, int num_channels);
     virtual ~CResampler() = 0;
     
-    virtual int resampleFrame(CAudioFrame* in_frame, double factor = 1.0) = 0;
+    virtual int resamplePacket(CAudioFrame* in_frame, double factor = 1.0) = 0;
     virtual int reset() = 0;
 
-    virtual int sizeInMultiChannelSamples() = 0;
+    virtual int sizeInFrames() = 0;
     
 };
 

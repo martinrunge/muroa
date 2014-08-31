@@ -62,7 +62,7 @@ public:
 
     int reset();
 
-    int sizeInMultiChannelSamples();
+    int sizeInFrames();
     
 
     

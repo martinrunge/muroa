@@ -120,7 +120,7 @@ int CRingBuffer::size()
     return size;
 }
 
-int CRingBuffer::sizeInMultiChannelSamples() {
+int CRingBuffer::sizeInFrames() {
    return size() / (m_num_channels * sizeof(short));
 }
 

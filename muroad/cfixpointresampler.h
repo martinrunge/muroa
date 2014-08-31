@@ -51,11 +51,11 @@ public:
 
     void init(int num_channels = 2, double volume = 1.0);
 
-    int resampleFrame(CAudioFrame* in_frame, double factor = 1.0);
+    int resamplePacket(CAudioFrame* in_frame, double factor = 1.0);
 
     int reset();
 
-    int sizeInMultiChannelSamples();
+    int sizeInFrames();
     
 
     

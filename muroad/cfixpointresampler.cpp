@@ -244,7 +244,7 @@ void CFixPointResampler::deleteBuffers() {
   
 }
 
-int CFixPointResampler::resampleFrame(CAudioFrame* in_frame, double factor)
+int CFixPointResampler::resamplePacket(CAudioFrame* in_frame, double factor)
 {
   addSamplesInX(in_frame);
   // now the samples are in the m_X[] arrays devided by channels
@@ -360,7 +360,7 @@ int CFixPointResampler::reset() {
 
 
 
-int CFixPointResampler::sizeInMultiChannelSamples() {
+int CFixPointResampler::sizeInFrames() {
   return 0;
 }
 

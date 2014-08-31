@@ -116,7 +116,7 @@ CFloatResampler::~CFloatResampler()
 /*!
     \fn CFloatResampler::resampleFrame(CAudioFrame* in_frame)
  */
-int CFloatResampler::resampleFrame(CAudioFrame* in_frame, double factor)
+int CFloatResampler::resamplePacket(CAudioFrame* in_frame, double factor)
 {
   int res;
   // src_set_ratio (m_src_state, factor);
@@ -218,7 +218,7 @@ int CFloatResampler::copyResampledFramesToRingbuffer()
 }
 
 
-int CFloatResampler::sizeInMultiChannelSamples() {
+int CFloatResampler::sizeInFrames() {
   return m_src_data->input_frames;
 }
 
