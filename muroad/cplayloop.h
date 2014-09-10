@@ -69,38 +69,22 @@ public:
 
 private:
 
-    CPacketRingBuffer *m_packet_ringbuffer;
-    CRingBuffer *m_ringbuffer;
-
-
-    CResampler* m_resampler;
     double m_resample_factor;
     double m_correction_factor;
 
-    //CAudioIoAlsa *m_audio_sink;
-    IAudioIO *m_audio_sink;
-    IAudioIO* initSoundSystem();
-
     /// write granularity in frames
     int m_write_granularity;
-
-
-    ptime* m_start_time;
 
     uint32_t m_stream_id, m_session_id;
 
     int m_seqnum;
     int m_counter;
 
-    long m_num_multi_channel_samples_played;
-    long m_num_multi_channel_samples_arrived;
+    long m_num_frames_arrived;
 
     boost::posix_time::time_duration m_average_time_diff;
     int m_average_size;
-    boost::posix_time::time_duration m_restart_duration;
 
-
-private:
     CAudioFrame* getAudioPacket(bool block);
     bool waitForData();
     int addPacket2RingBuffer(bool block);
@@ -110,17 +94,16 @@ private:
     int sleepuntil(boost::posix_time::ptime wakeup_time);
 
     void adjustResamplingFactor();
-    int getDelayInFrames();
 
     boost::posix_time::ptime getPreResamplerPTS();
 
     boost::posix_time::time_duration calcSoundCardDelay();
     boost::posix_time::time_duration calcResamplerDelay();
     boost::posix_time::time_duration calcRingbufferDelay();
-
     boost::posix_time::time_duration getCurrentPTSDeviation();
     
     boost::posix_time::time_duration m_last_start_stream_error;
+    boost::posix_time::time_duration m_max_stream_reset_duration;
 
     // nr of last audio frame that was not yet resampled. To get the presentation timestamp of this frame,
     // it is save to simply interpolate:
@@ -136,15 +119,20 @@ private:
     int m_periods_to_start;
     float m_stream_reset_threshold;
 
-    short *m_silence_buffer;
-    int m_frames_to_discard;
-
     FILE* m_debug_fd1;
     
     CPlayer* m_player;
     muroa::CApp *m_app;
     muroa::CSettings& m_settings;
     
+    CPacketRingBuffer *m_packet_ringbuffer;
+    CRingBuffer *m_ringbuffer;
+    CResampler* m_resampler;
+
+    //CAudioIoAlsa *m_audio_sink;
+    IAudioIO *m_audio_sink;
+    IAudioIO* initSoundSystem();
+
     int m_secs_idle;
     int m_max_idle;
 

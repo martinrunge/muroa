@@ -154,12 +154,9 @@ IContentItem* CRootItem::addContentItem(string text, int posInParent) throw (ExM
 		parent = mkPath(path);
 	}
 
-//	if(posInParent == -1) {
-//		posInParent = parent->numChildren();
-//	}
-	beginInsertItems(posInParent, 1, parent );
+	//beginInsertItems(posInParent, 1, parent );
 	IContentItem* newItem = IContentItem::itemFactory( itemType, this, text, parent, posInParent);
-	endInsertItems();
+	//endInsertItems();
 	return newItem;
 }
 

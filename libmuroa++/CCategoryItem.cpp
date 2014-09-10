@@ -209,7 +209,9 @@ IContentItem* CCategoryItem::getSuccessorOf(IContentItem* ci) {
 
 
 void CCategoryItem::delContentItem(int pos) {
+	m_root_item->beginRemoveItems(pos, 1, this);
 	m_content_items.erase(m_content_items.begin() + pos);
+	m_root_item->endRemoveItems();
 }
 
 void CCategoryItem::delCategory(CCategoryItem* categoryItem) {

@@ -9,7 +9,9 @@
 #define CSTREAMCLIENTHDL_H_
 
 #include <string>
+#include "IItemModel.h"
 
+class CStream;
 
 namespace muroa {
 
@@ -22,9 +24,9 @@ class CStreamClientItem;
 *  If a Streaming client appeares again, it is added to this session again and enabled.
 *  If a client appears that is not part of any session (disabled there), it gets added to availableClients.
 */
-class CStreamClientHdl {
+class CStreamClientHdl : public IItemModel {
 public:
-	CStreamClientHdl(CSession* session);
+	CStreamClientHdl(CSession* session, CStream* stream);
 	virtual ~CStreamClientHdl();
 
 	CRootItem* buildStateRevClientChange(CRootItem* curState,
@@ -41,9 +43,29 @@ public:
     bool isOwnClient(CStreamClientItem* sci);
 	std::pair<int,int> hasClient(std::string name,std::string category=std::string("/RenderClients"));
 
+	// inherited from IItemModel
+	bool beginInsertItems(const int pos, const int count, const CCategoryItem* parent);
+	bool endInsertItems(void);
+	bool beginRemoveItems(const int pos, const int count, const CCategoryItem* parent);
+	bool endRemoveItems(void);
+
+protected:
+	// inherited from IItemModel
+    void reset();
+
 
 private:
 	CSession* m_session;
+	CStream* m_stream;
+
+	const CCategoryItem* m_inserting_to_parent;
+	int m_insert_pos;
+	int m_insert_count;
+	const CCategoryItem* m_removing_from_parent;
+	int m_remove_pos;
+	int m_remove_count;
+
+	void assertNoActiveTransaction();
 };
 
 } /* namespace muroa */

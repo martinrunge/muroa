@@ -161,7 +161,7 @@ CStreamClientItem::CStreamClientItem(CRootItem *root_item, std::string text, CCa
 		if(m_parent) {
 			m_parent->addChild(this, posInParent);
 		}
-		// m_hash is an index that does not change during livetime of this object any more.
+		// m_hash is an index that does not change during live time of this object any more.
 	}
 	catch(std::invalid_argument& ex)
 	{

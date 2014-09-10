@@ -46,7 +46,7 @@ class CSessionStorage;
 class CSession : boost::noncopyable {
 public:
 	CSession(std::string name, boost::asio::io_service& io_service, CSessionContainer* const sessionContainer);
- 	//CSession( std::string name );
+ 	//CSession( std::string name );CSession
 	virtual ~CSession();
 
 	inline boost::asio::io_service& getIoService() {return m_io_service; };
@@ -177,8 +177,6 @@ private:
 	std::set<CConnection*> m_connections;
 	std::map<unsigned, CConnection*> m_connections_by_id;
 
-	CStreamClientHdl m_streamClientHdl;
-
 	std::map<uint32_t, CConnection*> m_job_initiators;
 
 	client_job_t getClientCmdIdBySubprocessCmdID(uint32_t subprocess_cmd_id, bool delentry = true) throw(ExInvMsg);
@@ -212,7 +210,8 @@ private:
     std::string m_stateDBFilename;
     CStateDB* m_stateDB;
 
-    CStream m_stream;
+    ::CStream m_stream;
+	CStreamClientHdl m_streamClientHdl;
 
 	CSessionStorage* m_sessionStorage;
 

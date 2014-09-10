@@ -63,7 +63,6 @@ CPlayloop::CPlayloop(CPlayer* parent, CApp *app, CPacketRingBuffer* packet_ringb
 	m_timing_logger = Logger::getInstance("timing");
 
 	m_desired_sample_rate = 48000;
-	m_frames_to_discard = 0;
 
 	m_periods_to_start = 4;
 
@@ -102,30 +101,18 @@ CPlayloop::CPlayloop(CPlayer* parent, CApp *app, CPacketRingBuffer* packet_ringb
 	m_resample_factor = (double) m_frames_per_second_post_resampler/m_frames_per_second_pre_resampler;
 	m_correction_factor = 1.0;
 
-	m_num_multi_channel_samples_played = 0;
-	m_num_multi_channel_samples_arrived = 0;
-
+	m_num_frames_arrived = 0;
 
 	cerr << "Audio sink granularity = " << m_audio_sink->getWriteGranularity() << endl;
-
-	m_restart_duration = milliseconds(500);
 
 	m_seqnum = 0;
 
 	m_stream_id = 0;
 	m_session_id = 0;
 
-	m_start_time = 0;
-
 	m_secs_idle = 0;
 
 	int num_shorts = m_audio_sink->getWriteGranularity() / sizeof(short);
-	m_silence_buffer = new short[num_shorts];
-	short silence_val = 0;
-
-	for(int i=0; i < num_shorts; i++) {
-		m_silence_buffer[i] = silence_val;
-	}
 
 	// m_debug_fd1 = fopen("m_debug_fd1","w");
 }
@@ -134,9 +121,6 @@ CPlayloop::CPlayloop(CPlayer* parent, CApp *app, CPacketRingBuffer* packet_ringb
 
 CPlayloop::~CPlayloop()
 {
-	delete[] m_silence_buffer;
-
-	delete m_start_time;
 	delete m_resampler;
 	delete m_ringbuffer;
 	m_audio_sink->close();
@@ -215,7 +199,7 @@ bool CPlayloop::waitForData() {
 int CPlayloop::addPacket2RingBuffer(bool block) {
 	CAudioFrame* frame = getAudioPacket(block);
 	if(frame) {
-		m_num_multi_channel_samples_arrived = frame->firstFrameNr();
+		m_num_frames_arrived = frame->firstFrameNr();
 		m_nr_of_last_frame_decoded = frame->firstFrameNr() + frame->sizeInMultiChannelSamples() - 1;
 		int num_frames = m_resampler->resamplePacket(frame, m_resample_factor * m_correction_factor);
 		delete frame;

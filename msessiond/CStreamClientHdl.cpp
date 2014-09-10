@@ -7,6 +7,7 @@
 
 #include "CStreamClientHdl.h"
 #include "CSession.h"
+#include "mediaprocessing/CStream.h"
 #include "CRootItem.h"
 #include "CStreamClientItem.h"
 
@@ -17,7 +18,14 @@ using namespace muroa;
 
 namespace muroa {
 
-CStreamClientHdl::CStreamClientHdl(CSession* session) : m_session(session)
+CStreamClientHdl::CStreamClientHdl(CSession* session, CStream* stream) : m_session(session),
+		                                                                 m_stream(stream),
+		                                                                 m_inserting_to_parent(0),
+		                                                                 m_insert_pos(0),
+		                                                                 m_insert_count(0),
+		                                                                 m_removing_from_parent(0),
+		                                                                 m_remove_pos(0),
+		                                                                 m_remove_count(0)
 {
 
 }
@@ -42,8 +50,8 @@ CRootItem* CStreamClientHdl::buildStateRevClientChange(CRootItem* curState,
  * \brief create a diff string representing an added streaming client
  *        As seen by this session.
  *
- *  This method gets called for all sessions when a streaming client appeares vid DNS-SD (Avahi)
- *  If the streaming client is part of a session, it is already known there, but disabled. It will be enabled.
+ *  This method gets called for all sessions when a streaming client appears via DNS-SD (Avahi)
+ *  If the streaming client is part of a session, it is already known there, but disabled, it will be enabled.
  *	For all sessions this client is not part of, it gets available in the "availStreamingClients" section.
  *
  *	\return std::pair with the pointer to a new RootItem containing the new state and the diff between
@@ -165,10 +173,10 @@ std::pair<CRootItem*, std::string> CStreamClientHdl::rmClientStateDiff(const CRo
 }
 
 /**
- *  \brief  Take ownership of a renderclient
+ *  \brief  Take ownership of a render client
  *
- *  Ownership of a renderclient was taken by session 'ownerSessionsName'. If it
- *  belonged to this session before, relase ownershio. Fill in
+ *  Ownership of a render client was taken by session 'ownerSessionsName'. If it
+ *  belonged to this session before, release ownership. Fill in
  *  'ownerSessionName' as owner of render client named 'name'.
  *
  *  \return as a pair: both pointer to sessionState CRootItem and the diff as string
@@ -326,5 +334,87 @@ pair<int,int> CStreamClientHdl::hasClient(string name, string category)
 
 	return make_pair(-1, insertpos);
 }
+
+
+bool CStreamClientHdl::beginInsertItems(const int pos, const int count, const CCategoryItem* parent) {
+	assertNoActiveTransaction();
+
+	m_insert_pos = pos;
+	m_insert_count = count;
+	m_inserting_to_parent = parent;
+}
+
+bool CStreamClientHdl::endInsertItems(void) {
+
+	CCategoryItem* citem = const_cast<CCategoryItem*>(m_inserting_to_parent);
+
+	// do insert items here
+	for(int i = m_insert_pos; i < m_insert_pos + m_insert_count; i++) {
+		const IContentItem* item = citem->getContentItem(i);
+		if(item->type() == CItemType::E_STREAM_CLIENT) {
+			const CStreamClientItem *sci = reinterpret_cast<const CStreamClientItem*>(item);
+			if(sci->isEnabled() && m_session->getName().compare(sci->getOwnerSessionName()) == 0) {
+				ServDescPtr srvPtr = m_session->getServiceByName(sci->getServiceName());
+				m_stream->addReceiver(srvPtr);
+			}
+		}
+	}
+
+	m_insert_pos = 0;
+	m_insert_count = 0;
+	m_inserting_to_parent = 0;
+}
+
+bool CStreamClientHdl::beginRemoveItems(const int pos, const int count, const CCategoryItem* parent) {
+	assertNoActiveTransaction();
+
+	m_remove_pos = pos;
+	m_remove_count = count;
+	m_removing_from_parent = parent;
+
+	CCategoryItem* citem = const_cast<CCategoryItem*>(m_removing_from_parent);
+
+	// do remove items here
+	for(int i = m_remove_pos; i < m_remove_pos + m_remove_count; i++) {
+		const IContentItem* item = citem->getContentItem(i);
+		if(item->type() == CItemType::E_STREAM_CLIENT) {
+			const CStreamClientItem *sci = reinterpret_cast<const CStreamClientItem*>(item);
+			if(sci->isEnabled() && m_session->getName().compare(sci->getOwnerSessionName()) == 0) {
+				m_stream->rmReceiver(sci->getServiceName());
+			}
+		}
+	}
+
+}
+
+bool CStreamClientHdl::endRemoveItems(void) {
+
+	m_remove_pos = 0;
+	m_remove_count = 0;
+	m_removing_from_parent = 0;
+}
+
+void CStreamClientHdl::reset() {
+	assertNoActiveTransaction();
+
+	m_insert_pos = 0;
+	m_insert_count = 0;
+	m_inserting_to_parent = 0;
+
+	m_remove_pos = 0;
+	m_remove_count = 0;
+	m_removing_from_parent = 0;
+}
+
+void CStreamClientHdl::assertNoActiveTransaction() {
+	assert(m_insert_pos == 0);
+	assert(m_insert_count == 0);
+	assert(m_inserting_to_parent == 0);
+
+	assert(m_remove_pos == 0);
+	assert(m_remove_count == 0);
+	assert(m_removing_from_parent == 0);
+}
+
 
 } /* namespace muroa */

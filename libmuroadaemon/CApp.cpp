@@ -108,7 +108,7 @@ void CApp::initLog() {
     }
     SharedAppenderPtr log_appender(appender);
 	log_appender->setName("LogAppender");
-	std::auto_ptr<Layout> myLayout = std::auto_ptr<Layout>(new log4cplus::TTCCLayout());
+	std::auto_ptr<Layout> myLayout = std::auto_ptr<Layout>(new log4cplus::PatternLayout("%d{%H:%M:%S,%q} [ %t: %-5p ] %m%n"));
 	log_appender->setLayout(myLayout);
 
 	m_logger.addAppender(log_appender);
