@@ -66,7 +66,7 @@ include_directories(${SOURCE_DIR}
                     ${CMAKE_CURRENT_SOURCE_DIR}/../libmuroadaemon 
                     ${CMAKE_CURRENT_SOURCE_DIR}/../libmuroa++
                     ${CMAKE_CURRENT_SOURCE_DIR}/../libsock++
-                    ${CMAKE_CURRENT_SOURCE_DIR}/../libdsaudio
+                    ${CMAKE_CURRENT_SOURCE_DIR}/../libmstream
                     ${ALSA_INCLUDE_DIR}
                     ) 
 
@@ -85,7 +85,7 @@ link_directories(/home/martin/x-tools/arm-unknown-linux-gnueabi/arm-unknown-linu
                  "${CMAKE_SOURCE_DIR}/../libmuroadaemon/build_${ARCH}" 
 #                 "${CMAKE_SOURCE_DIR}/../libmuroa++/build_${ARCH}"
                  "${CMAKE_SOURCE_DIR}/../libsock++/build_${ARCH}"
-                 "${CMAKE_SOURCE_DIR}/../libdsaudio/build_${ARCH}")
+                 "${CMAKE_SOURCE_DIR}/../libmstream/build_${ARCH}")
 
 ADD_EXECUTABLE(muroad ${SRCS} ${HEADERS} )
 
@@ -105,7 +105,7 @@ TARGET_LINK_LIBRARIES(muroad       ${CMAKE_THREAD_LIBS_INIT}
                                    ${libavahiclient_LIBRARY} 
                                    ${libavahicommon_LIBRARY}
                                    sock++
-                                   dsaudio
+                                   mstream
                                    muroadaemon
                                    rt
                                    )

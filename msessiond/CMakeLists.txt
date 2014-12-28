@@ -21,7 +21,6 @@ find_package( libxdiff REQUIRED )
 find_package( Avahi COMPONENTS common client REQUIRED ) 
 
 
-
 # add_subdirectory(unittest)
 
 add_definitions(-D__STDC_CONSTANT_MACROS)
@@ -101,14 +100,14 @@ include_directories(${SOURCE_DIR}
                     ${CMAKE_CURRENT_SOURCE_DIR} 
                     ${CMAKE_CURRENT_SOURCE_DIR}/../libmuroadaemon 
                     ${CMAKE_CURRENT_SOURCE_DIR}/../libmuroa++
-                    ${CMAKE_CURRENT_SOURCE_DIR}/../libstreamsrv
+                    ${CMAKE_CURRENT_SOURCE_DIR}/../libmstream
                     ${CMAKE_CURRENT_SOURCE_DIR}/../libsock++
                     ${CMAKE_CURRENT_SOURCE_DIR}/../libdsaudio) 
 
 link_directories(${BINARY_DIR} 
                  "${CMAKE_CURRENT_BINARY_DIR}/../libmuroadaemon/build_x86" 
                  "${CMAKE_CURRENT_BINARY_DIR}/../libmuroa++/build"
-                 "${CMAKE_CURRENT_BINARY_DIR}/../libstreamsrv/build_x86"
+                 "${CMAKE_CURRENT_BINARY_DIR}/../libmstream/build_x86"
                  "${CMAKE_CURRENT_BINARY_DIR}/../libsock++/build_x86"
                  )
 
@@ -118,7 +117,7 @@ set_target_properties( msessiond PROPERTIES  COMPILE_FLAGS "-std=gnu++0x" )
 
 TARGET_LINK_LIBRARIES(msessiond    muroadaemon
                                    muroa++
-                                   streamsrv
+                                   mstream
                                    sock++
                                    ${Boost_LIBRARIES}
                                    ${SQLITE_LIBRARIES}
@@ -193,7 +192,7 @@ if( ${unittests} )
     TARGET_LINK_LIBRARIES(msessiondtest  ${CPPUNIT_LIBRARIES} 
                                          muroa++
                                          muroadaemon
-                                         streamsrv
+                                         mstream
                                          sock++
                                          ${Boost_LIBRARIES} 
                                          ${Taglib_LIBRARIES} 

@@ -21,7 +21,6 @@ else( libxdiff_FOUND )
   add_subdirectory (3rdparty/libxdiff-0.23)
   
   FIND_PATH(libxdiff_INCLUDE_DIRS xdiff.h ${CMAKE_SOURCE_DIR}/3rdparty/libxdiff-0.23/xdiff )
-
   set( libxdiff_LIBRARIES ${CMAKE_BINARY_DIR}/3rdparty/libxdiff-0.23/libxdiff.so )   
   
   MARK_AS_ADVANCED(libxdiff_LIBRARIES)				
@@ -32,14 +31,15 @@ endif( libxdiff_FOUND )
 
 
 if( ${msessiond} )
-  add_subdirectory (libstreamsrv)
   add_subdirectory (mmscanner)
   add_subdirectory (msessiond)
 endif( ${msessiond} )
 
 if( ${muroad} )
-  add_subdirectory (libdsaudio)  
   add_subdirectory (muroad)
+  if( ${unittests} )
+    add_subdirectory(libmstream/unittest)
+  endif( ${unittests} )
 endif( ${muroad} )
 	  
 if( ${mqtclient} )
@@ -49,10 +49,14 @@ endif( ${mqtclient} )
 
 if( ${msessiond} OR ${mqtclient} )
   add_subdirectory (libmuroa++)
+  if( ${unittests} )
+    add_subdirectory(libmuroa++/unittest)
+  endif( ${unittests} )
 endif( ${msessiond} OR ${mqtclient} )
 
 
 if( ${msessiond} OR  ${muroad} )
+  add_subdirectory (libmstream)
   add_subdirectory (libmuroadaemon)  
   add_subdirectory (libsock++)
 endif( ${msessiond} OR ${muroad} )
