@@ -367,7 +367,7 @@ int CFixPointResampler::reset() {
 
 
 
-int CFixPointResampler::sizeInMultiChannelSamples() {
+int CFixPointResampler::sizeInFrames() {
   return 0;
 }
 

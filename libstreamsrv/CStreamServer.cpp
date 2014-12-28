@@ -17,21 +17,24 @@
  *   Free Software Foundation, Inc.,                                       *
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
-#include "cstreamserver.h"
+#include "CStreamServer.h"
 #include "cmds/CmdStreamReset.h"
 
 #include <log4cplus/loggingmacros.h>
 #include <log4cplus/loglevel.h>
+
+#include <boost/asio.hpp>
 
 using namespace std;
 using namespace boost::posix_time;
 using namespace muroa;
 using namespace log4cplus;
 
-CStreamServer::CStreamServer(int session_id, int transport_buffer_size_in_ms) : 
+CStreamServer::CStreamServer(int timeServerPort, int session_id, int transport_buffer_size_in_ms) :
             m_first_send_time(not_a_date_time), 
             m_send_time(not_a_date_time), 
-            m_last_send_time(not_a_date_time) {
+            m_last_send_time(not_a_date_time),
+		    m_time_server_port(timeServerPort) {
 
   m_timing_logger = Logger::getInstance("timing");
 
@@ -48,18 +51,12 @@ CStreamServer::CStreamServer(int session_id, int transport_buffer_size_in_ms) :
   
   m_rtp_packet = new CRTPPacket(m_session_id, m_stream_id, m_payload_size);
 
-
   m_frames_in_sync_period = 0;
-
-
 }
-
 
 CStreamServer::~CStreamServer()
 {
 }
-
-
 
 
 /*!
@@ -79,6 +76,7 @@ int CStreamServer::open(int audio_bytes_per_second)
   m_syncobj.frameNr(0);
   m_syncobj.streamId(m_stream_id);  
   m_syncobj.sessionId(m_session_id);
+  m_syncobj.setMediaClockSrv(boost::asio::ip::address(), m_time_server_port);
   m_syncobj.serialize();
 
   m_rtp_packet->sessionID(m_session_id);
@@ -101,7 +99,6 @@ int CStreamServer::open(int audio_bytes_per_second)
   sendToAllClients(m_rtp_packet);
 
   return 0;	LOG4CPLUS_DEBUG(m_timing_logger, "sync");
-
 }
 
 
@@ -144,7 +141,6 @@ int CStreamServer::write(char* buffer, int length) {
            left = 0;
        }
    }
-
    return sum;
 }
 
@@ -226,7 +222,6 @@ list<CStreamConnection*>::iterator CStreamServer::addStreamConnection(CStreamCon
   m_connection_list_mutex.Lock();
   iter = m_connection_list.insert(m_connection_list.end(), conn);
   m_connection_list_mutex.UnLock();
-
 }
 
 
@@ -250,9 +245,11 @@ CStreamConnection* CStreamServer::removeStreamConnection(list<CStreamConnection*
 void CStreamServer::sendToAllClients(CRTPPacket* packet)
 {
     list<CStreamConnection*>::iterator iter;
+    m_connection_list_mutex.Lock();
     for(iter = m_connection_list.begin(); iter != m_connection_list.end(); iter++ ) {
       (*iter)->send(packet->bufferPtr(), packet->usedBufferSize()); 
     }
+    m_connection_list_mutex.UnLock();
 }
 
 
@@ -276,9 +273,9 @@ list<CStreamConnection*>::iterator CStreamServer::addClient(CIPv4Address* addr, 
         conn->connect(addr);
         return addStreamConnection(conn);
     }
-    else
+    else {
         return m_connection_list.end();
-
+    }
 }
 
 void CStreamServer::adjustReceiverList(std::vector<ServDescPtr> receivers)
@@ -336,85 +333,11 @@ CSync* CStreamServer::getSyncObj(uint32_t session_id, uint32_t stream_id)
       m_syncobj.serialize();
       return &m_syncobj;
     }
-    else
+    else {
       return 0;
+    }
 }
 
-//
-//void CStreamServer::adjustClientListTo(std::list<std::string> clients)
-//{
-//  cerr << "CStreamServer::adjustClientListTo:" << endl;
-//  CIPv4Address* connection_list_addr;
-//  CIPv4Address tmp_addr;
-//  list<CStreamConnection*>::iterator conn_iter, tmp_conn_iter;
-//  list<string>::iterator clients_iter, clients_tmp_iter;
-//
-//  for(conn_iter = m_connection_list.begin(); conn_iter != m_connection_list.end(); conn_iter++ ) {
-//
-//
-//    connection_list_addr = (*conn_iter)->getClientAddress();
-//    cerr << "checking if " << *connection_list_addr << " is still in the list of clients..." ;
-//    bool found = false;
-//
-//    for(clients_iter = clients.begin(); clients_iter != clients.end(); clients_iter++ ) {
-//      tmp_addr = *clients_iter;
-//      if(tmp_addr.port() == 0)
-//        tmp_addr.port(m_std_client_port);
-//
-//      if(tmp_addr == *connection_list_addr) {
-//        found = true;
-//        break;
-//      }
-//    }
-//    if (!found) {
-//      cerr << " not found -> remove!" << endl;
-//      if(conn_iter == m_connection_list.begin()) {
-//        removeStreamConnection(conn_iter);
-//        conn_iter = m_connection_list.begin();
-//      }
-//      else {
-//        tmp_conn_iter = conn_iter;
-//        --tmp_conn_iter;
-//        removeStreamConnection(conn_iter);
-//        conn_iter = tmp_conn_iter;
-//      }
-//    }
-//    else {
-//      cerr << "found -> keep!" << endl;
-//    }
-//  }
-//  // now, all connections to clients not in the list any more have been removed.
-//
-//
-//  for(clients_iter = clients.begin(); clients_iter != clients.end(); clients_iter++ ) {
-//    cerr << "checking if " << *clients_iter << " is already in the list of connections ..." ;
-//
-//    tmp_addr = *clients_iter;
-//    if(tmp_addr.port() == 0)
-//      tmp_addr.port(m_std_client_port);
-//
-//    bool found = false;
-//
-//    for(conn_iter = m_connection_list.begin(); conn_iter != m_connection_list.end(); conn_iter++ ) {
-//      connection_list_addr = (*conn_iter)->getClientAddress();
-//
-//      if(tmp_addr == *connection_list_addr) {
-//        found = true;
-//        break;
-//      }
-//    }
-//    if (!found) {
-//      cerr << " not found -> add!" << endl;
-//      addClient(&tmp_addr);
-//    }
-//    else {
-//      cerr << "found -> already present in connection list!" << endl;
-//    }
-//  }
-//  // now, the lists are in sync
-//
-//}
-//
 
 /*!
     \fn CStreamServer::stdClientPort(int port)
@@ -441,7 +364,9 @@ void CStreamServer::listClients(void)
 {
   list<CStreamConnection*>::iterator iter;
   cerr << "List of clients in session: " << endl;
+  m_connection_list_mutex.Lock();
   for(iter = m_connection_list.begin(); iter != m_connection_list.end(); iter++ ) {
     cerr << *(*iter)->getClientAddress() << endl;
   }
+  m_connection_list_mutex.UnLock();
 }

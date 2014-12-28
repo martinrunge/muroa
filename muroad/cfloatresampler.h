@@ -35,16 +35,15 @@ audio resampling class
 class CAudioFrame;
 class CRingBuffer;
 
-
 class CFloatResampler : public CResampler {
 public:
     CFloatResampler(CRingBuffer *ringbuffer, enum converter_quality quality, int num_channels);
     ~CFloatResampler();
     
-    int resampleFrame(CAudioFrame* in_frame, double factor = 1.0);
+    int resamplePacket(CAudioFrame* in_frame, double factor = 1.0);
     int reset();
 
-    int sizeInMultiChannelSamples();
+    int sizeInFrames();
 
     
 private:

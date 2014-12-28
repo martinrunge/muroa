@@ -65,6 +65,7 @@ CApp::CApp(int argc, char** argv) throw(configEx) : m_settings(this)
     initLog();
 
     m_settings.readConfigFile();
+    m_settings.readCacheFile();
 }
 
 CApp::~CApp() {}
@@ -95,7 +96,7 @@ void CApp::initLog() {
 
     m_logger = Logger::getInstance("main");
     Appender* appender;
-    bool logfile_accessible = accessible(m_settings.logfile());
+    bool logfile_accessible = CSettings::accessible(m_settings.logfile());
     if( logfile_accessible ) {
         appender = new FileAppender(m_settings.logfile());
         appender->setErrorHandler(m_error_handler_ptr);
@@ -108,7 +109,7 @@ void CApp::initLog() {
     }
     SharedAppenderPtr log_appender(appender);
 	log_appender->setName("LogAppender");
-	std::auto_ptr<Layout> myLayout = std::auto_ptr<Layout>(new log4cplus::TTCCLayout());
+	std::auto_ptr<Layout> myLayout = std::auto_ptr<Layout>(new log4cplus::PatternLayout("%d{%H:%M:%S,%q} [ %t: %-5p ] %m%n"));
 	log_appender->setLayout(myLayout);
 
 	m_logger.addAppender(log_appender);
@@ -121,47 +122,6 @@ void CApp::initLog() {
 }
 
 
-bool CApp::accessible(string logfile_name) {
-	bfs::path lf(logfile_name);
-	if(bfs::is_directory(lf)) {
-		return false;
-	}
-	else {
-		int rc = access(logfile_name.c_str(), R_OK|W_OK);
-		if(rc == 0) {
-			return true;
-		}
-		else {
-			switch (errno) {
-			case EACCES:
-			case EROFS:
-				return false;
-
-			case ENOENT:
-			{
-				// try to create parent path, if not yet there:
-				boost::system::error_code ec;
-				create_directories(lf.parent_path(), ec);
-				if( ec ) {
-					// could not create path to logfile
-					return false;
-				}
-				int wr_fd = open(logfile_name.c_str(), O_RDWR|O_CREAT|FD_CLOEXEC, S_IRUSR|S_IWUSR|S_IRGRP|S_IWGRP|S_IROTH);
-				if(wr_fd == -1) {
-					return false;
-				}
-				else {
-					close(wr_fd);
-					return true;
-				}
-			}
-			default:
-				return false;
-			}
-		}
-	}
-	return false;
-}
 
 int CApp::daemonize() {
 	errno = 0;

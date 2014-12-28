@@ -116,7 +116,7 @@ CFloatResampler::~CFloatResampler()
 /*!
     \fn CFloatResampler::resampleFrame(CAudioFrame* in_frame)
  */
-int CFloatResampler::resampleFrame(CAudioFrame* in_frame, double factor)
+int CFloatResampler::resamplePacket(CAudioFrame* in_frame, double factor)
 {
   int res;
   // src_set_ratio (m_src_state, factor);
@@ -132,12 +132,12 @@ int CFloatResampler::resampleFrame(CAudioFrame* in_frame, double factor)
   res = src_process(m_src_state, m_src_data);
   
   if(res != 0) {
-    cerr << "CFloatResampler::resampleFrame: " << src_strerror (res) << endl;
+    cerr << "CFloatResampler::resampleFrame: (factor: " << factor << ") " << src_strerror (res) << endl;
   }
 
   int num_frames = copyResampledFramesToRingbuffer();
 
-  return num_frames;;
+  return num_frames;
 }
 
 
@@ -218,7 +218,7 @@ int CFloatResampler::copyResampledFramesToRingbuffer()
 }
 
 
-int CFloatResampler::sizeInMultiChannelSamples() {
+int CFloatResampler::sizeInFrames() {
   return m_src_data->input_frames;
 }
 

@@ -37,7 +37,7 @@ Class provides a server for a stream.
 // #include "libsock++.h"
 // #include "libdsaudio.h"
 
-#include "cstreamconnection.h"
+#include "CStreamConnection.h"
 #include "csync.h"
 #include "cmutex.h"
 #include "crtppacket.h"
@@ -60,7 +60,7 @@ public:
      * @param[in] transport_buffer_size_in_ms: the size of the client's playback buffer in ms. Aka difference
      * between send timestamp and presentation timestamp.
      */
-    CStreamServer(int session_id = 1, int transport_buffer_size_in_ms = 1500);
+    CStreamServer(int timeServerPort, int session_id = 1, int transport_buffer_size_in_ms = 1500);
 
     ~CStreamServer();
 
@@ -134,8 +134,7 @@ private:
     unsigned long m_stream_id;
 
     int m_std_client_port;
-
-
+    int m_time_server_port;
 
 private:
     void sendToAllClients(CRTPPacket* packet);

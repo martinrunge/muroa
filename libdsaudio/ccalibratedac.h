@@ -28,7 +28,7 @@ Class imlements an initial measurement of the actual sampling rate of the sound 
 
 #include <sys/time.h>
 
-class CAudioOSS;
+class CAudioIoAlsa;
 
 class CCalibrateDAC{
 public:
@@ -55,7 +55,7 @@ private:
         
     short *m_testbuffer;
     int m_testbuffer_size;
-    CAudioOSS* m_audio;
+    CAudioIoAlsa* m_audio;
 
     double m_measured_samping_rate;
 };

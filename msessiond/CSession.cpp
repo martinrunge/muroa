@@ -57,10 +57,9 @@ namespace muroa {
  */
 CSession::CSession(string name,
 		             boost::asio::io_service& io_service,
-		             CSessionContainer* const sessionContainer)
+		             CSessionContainer* const sessionContainer, int ts_port)
 							: m_io_service(io_service),
 							  m_name(name),
-							  m_streamClientHdl(this),
 							  m_maxMediaColRev(0),
 							  m_maxPlaylistRev(0),
 							  m_maxNextlistRev(0),
@@ -72,7 +71,8 @@ CSession::CSession(string name,
 							  m_playlistPos(0),
 							  m_sessionStorage(0),
 							  m_stateDBFilename("state.db"),
-							  m_stream(this),
+							  m_stream(this, ts_port),
+							  m_streamClientHdl(this, &m_stream),
 							  m_plIdProvider(this),
 							  m_app(CApp::getInstPtr()),
 							  m_sessionContainer(sessionContainer)
@@ -300,8 +300,12 @@ void CSession::addNextlistRev(const string& nextlist) {
 }
 
 void CSession::addSessionStateRev(CRootItem* ri) {
+	CRootItem* old_ri = getSessionState();
+	old_ri->disconnectItemModel(&m_streamClientHdl);
+
 	m_maxSessionStateRev++;
 	ri->setRevision(m_maxSessionStateRev);
+	ri->connectItemModel(&m_streamClientHdl);
 	m_sessionStateRevs.insert(pair<unsigned, CRootItem*>(m_maxSessionStateRev, ri));
 	m_sessionStorage->saveSessionStateRevs(m_maxSessionStateRev, m_maxSessionStateRev);
 }
@@ -361,6 +365,7 @@ int CSession::addSessionStateRevFromDiff(const std::string& sessionStateDiff, un
 	CRootItem* base = getRev(m_sessionStateRevs, diffFromRev, "Can't apply diff to session state based on revision # because that revision is unknown in session '");
 
 	CRootItem* ri = new CRootItem(*base);
+	ri->connectItemModel(&m_streamClientHdl);
 	ri->patch(sessionStateDiff);
 	addSessionStateRev(ri);
 }
@@ -456,7 +461,7 @@ void CSession::scanCollection(CConnection* initiator, uint32_t jobID) {
 	m_job_initiators.insert(std::pair<uint32_t, CConnection*>(jobID, initiator));
 
 	m_mediaScanner->start();
-	boost::filesystem::path dbpath = CApp::settings().getProperty("msessiond.sessions_storage_dir", "./") + getName() + "/mediacol";
+	boost::filesystem::path dbpath = CApp::settings().getProperty("msessiond.sessions_storage_dir", string("./")) + getName() + "/mediacol";
 	dbpath = CUtils::expandvars(dbpath);
 	CMsgOpenDb* dbmsg = new CMsgOpenDb( dbpath.string() );
 	m_mediaScanner->sendMsg(dbmsg);
@@ -529,12 +534,10 @@ void CSession::collectionChanged(uint32_t newRev, uint32_t minRev, uint32_t maxR
 
 void CSession::response(uint32_t requestID, int32_t returnCode, string message) {
 	delOutstandingMsg(requestID);
-
 }
 
 void CSession::reportError(uint32_t jobID, int32_t errCode, string message) {
 	delOutstandingMsg(jobID);
-
 }
 
 void CSession::incomingCmd(Cmd*  cmd, CConnection* initiator) {
@@ -588,7 +591,7 @@ void CSession::setProperty(string key, string val) {
 
 int CSession::getProperty(string key, int defaultVal) {
 	string privKey = privatePropertyKey(key);
-	int value = m_app->settings().getProptery(privKey, defaultVal);
+	int value = m_app->settings().getProperty(privKey, defaultVal);
 	return value;
 }
 

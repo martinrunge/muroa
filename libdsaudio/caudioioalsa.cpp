@@ -20,6 +20,7 @@
 #include "caudioioalsa.h"
 
 #include <iostream>
+#include <limits>
 
 using namespace std;
 
@@ -35,6 +36,40 @@ CAudioIoAlsa::~CAudioIoAlsa()
 {
 }
 
+int CAudioIoAlsa::start() {
+		return snd_pcm_start(m_playback_handle);
+}
+
+int CAudioIoAlsa::stop() {
+	return snd_pcm_drop(m_playback_handle);
+}
+
+int CAudioIoAlsa::state() {
+	snd_pcm_state_t alsa_state = snd_pcm_state(m_playback_handle);
+
+	switch(alsa_state) {
+	case SND_PCM_STATE_OPEN:
+		return E_OPEN;
+	case SND_PCM_STATE_SETUP:
+		return E_SETUP;
+	case SND_PCM_STATE_PREPARED:
+		return E_PREPARED;
+	case SND_PCM_STATE_RUNNING:
+		return E_RUNNING;
+	case SND_PCM_STATE_XRUN:
+		return E_UNDERRUN;
+	case SND_PCM_STATE_DRAINING:
+		return E_NONE;
+	case SND_PCM_STATE_PAUSED:
+		return E_PAUSED;
+	case SND_PCM_STATE_SUSPENDED:
+		return E_NONE;
+	case SND_PCM_STATE_DISCONNECTED:
+		return E_NONE;
+	default:
+		return E_NONE;
+	}
+}
 
 int CAudioIoAlsa::close() {
   if(m_open == true)
@@ -52,8 +87,8 @@ int CAudioIoAlsa::close() {
 int CAudioIoAlsa::open(std::string device, int samplerate, int channels) {
 
   int err;
-  snd_pcm_uframes_t periodsize = 1024;
-  // snd_pcm_uframes_t periodsize = 4096;
+  // snd_pcm_uframes_t periodsize = 1024;
+  snd_pcm_uframes_t periodsize = 4096;
 
   if(m_open == true)
     return 0;
@@ -103,7 +138,7 @@ int CAudioIoAlsa::open(std::string device, int samplerate, int channels) {
     return -7;
   }
 
-  snd_pcm_uframes_t bufsize = periodsize * 16;
+  snd_pcm_uframes_t bufsize = periodsize * 8;
   
   cerr << "trying to set buffer size to " << bufsize << " frames, ";
   err = snd_pcm_hw_params_set_buffer_size_near(m_playback_handle, m_hw_params, &bufsize);
@@ -113,13 +148,13 @@ int CAudioIoAlsa::open(std::string device, int samplerate, int channels) {
   }
   cerr << " successfull with " << bufsize << " frames!" << endl;
   
-  cerr << "trying to set period size to " << periodsize << " bytes, ";        
+  cerr << "trying to set period size to " << periodsize << " frames, ";
   err = snd_pcm_hw_params_set_period_size_near(m_playback_handle, m_hw_params, &periodsize, 0);
   if (err < 0) {
     printf("Unable to set period size %li: %s\n", periodsize, snd_strerror(err));
     return err;
   }
-  cerr << " successfull with " << periodsize << " bytes!" << endl;
+  cerr << " successfull with " << periodsize << " frames!" << endl;
   m_write_granularity = periodsize;
 
   
@@ -149,7 +184,7 @@ int CAudioIoAlsa::open(std::string device, int samplerate, int channels) {
     fprintf (stderr, "cannot set minimum available count (%s)\n", snd_strerror (err));
     return -12;
   }
-  if ((err = snd_pcm_sw_params_set_start_threshold (m_playback_handle, m_sw_params, bufsize / 2)) < 0) {
+  if ((err = snd_pcm_sw_params_set_start_threshold (m_playback_handle, m_sw_params, std::numeric_limits<int>::max())) < 0) {
     fprintf (stderr, "cannot set start mode (%s)\n", snd_strerror (err));
     return -13;
   }
@@ -166,6 +201,13 @@ int CAudioIoAlsa::open(std::string device, int samplerate, int channels) {
     return -15;
   }
   
+  if ((err = snd_pcm_prepare(m_playback_handle)) < 0)
+  {
+    fprintf(stderr, "cannot prepare audio interface for use (%s)\n", snd_strerror(err));
+    return -9;
+  }
+
+
   m_open = true; 
   return 0;
 }
@@ -186,6 +228,8 @@ int CAudioIoAlsa::write(char* data, int length) {
     if (frames_written < 0) {
       if(abs(frames_written) == EBADFD)
         cerr << "EBADFD" << endl;
+      cerr << "length = " << length << " but only " << frames_written << " frames written." << endl;
+
       if(abs(frames_written) == EPIPE)
         cerr << "EPIPE" << endl;
       if(abs(frames_written) == ESTRPIPE)
@@ -213,29 +257,50 @@ int CAudioIoAlsa::getOutOverflows(){
   return 0;
 }
 
-
-
-
 /*!
     \fn CAudioIoAlsa::getDelay()
  */
 int CAudioIoAlsa::getDelay()
 {
-  if(m_open == true)
-  {
-    snd_pcm_sframes_t delay;
-    int retval;
+	snd_pcm_state_t state = snd_pcm_state(m_playback_handle);
+	if( state == SND_PCM_STATE_PREPARED || state == SND_PCM_STATE_RUNNING)
+	{
+		snd_pcm_sframes_t delay;
+		int retval;
 
-    retval = snd_pcm_delay(m_playback_handle, &delay);
-    if(retval != 0) {
-      cerr << "CAudioIoAlsa::getDelay: Error." << endl;
-      return -1;
-    }
+		retval = snd_pcm_delay(m_playback_handle, &delay);
+		if(retval != 0) {
+			cerr << "CAudioIoAlsa::getDelay: Error:" << snd_strerror(retval) << endl;
+			return -1;
+		}
 
-    return delay;
-  }
-  else
-    return 0;
+		return delay;
+	}
+	else {
+		cerr << "CAudioIoAlsa::getDelay: State=" << state << endl;
+		return 0;
+	}
+}
+
+int CAudioIoAlsa::getSpace()
+{
+	snd_pcm_state_t state = snd_pcm_state(m_playback_handle);
+	if( state == SND_PCM_STATE_PREPARED || state == SND_PCM_STATE_RUNNING)
+	{
+		snd_pcm_sframes_t freeBufferSpace;
+		int retval;
+
+		freeBufferSpace = snd_pcm_avail(m_playback_handle);
+		if(freeBufferSpace < 0) {
+			cerr << "CAudioIoAlsa::getSpace: Error:" << snd_strerror(freeBufferSpace) << endl;
+		}
+
+		return freeBufferSpace;
+	}
+	else {
+		cerr << "CAudioIoAlsa::getSpace: State=" << state << endl;
+		return 0;
+	}
 }
 
 

@@ -36,7 +36,7 @@ CPThread::~CPThread() {
 
 
 int CPThread::StartThread(bool realtime) {
-
+	int retval = -1;
 	Run(true);
     if(realtime) {
       struct sched_param s_param;
@@ -45,14 +45,18 @@ int CPThread::StartThread(bool realtime) {
       pthread_attr_init(&m_thread_attr);
       pthread_attr_setinheritsched(&m_thread_attr, PTHREAD_EXPLICIT_SCHED);
   
-      int retval = pthread_attr_setschedpolicy(&m_thread_attr, SCHED_FIFO);
-      if(retval == 0) {
+      int retval1 = pthread_attr_setschedpolicy(&m_thread_attr, SCHED_FIFO);
+      if(retval1 == 0) {
         // setschedpolicy suceeded. We have the neccessary rights.
         int retval2 = pthread_attr_setschedparam(&m_thread_attr, &s_param);
         if (retval2 == 0) {
-          cerr << "Realtime priority set!" << endl;
-          int retval3  = pthread_create(&m_thread_id, &m_thread_attr, (start_routine_ptr)CPThread::ThreadMainLoop, (void*) this);
-          return retval3;
+          retval = pthread_create(&m_thread_id, &m_thread_attr, (start_routine_ptr)CPThread::ThreadMainLoop, (void*) this);
+          if(retval != 0) {
+              cerr << "Failed to set Realtime priority for playback thread: "<< strerror(retval) << endl;
+          }
+          else {
+        	  cerr << "Realtime prio set for playback thread." << endl;
+          }
         }
         else {
         	if( retval2 == EPERM ) {
@@ -74,10 +78,9 @@ int CPThread::StartThread(bool realtime) {
       pthread_attr_destroy(&m_thread_attr);
 
     }
-     
-    // no realtime prio
-    int retval = pthread_create(&m_thread_id, NULL, (start_routine_ptr)CPThread::ThreadMainLoop, (void*) this);
-    
+    if(retval != 0) {  // either thread should start without realtime prio or setting realtime prio failed
+    	retval = pthread_create(&m_thread_id, NULL, (start_routine_ptr)CPThread::ThreadMainLoop, (void*) this);
+    }
     return retval;
 }
 

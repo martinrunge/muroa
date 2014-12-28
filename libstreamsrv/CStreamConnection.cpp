@@ -17,8 +17,8 @@
  *   Free Software Foundation, Inc.,                                       *
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
-#include "cstreamconnection.h"
-#include "cstreamserver.h"
+#include "CStreamConnection.h"
+#include "CStreamServer.h"
 
 #include <iostream>
 

@@ -22,6 +22,10 @@
 
 #include <cthreadslave.h>
 
+#include <boost/asio.hpp>
+
+#include <log4cplus/logger.h>
+
 #include "csync.h"
 #include "cmuroad.h"
 /**
@@ -52,6 +56,7 @@ public:
 private:
     CSocket *m_socket;
 
+    log4cplus::Logger m_timing_logger;
     CPacketRingBuffer *m_packet_ringbuffer;
     CPlayer* m_player;
     muroa::CApp* m_app;
@@ -59,6 +64,9 @@ private:
 
     CSync m_tmp_sync_obj;
     int m_max_idle;
+
+    int m_ts_port;
+
 };
 
 #endif

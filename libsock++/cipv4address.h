@@ -34,7 +34,6 @@ class CIPv4Address : public CIPAddress
 {
 public:
     CIPv4Address();
-
     CIPv4Address(std::string host, unsigned short port = 0);
 
     ~CIPv4Address();
@@ -65,7 +64,6 @@ private:
 
 
     struct sockaddr_in m_sockaddr_in;   
-
 };
 
 #endif

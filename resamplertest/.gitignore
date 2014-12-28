@@ -1,0 +1,13 @@
+# ignore all generated files in build directory
+*~
+*.raw
+core
+core.*
+*.log
+*.wav
+*.png
+
+
+CMakeFiles
+cmake_install.cmake
+Makefile

@@ -40,6 +40,7 @@
 #include "CApp.h"
 #include "CSettings.h"
 #include "avahi/CDnsSdAvahi.h"
+#include "CTimeServiceCtrl.h"
 
 
 using namespace std;
@@ -72,12 +73,15 @@ CPlayer::CPlayer(CApp* app, boost::asio::io_service& io_service) : m_app(app), m
 
   m_idle_time = 0;
 
+  m_ts = new CTimeServiceCtrl();
   //CSync syncobj;
 }
 
 
 CPlayer::~CPlayer()
 {
+  m_ts->stop();
+  delete m_ts;
   delete m_recvloop_thread;
   delete m_playloop_thread;
 
@@ -117,19 +121,18 @@ void CPlayer::sendRTPPacket(CRTPPacket* packet)
 }
 
 
-/*!
-    \fn CPlayer::sync()
- */
-void CPlayer::sync()
-{
-  m_playloop->sync();    
-}
+///*!
+//    \fn CPlayer::sync()
+// */
+//void CPlayer::sync()
+//{
+//  // m_playloop->sync();
+//}
 
 void CPlayer::setSyncObj(CRTPPacket* rtp_packet) {
   m_sync_obj.deserialize( rtp_packet);
-  m_playloop->setSync(&m_sync_obj); 
+  m_playloop->setSync(&m_sync_obj);
 }
-
 
 /*!
     \fn CPlayer::setRequestedSyncObj(CRTPPacket* rtp_packet)
@@ -175,9 +178,11 @@ void CPlayer::onResetStream(const CmdStreamReset& cmd_rst) {
          << " newSessionID: " << cmd_rst.getNewSessionId()
          << " newStreamID: " << cmd_rst.getNewStreamId() << endl;
 	m_packet_ringbuffer->clearContent(cmd_rst.getOldSessionId(), cmd_rst.getOldStreamId());
-	m_playloop->reset(cmd_rst.getOldSessionId(), cmd_rst.getOldStreamId());
+	m_playloop->resetStream(cmd_rst.getOldSessionId(), cmd_rst.getOldStreamId());
 }
 
 
 
-
+void CPlayer::useTimeService(boost::asio::ip::address ip_address, int port, boost::asio::ip::udp protocol) {
+	m_ts->start(false, ip_address, port, protocol);
+}

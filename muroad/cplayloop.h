@@ -46,7 +46,6 @@ namespace muroa
   class CApp;
 }
 
-
 class CAudioFrame;
 class CSync;
 class CPacketRingBuffer;
@@ -61,73 +60,55 @@ using namespace boost::posix_time;
 class CPlayloop : public CThreadSlave
 {
 public:
-  CPlayloop(CPlayer* parent, muroa::CApp *app, CPacketRingBuffer* packet_ringbuffer );
-
+	CPlayloop(CPlayer* parent, muroa::CApp *app, CPacketRingBuffer* packet_ringbuffer );
     ~CPlayloop();
 
     void DoLoop();
-    void playSilence(int num_frames);
-
-    int sync(void);
-
     void setSync(CSync* sync_obj);
+    void resetStream(uint32_t oldSessionID, uint32_t oldStreamId);
 
-    void reset(uint32_t oldSessionID, uint32_t oldStreamId);
-
-
-//    void appendAudioFrame(CAudioFrame* frame);
-
-  
 private:
 
-    CPacketRingBuffer *m_packet_ringbuffer;
-    CRingBuffer *m_ringbuffer;
-
-
-    CResampler* m_resampler;
     double m_resample_factor;
     double m_correction_factor;
 
-    //CAudioIoAlsa *m_audio_sink;
-    IAudioIO *m_audio_sink;
-
-
-    void playAudio(CAudioFrame *frame);
-    IAudioIO* initSoundSystem();
-
-    void handleSyncObj(CSync* sync_obj);
-
-    ptime* m_start_time;
+    /// write granularity in frames
+    int m_write_granularity;
 
     uint32_t m_stream_id, m_session_id;
 
     int m_seqnum;
     int m_counter;
 
-    long m_num_multi_channel_samples_played;
-    long m_num_multi_channel_samples_arrived;
+    long m_num_frames_arrived;
 
     boost::posix_time::time_duration m_average_time_diff;
     int m_average_size;
 
-//    std::list<CAudioFrame*> m_frame_list;
+    CAudioFrame* getAudioPacket(bool block);
+    bool waitForData();
+    int addPacket2RingBuffer(bool block);
+    int startStream();
+    boost::posix_time::ptime discardPastPTSFrames();
+    void waitForStartPTS();
+    int sleepuntil(boost::posix_time::ptime wakeup_time);
 
+    void adjustResamplingFactor();
 
-private:
-    void adjustResamplingFactor(int multichannel_samples_in_playback_ringbuffer);
+    boost::posix_time::ptime getPreResamplerPTS();
 
-    int getDelayInMultiChannelSamples();
     boost::posix_time::time_duration calcSoundCardDelay();
     boost::posix_time::time_duration calcResamplerDelay();
     boost::posix_time::time_duration calcRingbufferDelay();
-
-    boost::posix_time::time_duration getPlaybackDiff();
-    boost::posix_time::time_duration getPlaybackDiffFromTime();
+    boost::posix_time::time_duration getCurrentPTSDeviation();
     
-    int sleep(boost::posix_time::time_duration duration);
-    int adjustFramesToDiscard(int num_frames_discarded);
+    boost::posix_time::time_duration m_last_start_stream_error;
+    boost::posix_time::time_duration m_max_stream_reset_duration;
 
-    long long m_nr_of_last_frame_decoded;
+    // nr of last audio frame that was not yet resampled. To get the presentation timestamp of this frame,
+    // it is save to simply interpolate:
+    // pts = syncObj->pts() + (m_last_frame_pre_resampler - syncObj->frameNr() ) * stream_frame_rate
+    int64_t m_nr_of_last_frame_decoded;
 
     int m_desired_sample_rate;
     int m_num_channels;
@@ -135,8 +116,8 @@ private:
     int m_frames_per_second_pre_resampler;
     int m_frames_per_second_post_resampler;
 
-    short *m_silence_buffer;
-    int m_frames_to_discard;
+    int m_periods_to_start;
+    float m_stream_reset_threshold;
 
     FILE* m_debug_fd1;
     
@@ -144,6 +125,14 @@ private:
     muroa::CApp *m_app;
     muroa::CSettings& m_settings;
     
+    CPacketRingBuffer *m_packet_ringbuffer;
+    CRingBuffer *m_ringbuffer;
+    CResampler* m_resampler;
+
+    //CAudioIoAlsa *m_audio_sink;
+    IAudioIO *m_audio_sink;
+    IAudioIO* initSoundSystem();
+
     int m_secs_idle;
     int m_max_idle;
 

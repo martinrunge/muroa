@@ -25,7 +25,13 @@ public:
     CAudioOSS();
 
     ~CAudioOSS();
+
+    int start();
+    int stop();
     
+    int state();
+
+
     int close();
     int open(std::string device, int samplerate, int channels);
     int read(char* data, int buffersize);
@@ -34,6 +40,7 @@ public:
     int getBytesPlayed();
     int getOutOverflows();
     int getDelay();
+    int getSpace();
     int getWriteGranularity(void);
     int getActualSampleRate(void);
 

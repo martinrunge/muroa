@@ -14,7 +14,7 @@
 #include "CAudioIOAlsa.h"
 #include "CSession.h"
 
-#include "cstreamserver.h"
+#include "CStreamServer.h"
 
 #include <cmds/CmdProgress.h>
 #include <cmds/CmdFinished.h>
@@ -27,10 +27,15 @@ using namespace log4cplus;
 using namespace muroa;
 using namespace std;
 
-CStream::CStream(CSession* session) : m_done(0), m_state(e_stopped), m_decoder(this), m_session(session), m_thread(0), m_run(false)
+CStream::CStream(CSession* session, int timeServicePort) : m_done(0),
+		                                                   m_state(e_stopped),
+		                                                   m_decoder(this),
+		                                                   m_session(session),
+		                                                   m_thread(0),
+		                                                   m_run(false)
 {
     m_audioIO = new CAudioIoAlsa();
-    m_streamserver = new CStreamServer();
+    m_streamserver = new CStreamServer(timeServicePort);
 }
 
 CStream::~CStream() {

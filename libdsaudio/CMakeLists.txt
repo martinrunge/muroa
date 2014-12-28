@@ -16,9 +16,13 @@ set( SRC           caudioframe.cpp
                    caudioioalsa.cpp
                    ccalibratedac.cpp
                    csync.cpp  
-                   IRenderCmds.cpp  
+                   IRenderCmds.cpp
+                   CTimeSyncPkt.cpp
+                   CTimeService.cpp
+                   CTimeServiceCtrl.cpp
                    cmds/CmdStreamBase.cpp
                    cmds/CmdStreamReset.cpp
+                   cmds/CmdStreamConnect.cpp
                    )
                   
 
@@ -30,13 +34,20 @@ set( HEADERS       caudioframe.h
                    ccalibratedac.h
                    csync.h 
                    IRenderCmds.h
+                   CTime.h
+                   CTimeSyncPkt.h
+                   CTimeService.h
+                   CTimeServiceCtrl.h
+                   Exceptions.h
                    cmds/CmdStreamBase.h
                    cmds/CmdStreamReset.h
+                   cmds/CmdStreamConnect.h
                    )
                   
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}
                     ${Boost_INCLUDE_DIRS} 
-                    ${ALSA_INCLUDE_DIR})
+                    ${ALSA_INCLUDE_DIR}
+                    )
 
 link_directories(   ${BOOST_LIBRARYDIR})
 

@@ -47,6 +47,9 @@ public:
 
 	int parse(int argc, char** argv) throw(muroa::configEx);
 	int readConfigFile() throw(muroa::configEx);
+	int readCacheFile() throw(muroa::configEx);
+	int resetCache();
+
 
 	inline bool foreground() { return m_foreground; };
     inline int debuglevel() { return m_debuglevel; };
@@ -63,11 +66,19 @@ public:
     inline std::string serviceType() {return m_service_type; };
     inline void setServiceType(std::string service_type) { m_service_type = service_type; };
 
+    std::string getProperty(const std::string& key, const char* defaultVal);
+    void setProperty(const std::string& key, const char* val);
+
     std::string getProperty(const std::string& key, const std::string& defaultVal);
     void setProperty(const std::string& key, const std::string& val);
 
-    int getProptery(const std::string& key, const int& defaultVal);
+    int getProperty(const std::string& key, const int& defaultVal);
     void setProptery(const std::string& key, const int& val);
+
+    bool getProperty(const std::string& key, const bool& defaultVal);
+    void setProptery(const std::string& key, const bool& val);
+
+    static bool accessible(std::string filename);
 
 private:
 	void usage(std::string appname);
@@ -75,11 +86,15 @@ private:
 
     std::string m_configfile;
     std::string m_logfile;
+    // cachefile: usually in /var/cache, used to hold internal runtime values persistent over
+    // restart, e.g. the measured time it took to restart an audio stream on this perticular client
+    std::string m_cachefile;
 
     bool m_foreground;
     int m_debuglevel;
     unsigned short m_port;
     bool m_search_free_port;
+    bool m_reset_cache;
 
     std::string m_service_name;
     std::string m_service_type;
@@ -87,8 +102,10 @@ private:
 
     unsigned short m_ip_version;
     boost::property_tree::ptree m_pt;
+    boost::property_tree::ptree m_cache_pt;
 
     std::stack<std::string> m_search_config_file;
+    std::stack<std::string> m_search_cache_file;
 
     CApp* m_app;
 };

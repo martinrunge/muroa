@@ -27,7 +27,11 @@ synchronisation objects which transport a timestamp at which a sample in a speci
 */
 
 #include <boost/date_time/posix_time/posix_time.hpp>
+#include <boost/asio.hpp>
 #include <linux/types.h>
+
+#include <ostream>
+#include <limits>
 
 class CRTPPacket;
 
@@ -47,11 +51,18 @@ typedef struct serialisation_vars{
   uint32_t frame_nr;
   /* YYYYMMDDTHHMMSS,fffffffff */
   char timestamp[32]; // only 27 used
+
+  // clock domain master
+  uint16_t ip_port;
+  uint16_t ip_proto_ver;  // can be 4 for ipv4 or 6 for ipv6
+  // if ip_proto_ver == 4, only first 4 bytes are used to store IPv4 address
+  // if ip_proto_ver == 6, all 16 bytes are used to store the address
+  uint8_t  ip_addr[16];
 }serialisation_vars_t;
 
 typedef union serialization_buffer{
   serialisation_vars_t serialisation_vars;
-  char raw_buffer[4 + 4 + 4 + 4 + 32];
+  char raw_buffer[sizeof(serialisation_vars_t)];
 } serialization_buffer_t;
 
 
@@ -81,6 +92,14 @@ public:
     inline uint32_t frameNr(void) { return m_frame_nr; };
     inline void frameNr(uint32_t frame_nr) { m_frame_nr = frame_nr; };
 
+    inline bool isValid() { return (m_session_id != std::numeric_limits<uint32_t>::max() &&
+    		                        m_stream_id  != std::numeric_limits<uint32_t>::max() &&
+    		                        m_frame_nr   != std::numeric_limits<uint32_t>::max() ); };
+
+    boost::asio::ip::udp::endpoint getMediaClockSrv();
+    void setMediaClockSrv(boost::asio::ip::udp::endpoint endpoint);
+    void setMediaClockSrv(boost::asio::ip::address ip_address, int port);
+
     char* serialize();
     void deserialize();
     void deserialize(CRTPPacket* sync_packet);
@@ -90,9 +109,10 @@ public:
     void print();
     void addDuration(boost::posix_time::time_duration duration);
 
-    inline boost::posix_time::ptime* getPtimePtr() { return m_local_time; };
+    inline boost::posix_time::ptime* getPtimePtr() { return m_utc_time; };
     void setTimeToNow();
 
+    friend std::ostream& operator<< (std::ostream &out, CSync &so);
 
 private:
 
@@ -110,8 +130,9 @@ private:
   uint32_t m_frame_nr;
 
   /** point of time at which the specified sample number should be played back */
-  boost::posix_time::ptime *m_local_time;
+  boost::posix_time::ptime *m_utc_time;
 
+  boost::asio::ip::udp::endpoint m_media_clock_srv_endpoint;
 
   serialization_buffer_t m_serialization_buffer;
 
