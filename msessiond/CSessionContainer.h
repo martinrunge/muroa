@@ -26,6 +26,7 @@ namespace muroa {
 class CSession;
 class CApp;
 class CDnsSdAvahi;
+class CTimeServiceCtrl;
 
 class CSessionContainer : public IConnectionManager {
 
@@ -70,6 +71,8 @@ private:
 
 	std::map<std::string, CSession*> m_sessions;
 	std::set<CConnection*> m_sessionless_connections;
+
+	muroa::CTimeServiceCtrl *m_ts_ctrl;
 };
 
 } /* namespace muroa */

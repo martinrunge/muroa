@@ -57,8 +57,6 @@ private:
 
 	std::auto_ptr<log4cplus::ErrorHandler> m_error_handler_ptr;
 
-	bool accessible(std::string logfile_name);
-
     boost::filesystem::path m_abs_prog_dir;
     boost::filesystem::path m_called_from_path;
     std::string m_prog_name;

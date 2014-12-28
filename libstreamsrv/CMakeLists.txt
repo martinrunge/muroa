@@ -11,14 +11,14 @@ find_package( Boost 1.36.0 COMPONENTS filesystem system date_time program_option
 
 add_definitions(  )
 
-set( SRC           cstreamconnection.cpp
-                   cstreamserver.cpp  
+set( SRC           CStreamConnection.cpp
+                   CStreamServer.cpp
                    )
                   
 
-set( HEADERS       cstreamconnection.h
-                   cstreamserver.h
-                    )
+set( HEADERS       CStreamConnection.h
+                   CStreamServer.h
+                   )
                   
 include_directories(${CMAKE_CURRENT_SOURCE_DIR} 
                     ${Boost_INCLUDE_DIRS}  

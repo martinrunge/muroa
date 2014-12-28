@@ -22,6 +22,8 @@
 
 #include <cthreadslave.h>
 
+#include <boost/asio.hpp>
+
 #include <log4cplus/logger.h>
 
 #include "csync.h"
@@ -62,6 +64,9 @@ private:
 
     CSync m_tmp_sync_obj;
     int m_max_idle;
+
+    int m_ts_port;
+
 };
 
 #endif

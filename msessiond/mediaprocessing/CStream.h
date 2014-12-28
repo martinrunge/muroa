@@ -34,7 +34,7 @@ enum sessionState {
 
 class CStream  {
 public:
-	CStream(muroa::CSession* session);
+	CStream(muroa::CSession* session, int timeServicePort = 0);
 	virtual ~CStream();
 
 	void next() const;

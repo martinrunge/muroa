@@ -32,6 +32,7 @@
 using namespace std;
 using namespace muroa;
 using namespace log4cplus;
+using namespace boost::asio::ip;
 
 
 CRecvloop::CRecvloop(CPlayer* parent, CApp* app, CPacketRingBuffer* packet_ringbuffer):
@@ -45,7 +46,7 @@ CRecvloop::CRecvloop(CPlayer* parent, CApp* app, CPacketRingBuffer* packet_ringb
   
   m_packet_ringbuffer = packet_ringbuffer;
 
-  m_max_idle = m_settings.getProptery("MaxIdle", 10);
+  m_max_idle = m_settings.getProperty("MaxIdle", 10);
 
 
   m_socket = new CSocket(SOCK_DGRAM, m_settings.port(), true);
@@ -76,6 +77,7 @@ void CRecvloop::DoLoop()
 
     switch( rtp_packet->payloadType() ) {
       case PAYLOAD_SYNC_OBJ:
+      {
           m_tmp_sync_obj.deserialize(rtp_packet);
           LOG4CPLUS_INFO(m_timing_logger, "Received SyncObj: " << m_tmp_sync_obj);
         if(m_tmp_sync_obj.streamId() == m_player->syncRequestedForStreamID()) {
@@ -87,6 +89,16 @@ void CRecvloop::DoLoop()
           // beginning of next stream. put sync object into the packet ringbuffer
           m_packet_ringbuffer->appendRTPPacket(rtp_packet);
         }
+        udp::endpoint ep = m_tmp_sync_obj.getMediaClockSrv();
+        int tmp_port = ep.port();
+        if(tmp_port != m_ts_port) {
+        	m_ts_port = tmp_port;
+        	CIPv4Address *sender = m_socket->latestSender();
+        	address_v4 tmp_addr(sender->sock_addr_in_ptr()->sin_addr.s_addr);
+        	address sender_addr(tmp_addr);
+        	m_player->useTimeService(sender_addr, m_ts_port);
+
+        }
 
         // wake up playback thread
         //if(m_player->idleTime() > m_max_idle && m_max_idle != 0) {
@@ -94,7 +106,7 @@ void CRecvloop::DoLoop()
         //}
         
         break;
-
+      }
       case PAYLOAD_RESET_STREAM:
       {
     	  CmdStreamReset* cmd_rst = new CmdStreamReset(rtp_packet);

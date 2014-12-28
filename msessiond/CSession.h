@@ -45,7 +45,7 @@ class CSessionStorage;
 
 class CSession : boost::noncopyable {
 public:
-	CSession(std::string name, boost::asio::io_service& io_service, CSessionContainer* const sessionContainer);
+	CSession(std::string name, boost::asio::io_service& io_service, CSessionContainer* const sessionContainer, int ts_port);
  	//CSession( std::string name );CSession
 	virtual ~CSession();
 

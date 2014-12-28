@@ -26,6 +26,7 @@ namespace muroa {
 class CmdStreamBase {
 public:
 	enum cmd_stream_t {
+		E_CONNECT_STREAM,
 		E_RESET_STREAM,
 		E_UNKNOWN
 	};

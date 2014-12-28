@@ -41,6 +41,7 @@ namespace muroa
   class CSettings;
   class CDnsSdAvahi;
   class CmdStreamReset;
+  class CTimeServiceCtrl;
 }
 
 class CRecvloop;
@@ -62,6 +63,8 @@ public:
     void onResetStream(const muroa::CmdStreamReset& cmd_rst);
 	void onJoinMulticastGroup() {};
 	void onLeaveMutlicastGroup() {};
+
+	void useTimeService(boost::asio::ip::address ip_address, int port, boost::asio::ip::udp protocol = boost::asio::ip::udp::v4());
 
 
     inline CSync* syncObj() {return &m_sync_obj; };
@@ -85,7 +88,6 @@ public:
         return m_idle_time;
     }
     
-
     CPosixCond m_traffic_cond;
 
 private:
@@ -108,6 +110,8 @@ private:
     // Cmuroad* m_config;
     muroa::CApp* m_app;
     muroa::CSettings& m_settings;
+
+	muroa::CTimeServiceCtrl *m_ts;
 
     boost::asio::io_service& m_io_service;
 };

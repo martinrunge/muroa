@@ -32,6 +32,7 @@
 
 #include "CApp.h"
 #include "CSettings.h"
+#include "CTimeServiceCtrl.h"
 
 #include <sys/stat.h>
 #include <string.h>
@@ -39,8 +40,6 @@
 #include <log4cplus/logger.h>
 #include <log4cplus/loggingmacros.h>
 
-#include "CApp.h"
-#include "CSettings.h"
 #include "CSessionContainer.h"
 #include "Exceptions.h"
 
@@ -57,6 +56,7 @@ int main(int argc, char** argv) {
 
     muroa::CApp* app;
     muroa::CSessionContainer *sc;
+    muroa::CTimeServiceCtrl *ts_ctrl = 0;
 
     try {
     	app = muroa::CApp::getInstPtr(argc, argv);
@@ -64,6 +64,13 @@ int main(int argc, char** argv) {
     	if(!app->settings().foreground()) {
     		app->daemonize();
     	}
+
+//    	if(app->settings().getProperty("enable_time_service", true)) {
+//    		ts_ctrl = new muroa::CTimeServiceCtrl();
+//    		int portNr = app->settings().getProperty("time_service_port", 44401);
+//    		boost::asio::ip::address address;
+//    		ts_ctrl->start(true, address, portNr);
+//    	}
 
 		boost::asio::io_service io_service;
 
@@ -91,7 +98,7 @@ int main(int argc, char** argv) {
 		LOG4CPLUS_ERROR(app->logger(), "Uncaught exception of type 'bad_alloc': " << baex.what());
 	}
 
-
+    if(ts_ctrl != 0) delete ts_ctrl;
     delete sc;
     delete app;
 

@@ -24,6 +24,7 @@
 
 using namespace std;
 using namespace boost::posix_time;
+using namespace boost::asio::ip;
 
 
 CSync::CSync(enum sync_type_t sync_type) : m_session_id(numeric_limits<uint32_t>::max()),
@@ -37,7 +38,7 @@ CSync::CSync(enum sync_type_t sync_type) : m_session_id(numeric_limits<uint32_t>
 
 }
 
-CSync::CSync(CRTPPacket* rtp_packet) 
+CSync::CSync(CRTPPacket* rtp_packet)
 {
   if(rtp_packet->payloadType() != PAYLOAD_SYNC_OBJ) return;
 
@@ -69,6 +70,21 @@ char* CSync::serialize()
 
   strcpy((char*)m_serialization_buffer.serialisation_vars.timestamp, to_simple_string(*m_utc_time).c_str() );
 
+  m_serialization_buffer.serialisation_vars.ip_port = m_media_clock_srv_endpoint.port();
+  address addr = m_media_clock_srv_endpoint.address();
+
+  if(addr.is_v6()) {
+	  m_serialization_buffer.serialisation_vars.ip_proto_ver = 6;
+	  address_v6 v6addr = addr.to_v6();
+	  memcpy(m_serialization_buffer.serialisation_vars.ip_addr, v6addr.to_bytes().data(), v6addr.to_bytes().size());
+  }
+  else {
+	  m_serialization_buffer.serialisation_vars.ip_proto_ver = 4;
+	  address_v4 v4addr = addr.to_v4();
+	  uint32_t* tmp_ptr = reinterpret_cast<uint32_t*>(m_serialization_buffer.serialisation_vars.ip_addr);
+	  *tmp_ptr = htonl( v4addr.to_ulong() );
+  }
+
   return m_serialization_buffer.raw_buffer;    
 }
 
@@ -87,7 +103,36 @@ void CSync::deserialize(void)
   m_frame_nr = ntohl( m_serialization_buffer.serialisation_vars.frame_nr );
 
   *m_utc_time = time_from_string( m_serialization_buffer.serialisation_vars.timestamp );
+
+  int port = m_serialization_buffer.serialisation_vars.ip_port;
+  if(m_serialization_buffer.serialisation_vars.ip_proto_ver == 6) {
+	  address_v6::bytes_type barray;
+	  memcpy(barray.data(), &m_serialization_buffer.serialisation_vars.ip_addr, 16);
+	  address_v6 v6addr(barray);
+
+	  address ip_addr(v6addr);
+	  m_media_clock_srv_endpoint = udp::endpoint(ip_addr, port);
+  }
+  else {
+	  unsigned long* ipv4addr_ptr = reinterpret_cast<unsigned long*>(&m_serialization_buffer.serialisation_vars.ip_addr);
+	  address_v4 v4addr(*ipv4addr_ptr);
+	  address ip_addr(v4addr);
+	  m_media_clock_srv_endpoint = udp::endpoint(ip_addr, port);
+  }
 }
+
+udp::endpoint CSync::getMediaClockSrv() {
+	return m_media_clock_srv_endpoint;
+}
+
+void CSync::setMediaClockSrv(udp::endpoint endpoint) {
+	m_media_clock_srv_endpoint = endpoint;
+}
+
+void CSync::setMediaClockSrv(address ip_address, int port) {
+	m_media_clock_srv_endpoint = udp::endpoint(ip_address, port);
+}
+
 
 
 /*!

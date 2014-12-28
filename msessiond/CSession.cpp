@@ -57,7 +57,7 @@ namespace muroa {
  */
 CSession::CSession(string name,
 		             boost::asio::io_service& io_service,
-		             CSessionContainer* const sessionContainer)
+		             CSessionContainer* const sessionContainer, int ts_port)
 							: m_io_service(io_service),
 							  m_name(name),
 							  m_maxMediaColRev(0),
@@ -71,7 +71,7 @@ CSession::CSession(string name,
 							  m_playlistPos(0),
 							  m_sessionStorage(0),
 							  m_stateDBFilename("state.db"),
-							  m_stream(this),
+							  m_stream(this, ts_port),
 							  m_streamClientHdl(this, &m_stream),
 							  m_plIdProvider(this),
 							  m_app(CApp::getInstPtr()),
@@ -461,7 +461,7 @@ void CSession::scanCollection(CConnection* initiator, uint32_t jobID) {
 	m_job_initiators.insert(std::pair<uint32_t, CConnection*>(jobID, initiator));
 
 	m_mediaScanner->start();
-	boost::filesystem::path dbpath = CApp::settings().getProperty("msessiond.sessions_storage_dir", "./") + getName() + "/mediacol";
+	boost::filesystem::path dbpath = CApp::settings().getProperty("msessiond.sessions_storage_dir", string("./")) + getName() + "/mediacol";
 	dbpath = CUtils::expandvars(dbpath);
 	CMsgOpenDb* dbmsg = new CMsgOpenDb( dbpath.string() );
 	m_mediaScanner->sendMsg(dbmsg);
@@ -591,7 +591,7 @@ void CSession::setProperty(string key, string val) {
 
 int CSession::getProperty(string key, int defaultVal) {
 	string privKey = privatePropertyKey(key);
-	int value = m_app->settings().getProptery(privKey, defaultVal);
+	int value = m_app->settings().getProperty(privKey, defaultVal);
 	return value;
 }
 
