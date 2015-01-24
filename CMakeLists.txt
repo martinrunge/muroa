@@ -29,6 +29,7 @@ else( libxdiff_FOUND )
   set( libxdiff_FOUND "yes")
 endif( libxdiff_FOUND )
 
+add_subdirectory (libmcommons)
 
 if( ${msessiond} )
   add_subdirectory (mmscanner)
