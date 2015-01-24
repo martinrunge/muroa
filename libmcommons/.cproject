@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<?fileVersion 4.0.0?><cproject storage_type_id="org.eclipse.cdt.core.XmlProjectDescriptionStorage">
+	<storageModule moduleId="org.eclipse.cdt.core.settings">
+		<cconfiguration id="org.eclipse.cdt.cmake.debug.810645456">
+			<storageModule buildSystemId="org.eclipse.cdt.managedbuilder.core.configurationDataProvider" id="org.eclipse.cdt.cmake.debug.810645456" moduleId="org.eclipse.cdt.core.settings" name="debug">
+				<externalSettings/>
+				<extensions>
+					<extension id="org.eclipse.cdt.core.MachO64" point="org.eclipse.cdt.core.BinaryParser"/>
+					<extension id="org.eclipse.cdt.core.Cygwin_PE" point="org.eclipse.cdt.core.BinaryParser"/>
+					<extension id="org.eclipse.cdt.core.PE" point="org.eclipse.cdt.core.BinaryParser"/>
+					<extension id="org.eclipse.cdt.core.ELF" point="org.eclipse.cdt.core.BinaryParser"/>
+					<extension id="org.eclipse.cdt.core.GNU_ELF" point="org.eclipse.cdt.core.BinaryParser"/>
+					<extension id="org.eclipse.cdt.core.GCCErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+				</extensions>
+			</storageModule>
+			<storageModule moduleId="cdtBuildSystem" version="4.0.0">
+				<configuration artifactName="${ProjName}" buildArtefactType="org.eclipse.cdt.cmake.buildArtefactType.cmake" buildProperties="org.eclipse.cdt.build.core.buildArtefactType=org.eclipse.cdt.cmake.buildArtefactType.cmake" description="" id="org.eclipse.cdt.cmake.debug.810645456" name="debug" parent="org.eclipse.cdt.cmake.debug">
+					<folderInfo id="org.eclipse.cdt.cmake.debug.810645456." name="/" resourcePath="">
+						<toolChain id="org.eclipse.cdt.cmake.toolChain.debug.1244959840" name="CMake provided toolchain" superClass="org.eclipse.cdt.cmake.toolChain.debug">
+							<targetPlatform id="org.eclipse.cdt.cmake.targetPlatform1.1988667111" isAbstract="false" name="CMake target platform" superClass="org.eclipse.cdt.cmake.targetPlatform1"/>
+							<builder buildPath="/home/martin/git/muroa/libmcommons/debug_arm" id="org.eclipse.cdt.cmake.builder.801545923" keepEnvironmentInBuildfile="false" managedBuildOn="true" name="CMake Builder" superClass="org.eclipse.cdt.cmake.builder"/>
+							<tool id="org.eclipse.cdt.cmake.gpp.1550219647" name="g++" superClass="org.eclipse.cdt.cmake.gpp">
+								<inputType id="cdt.managedbuild.tool.gnu.cpp.compiler.input.1375996014" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.input"/>
+							</tool>
+							<tool id="org.eclipse.cdt.cmake.gcc.28560555" name="gcc" superClass="org.eclipse.cdt.cmake.gcc">
+								<inputType id="cdt.managedbuild.tool.gnu.c.compiler.input.1190704089" superClass="cdt.managedbuild.tool.gnu.c.compiler.input"/>
+							</tool>
+						</toolChain>
+					</folderInfo>
+				</configuration>
+			</storageModule>
+			<storageModule moduleId="org.eclipse.cdt.core.externalSettings"/>
+		</cconfiguration>
+	</storageModule>
+	<storageModule moduleId="cdtBuildSystem" version="4.0.0">
+		<project id="libmutils.org.eclipse.cdt.cmake.CMakeProject.548391934" name="CMake Project Property" projectType="org.eclipse.cdt.cmake.CMakeProject"/>
+	</storageModule>
+	<storageModule moduleId="scannerConfiguration">
+		<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
+	</storageModule>
+	<storageModule moduleId="org.eclipse.cdt.core.LanguageSettingsProviders"/>
+	<storageModule moduleId="refreshScope"/>
+	<storageModule moduleId="org.eclipse.cdt.make.core.buildtargets"/>
+</cproject>

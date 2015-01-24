@@ -31,29 +31,29 @@ CConnectionManager::CConnectionManager() {
 }
 
 CConnectionManager::~CConnectionManager() {
-	stopAll();
+	removeAll();
 }
 
 /// Add the specified connection to the manager and start it.
-void CConnectionManager::start(CTcpConnection* c) {
+void CConnectionManager::add(CTcpConnection* c) {
 	  m_connections.insert(c);
 	  c->start();
 }
 
 /// Stop the specified connection.
-void CConnectionManager::stop(CTcpConnection* c) {
+void CConnectionManager::remove(CTcpConnection* c) {
 	  m_connections.erase(c);
 	  c->stop();
 
 }
 
 /// Stop all connections.
-void CConnectionManager::stopAll() {
+void CConnectionManager::removeAll() {
 	  std::for_each(m_connections.begin(), m_connections.end(), boost::bind(&CTcpConnection::stop, _1));
 	  m_connections.clear();
 }
 
-std::set<CTcpConnection::pointer> CConnectionManager::getConnections() {
+std::set<CTcpConnection*> CConnectionManager::getConnections() {
 	return m_connections;
 }
 

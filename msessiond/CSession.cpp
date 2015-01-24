@@ -597,7 +597,7 @@ int CSession::getProperty(string key, int defaultVal) {
 
 void CSession::setProperty(string key, int val) {
 	string privKey = privatePropertyKey(key);
-	m_app->settings().setProptery(privKey, val);
+	m_app->settings().setProperty(privKey, val);
 }
 
 void CSession::addClient(std::string name) {

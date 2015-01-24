@@ -88,8 +88,7 @@ set( HEADERS          sessionEx.h
                       )                    
 
 
-include_directories(${SOURCE_DIR} 
-                    ${Boost_INCLUDE_DIRS} 
+include_directories(${Boost_INCLUDE_DIRS} 
                     ${log4cplus_INCLUDE_DIRS}
                     ${SQLITE_INCLUDE_DIRS}
                     ${libxdiff_INCLUDE_DIRS}
@@ -98,6 +97,7 @@ include_directories(${SOURCE_DIR}
                     ${libavutil_INCLUDE_DIR}
                     ${LibAO_INCLUDE_DIRS}
                     ${CMAKE_CURRENT_SOURCE_DIR} 
+                    ${CMAKE_CURRENT_SOURCE_DIR}/../libmcommons
                     ${CMAKE_CURRENT_SOURCE_DIR}/../libmuroadaemon 
                     ${CMAKE_CURRENT_SOURCE_DIR}/../libmuroa++
                     ${CMAKE_CURRENT_SOURCE_DIR}/../libmstream

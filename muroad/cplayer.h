@@ -31,6 +31,7 @@ Class encapsulates all the playback functioinalty. It inplements an interface to
 #include "cposixcond.h"
 #include "IRenderCmds.h"
 // #include "cmds/CmdStreamReset.h"
+#include "CConnectionManager.h"
 
 #include <boost/asio.hpp>
 
@@ -41,7 +42,9 @@ namespace muroa
   class CSettings;
   class CDnsSdAvahi;
   class CmdStreamReset;
+  class CTcpServer;
   class CTimeServiceCtrl;
+  class CCtrlConnection;
 }
 
 class CRecvloop;
@@ -100,6 +103,9 @@ private:
 
     CPThread *m_recvloop_thread;
     CPThread *m_playloop_thread;
+
+    muroa::CConnectionManager m_conn_mgr;
+    muroa::CTcpServer* m_tcp_server;
 
     CSync m_sync_obj;
 

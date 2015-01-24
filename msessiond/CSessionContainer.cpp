@@ -30,6 +30,7 @@ namespace muroa {
 using namespace std;
 using namespace log4cplus;
 using namespace muroa;
+using boost::asio::ip::tcp;
 
 CSessionContainer* CSessionContainer::m_inst_ptr = 0;
 std::mutex CSessionContainer::m_mutex;
@@ -52,7 +53,16 @@ void CSessionContainer::setup( boost::asio::io_service& io_service) {
 	m_settings.setServiceName("Muroa Session Server");
 	m_settings.setServiceType("_muroa._tcp");
 
-	m_tcp_server = new CTcpServer(io_service, this, m_app, reinterpret_cast<factory_ptr_t>(&CConnection::create));
+	boost::asio::ip::tcp protocol = tcp::v4();
+	if( m_settings.ipversion() == 6 ) {
+		protocol = tcp::v6();
+	}
+
+	tcp::endpoint endp = tcp::endpoint(protocol, m_settings.getProperty("msessiond/port", 44555));
+
+	m_tcp_server = new CTcpServer(io_service, this, endp, reinterpret_cast<factory_ptr_t>(&CConnection::create));
+
+	m_settings.setProperty(string("ControlPort"), (const int)endp.port());
 
 	m_sigPtr = CSignalHandler::create(io_service);
 	m_sigPtr->start();

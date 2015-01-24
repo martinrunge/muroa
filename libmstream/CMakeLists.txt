@@ -15,6 +15,7 @@ add_definitions( ${log4cplus_DEFINITIONS} )
 
 set( SRC           CStreamConnection.cpp
                    CStreamServer.cpp
+                   CCtrlConnection.cpp
                    caudioframe.cpp
                    caudiooss.cpp
                    crtppacket.cpp
@@ -29,11 +30,14 @@ set( SRC           CStreamConnection.cpp
                    cmds/CmdStreamBase.cpp
                    cmds/CmdStreamReset.cpp
                    cmds/CmdStreamConnect.cpp
-                   )
-                  
+                   ctrlrpcxml/CStreamCtrlParserSM.cpp
+                   ctrlrpcxml/CStreamCtrlXml.cpp
+                   ctrlrpcxml/StreamCtrlXMLCmds.cpp
+                                      )                  
 
 set( HEADERS       CStreamConnection.h
                    CStreamServer.h
+                   CCtrlConnection.h
                    caudioframe.h
                    caudiooss.h
                    crtppacket.h
@@ -50,23 +54,30 @@ set( HEADERS       CStreamConnection.h
                    cmds/CmdStreamBase.h
                    cmds/CmdStreamReset.h
                    cmds/CmdStreamConnect.h
+                   ctrlrpcxml/IStreamCtrlRPC.h
+                   ctrlrpcxml/CStreamCtrlParserSM.h
+                   ctrlrpcxml/CStreamCtrlXml.h
+                   ctrlrpcxml/StreamCtrlXMLCmds.h
                    )
                   
-include_directories(${CMAKE_CURRENT_SOURCE_DIR} 
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}
+                    ${CMAKE_CURRENT_SOURCE_DIR}/../libmcommons
                     ${Boost_INCLUDE_DIRS}  
                     ${log4cplus_INCLUDE_DIRS}
-				    ../libsock++ 
-				    ../libmuroadaemon )
+		    ${CMAKE_CURRENT_SOURCE_DIR}/../libsock++ 
+		    ${CMAKE_CURRENT_SOURCE_DIR}/../libmuroadaemon )
 
 link_directories( "${CMAKE_SOURCE_DIR}/../libsock++/build_x86" 
                   ${BOOST_LIBRARYDIR})
 
 add_library( mstream SHARED  ${SRC} ${HEADERS} )
 target_link_libraries( mstream ${CMAKE_THREAD_LIBS_INIT} 
-                                 ${Boost_LIBRARIES} 
-                                 ${log4cplus_LIBRARY}
-                                 sock++ 
-                                 )
+                                ${Boost_LIBRARIES} 
+                                ${log4cplus_LIBRARY}
+                                mcommons
+                                sock++
+                                muroadaemon 
+                                )
 set_target_properties( mstream  PROPERTIES  COMPILE_FLAGS "-std=gnu++0x -pthread" ) 
 ###################################################################################
 # This step merges a gdb_index section into the binary to speed up debugging.

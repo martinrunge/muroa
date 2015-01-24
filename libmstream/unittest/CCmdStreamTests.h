@@ -24,16 +24,23 @@
 #include <cppunit/extensions/HelperMacros.h>
 #include <cppunit/TestFixture.h>
 
+#include "CStreamCtrlRpcDummy.h"
+
 namespace muroa {
 
 class CCmdStreamTests : public CppUnit::TestFixture {
 	  CPPUNIT_TEST_SUITE( CCmdStreamTests );
 	  CPPUNIT_TEST( serializeStreamReset );
-	  CPPUNIT_TEST( serializeStreamConnectIPv4 );
-	  CPPUNIT_TEST( serializeStreamConnectIPv6 );
-	  CPPUNIT_TEST( deserializeStreamConnectIPv6 );
-	  CPPUNIT_TEST( deserializeStreamConnectIPv4 );
+	  CPPUNIT_TEST( serializeError );
+	  CPPUNIT_TEST( serializeJoinSession );
+	  CPPUNIT_TEST( serializeTakeFromSession );
+	  CPPUNIT_TEST( testGetSetTimeSrv );
+	  CPPUNIT_TEST( testGetSetStreamTimeBase );
+	  CPPUNIT_TEST( testGetSetRtpPort );
+	  CPPUNIT_TEST( testGetSetVolume );
+	  CPPUNIT_TEST( testGetSetLeaveMCastGrp );
 	  CPPUNIT_TEST_SUITE_END();
+
 public:
 	CCmdStreamTests();
 	virtual ~CCmdStreamTests();
@@ -41,12 +48,25 @@ public:
 	void setUp();
     void tearDown();
 
+    void serializeError();
+
+    void serializeJoinSession();
+    void serializeTakeFromSession();
+
 	void serializeStreamReset();
 
-	void serializeStreamConnectIPv4();
-	void serializeStreamConnectIPv6();
-	void deserializeStreamConnectIPv4();
-	void deserializeStreamConnectIPv6();
+	void testGetSetTimeSrv();
+	void testGetSetStreamTimeBase();
+	void testGetSetRtpPort();
+	void testGetSetVolume();
+
+	void testGetSetLeaveMCastGrp();
+
+
+
+private:
+	CStreamCtrlRpcDummy* m_rpc_s;
+	CStreamCtrlRpcDummy* m_rpc_r;
 };
 
 } /* namespace muroa */

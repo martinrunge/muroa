@@ -37,7 +37,8 @@ set( unittests_H
 include ( ${QT_USE_FILE} )
 qt4_wrap_cpp( MOC_SOURCES ${MOC_H} ${MOC_MEDPROC_H} )
 
-include_directories(${SOURCE_DIR} .. 
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/.. 
+                    ${CMAKE_CURRENT_SOURCE_DIR}/../../libmcommons
                     ${Boost_INCLUDE_DIRS} 
                     ${libxdiff_INCLUDE_DIRS} 
                     ${CMAKE_CURRENT_BINARY_DIR}/..
@@ -51,6 +52,7 @@ set_target_properties( libmuroatest PROPERTIES  COMPILE_FLAGS "-std=gnu++0x" )
 
 TARGET_LINK_LIBRARIES(libmuroatest ${CPPUNIT_LIBRARIES} 
                                    muroa++
+                                   mcommons
                                    ${Boost_LIBRARIES} 
                                    ${QT_LIBRARIES} 
                                    ${libxdiff_LIBRARIES}

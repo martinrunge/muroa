@@ -302,7 +302,7 @@ int CSettings::getProperty(const string& key, const int& defaultVal) {
 	return m_pt.get(key, defaultVal);
 }
 
-void CSettings::setProptery(const string& key, const int& val) {
+void CSettings::setProperty(const string& key, const int& val) {
 	m_pt.put(key, val);
 }
 

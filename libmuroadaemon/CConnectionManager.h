@@ -24,25 +24,25 @@
 #ifndef CCONNECTIONMANAGER_H_
 #define CCONNECTIONMANAGER_H_
 
-#include <boost/noncopyable.hpp>
+#include "IConnectionManager.h"
 #include "CTcpConnection.h"
 
 #include <set>
 namespace muroa {
 
-class CConnectionManager : private boost::noncopyable {
+class CConnectionManager : public IConnectionManager {
 public:
 	CConnectionManager();
 	virtual ~CConnectionManager();
 
 	  /// Add the specified connection to the manager and start it.
-	  void start(CTcpConnection* c);
+	  void add(CTcpConnection* c);
 
 	  /// Stop the specified connection.
-	  void stop(CTcpConnection* c);
+	  void remove(CTcpConnection* c);
 
 	  /// Stop all connections.
-	  void stopAll();
+	  void removeAll();
 
 	  std::set<CTcpConnection*> getConnections();
 

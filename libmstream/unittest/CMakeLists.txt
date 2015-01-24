@@ -9,20 +9,23 @@ find_package ( CppUnit REQUIRED )
 add_definitions( ${QT4_DEFINITIONS} -D__STDC_CONSTANT_MACROS ${CPPUNIT_DEFINITIONS})
 
 set( unittests_SRCS   CCmdStreamTests.cpp
+                      CStreamCtrlRpcDummy.cpp
                       LibMStreamTestApp.cpp
                       )
                     
 set( unittests_H   
                       )
                     
- set( HEADERS         CCmdStreamTests.h
+set( HEADERS          CCmdStreamTests.h
+                      CStreamCtrlRpcDummy.h 
                       )                    
   
 
 include ( ${QT_USE_FILE} )
 qt4_wrap_cpp( MOC_SOURCES ${MOC_H} ${MOC_MEDPROC_H} )
 
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}/.. 
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/..
+                    ${CMAKE_CURRENT_SOURCE_DIR}/../../libmcommons
                     ${Boost_INCLUDE_DIRS} 
                     ${CMAKE_CURRENT_BINARY_DIR}/..
                     ${CPPUNIT_INCLUDE_DIRS} ) 

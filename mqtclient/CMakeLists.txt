@@ -99,6 +99,7 @@ qt4_wrap_cpp( MOC_SOURCES ${MOC_H} )
 include_directories( ${CMAKE_CURRENT_BINARY_DIR}  
                      ${CMAKE_CURRENT_SOURCE_DIR} 
                      ${CMAKE_CURRENT_SOURCE_DIR}/../libmuroa++
+                     ${CMAKE_CURRENT_SOURCE_DIR}/../libmcommons
                      ${Avahi_INCLUDE_DIRS} 
                      ${libxdiff_INCLUDE_DIRS} )
 
@@ -106,6 +107,7 @@ link_directories( ${QT_LIB_DIR} "${CMAKE_SOURCE_DIR}/../libmuroa++/build")
 
 add_executable( mqtclient ${SRC} ${MOC_SOURCES} ${UIS_H} ${RCCS_SRC})
 target_link_libraries( mqtclient   muroa++
+                                   mcommons
                                    ${Avahi_LIBRARIES}
                                    ${libxdiff_LIBRARIES}
                                    ${QT_LIBRARIES} )

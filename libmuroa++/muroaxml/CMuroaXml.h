@@ -10,7 +10,7 @@
 
 #include "IRPC.h"
 #include "CParserStateMachine.h"
-#include "MuroaExceptions.h"
+#include "../libmcommons/MuroaExceptions.h"
 
 #include <expat.h>
 #include <cstdint>

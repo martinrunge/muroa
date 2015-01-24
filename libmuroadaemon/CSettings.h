@@ -73,7 +73,7 @@ public:
     void setProperty(const std::string& key, const std::string& val);
 
     int getProperty(const std::string& key, const int& defaultVal);
-    void setProptery(const std::string& key, const int& val);
+    void setProperty(const std::string& key, const int& val);
 
     bool getProperty(const std::string& key, const bool& defaultVal);
     void setProptery(const std::string& key, const bool& val);

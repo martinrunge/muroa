@@ -30,7 +30,7 @@ set( SRC           CRootItem.cpp
                    CNextlistItem.cpp
                    CStreamClientItem.cpp
                    CDiff.cpp
-                   CUtils.cpp
+                   # CUtils.cpp
                    # libmain.cpp
                    muroaxml/IRPC.cpp
                    muroaxml/CMuroaXml.cpp
@@ -66,8 +66,8 @@ set( HEADERS       IItemModel.h
                    CNextlistItem.h
                    CStreamClientItem.h
                    CDiff.h
-                   CUtils.h
-                   MuroaExceptions.h
+                   # CUtils.h
+                   # MuroaExceptions.h
                    muroaxml/IRPC.h
                    muroaxml/CMuroaXml.h
                    muroaxml/xmlCommands.h
@@ -87,7 +87,8 @@ set( HEADERS       IItemModel.h
                    cmds/CmdRmStreamClient.h
                    )
                    
-include_directories(${CMAKE_CURRENT_SOURCE_DIR} 
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}
+                    ${CMAKE_CURRENT_SOURCE_DIR}/../libmcommons 
                     ${Boost_INCLUDE_DIRS} 
                     ${EXPAT_INCLUDE_DIRS}
                     ${libxdiff_INCLUDE_DIRS} 
@@ -96,7 +97,8 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR}
 link_directories(  )
 
 add_library( muroa++ SHARED ${SRC} ${HEADERS} )
-target_link_libraries( muroa++  ${Boost_LIBRARIES} 
+target_link_libraries( muroa++  mcommons
+                                ${Boost_LIBRARIES} 
                                 ${EXPAT_LIBRARIES} 
                                 ${LIBXDIFF_LIBRARIES} )
 set_target_properties( muroa++  PROPERTIES  COMPILE_FLAGS "-std=gnu++0x" )

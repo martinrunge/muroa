@@ -20,7 +20,7 @@ add_definitions( ${log4cplus_DEFINITIONS} )
 
 set( SRC           CTcpConnection.cpp
                    CTcpServer.cpp
-                   # CConnectionManager.cpp
+                   CConnectionManager.cpp
                    CSignalHandler.cpp
                    CSettings.cpp
                    Exceptions.cpp
@@ -37,6 +37,7 @@ set( SRC           CTcpConnection.cpp
 set( HEADERS       CTcpConnection.h
                    CTcpServer.h
                    IConnectionManager.h
+                   CConnectionManager.cpp
                    CSignalHandler.h
                    CSettings.h
                    Exceptions.h

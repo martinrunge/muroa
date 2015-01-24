@@ -108,6 +108,52 @@ uint32_t CUtils::str2uint32(std::string str) throw(std::invalid_argument) {
 	return iVal;
 }
 
+
+uint64_t CUtils::str2uint64(std::string str) throw(std::invalid_argument) {
+	errno = 0;
+	char* endptr;
+	unsigned long long iVal = strtoull( str.c_str(), &endptr, 10);
+	if (errno != 0 || *endptr != '\0' ) {
+		switch (errno) {
+		case ERANGE:
+			throw invalid_argument("convert string to int (out of range)");
+			break;
+		case EINVAL:
+			throw invalid_argument("convert string to int");
+			break;
+		default:
+			throw invalid_argument("convert string to int");
+			break;
+		}
+	}
+//	if(iVal > UINT32_MAX) {
+//		throw invalid_argument("convert string to int (out of range)");
+//	}
+//	if(iVal < UINT32_MIN) {
+//		throw invalid_argument("convert string to int (out of range)");
+//	}
+
+	return iVal;
+}
+
+
+void CUtils::xmlesc(std::string& input) {
+    std::string buffer;
+    buffer.reserve(input.size());
+    for(size_t pos = 0; pos != input.size(); ++pos) {
+        switch(input[pos]) {
+            case '&':  buffer.append("&amp;");       break;
+            case '\"': buffer.append("&quot;");      break;
+            case '\'': buffer.append("&apos;");      break;
+            case '<':  buffer.append("&lt;");        break;
+            case '>':  buffer.append("&gt;");        break;
+            default:   buffer.append(&input[pos], 1); break;
+        }
+    }
+    input.swap(buffer);
+}
+
+
 path CUtils::expandvars(path p) {
 	path rp;
 	path::iterator it = p.begin();
