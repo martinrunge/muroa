@@ -73,13 +73,28 @@ public:
 	uint32_t getLastSsrc() const;
 	uint32_t getLastPort() const;
 	const boost::asio::ip::address& getMcastGrp() const;
+
 	uint32_t getRtpPort() const;
+	void setRtpPort(uint32_t port);
+
 	uint64_t getTimebasePts() const;
+	void setTimebasePts(uint64_t pts);
+
 	uint64_t getTimebaseRtpTs() const;
+	void setTimebaseRtpTs(uint64_t  rtp_ts);
+
 	uint32_t getTimebaseSsrc() const;
+	void setTimebaseSsrc(uint32_t ssrc);
+
 	const boost::asio::ip::address& getTimesrvIpAddr() const;
+	void setTimesrvIpAddr(const boost::asio::ip::address& ip_addr);
+
 	uint32_t getTimesrvPort() const;
+	void setTimesrvPort(uint32_t port);
+
 	int getVolPercent() const;
+	void setVolPercent(int percent);
+
 	uint32_t getLastAck() const;
 
 private:

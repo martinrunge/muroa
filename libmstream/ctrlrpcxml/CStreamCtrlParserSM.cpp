@@ -59,11 +59,11 @@ void CStreamCtrlParserSM::onXmlVersion() {
 
 }
 
-void CStreamCtrlParserSM::setState(enum state_t state) {
+void CStreamCtrlParserSM::setState(IStreamCtrl::state_t state) {
 	m_state = state;
 }
 
-enum CStreamCtrlParserSM::state_t CStreamCtrlParserSM::getState() {
+IStreamCtrl::state_t CStreamCtrlParserSM::getState() {
 	return m_state;
 }
 
@@ -95,18 +95,18 @@ void CStreamCtrlParserSM::onXmlStartElement(const std::string& name, const char*
 		parseErrorArgs(attributes);
 	}
 	else {
-		switch (m_xml_parser_state.root_state) {
-			case XML_SESSION_STATE:
+		switch (m_state) {
+			case SESSION_STATE:
 				// state machine is in state 'IN_SESSION_STATE'. Whatever can happen from here is handled by the function 'sessionState'
 				sessionState(START, name, attributes);
 				break;
 
-			case XML_INFO_STATE:
+			case INFO_STATE:
 				// ... whatever can happen from here is handled by the function 'infoState'
 				infoState(START, name, attributes);
 				break;
 
-			case XML_ROOT_STATE:
+			case ROOT_STATE:
 			default:
 
 				// the state machine is in state 'ROOT_STATE'. Only switch into INFO_SATE or SESSION_STATE is allowed from this state.
@@ -132,18 +132,18 @@ void CStreamCtrlParserSM::onXmlEndElement(const std::string& name)
 		onError(m_tmp_cmdID, m_errorCode, m_errorMsg);
 	}
 	else {
-		switch (m_xml_parser_state.root_state) {
-			case XML_SESSION_STATE:
+		switch (m_state) {
+			case SESSION_STATE:
 				// state machine is in state 'IN_SESSION_STATE'. Whatever can happen from here is handled by the function 'sessionState'
 				sessionState(END, name, null_ptr);
 				break;
 
-			case XML_INFO_STATE:
+			case INFO_STATE:
 				// ... whatever can happen from here is handled by the function 'infoState'
 				infoState(END, name, null_ptr);
 				break;
 
-			case XML_ROOT_STATE:
+			case ROOT_STATE:
 			default:
 
 				// state machine is in state 'ROOT_STATE'. Whatever can happen from here is handled by the function 'rootState'

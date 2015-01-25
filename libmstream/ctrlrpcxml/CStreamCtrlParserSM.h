@@ -69,19 +69,14 @@ public:
 		root_state_t root_state;
 		info_state_t info_state;
 		session_state_t session_state;
-	} parser_state;
-
-	enum state_t {   ROOT_STATE,
-					 INFO_STATE,
-		             SESSION_STATE
-	};
+	} parser_state_t;
 
 
 	CStreamCtrlParserSM();
 	virtual ~CStreamCtrlParserSM() = 0;
 
-	void setState(enum state_t state);
-	enum state_t getState();
+	void setState(IStreamCtrl::state_t state);
+	IStreamCtrl::state_t getState();
 
 	void onXmlStartDocument();
 	void onXmlEndDocument();
@@ -102,8 +97,8 @@ private:
 
 	enum action_flag { INIT, START, END};
 
-	enum state_t m_state;
-	parser_state m_xml_parser_state;
+	state_t m_state;
+	parser_state_t m_xml_parser_state;
 
 	int m_xml_tag_depth;
 	int m_tag_unknown_depth;

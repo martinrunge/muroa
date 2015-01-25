@@ -30,7 +30,15 @@
 #include <MuroaExceptions.h>
 #include <boost/asio.hpp>
 
-class IStreamCtrlRPC {
+class IStreamCtrl {
+public:
+	typedef enum state {   ROOT_STATE,
+					 INFO_STATE,
+		             SESSION_STATE
+	} state_t;
+};
+
+class IStreamCtrlRPC : public IStreamCtrl {
 public:
 	virtual ~IStreamCtrlRPC() {}
 
@@ -69,7 +77,7 @@ public:
 
 };
 
-class IStreamCtrlCBs {
+class IStreamCtrlCBs : public IStreamCtrl {
 public:
 	virtual ~IStreamCtrlCBs() {}
 

@@ -168,20 +168,40 @@ uint64_t CStreamCtrlRpcDummy::getTimebasePts() const {
 	return m_timebase_pts;
 }
 
+void CStreamCtrlRpcDummy::setTimebasePts(uint64_t pts) {
+	m_timebase_pts = pts;
+}
+
 uint64_t CStreamCtrlRpcDummy::getTimebaseRtpTs() const {
 	return m_timebase_rtp_ts;
+}
+
+void CStreamCtrlRpcDummy::setTimebaseRtpTs(uint64_t rtp_ts) {
+	m_timebase_rtp_ts = rtp_ts;
 }
 
 uint32_t CStreamCtrlRpcDummy::getTimebaseSsrc() const {
 	return m_timebase_ssrc;
 }
 
+void CStreamCtrlRpcDummy::setTimebaseSsrc(uint32_t ssrc) {
+	m_timebase_ssrc = ssrc;
+}
+
 const boost::asio::ip::address& CStreamCtrlRpcDummy::getTimesrvIpAddr() const {
 	return m_timesrv_ip_addr;
 }
 
+void CStreamCtrlRpcDummy::setTimesrvIpAddr(const boost::asio::ip::address& ip_addr) {
+	m_timesrv_ip_addr = ip_addr;
+}
+
 uint32_t CStreamCtrlRpcDummy::getTimesrvPort() const {
 	return m_timesrv_port;
+}
+
+void CStreamCtrlRpcDummy::setTimesrvPort(uint32_t port) {
+	m_timesrv_port = port;
 }
 
 int CStreamCtrlRpcDummy::getVolPercent() const {
