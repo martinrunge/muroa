@@ -66,23 +66,30 @@ public:
     inline std::string serviceType() {return m_service_type; };
     inline void setServiceType(std::string service_type) { m_service_type = service_type; };
 
-    std::string getProperty(const std::string& key, const char* defaultVal);
-    void setProperty(const std::string& key, const char* val);
+    std::string getConfigVal(const std::string& key, const char* defaultVal);
+    std::string getConfigVal(const std::string& key, const std::string& defaultVal);
+    int getConfigVal(const std::string& key, const int& defaultVal);
+    bool getConfigVal(const std::string& key, const bool& defaultVal);
 
-    std::string getProperty(const std::string& key, const std::string& defaultVal);
-    void setProperty(const std::string& key, const std::string& val);
+    std::string getPersisentVal(const std::string& key, const char* defaultVal);
+    void setPersistentVal(const std::string& key, const int& val);
 
-    int getProperty(const std::string& key, const int& defaultVal);
-    void setProperty(const std::string& key, const int& val);
+    std::string getPersisentVal(const std::string& key, const std::string& defaultVal);
+    void setPersistentVal(const std::string& key, const std::string& val);
 
-    bool getProperty(const std::string& key, const bool& defaultVal);
-    void setProptery(const std::string& key, const bool& val);
+    int getPersisentVal(const std::string& key, const int& defaultVal);
+    void setPersistentVal(const std::string& key, const char* val);
+
+    bool getPersisentVal(const std::string& key, const bool& defaultVal);
+    void setPersistentVal(const std::string& key, const bool& val);
 
     static bool accessible(std::string filename);
 
 private:
 	void usage(std::string appname);
 	void applyDefaults();
+
+	void createMinimalJsonFile(std::string filename);
 
     std::string m_configfile;
     std::string m_logfile;
@@ -101,11 +108,11 @@ private:
 
 
     unsigned short m_ip_version;
-    boost::property_tree::ptree m_pt;
-    boost::property_tree::ptree m_cache_pt;
+    boost::property_tree::ptree m_config_pt;
+    boost::property_tree::ptree m_persist_pt;
 
     std::stack<std::string> m_search_config_file;
-    std::stack<std::string> m_search_cache_file;
+    std::stack<std::string> m_search_persist_file;
 
     CApp* m_app;
 };

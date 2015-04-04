@@ -46,7 +46,7 @@ CRecvloop::CRecvloop(CPlayer* parent, CApp* app, CPacketRingBuffer* packet_ringb
   
   m_packet_ringbuffer = packet_ringbuffer;
 
-  m_max_idle = m_settings.getProperty("MaxIdle", 10);
+  m_max_idle = m_settings.getConfigVal("MaxIdle", 10);
 
 
   m_socket = new CSocket(SOCK_DGRAM, m_settings.port(), true);

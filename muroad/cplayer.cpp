@@ -63,11 +63,11 @@ CPlayer::CPlayer(CApp* app, boost::asio::io_service& io_service) : m_app(app),
     protocol = tcp::v6();
   }
 
-  tcp::endpoint endp = tcp::endpoint(protocol, m_settings.getProperty("muroad/ControlPort", 5555));
+  tcp::endpoint endp = tcp::endpoint(protocol, m_settings.getConfigVal("muroad/ControlPort", 5555));
 
   m_tcp_server = new CTcpServer(io_service, &m_conn_mgr, endp, reinterpret_cast<factory_ptr_t>(&CCtrlConnection::create)),
 
-  m_settings.setProperty(string("ControlPort"), (const int)endp.port());
+  m_settings.setPersistentVal(string("ControlPort"), (const int)endp.port());
 
 
   m_settings.setServiceType("_muroad._udp");

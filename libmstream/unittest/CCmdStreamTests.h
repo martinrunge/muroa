@@ -65,6 +65,10 @@ public:
 
 
 private:
+
+	void joinSession(std::string name = "default session");
+	void leaveSession();
+
 	CStreamCtrlRpcDummy* m_rpc_s;
 	CStreamCtrlRpcDummy* m_rpc_r;
 };

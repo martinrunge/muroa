@@ -114,7 +114,7 @@ void CSync::deserialize(void)
 	  m_media_clock_srv_endpoint = udp::endpoint(ip_addr, port);
   }
   else {
-	  unsigned long* ipv4addr_ptr = reinterpret_cast<unsigned long*>(&m_serialization_buffer.serialisation_vars.ip_addr);
+	  uint32_t* ipv4addr_ptr = reinterpret_cast<uint32_t*>(&m_serialization_buffer.serialisation_vars.ip_addr);
 	  address_v4 v4addr(*ipv4addr_ptr);
 	  address ip_addr(v4addr);
 	  m_media_clock_srv_endpoint = udp::endpoint(ip_addr, port);

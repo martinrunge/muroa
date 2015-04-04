@@ -461,13 +461,13 @@ void CSession::scanCollection(CConnection* initiator, uint32_t jobID) {
 	m_job_initiators.insert(std::pair<uint32_t, CConnection*>(jobID, initiator));
 
 	m_mediaScanner->start();
-	boost::filesystem::path dbpath = CApp::settings().getProperty("msessiond.sessions_storage_dir", string("./")) + getName() + "/mediacol";
+	boost::filesystem::path dbpath = CApp::settings().getConfigVal("msessiond.sessions_storage_dir", string("./")) + getName() + "/mediacol";
 	dbpath = CUtils::expandvars(dbpath);
 	CMsgOpenDb* dbmsg = new CMsgOpenDb( dbpath.string() );
 	m_mediaScanner->sendMsg(dbmsg);
 	addOutstandingMsg(dbmsg);
 
-	boost::filesystem::path mediapath = CApp::settings().getProperty("msessiond.media_path", "~/Desktop");
+	boost::filesystem::path mediapath = CApp::settings().getConfigVal("msessiond.media_path", "~/Desktop");
 	mediapath = CUtils::expandvars(mediapath);
 	CMsgScanDir* sdmsg = new CMsgScanDir( mediapath.string() );
 	m_mediaScanner->sendMsg(sdmsg);
@@ -580,24 +580,24 @@ void CSession::toAll( Cmd* cmd, bool deleteCmd ) {
 
 string CSession::getProperty(string key, string defaultVal) {
 	string privKey = privatePropertyKey(key);
-	string value = m_app->settings().getProperty(privKey, defaultVal);
+	string value = m_app->settings().getConfigVal(privKey, defaultVal);
 	return value;
 }
 
 void CSession::setProperty(string key, string val) {
 	string privKey = privatePropertyKey(key);
-	m_app->settings().setProperty(privKey, val);
+	m_app->settings().setPersistentVal(privKey, val);
 }
 
 int CSession::getProperty(string key, int defaultVal) {
 	string privKey = privatePropertyKey(key);
-	int value = m_app->settings().getProperty(privKey, defaultVal);
+	int value = m_app->settings().getConfigVal(privKey, defaultVal);
 	return value;
 }
 
 void CSession::setProperty(string key, int val) {
 	string privKey = privatePropertyKey(key);
-	m_app->settings().setProperty(privKey, val);
+	m_app->settings().setPersistentVal(privKey, val);
 }
 
 void CSession::addClient(std::string name) {

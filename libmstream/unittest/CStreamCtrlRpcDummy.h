@@ -42,7 +42,7 @@ public:
 	void onError(uint32_t cmdID, int errorCode, std::string errmsg);
 
 	void onJoinSession(uint32_t cmdID, std::string name, boost::asio::ip::address session_srv);
-	void onJoinSessionLeave( std::string name );
+	void onJoinSessionLeave();
 	void onTakeFromSession(uint32_t cmdID, std::string name, boost::asio::ip::address session_srv);
 
 	void onSetTimeSrv(uint32_t cmdID, boost::asio::ip::address session_srv, uint32_t port);
@@ -67,33 +67,36 @@ public:
 	// called when there are serialized command ready to be sent to receiver
 	void onDataToSend(const char* data, int len);
 
-	std::string getLastCmd();
-	boost::asio::ip::address getLastIpAddr() const;
-	uint32_t getLastCmdId() const;
-	uint32_t getLastSsrc() const;
-	uint32_t getLastPort() const;
-	const boost::asio::ip::address& getMcastGrp() const;
+	std::string getLastCmdInternal();
+	boost::asio::ip::address getLastIpAddrInternal() const;
+	uint32_t getLastCmdIdInternal() const;
+	uint32_t getLastSsrcInternal() const;
+	uint32_t getLastPortInternal() const;
+	const boost::asio::ip::address& getMcastGrpInternal() const;
 
-	uint32_t getRtpPort() const;
-	void setRtpPort(uint32_t port);
+	uint32_t getRtpPortInternal() const;
+	void setRtpPortInternal(uint32_t port);
 
-	uint64_t getTimebasePts() const;
-	void setTimebasePts(uint64_t pts);
+	uint64_t getTimebasePtsInternal() const;
+	void setTimebasePtsInternal(uint64_t pts);
 
-	uint64_t getTimebaseRtpTs() const;
-	void setTimebaseRtpTs(uint64_t  rtp_ts);
+	uint64_t getTimebaseRtpTsInternal() const;
+	void setTimebaseRtpTsInternal(uint64_t  rtp_ts);
 
-	uint32_t getTimebaseSsrc() const;
-	void setTimebaseSsrc(uint32_t ssrc);
+	uint32_t getTimebaseSsrcInternal() const;
+	void setTimebaseSsrcInternal(uint32_t ssrc);
 
-	const boost::asio::ip::address& getTimesrvIpAddr() const;
-	void setTimesrvIpAddr(const boost::asio::ip::address& ip_addr);
+	const boost::asio::ip::address& getTimesrvIpAddrInternal() const;
+	void setTimesrvIpAddrInternal(const boost::asio::ip::address& ip_addr);
 
-	uint32_t getTimesrvPort() const;
-	void setTimesrvPort(uint32_t port);
+	uint32_t getTimesrvPortInternal() const;
+	void setTimesrvPortInternal(uint32_t port);
 
-	int getVolPercent() const;
-	void setVolPercent(int percent);
+	int getVolPercentInternal() const;
+	void setVolPercentInternal(int percent);
+
+	void setMCastGrpInternal(const boost::asio::ip::address& ip_addr);
+	boost::asio::ip::address getMCastGrpInternal();
 
 	uint32_t getLastAck() const;
 
@@ -106,6 +109,9 @@ private:
 	boost::asio::ip::address m_last_ip_addr;
 
 	boost::asio::ip::address m_timesrv_ip_addr;
+
+	boost::asio::ip::address m_mcast_addr;
+
 	uint32_t m_timesrv_port;
 
 	uint32_t m_rtp_port;

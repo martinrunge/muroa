@@ -58,18 +58,19 @@ void CSessionContainer::setup( boost::asio::io_service& io_service) {
 		protocol = tcp::v6();
 	}
 
-	tcp::endpoint endp = tcp::endpoint(protocol, m_settings.getProperty("msessiond/port", 44555));
+	tcp::endpoint endp = tcp::endpoint(protocol, m_settings.getConfigVal("msessiond/port", 44555));
 
 	m_tcp_server = new CTcpServer(io_service, this, endp, reinterpret_cast<factory_ptr_t>(&CConnection::create));
 
-	m_settings.setProperty(string("ControlPort"), (const int)endp.port());
+	const int port(endp.port());
+	m_settings.setPersistentVal(string("msessiond/port"), port);
 
 	m_sigPtr = CSignalHandler::create(io_service);
 	m_sigPtr->start();
 
-	if(m_app->settings().getProperty("enable_time_service", true)) {
+	if(m_app->settings().getConfigVal("enable_time_service", true)) {
 		m_ts_ctrl = new CTimeServiceCtrl();
-		int portNr = m_app->settings().getProperty("time_service_port", 44401);
+		int portNr = m_app->settings().getConfigVal("time_service_port", 44401);
 		boost::asio::ip::address address;
 		m_ts_ctrl->start(true, address, portNr);
 	}
@@ -78,7 +79,7 @@ void CSessionContainer::setup( boost::asio::io_service& io_service) {
 	browselist.push_back("_muroa._tcp");
 	browselist.push_back("_muroad._udp");
 
-	m_dnssd = new CDnsSdAvahi(io_service, m_settings.serviceName(), m_settings.port(), m_settings.serviceType(), browselist);
+	m_dnssd = new CDnsSdAvahi(io_service, m_settings.serviceName(), port, m_settings.serviceType(), browselist);
 	m_dnssd->setServiceChangedHandler(boost::bind( &muroa::CSessionContainer::serviceChanged, this));
 	m_dnssd->setServiceAddedHandler(boost::bind( &muroa::CSessionContainer::serviceAdded, this, _1));
 	m_dnssd->setServiceRemovedHandler(boost::bind( &muroa::CSessionContainer::serviceRemoved, this, _1));

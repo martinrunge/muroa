@@ -13,6 +13,11 @@
 
 #include <libavutil/opt.h>
 
+#ifndef AVCODEC_MAX_AUDIO_FRAME_SIZE
+#define AVCODEC_MAX_AUDIO_FRAME_SIZE 192000 // 1 second of 48khz 32bit audio
+#endif
+
+
 CDecoder::CDecoder(const CStream* streamPtr) : m_streamPtr(streamPtr),
                                                m_pFormatCtx(0),
                                                m_pCodecCtx(0),

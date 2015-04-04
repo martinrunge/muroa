@@ -43,6 +43,8 @@ void CStreamCtrlParserSM::reset() {
 	// m_command_connection = parent;
 	// m_session = session;
 
+	m_state = ROOT_STATE;
+
 	m_xml_parser_state.root_state = XML_ROOT_STATE;
 	m_xml_parser_state.info_state = XML_INFO_STATE_ROOT;
 	m_xml_parser_state.session_state = XML_SESSION_STATE_ROOT;
@@ -339,7 +341,7 @@ void CStreamCtrlParserSM::sessionState(const action_flag& init_start_end, const 
 		}
 		else if (name.compare(StreamCtrlXMLCmds::joinSession) == 0) {
 			m_xml_parser_state.root_state = XML_ROOT_STATE;
-			onJoinSessionLeave( m_joinSession_Name );
+			onJoinSessionLeave( );
 		}
 		else {
 			cerr << "unknown end tag received :'" << name << "' !" << endl;
@@ -420,6 +422,7 @@ void CStreamCtrlParserSM::parseJoinSessionArgs(const char** attrs) {
 
 	m_tmp_addr = str2ip_addr(addr_str);
 }
+
 
 void CStreamCtrlParserSM::parseTakeFromSessionArgs(const char** attrs) {
 	m_tmp_name.clear();

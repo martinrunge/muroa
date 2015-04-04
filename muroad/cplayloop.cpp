@@ -73,12 +73,12 @@ CPlayloop::CPlayloop(CPlayer* parent, CApp *app, CPacketRingBuffer* packet_ringb
 	m_sample_size = sizeof(short);
 	m_num_channels = 2;
 
-	m_max_idle = m_settings.getProperty("MaxIdle", 100);
+	m_max_idle = m_settings.getConfigVal("MaxIdle", 100);
 
 
 	// m_audio_sink = new CAudioIoAlsa();
 	m_audio_sink = initSoundSystem();
-	string audio_device = m_settings.getProperty(string("muroad.AudioDevice"), string("hw:0,0"));
+	string audio_device = m_settings.getConfigVal(string("muroad.AudioDevice"), string("hw:0,0"));
 	m_audio_sink->open(audio_device, m_desired_sample_rate, m_num_channels);
 
 	int actual_sample_rate = m_audio_sink->getActualSampleRate();
@@ -178,7 +178,7 @@ bool CPlayloop::waitForData() {
 
 	int retval = m_player->m_traffic_cond.Wait(1);
 	if(retval == 0) {
-		string audio_device = m_settings.getProperty(string("muroa.AudioDevice"), string("hw:0,0"));
+		string audio_device = m_settings.getConfigVal(string("muroad.AudioDevice"), string("hw:0,0"));
 
 		m_audio_sink->open(audio_device, m_desired_sample_rate, m_num_channels);
 		m_write_granularity = m_audio_sink->getWriteGranularity();

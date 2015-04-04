@@ -88,7 +88,7 @@ public:
 	virtual void onError(uint32_t cmdID, int errorCode, std::string errmsg) = 0;
 
 	virtual void onJoinSession(uint32_t cmdID, std::string name, boost::asio::ip::address session_srv) = 0;
-	virtual void onJoinSessionLeave(std::string name) = 0;
+	virtual void onJoinSessionLeave() = 0;
 
 	virtual void onTakeFromSession(uint32_t cmdID, std::string name, boost::asio::ip::address session_srv) = 0;
 

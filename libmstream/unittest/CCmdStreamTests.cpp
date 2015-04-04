@@ -64,7 +64,7 @@ void CCmdStreamTests::tearDown() {
 void CCmdStreamTests::serializeError() {
 	m_rpc_s->error(1, 1, "error message");
 
-	string lastCmd = m_rpc_r->getLastCmd();
+	string lastCmd = m_rpc_r->getLastCmdInternal();
 	CPPUNIT_ASSERT(lastCmd.compare("onError(1, 1, 'error message')") == 0);
 
 }
@@ -77,9 +77,9 @@ void muroa::CCmdStreamTests::serializeJoinSession() {
 
 	m_rpc_s->joinSession(cmdID, sesion_name, server_addr);
 
-	uint32_t lastCmdID = m_rpc_r->getLastCmdId();
-	string lastCmd = m_rpc_r->getLastCmd();
-	boost::asio::ip::address received_address = m_rpc_r->getLastIpAddr();
+	uint32_t lastCmdID = m_rpc_r->getLastCmdIdInternal();
+	string lastCmd = m_rpc_r->getLastCmdInternal();
+	boost::asio::ip::address received_address = m_rpc_r->getLastIpAddrInternal();
 
 	CPPUNIT_ASSERT( lastCmdID == cmdID );
 	CPPUNIT_ASSERT( lastCmd.compare( sesion_name ) == 0);
@@ -95,9 +95,9 @@ void muroa::CCmdStreamTests::serializeTakeFromSession() {
 
 	m_rpc_s->takeFromSession(cmdID, sesion_name, server_addr);
 
-	uint32_t lastCmdID = m_rpc_r->getLastCmdId();
-	string lastCmd = m_rpc_r->getLastCmd();
-	boost::asio::ip::address received_address = m_rpc_r->getLastIpAddr();
+	uint32_t lastCmdID = m_rpc_r->getLastCmdIdInternal();
+	string lastCmd = m_rpc_r->getLastCmdInternal();
+	boost::asio::ip::address received_address = m_rpc_r->getLastIpAddrInternal();
 
 	CPPUNIT_ASSERT( lastCmdID == cmdID );
 	CPPUNIT_ASSERT( lastCmd.compare( sesion_name ) == 0);
@@ -113,7 +113,7 @@ void CCmdStreamTests::serializeStreamReset() {
 
 	m_rpc_s->joinSession(joinSessionCmdID, joinSessionName, server_addr);
 
-	uint32_t lastCmdID = m_rpc_r->getLastCmdId();
+	uint32_t lastCmdID = m_rpc_r->getLastCmdIdInternal();
 	if(lastCmdID == joinSessionCmdID) {
 		m_rpc_r->ack(lastCmdID);
 	}
@@ -129,10 +129,10 @@ void CCmdStreamTests::serializeStreamReset() {
 	uint32_t ssrc = 324784;
 	m_rpc_s->resetStream(cmdID, ssrc);
 
-	lastCmdID = m_rpc_r->getLastCmdId();
-	uint32_t lastSsrc = m_rpc_r->getLastSsrc();
+	lastCmdID = m_rpc_r->getLastCmdIdInternal();
+	uint32_t lastSsrc = m_rpc_r->getLastSsrcInternal();
 
-	string lastCmd = m_rpc_r->getLastCmd();
+	string lastCmd = m_rpc_r->getLastCmdInternal();
 	CPPUNIT_ASSERT( cmdID == lastCmdID );
 	CPPUNIT_ASSERT( ssrc == lastSsrc );
 	CPPUNIT_ASSERT(lastCmd.compare("onResetStream(5, 324784)") == 0);
@@ -146,7 +146,7 @@ void CCmdStreamTests::testGetSetTimeSrv() {
 
 	m_rpc_s->joinSession(joinSessionCmdID, joinSessionName, server_addr);
 
-	uint32_t lastCmdID = m_rpc_r->getLastCmdId();
+	uint32_t lastCmdID = m_rpc_r->getLastCmdIdInternal();
 	if(lastCmdID == joinSessionCmdID) {
 		m_rpc_r->ack(lastCmdID);
 	}
@@ -163,16 +163,16 @@ void CCmdStreamTests::testGetSetTimeSrv() {
 
 	uint32_t cmdID = 7;
 	uint32_t port = 5779;
-	m_rpc_r->setTimesrvIpAddr(server_addr);
-	m_rpc_r->setTimesrvPort(port);
+	m_rpc_r->setTimesrvIpAddrInternal(server_addr);
+	m_rpc_r->setTimesrvPortInternal(port);
 
 	m_rpc_s->getTimeSrv(cmdID);
 
 	// m_rpc_r will send the resonse to m_rpc_s
 
-	lastCmdID = m_rpc_s->getLastCmdId();
-	boost::asio::ip::address timesrvAddr = m_rpc_s->getTimesrvIpAddr();
-	uint32_t timesrvPort = m_rpc_s->getTimesrvPort();
+	lastCmdID = m_rpc_s->getLastCmdIdInternal();
+	boost::asio::ip::address timesrvAddr = m_rpc_s->getTimesrvIpAddrInternal();
+	uint32_t timesrvPort = m_rpc_s->getTimesrvPortInternal();
 
 	CPPUNIT_ASSERT( cmdID == lastCmdID );
 	CPPUNIT_ASSERT( port == timesrvPort );
@@ -184,9 +184,9 @@ void CCmdStreamTests::testGetSetTimeSrv() {
 
 	m_rpc_s->setTimeSrv(cmdID, server_addr, port);
 
-	lastCmdID = m_rpc_r->getLastCmdId();
-	timesrvAddr = m_rpc_r->getTimesrvIpAddr();
-	timesrvPort = m_rpc_r->getTimesrvPort();
+	lastCmdID = m_rpc_r->getLastCmdIdInternal();
+	timesrvAddr = m_rpc_r->getTimesrvIpAddrInternal();
+	timesrvPort = m_rpc_r->getTimesrvPortInternal();
 
 	CPPUNIT_ASSERT( cmdID == lastCmdID );
 	CPPUNIT_ASSERT( port == timesrvPort );
@@ -194,9 +194,9 @@ void CCmdStreamTests::testGetSetTimeSrv() {
 
 	cmdID = 8;
 	m_rpc_s->getTimeSrv(cmdID);
-	lastCmdID = m_rpc_s->getLastCmdId();
-	timesrvAddr = m_rpc_s->getTimesrvIpAddr();
-	timesrvPort = m_rpc_s->getTimesrvPort();
+	lastCmdID = m_rpc_s->getLastCmdIdInternal();
+	timesrvAddr = m_rpc_s->getTimesrvIpAddrInternal();
+	timesrvPort = m_rpc_s->getTimesrvPortInternal();
 
 	CPPUNIT_ASSERT( cmdID == lastCmdID );
 	CPPUNIT_ASSERT( port == timesrvPort );
@@ -210,7 +210,7 @@ void CCmdStreamTests::testGetSetStreamTimeBase() {
 
 	m_rpc_s->joinSession(joinSessionCmdID, joinSessionName, server_addr);
 
-	uint32_t lastCmdID = m_rpc_r->getLastCmdId();
+	uint32_t lastCmdID = m_rpc_r->getLastCmdIdInternal();
 	if(lastCmdID == joinSessionCmdID) {
 		m_rpc_r->ack(lastCmdID);
 	}
@@ -228,18 +228,18 @@ void CCmdStreamTests::testGetSetStreamTimeBase() {
 	uint64_t pts = 324345478593LL;
 	uint64_t rtp_ts = 38650943785934LL;
 
-	m_rpc_r->setTimebaseSsrc(ssrc);
-	m_rpc_r->setTimebasePts(pts);
-	m_rpc_r->setTimebaseRtpTs(rtp_ts);
+	m_rpc_r->setTimebaseSsrcInternal(ssrc);
+	m_rpc_r->setTimebasePtsInternal(pts);
+	m_rpc_r->setTimebaseRtpTsInternal(rtp_ts);
 
 	m_rpc_s->getStreamTimeBase(cmdID, ssrc);
 
 	// receiver should respond with "setStreamTimeBase" with same cmdID
 
-	lastCmdID = m_rpc_s->getLastCmdId();
-	uint32_t last_ssrc = m_rpc_s->getTimebaseSsrc();
-	uint64_t last_pts = m_rpc_s->getTimebasePts();
-	uint64_t last_rtp_ts = m_rpc_s->getTimebaseRtpTs();
+	lastCmdID = m_rpc_s->getLastCmdIdInternal();
+	uint32_t last_ssrc = m_rpc_s->getTimebaseSsrcInternal();
+	uint64_t last_pts = m_rpc_s->getTimebasePtsInternal();
+	uint64_t last_rtp_ts = m_rpc_s->getTimebaseRtpTsInternal();
 
 
 	CPPUNIT_ASSERT( cmdID == lastCmdID );
@@ -259,10 +259,10 @@ void CCmdStreamTests::testGetSetStreamTimeBase() {
 	// receiver should respond with "ack" with same cmdID
 
 	// uint32_t lastAck = m_rpc_s->getLastAck();
-	lastCmdID = m_rpc_r->getLastCmdId();
-	last_ssrc = m_rpc_r->getTimebaseSsrc();
-	last_pts = m_rpc_r->getTimebasePts();
-	last_rtp_ts = m_rpc_r->getTimebaseRtpTs();
+	lastCmdID = m_rpc_r->getLastCmdIdInternal();
+	last_ssrc = m_rpc_r->getTimebaseSsrcInternal();
+	last_pts = m_rpc_r->getTimebasePtsInternal();
+	last_rtp_ts = m_rpc_r->getTimebaseRtpTsInternal();
 
 	CPPUNIT_ASSERT( ssrc == last_ssrc );
 	CPPUNIT_ASSERT( pts == last_pts );
@@ -276,12 +276,150 @@ void CCmdStreamTests::testGetSetStreamTimeBase() {
 }
 
 void CCmdStreamTests::testGetSetRtpPort() {
+	joinSession();
+
+	uint32_t cmdID = 10;
+	uint32_t rtp_port = 5437;
+
+	m_rpc_r->setRtpPortInternal(rtp_port);
+
+	m_rpc_s->getRTPPort(cmdID);
+
+	// receiver should respond with "setRTPPort" with same cmdID
+
+	uint32_t lastCmdID = m_rpc_s->getLastCmdIdInternal();
+	uint32_t last_rtp_port = m_rpc_s->getRtpPortInternal();
+
+
+	CPPUNIT_ASSERT( cmdID == lastCmdID );
+	CPPUNIT_ASSERT( rtp_port == last_rtp_port );
+
+	// set a new time base
+
+	cmdID++;
+	rtp_port = 7345;
+
+	m_rpc_s->setRTPPort(cmdID, rtp_port);
+
+	// receiver should respond with "ack" with same cmdID
+
+	uint32_t lastAck = m_rpc_s->getLastAck();
+
+	lastCmdID = m_rpc_r->getLastCmdIdInternal();
+	last_rtp_port = m_rpc_r->getRtpPortInternal();
+
+	CPPUNIT_ASSERT( lastCmdID == cmdID );
+	CPPUNIT_ASSERT( rtp_port == last_rtp_port );
+
 }
 
 void CCmdStreamTests::testGetSetVolume() {
+	joinSession();
+
+	uint32_t cmdID = 10;
+	uint32_t volume = 75;
+
+	m_rpc_r->setVolPercentInternal(volume);
+
+	m_rpc_s->getVolume(cmdID);
+
+	// receiver should respond with "setRTPPort" with same cmdID
+
+	uint32_t lastCmdID = m_rpc_s->getLastCmdIdInternal();
+	uint32_t last_volume = m_rpc_s->getVolPercentInternal();
+
+	CPPUNIT_ASSERT( cmdID == lastCmdID );
+	CPPUNIT_ASSERT( volume == last_volume );
+
+	// set a new volume
+
+	cmdID++;
+	volume = 90;
+
+	m_rpc_s->setVolume(cmdID, volume);
+
+	lastCmdID = m_rpc_r->getLastCmdIdInternal();
+
+	if(lastCmdID == cmdID) {
+		m_rpc_r->ack(lastCmdID);
+	}
+	// receiver should respond with "ack" with same cmdID
+
+	uint32_t lastAck = m_rpc_s->getLastAck();
+	last_volume = m_rpc_r->getVolPercentInternal();
+
+	CPPUNIT_ASSERT( lastAck == cmdID );
+	CPPUNIT_ASSERT( last_volume == volume );
+
+	leaveSession();
 }
 
 void CCmdStreamTests::testGetSetLeaveMCastGrp() {
+	joinSession();
+
+	uint32_t cmdID = 10;
+	boost::asio::ip::address mcast_grp = address::from_string("224.100.100.39");
+
+	m_rpc_r->setMCastGrpInternal(mcast_grp);
+
+	m_rpc_s->getMCastGrp(cmdID);
+
+	// receiver should respond with "setRTPPort" with same cmdID
+
+	uint32_t lastCmdID = m_rpc_s->getLastCmdIdInternal();
+	boost::asio::ip::address last_mcast_grp = m_rpc_s->getMCastGrpInternal();
+
+	CPPUNIT_ASSERT( cmdID == lastCmdID );
+	CPPUNIT_ASSERT( last_mcast_grp == mcast_grp );
+
+	// set a new mcast group
+
+	cmdID++;
+	mcast_grp = address::from_string("224.101.101.40");
+
+	m_rpc_s->joinMCastGrp(cmdID, mcast_grp);
+
+	lastCmdID = m_rpc_r->getLastCmdIdInternal();
+
+	if(lastCmdID == cmdID) {
+		m_rpc_r->ack(lastCmdID);
+	}
+	// receiver should respond with "ack" with same cmdID
+
+	uint32_t lastAck = m_rpc_s->getLastAck();
+	last_mcast_grp = m_rpc_r->getMcastGrpInternal();
+
+	CPPUNIT_ASSERT( lastAck == cmdID );
+	CPPUNIT_ASSERT( last_mcast_grp == mcast_grp );
+
+	leaveSession();
+}
+
+void CCmdStreamTests::joinSession(std::string name) {
+	uint32_t joinSessionCmdID = 19;
+	string joinSessionName = name;
+	boost::asio::ip::address server_addr = address::from_string("FE80::0202:B3FF:FE1E:8329");
+
+	m_rpc_s->joinSession(joinSessionCmdID, joinSessionName, server_addr);
+
+	uint32_t lastCmdID = m_rpc_r->getLastCmdIdInternal();
+	if(lastCmdID == joinSessionCmdID) {
+		m_rpc_r->ack(lastCmdID);
+	}
+
+	uint32_t ackCmd = m_rpc_s->getLastAck();
+	CPPUNIT_ASSERT( ackCmd == joinSessionCmdID );
+	if(ackCmd == joinSessionCmdID) {
+		m_rpc_s->setState(IStreamCtrl::SESSION_STATE);
+		m_rpc_r->setState(IStreamCtrl::SESSION_STATE);
+	}
+}
+
+void CCmdStreamTests::leaveSession() {
+	m_rpc_s->joinSessionLeave();
+
+	m_rpc_s->setState(IStreamCtrl::ROOT_STATE);
+	m_rpc_r->setState(IStreamCtrl::ROOT_STATE);
 }
 
 } /* namespace muroa */

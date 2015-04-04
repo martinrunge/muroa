@@ -173,10 +173,13 @@ int CSettings::readConfigFile() throw(muroa::configEx) {
     		m_search_config_file.pop();
     		// beware of boost bug resolved in this changeset: https://svn.boost.org/trac/boost/changeset/78679
 			// came up with c++11
-			read_json(current_config_file, m_pt);
+			read_json(current_config_file, m_config_pt);
 			// if no exception occurred ...
 			config_success = true;
-			m_configfile = current_config_file;
+
+			bfs::path cur_path(current_config_file);
+			m_configfile = bfs::absolute(cur_path).native();
+
 			LOG4CPLUS_INFO( m_app->getLoggerRef() , "Successfully loaded config file '" << current_config_file << "'.");
 			break;
 		}
@@ -213,7 +216,7 @@ int CSettings::resetCache() {
 		copy_of_search_cache_file.push(m_cachefile);
 	}
 	else {
-		copy_of_search_cache_file = m_search_cache_file;
+		copy_of_search_cache_file = m_search_persist_file;
 	}
 
 	while(!copy_of_search_cache_file.empty()) {
@@ -225,6 +228,7 @@ int CSettings::resetCache() {
 			bool success = bfs::remove(cf);
 			if(success) {
 				LOG4CPLUS_INFO( m_app->getLoggerRef(), "	removed '" << current_cache_file << "'");
+				write_json(current_cache_file, m_persist_pt);
 			}
 			else {
 				LOG4CPLUS_WARN( m_app->getLoggerRef(), "	could not remove '" << current_cache_file << "'");
@@ -240,31 +244,35 @@ int CSettings::readCacheFile() throw(muroa::configEx) {
     string current_cache_file;
 	if(!m_cachefile.empty()) {
 		// a cache file was given as program argument -> try it and none else.
-		while(!m_search_cache_file.empty()) {
-			m_search_cache_file.pop();
+		while(!m_search_persist_file.empty()) {
+			m_search_persist_file.pop();
 		}
-		m_search_cache_file.push(m_cachefile);
+		m_search_persist_file.push(m_cachefile);
 	}
 
 	try { // try the next possible cache file location (it may not be present yet)
-		while(!m_search_cache_file.empty()) {
-    		current_cache_file = m_search_cache_file.top();
-    		m_search_cache_file.pop();
+		while(!m_search_persist_file.empty()) {
+    		current_cache_file = m_search_persist_file.top();
+    		m_search_persist_file.pop();
     		// beware of boost bug resolved in this changeset: https://svn.boost.org/trac/boost/changeset/78679
 			// came up with c++11
     		if(accessible(current_cache_file)) {
-    			read_json(current_cache_file, m_cache_pt);
+
+    			read_json(current_cache_file, m_persist_pt);
     			// if no exception occurred ...
     			cache_success = true;
-    			m_cachefile = current_cache_file;
+    			bfs::path cur_path(current_cache_file);
+    			m_cachefile = bfs::absolute(cur_path).native();
     			LOG4CPLUS_INFO( m_app->getLoggerRef(), "Successfully restored persistent runtime values from '" << current_cache_file << "'.");
     			break;
     		}
 		}
     }
 	catch(boost::property_tree::json_parser::json_parser_error& err) {
-		LOG4CPLUS_INFO( m_app->getLoggerRef() , "Could not restore persistent runtime values from '" << current_cache_file << "': " << err.what() << " Using default values.");
+		LOG4CPLUS_INFO( m_app->getLoggerRef() , "Could not restore persistent runtime values from '" << current_cache_file << "': " << err.what() << endl <<" Using default values.");
+		// current_cache_file was accessible, but could not be parsed. Reset it.
 		m_cachefile = current_cache_file;
+		resetCache();
 	}
 
     return 0;
@@ -282,36 +290,56 @@ void CSettings::setPort(unsigned short port) {
  *  because std::string is not built-in but user-defined. Without the following to overloads, calling
  *  getProperty(key, "myvalue") with the default value hardcoded will return a bool instead of the desired std::string.
  */
-std::string CSettings::getProperty(const std::string& key, const char* defaultVal) {
-	return getProperty(key, string(defaultVal));
+string CSettings::getConfigVal(const string& key, const char* defaultVal) {
+	return getConfigVal(key, string(defaultVal));
 }
 
-void CSettings::setProperty(const std::string& key, const char* val) {
-	setProperty(key, string(val));
+string CSettings::getConfigVal(const string& key, const string& defaultVal) {
+	return m_config_pt.get(key, defaultVal);
 }
 
-string CSettings::getProperty(const string& key, const string& defaultVal) {
-	return m_pt.get(key, defaultVal);
+int CSettings::getConfigVal(const string& key, const int& defaultVal) {
+	return m_config_pt.get(key, defaultVal);
 }
 
-void CSettings::setProperty(const string& key, const string& val) {
-	m_pt.put(key, val);
+bool CSettings::getConfigVal(const std::string& key, const bool& defaultVal) {
+	return m_config_pt.get(key, defaultVal);
 }
 
-int CSettings::getProperty(const string& key, const int& defaultVal) {
-	return m_pt.get(key, defaultVal);
+
+string CSettings::getPersisentVal(const string& key, const char* defaultVal) {
+	return getPersisentVal(key, string(defaultVal));
 }
 
-void CSettings::setProperty(const string& key, const int& val) {
-	m_pt.put(key, val);
+void CSettings::setPersistentVal(const std::string& key, const char* val) {
+	setPersistentVal(key, string(val));
 }
 
-bool CSettings::getProperty(const std::string& key, const bool& defaultVal) {
-	return m_pt.get(key, defaultVal);
+string CSettings::getPersisentVal(const string& key, const string& defaultVal) {
+	return m_persist_pt.get(key, defaultVal);
 }
 
-void CSettings::setProptery(const std::string& key, const bool& val) {
-	m_pt.put(key, val);
+void CSettings::setPersistentVal(const string& key, const string& val) {
+	m_persist_pt.put(key, val);
+	write_json(m_cachefile, m_persist_pt);
+}
+
+int CSettings::getPersisentVal(const std::string& key, const int& defaultVal) {
+	return m_persist_pt.get(key, defaultVal);
+}
+
+void CSettings::setPersistentVal(const string& key, const int& val) {
+	m_persist_pt.put(key, val);
+	write_json(m_cachefile, m_persist_pt);
+}
+
+bool CSettings::getPersisentVal(const std::string& key, const bool& defaultVal) {
+	return m_persist_pt.get(key, defaultVal);
+}
+
+void CSettings::setPersistentVal(const std::string& key, const bool& val) {
+	m_persist_pt.put(key, val);
+	write_json(m_cachefile, m_persist_pt);
 }
 
 
@@ -340,9 +368,9 @@ void CSettings::applyDefaults() {
 	m_search_config_file.push("etc/muroa.conf");
 	m_search_config_file.push("/etc/muroa.conf");
 
-	m_search_cache_file.push("muroa.cache");
-	m_search_cache_file.push("var/cache/muroa.cache");
-	m_search_cache_file.push("/var/cache/muroa.cache");
+	m_search_persist_file.push("muroa.cache");
+	m_search_persist_file.push("var/cache/muroa.cache");
+	m_search_persist_file.push("/var/cache/muroa.cache");
 
     m_service_name = "Muroa streaming client";
     m_service_type = "_muroad._udp";
@@ -381,6 +409,7 @@ bool CSettings::accessible(string filename) {
 				}
 				else {
 					close(wr_fd);
+					bfs::remove(lf);
 					return true;
 				}
 			}
@@ -392,6 +421,9 @@ bool CSettings::accessible(string filename) {
 	return false;
 }
 
+void CSettings::createMinimalJsonFile(string filename) {
+	bfs::path pf(filename);
+}
 
 
 
