@@ -21,22 +21,21 @@
 #ifndef CCTRLCONNECTION_H_
 #define CCTRLCONNECTION_H_
 
-#include "CTcpConnection.h"
 #include "ctrlrpcxml/CStreamCtrlXml.h"
 #include <boost/shared_ptr.hpp>
 #include <boost/enable_shared_from_this.hpp>
+#include <boost/asio.hpp>
 
 class CStreamConnection;
 class CStreamServer;
 
+namespace bip=boost::asio::ip;
+
 namespace muroa {
 
-class CStreamCtrlConnection : public CTcpConnection, public muroa::CStreamCtrlXml {
+class CStreamCtrlConnection : public bip::tcp::socket, public muroa::CStreamCtrlXml {
 public:
-	static CStreamCtrlConnection* create(boost::asio::io_service& io_service) {
-	    return new CStreamCtrlConnection(io_service);
-	}
-
+	CStreamCtrlConnection(std::string serviceName, CStreamServer* stream_server, boost::asio::io_service& io_service);
 	virtual ~CStreamCtrlConnection();
 
 	void openStreamConnection();
@@ -99,7 +98,6 @@ public:
 
 
 private:
-	CStreamCtrlConnection(boost::asio::io_service& io_service);
 	void onDataToSend(const char* data, int len);
 
 	CStreamServer* m_stream_server;

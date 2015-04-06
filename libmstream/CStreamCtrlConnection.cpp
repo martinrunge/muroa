@@ -24,10 +24,11 @@
 
 namespace muroa {
 
-CStreamCtrlConnection::CStreamCtrlConnection(boost::asio::io_service& io_service)
-                      : CTcpConnection(io_service),
+CStreamCtrlConnection::CStreamCtrlConnection(std::string serviceName, CStreamServer* stream_server, boost::asio::io_service& io_service)
+                      : bip::tcp::socket(io_service),
 						m_stream_connection(0),
-					    m_stream_server(0),
+					    m_stream_server(stream_server),
+						m_serviceName(serviceName),
 						m_RTP_port(0)
 {
 
@@ -118,7 +119,7 @@ void CStreamCtrlConnection::dataReceived( boost::array<char, 8192> buffer, int l
 }
 
 void CStreamCtrlConnection::onDataToSend(const char* data, int len) {
-	writeData(data, len);
+	boost::asio::write(*this, boost::asio::buffer(data, len));
 }
 
 } /* namespace muroa */

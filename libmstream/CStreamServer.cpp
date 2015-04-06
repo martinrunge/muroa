@@ -33,11 +33,13 @@ using namespace boost::posix_time;
 using namespace muroa;
 using namespace log4cplus;
 
-CStreamServer::CStreamServer(int timeServerPort, int session_id, int transport_buffer_size_in_ms) :
+CStreamServer::CStreamServer(boost::asio::io_service& io_service, int timeServerPort, int session_id, int transport_buffer_size_in_ms) :
             m_first_send_time(not_a_date_time), 
             m_send_time(not_a_date_time), 
             m_last_send_time(not_a_date_time),
-		    m_time_server_port(timeServerPort) {
+		    m_time_server_port(timeServerPort),
+			m_io_service(io_service)
+{
 
   m_timing_logger = Logger::getInstance("timing");
 
@@ -265,15 +267,22 @@ list<CStreamCtrlConnection*>::iterator CStreamServer::addClient(bip::tcp::endpoi
 
     list<CStreamCtrlConnection*>::iterator iter;
     for(iter = m_connection_list.begin(); iter != m_connection_list.end(); iter++ ) {
-      bip::tcp::endpoint known_endp = (*iter)->remoteEndpoint();
+      bip::tcp::endpoint known_endp = (*iter)->remote_endpoint();
       if( known_endp == endp ) {
           known = true;
       }
     }
 
     if( known == false ) {
-//        CStreamCtrlConnection* conn = new CStreamCtrlConnection(this, serviceName);
-//        conn->openStreamConnection();
+    	CStreamCtrlConnection* conn = new CStreamCtrlConnection(serviceName, this, m_io_service);
+    	boost::system::error_code ec;
+    	conn->connect(endp, ec);
+    	if(ec) {
+
+    	}
+    	else {
+    		conn->openStreamConnection();
+    	}
 //        return addStreamCtrlConnection(conn);
     }
     else {
@@ -369,7 +378,7 @@ void CStreamServer::listClients(void)
   cerr << "List of clients in session: " << endl;
   m_connection_list_mutex.Lock();
   for(iter = m_connection_list.begin(); iter != m_connection_list.end(); iter++ ) {
-    cerr << (*iter)->remoteEndpointStr() << endl;
+    cerr << (*iter)->remote_endpoint() << endl;
   }
   m_connection_list_mutex.UnLock();
 }

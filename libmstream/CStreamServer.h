@@ -64,7 +64,7 @@ public:
      * @param[in] transport_buffer_size_in_ms: the size of the client's playback buffer in ms. Aka difference
      * between send timestamp and presentation timestamp.
      */
-    CStreamServer(int timeServerPort, int session_id = 1, int transport_buffer_size_in_ms = 1500);
+    CStreamServer(boost::asio::io_service& io_service, int timeServerPort, int session_id = 1, int transport_buffer_size_in_ms = 1500);
 
     ~CStreamServer();
 
@@ -139,6 +139,8 @@ private:
 
     int m_std_client_port;
     int m_time_server_port;
+
+    boost::asio::io_service& m_io_service;
 
 private:
     void sendToAllClients(CRTPPacket* packet);

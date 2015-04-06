@@ -24,7 +24,7 @@
 #include "CSettings.h"
 #include "cplayer.h"
 #include "CTcpServer.h"
-#include "CStreamCtrlConnection.h"
+#include "CCtrlConnection.h"
 #include "avahi/CDnsSdAvahi.h"
 
 #include <string>
@@ -43,7 +43,7 @@ CPlayerState::CPlayerState(boost::asio::io_service& io_service) :           m_tc
 		protocol = tcp::v6();
 	}
 	tcp::endpoint endp = tcp::endpoint(protocol, CApp::settings().getConfigVal("muroad.ControlPort", 5555));
-	m_tcp_server = new CTcpServer(io_service, &m_conn_mgr, endp, reinterpret_cast<factory_ptr_t>(&CStreamCtrlConnection::create));
+	m_tcp_server = new CTcpServer(io_service, &m_conn_mgr, endp, reinterpret_cast<factory_ptr_t>(&CCtrlConnection::create));
 
     // CTcpServer searches for a free port to bind to starting at the given port.
 	// endp is passed as reference and after return contains the port that was actually was bound.

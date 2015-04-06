@@ -10,6 +10,7 @@
 
 #include "CDecoder.h"
 #include "avahi/CServiceDesc.h"
+#include "boost/asio.hpp"
 
 namespace std {
   class thread;
@@ -34,7 +35,7 @@ enum sessionState {
 
 class CStream  {
 public:
-	CStream(muroa::CSession* session, int timeServicePort = 0);
+	CStream(muroa::CSession* session, boost::asio::io_service& io_service, int timeServicePort = 0);
 	virtual ~CStream();
 
 	void next() const;
@@ -76,7 +77,7 @@ private:
 	bool m_run;
 
     CStreamServer *m_streamserver;
-
+    boost::asio::io_service& m_io_service;
 };
 
 #endif /* CSTREAM_H_ */
