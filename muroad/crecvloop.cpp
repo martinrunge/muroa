@@ -35,10 +35,8 @@ using namespace log4cplus;
 using namespace boost::asio::ip;
 
 
-CRecvloop::CRecvloop(CPlayer* parent, CApp* app, CPacketRingBuffer* packet_ringbuffer):
-		CThreadSlave(),
-		m_app(app),
-		m_settings(app->settings())
+CRecvloop::CRecvloop(CPlayer* parent, CPacketRingBuffer* packet_ringbuffer):
+		CThreadSlave()
 {
 
   m_player = parent;
@@ -46,11 +44,15 @@ CRecvloop::CRecvloop(CPlayer* parent, CApp* app, CPacketRingBuffer* packet_ringb
   
   m_packet_ringbuffer = packet_ringbuffer;
 
-  m_max_idle = m_settings.getConfigVal("MaxIdle", 10);
+  m_max_idle = CApp::settings().getConfigVal("muroad.MaxIdle", 10);
 
+  unsigned short port = CApp::settings().getPersisentVal("muroad.RTPport", 0);
+  if(port == 0) {
+	  port = CApp::settings().getConfigVal("muroad.RTPport", 44400);
+  }
 
-  m_socket = new CSocket(SOCK_DGRAM, m_settings.port(), true);
-  m_settings.setPort( m_socket->getPort() );
+  m_socket = new CSocket(SOCK_DGRAM, port, true);
+  CApp::settings().setPersistentVal("muroad.RTPport", m_socket->getPort());
 
   m_socket->recordSenderWithRecv(true);
 

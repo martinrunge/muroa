@@ -30,6 +30,8 @@
 #include <MuroaExceptions.h>
 #include <boost/asio.hpp>
 
+namespace muroa {
+
 class IStreamCtrl {
 public:
 	typedef enum state {   ROOT_STATE,
@@ -114,5 +116,5 @@ public:
 	// called when there are serialized command ready to be sent to receiver
 	virtual void onDataToSend(const char* data, int len) = 0;
 };
-
+} // namespace muroa
 #endif /* ISTREAMCTRLRPC_H_ */

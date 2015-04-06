@@ -44,7 +44,7 @@ namespace muroa
   class CmdStreamReset;
   class CTcpServer;
   class CTimeServiceCtrl;
-  class CCtrlConnection;
+  class CStreamCtrlConnection;
 }
 
 class CRecvloop;
@@ -56,7 +56,7 @@ class CPacketRingBuffer;
 
 class CPlayer : public muroa::IRenderCmds {
 public:
-    CPlayer(muroa::CApp *app, boost::asio::io_service& io_service);
+    CPlayer(boost::asio::io_service& io_service);
 
     ~CPlayer();
     void start();
@@ -94,7 +94,6 @@ public:
     CPosixCond m_traffic_cond;
 
 private:
-    muroa::CDnsSdAvahi *m_dnssd;
 
     CPacketRingBuffer * m_packet_ringbuffer;
   
@@ -104,8 +103,8 @@ private:
     CPThread *m_recvloop_thread;
     CPThread *m_playloop_thread;
 
-    muroa::CConnectionManager m_conn_mgr;
-    muroa::CTcpServer* m_tcp_server;
+//    muroa::CConnectionManager m_conn_mgr;
+//    muroa::CTcpServer* m_tcp_server;
 
     CSync m_sync_obj;
 
@@ -113,10 +112,6 @@ private:
     boost::posix_time::ptime m_sync_requested_at;
     int m_idle_time;
     
-    // Cmuroad* m_config;
-    muroa::CApp* m_app;
-    muroa::CSettings& m_settings;
-
 	muroa::CTimeServiceCtrl *m_ts;
 
     boost::asio::io_service& m_io_service;

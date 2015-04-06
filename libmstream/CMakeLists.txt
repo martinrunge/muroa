@@ -15,7 +15,7 @@ add_definitions( ${log4cplus_DEFINITIONS} )
 
 set( SRC           CStreamConnection.cpp
                    CStreamServer.cpp
-                   CCtrlConnection.cpp
+                   CStreamCtrlConnection.cpp
                    caudioframe.cpp
                    caudiooss.cpp
                    crtppacket.cpp
@@ -37,7 +37,7 @@ set( SRC           CStreamConnection.cpp
 
 set( HEADERS       CStreamConnection.h
                    CStreamServer.h
-                   CCtrlConnection.h
+                   CStreamCtrlConnection.h
                    caudioframe.h
                    caudiooss.h
                    crtppacket.h

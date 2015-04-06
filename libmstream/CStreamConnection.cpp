@@ -18,15 +18,18 @@
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
 #include "CStreamConnection.h"
+
+#include "CStreamCtrlConnection.h"
 #include "CStreamServer.h"
 
 #include <iostream>
 
 using namespace std;
+using namespace muroa;
 
-CStreamConnection::CStreamConnection(CStreamServer* parent, const std::string& name, unsigned short bind_port) : m_socket(SOCK_DGRAM, bind_port ), m_name(name)
+CStreamConnection::CStreamConnection(CStreamCtrlConnection* parent, unsigned short bind_port) : m_socket(SOCK_DGRAM, bind_port )
 {
-  m_stream_server = parent;
+  m_stream_ctrl_conn = parent;
   m_socket.setNonBlocking(0);
   m_socket.recordSenderWithRecv(false);
 }
@@ -86,7 +89,7 @@ void CStreamConnection::handleReceivedPacket()
       if(tmp_sync.syncType() == SYNC_REQ_STREAM) {
         // the clients needs a sync object for this stream !!!
         CSync* session_sync_obj;
-        session_sync_obj = m_stream_server->getSyncObj(tmp_sync.sessionId(), tmp_sync.streamId());
+        session_sync_obj = m_stream_ctrl_conn->getStreamServer()->getSyncObj(tmp_sync.sessionId(), tmp_sync.streamId());
         if(session_sync_obj != 0) {
 
           CRTPPacket packet(session_sync_obj->sessionId(), session_sync_obj->streamId(), sizeof(CSync), true);

@@ -54,8 +54,8 @@ using namespace muroa;
 using namespace log4cplus;
 /** C-tor */
 
-CPlayloop::CPlayloop(CPlayer* parent, CApp *app, CPacketRingBuffer* packet_ringbuffer)
-: CThreadSlave(), m_counter(0), m_average_size(32), m_app(app), m_settings(app->settings()), m_after_sync(false), m_stream_reset_threshold(0.2f)
+CPlayloop::CPlayloop(CPlayer* parent, CPacketRingBuffer* packet_ringbuffer)
+: CThreadSlave(), m_counter(0), m_average_size(32), m_after_sync(false), m_stream_reset_threshold(0.2f)
 {
 
 	m_player = parent;
@@ -73,12 +73,12 @@ CPlayloop::CPlayloop(CPlayer* parent, CApp *app, CPacketRingBuffer* packet_ringb
 	m_sample_size = sizeof(short);
 	m_num_channels = 2;
 
-	m_max_idle = m_settings.getConfigVal("MaxIdle", 100);
+	m_max_idle = CApp::settings().getConfigVal("muroad.MaxIdle", 100);
 
 
 	// m_audio_sink = new CAudioIoAlsa();
 	m_audio_sink = initSoundSystem();
-	string audio_device = m_settings.getConfigVal(string("muroad.AudioDevice"), string("hw:0,0"));
+	string audio_device = CApp::settings().getConfigVal(string("muroad.AudioDevice"), string("hw:0,0"));
 	m_audio_sink->open(audio_device, m_desired_sample_rate, m_num_channels);
 
 	int actual_sample_rate = m_audio_sink->getActualSampleRate();
@@ -178,7 +178,7 @@ bool CPlayloop::waitForData() {
 
 	int retval = m_player->m_traffic_cond.Wait(1);
 	if(retval == 0) {
-		string audio_device = m_settings.getConfigVal(string("muroad.AudioDevice"), string("hw:0,0"));
+		string audio_device = CApp::settings().getConfigVal(string("muroad.AudioDevice"), string("hw:0,0"));
 
 		m_audio_sink->open(audio_device, m_desired_sample_rate, m_num_channels);
 		m_write_granularity = m_audio_sink->getWriteGranularity();
@@ -230,7 +230,7 @@ void CPlayloop::DoLoop() {
 	int frames_writable = m_audio_sink->getSpace();
 	int num_frames;
 	while( m_ringbuffer->sizeInFrames() < m_write_granularity) {
-		num_frames = addPacket2RingBuffer(false);
+		num_frames = addPacket2RingBuffer(true);
 		// LOG4CPLUS_DEBUG(m_timing_logger, "  ringbuffer was low (" << m_ringbuffer->sizeInFrames() << "), added " << num_frames << " frames.");
 	}
 

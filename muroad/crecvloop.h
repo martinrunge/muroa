@@ -46,7 +46,7 @@ class CPlayer;
 class CRecvloop : public CThreadSlave
 {
 public:
-    CRecvloop(CPlayer* parent, muroa::CApp *app, CPacketRingBuffer* packet_ringbuffer);
+    CRecvloop(CPlayer* parent, CPacketRingBuffer* packet_ringbuffer);
 
     ~CRecvloop();
   
@@ -59,8 +59,6 @@ private:
     log4cplus::Logger m_timing_logger;
     CPacketRingBuffer *m_packet_ringbuffer;
     CPlayer* m_player;
-    muroa::CApp* m_app;
-    muroa::CSettings& m_settings;
 
     CSync m_tmp_sync_obj;
     int m_max_idle;

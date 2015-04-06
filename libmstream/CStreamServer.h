@@ -33,11 +33,11 @@ Class provides a server for a stream.
 #include <sys/time.h>
 
 #include <boost/date_time/posix_time/posix_time.hpp>
-
+#include <boost/asio.hpp>
 // #include "libsock++.h"
 // #include "libdsaudio.h"
 
-#include "CStreamConnection.h"
+#include "CStreamCtrlConnection.h"
 #include "csync.h"
 #include "cmutex.h"
 #include "crtppacket.h"
@@ -45,6 +45,10 @@ Class provides a server for a stream.
 #include "avahi/CServiceDesc.h"
 
 #include <log4cplus/logger.h>
+
+class CIPv4Address;
+
+namespace bip=boost::asio::ip;
 
 
 class CStreamServer{
@@ -72,14 +76,14 @@ public:
     int sendPacket(char* buffer, int length);
 
 
-    std::list<CStreamConnection*>::iterator addStreamConnection(CStreamConnection* conn);
-    CStreamConnection* removeStreamConnection(std::list<CStreamConnection*>::iterator conn_iterator);
+    std::list<muroa::CStreamCtrlConnection*>::iterator addStreamConnection(muroa::CStreamCtrlConnection* conn);
+    muroa::CStreamCtrlConnection* removeStreamConnection(std::list<muroa::CStreamCtrlConnection*>::iterator conn_iterator);
 
     void adjustReceiverList(std::vector<muroa::ServDescPtr> receivers);
 
     void removeClient(const std::string& name);
-    void removeClient(std::list<CStreamConnection*>::iterator iter);
-    std::list<CStreamConnection*>::iterator addClient(CIPv4Address* addr, const std::string& name);
+    void removeClient(std::list<muroa::CStreamCtrlConnection*>::iterator iter);
+    std::list<muroa::CStreamCtrlConnection*>::iterator addClient(bip::tcp::endpoint endp, const std::string& name);
     CSync* getSyncObj(uint32_t session_id, uint32_t stream_id);
 
     /*!
@@ -125,7 +129,7 @@ private:
     CRTPPacket *m_rtp_packet;
     CSync m_syncobj;
 
-    std::list<CStreamConnection*> m_connection_list;
+    std::list<muroa::CStreamCtrlConnection*> m_connection_list;
 
     CMutex m_connection_list_mutex;
 

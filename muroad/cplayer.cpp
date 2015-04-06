@@ -40,44 +40,36 @@
 #include "CApp.h"
 #include "CSettings.h"
 #include "CTcpServer.h"
-#include "avahi/CDnsSdAvahi.h"
 #include "CTimeServiceCtrl.h"
-#include "CCtrlConnection.h"
+#include "CStreamCtrlConnection.h"
 
 
 using namespace std;
 using namespace boost::posix_time;
 using namespace muroa;
 
-CPlayer::CPlayer(CApp* app, boost::asio::io_service& io_service) : m_app(app),
-						                                           m_tcp_server(0),
-																   m_settings(app->settings()),
-																   m_io_service(io_service)
+CPlayer::CPlayer(boost::asio::io_service& io_service) : m_io_service(io_service)
 {
   
   int num;
-  cout << "dsclient" << endl;
 
-  boost::asio::ip::tcp protocol = tcp::v4();
-  if( m_settings.ipversion() == 6 ) {
-    protocol = tcp::v6();
-  }
+//  boost::asio::ip::tcp protocol = tcp::v4();
+//  if( m_settings.ipversion() == 6 ) {
+//    protocol = tcp::v6();
+//  }
+//
+//  tcp::endpoint endp = tcp::endpoint(protocol, m_settings.getConfigVal("muroad/ControlPort", 5555));
+//
+//  m_tcp_server = new CTcpServer(io_service, &m_conn_mgr, endp, reinterpret_cast<factory_ptr_t>(&CCtrlConnection::create)),
+//
+//  m_settings.setPersistentVal(string("ControlPort"), (const int)endp.port());
+//
 
-  tcp::endpoint endp = tcp::endpoint(protocol, m_settings.getConfigVal("muroad/ControlPort", 5555));
-
-  m_tcp_server = new CTcpServer(io_service, &m_conn_mgr, endp, reinterpret_cast<factory_ptr_t>(&CCtrlConnection::create)),
-
-  m_settings.setPersistentVal(string("ControlPort"), (const int)endp.port());
-
-
-  m_settings.setServiceType("_muroad._udp");
-  m_settings.setServiceName("Muroa Streaming Client");
-  m_settings.setPort(44400);
    
   m_packet_ringbuffer = new CPacketRingBuffer(10);
 
-  m_recvloop = new CRecvloop(this, m_app, m_packet_ringbuffer);
-  m_playloop = new CPlayloop(this, m_app, m_packet_ringbuffer);
+  m_recvloop = new CRecvloop(this, m_packet_ringbuffer);
+  m_playloop = new CPlayloop(this, m_packet_ringbuffer);
 
   m_recvloop_thread = new CPThread(m_recvloop);
   m_playloop_thread = new CPThread(m_playloop);
@@ -85,8 +77,6 @@ CPlayer::CPlayer(CApp* app, boost::asio::io_service& io_service) : m_app(app),
   m_sync_requested_for_stream_id = -1;
   m_sync_requested_at = microsec_clock::universal_time();
 
-  m_dnssd = new CDnsSdAvahi(io_service, app->settings().serviceName(), app->settings().port(), app->settings().serviceType(), vector<string>());
-  m_dnssd->setServiceChangedHandler(boost::bind( &muroa::CApp::serviceChanged, app));
 
   m_idle_time = 0;
 
@@ -106,8 +96,6 @@ CPlayer::~CPlayer()
   delete m_playloop;
 
   delete m_packet_ringbuffer;
-
-  delete m_tcp_server;
 
 }
 

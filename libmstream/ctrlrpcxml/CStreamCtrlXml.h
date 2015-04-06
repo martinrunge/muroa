@@ -33,7 +33,9 @@
 
 #include <boost/asio.hpp>
 
-class CStreamCtrlXml: public IStreamCtrlRPC, public CStreamCtrlParserSM {
+namespace muroa {
+
+class CStreamCtrlXml: public muroa::IStreamCtrlRPC, public muroa::CStreamCtrlParserSM {
 	enum state_t {   ROOT_STATE,
 					 INFO_STATE,
 		             SESSION_STATE
@@ -86,5 +88,7 @@ private:
 
 	uint32_t m_sessionID;
 };
+
+}
 
 #endif /* CMUROAXML_H_ */

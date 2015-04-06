@@ -31,7 +31,7 @@
 #include <log4cplus/loggingmacros.h>
 
 #include "cmuroad.h"
-#include "cplayer.h"
+#include "CPlayerState.h"
 
 #include "CApp.h"
 #include "CSettings.h"
@@ -41,6 +41,7 @@
 
 
 using namespace std;
+using namespace muroa;
 
 int main(int argc, char *argv[])
 {
@@ -66,8 +67,7 @@ int main(int argc, char *argv[])
 		sigPtr->start();
 
 		LOG4CPLUS_DEBUG(app->logger(), "starting io_service");
-	    CPlayer player(app, io_service);
-	    player.start();
+	    CPlayerState ps(io_service);
 
 	    io_service.run();
 

@@ -188,8 +188,9 @@ void CStream::next() const
 
 void CStream::addReceiver(ServDescPtr srv_desc_ptr)
 {
-    CIPv4Address addr(srv_desc_ptr->getHostName(), srv_desc_ptr->getPortNr());
-    m_streamserver->addClient(&addr, srv_desc_ptr->getServiceName());
+    // CIPv4Address addr(srv_desc_ptr->getHostName(), srv_desc_ptr->getPortNr());
+    bip::tcp::endpoint endp(srv_desc_ptr->getAddress(), srv_desc_ptr->getPortNr());
+    m_streamserver->addClient(endp, srv_desc_ptr->getServiceName());
 }
 
 void CStream::rmReceiver(const string& name)

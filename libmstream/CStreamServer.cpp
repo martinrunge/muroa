@@ -18,6 +18,9 @@
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
 #include "CStreamServer.h"
+#include "CStreamCtrlConnection.h"
+#include "CStreamConnection.h"
+
 #include "cmds/CmdStreamReset.h"
 
 #include <log4cplus/loggingmacros.h>
@@ -213,9 +216,9 @@ int CStreamServer::sendPacket(char* buffer, int length) {
 
 
 
-list<CStreamConnection*>::iterator CStreamServer::addStreamConnection(CStreamConnection* conn) {
+list<CStreamCtrlConnection*>::iterator CStreamServer::addStreamConnection(CStreamCtrlConnection* conn) {
 
-  list<CStreamConnection*>::iterator iter;
+  list<CStreamCtrlConnection*>::iterator iter;
 
   // do some checks on the socket here.
 
@@ -225,9 +228,9 @@ list<CStreamConnection*>::iterator CStreamServer::addStreamConnection(CStreamCon
 }
 
 
-CStreamConnection* CStreamServer::removeStreamConnection(list<CStreamConnection*>::iterator conn_iterator) {
+CStreamCtrlConnection* CStreamServer::removeStreamConnection(list<CStreamCtrlConnection*>::iterator conn_iterator) {
 
-  CStreamConnection* conn;  
+  CStreamCtrlConnection* conn;
   conn = *conn_iterator;
   
   m_connection_list_mutex.Lock();
@@ -244,10 +247,10 @@ CStreamConnection* CStreamServer::removeStreamConnection(list<CStreamConnection*
  */
 void CStreamServer::sendToAllClients(CRTPPacket* packet)
 {
-    list<CStreamConnection*>::iterator iter;
+    list<CStreamCtrlConnection*>::iterator iter;
     m_connection_list_mutex.Lock();
     for(iter = m_connection_list.begin(); iter != m_connection_list.end(); iter++ ) {
-      (*iter)->send(packet->bufferPtr(), packet->usedBufferSize()); 
+      (*iter)->getStreamConnection()->send(packet->bufferPtr(), packet->usedBufferSize());
     }
     m_connection_list_mutex.UnLock();
 }
@@ -256,22 +259,22 @@ void CStreamServer::sendToAllClients(CRTPPacket* packet)
 /*!
     \fn CStreamServer::addClient(CIPv4Address* addr)
  */
-list<CStreamConnection*>::iterator CStreamServer::addClient(CIPv4Address* addr, const string& name)
+list<CStreamCtrlConnection*>::iterator CStreamServer::addClient(bip::tcp::endpoint endp, const string& serviceName)
 {
     bool known = false;
 
-    list<CStreamConnection*>::iterator iter;
+    list<CStreamCtrlConnection*>::iterator iter;
     for(iter = m_connection_list.begin(); iter != m_connection_list.end(); iter++ ) {
-      CIPv4Address* knownaddr = (*iter)->getClientAddress();
-      if( *knownaddr == *addr ) {
+      bip::tcp::endpoint known_endp = (*iter)->remoteEndpoint();
+      if( known_endp == endp ) {
           known = true;
       }
     }
 
     if( known == false ) {
-        CStreamConnection* conn = new CStreamConnection(this, name);
-        conn->connect(addr);
-        return addStreamConnection(conn);
+//        CStreamCtrlConnection* conn = new CStreamCtrlConnection(this, serviceName);
+//        conn->openStreamConnection();
+//        return addStreamCtrlConnection(conn);
     }
     else {
         return m_connection_list.end();
@@ -280,13 +283,13 @@ list<CStreamConnection*>::iterator CStreamServer::addClient(CIPv4Address* addr, 
 
 void CStreamServer::adjustReceiverList(std::vector<ServDescPtr> receivers)
 {
-    list<CStreamConnection*>::iterator iter;
+    list<CStreamCtrlConnection*>::iterator iter;
     for(iter = m_connection_list.begin(); iter != m_connection_list.end(); iter++ ) {
 
         bool found = false;
         for(int i=0; i < receivers.size(); i++) {
             string servicename = receivers[i]->getServiceName();
-            if( servicename.compare( (*iter)->getName() ) == 0 ) {
+            if( servicename.compare( (*iter)->getServiceName() ) == 0 ) {
                 found = true;
                 receivers.erase(receivers.begin() + i);
                 break;
@@ -299,8 +302,8 @@ void CStreamServer::adjustReceiverList(std::vector<ServDescPtr> receivers)
     // add oaa receivers left in receivers list
     for(int i=0; i < receivers.size(); i++) {
         ServDescPtr srv_desc_ptr = receivers[i];
-        CIPv4Address addr(srv_desc_ptr->getHostName(), srv_desc_ptr->getPortNr());
-        addClient(&addr, srv_desc_ptr->getServiceName());
+        bip::tcp::endpoint endp(bip::address::from_string(srv_desc_ptr->getHostName()), srv_desc_ptr->getPortNr() );
+        addClient(endp, srv_desc_ptr->getServiceName());
     }
 }
 
@@ -309,10 +312,10 @@ void CStreamServer::adjustReceiverList(std::vector<ServDescPtr> receivers)
  */
 void CStreamServer::removeClient(const string& name)
 {
-    list<CStreamConnection*>::iterator iter;
+    list<CStreamCtrlConnection*>::iterator iter;
     for(iter = m_connection_list.begin(); iter != m_connection_list.end(); iter++ ) {
-        CStreamConnection* sc = *iter;
-        if( name.compare( sc->getName() ) == 0 ) {
+        CStreamCtrlConnection* sc = *iter;
+        if( name.compare( sc->getServiceName() ) == 0 ) {
             removeClient(iter);
             iter--;
         }
@@ -320,7 +323,7 @@ void CStreamServer::removeClient(const string& name)
 }
 
 
-void CStreamServer::removeClient(list<CStreamConnection*>::iterator iter) {
+void CStreamServer::removeClient(list<CStreamCtrlConnection*>::iterator iter) {
   removeStreamConnection(iter);
 }
 
@@ -362,11 +365,11 @@ int CStreamServer::stdClientPort(void)
  */
 void CStreamServer::listClients(void)
 {
-  list<CStreamConnection*>::iterator iter;
+  list<CStreamCtrlConnection*>::iterator iter;
   cerr << "List of clients in session: " << endl;
   m_connection_list_mutex.Lock();
   for(iter = m_connection_list.begin(); iter != m_connection_list.end(); iter++ ) {
-    cerr << *(*iter)->getClientAddress() << endl;
+    cerr << (*iter)->remoteEndpointStr() << endl;
   }
   m_connection_list_mutex.UnLock();
 }

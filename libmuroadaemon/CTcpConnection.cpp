@@ -67,6 +67,15 @@ void CTcpConnection::setNonBlocking(bool mode) {
 void CTcpConnection::onClose() {
 
 }
+tcp::endpoint CTcpConnection::localEndpoint() {
+	return m_socket.local_endpoint();
+}
+
+std::string CTcpConnection::localEndpointStr() {
+	tcp::endpoint local = m_socket.local_endpoint();
+	boost::asio::ip::address addr = local.address();
+	return addr.to_string();
+}
 
 tcp::endpoint CTcpConnection::remoteEndpoint() {
 	return m_socket.remote_endpoint();

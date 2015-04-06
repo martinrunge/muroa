@@ -60,7 +60,7 @@ using namespace boost::posix_time;
 class CPlayloop : public CThreadSlave
 {
 public:
-	CPlayloop(CPlayer* parent, muroa::CApp *app, CPacketRingBuffer* packet_ringbuffer );
+	CPlayloop(CPlayer* parent, CPacketRingBuffer* packet_ringbuffer );
     ~CPlayloop();
 
     void DoLoop();
@@ -122,8 +122,6 @@ private:
     FILE* m_debug_fd1;
     
     CPlayer* m_player;
-    muroa::CApp *m_app;
-    muroa::CSettings& m_settings;
     
     CPacketRingBuffer *m_packet_ringbuffer;
     CRingBuffer *m_ringbuffer;

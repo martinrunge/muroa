@@ -10,13 +10,16 @@
 
 #include <string>
 #include <boost/shared_ptr.hpp>
+#include <boost/asio.hpp>
+
+namespace bip=boost::asio::ip;
 
 namespace muroa {
 
 class CServiceDesc {
 public:
 	CServiceDesc();
-	CServiceDesc(std::string serviceName, std::string hostName,	std::string domainName, std::string serviceType = std::string(), int portNr = 0, int interface = 0, int protocol = 0);
+	CServiceDesc(std::string serviceName, std::string hostName,	std::string domainName, std::string serviceType = std::string(), bip::address addr = bip::address(), int portNr = 0, int interface = 0, int protocol = 0);
 	virtual ~CServiceDesc();
     int getInterface() const
     {
@@ -104,11 +107,20 @@ public:
     		return false;
 	}
 
+	const bip::address& getAddress() const {
+		return m_address;
+	}
+
+	void setAddress(const bip::address& address) {
+		m_address = address;
+	}
+
 private:
     std::string m_serviceName;
     std::string m_serviceType;
     std::string m_hostName;
     std::string m_domainName;
+    bip::address m_address;
 	int m_portNr;
 
 	int m_protocol;

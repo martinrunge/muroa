@@ -34,7 +34,7 @@ state machine for the command parser
 #include <vector>
 #include "IStreamCtrlRPC.h"
 
-
+namespace muroa {
 
 class CStreamCtrlParserSM : public IStreamCtrlCBs {
 public:
@@ -153,5 +153,5 @@ private:
 	void parseErrorArgs(const char** attrs);
 
 };
-
+}
 #endif

@@ -32,6 +32,8 @@ using namespace std;
 using namespace muroa;
 using namespace boost::asio;
 
+namespace muroa {
+
 CStreamCtrlParserSM::CStreamCtrlParserSM()
 {
 	reset();
@@ -730,3 +732,5 @@ void CStreamCtrlParserSM::parseErrorArgs(const char** attrs) {
 		}
 	}
 }
+
+}  // namespace muroa

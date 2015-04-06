@@ -58,12 +58,12 @@ void CSessionContainer::setup( boost::asio::io_service& io_service) {
 		protocol = tcp::v6();
 	}
 
-	tcp::endpoint endp = tcp::endpoint(protocol, m_settings.getConfigVal("msessiond/port", 44555));
+	tcp::endpoint endp = tcp::endpoint(protocol, m_settings.getConfigVal("msessiond.port", 44555));
 
 	m_tcp_server = new CTcpServer(io_service, this, endp, reinterpret_cast<factory_ptr_t>(&CConnection::create));
 
 	const int port(endp.port());
-	m_settings.setPersistentVal(string("msessiond/port"), port);
+	m_settings.setPersistentVal(string("msessiond.port"), port);
 
 	m_sigPtr = CSignalHandler::create(io_service);
 	m_sigPtr->start();
@@ -77,7 +77,7 @@ void CSessionContainer::setup( boost::asio::io_service& io_service) {
 
 	vector<string> browselist;
 	browselist.push_back("_muroa._tcp");
-	browselist.push_back("_muroad._udp");
+	browselist.push_back("_muroad._tcp");
 
 	m_dnssd = new CDnsSdAvahi(io_service, m_settings.serviceName(), port, m_settings.serviceType(), browselist);
 	m_dnssd->setServiceChangedHandler(boost::bind( &muroa::CSessionContainer::serviceChanged, this));
@@ -145,7 +145,7 @@ CSession* CSessionContainer::assignConnection(CConnection* ptr, std::string sess
 		const std::vector<ServDescPtr> slist = m_dnssd->getServiceList();
 	    std::vector<ServDescPtr>::const_iterator it;
 	    for(it = slist.begin(); it != slist.end(); it++) {
-	        if((*it)->getServiceType().compare("_muroad._udp") == 0) {
+	        if((*it)->getServiceType().compare("_muroad._tcp") == 0) {
 	            session->addClient((*it)->getServiceName());
 	        }
 	    }
@@ -167,7 +167,7 @@ void CSessionContainer::serviceAdded(ServDescPtr srvPtr) {
 	string name = srvPtr->getServiceName();
 	int num = 0;
 
-	if(srvPtr->getServiceType().compare("_muroad._udp") == 0) {
+	if(srvPtr->getServiceType().compare("_muroad._tcp") == 0) {
 		LOG4CPLUS_DEBUG(m_app->logger(), "service " << name << " appeared.");
 		map<std::string, CSession*>::iterator it;
 		for(it = m_sessions.begin(); it != m_sessions.end(); it++)
@@ -183,7 +183,7 @@ void CSessionContainer::serviceAdded(ServDescPtr srvPtr) {
 void CSessionContainer::serviceRemoved(ServDescPtr srvPtr) {
 	int num = 0;
 
-	if(srvPtr->getServiceType().compare("_muroad._udp") == 0) {
+	if(srvPtr->getServiceType().compare("_muroad._tcp") == 0) {
 		LOG4CPLUS_DEBUG(m_app->logger(), "service " << srvPtr->getServiceName() << " disappeared.");
 		map<std::string, CSession*>::iterator it;
 		for(it = m_sessions.begin(); it != m_sessions.end(); it++)

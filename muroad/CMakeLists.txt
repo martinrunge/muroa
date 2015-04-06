@@ -34,11 +34,13 @@ add_definitions(-D__STDC_CONSTANT_MACROS)
 set( SRCS             cpacketringbuffer.cpp
                       cplayloop.cpp
                       cresampler.cpp
-		              cfilterdef.cpp
+		      cfilterdef.cpp
                       cfixpointresampler.cpp
                       cfloatresampler.cpp
                       cmuroad.cpp
                       main.cpp
+                      CPlayerState.cpp
+                      CCtrlConnection.cpp
                       cplayer.cpp
                       crecvloop.cpp
                       cringbuffer.cpp 
@@ -47,11 +49,13 @@ set( SRCS             cpacketringbuffer.cpp
 set( HEADERS          cpacketringbuffer.h
                       cplayloop.h
                       cresampler.h
-		              cfilterdef.h
+		      cfilterdef.h
                       cfixpointresampler.h
                       cfloatresampler.h
                       cmuroad.h
                       cplayer.h
+                      CPlayerState.h
+                      CCtrlConnection.h
                       crecvloop.h
                       cringbuffer.h
                       )                    
@@ -63,6 +67,7 @@ include_directories(${SOURCE_DIR}
                     ${libavformat_INCLUDE_DIRS} 
                     ${log4cplus_INCLUDE_DIRS}
                     ${CMAKE_CURRENT_SOURCE_DIR} 
+                    ${CMAKE_CURRENT_SOURCE_DIR}/../libmcommons 
                     ${CMAKE_CURRENT_SOURCE_DIR}/../libmuroadaemon 
                     ${CMAKE_CURRENT_SOURCE_DIR}/../libmuroa++
                     ${CMAKE_CURRENT_SOURCE_DIR}/../libsock++

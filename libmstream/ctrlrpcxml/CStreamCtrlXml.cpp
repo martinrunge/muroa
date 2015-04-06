@@ -31,6 +31,8 @@ using namespace std;
 using namespace muroa;
 using namespace boost::asio;
 
+namespace muroa {
+
 CStreamCtrlXml::CStreamCtrlXml() throw (ExRpcError) {
 	m_parser = XML_ParserCreate(NULL);
 	if (!m_parser) {
@@ -215,5 +217,7 @@ void XMLCALL CStreamCtrlXml::endTagHandler(void *inst_ptr, const char *el){
 void XMLCALL CStreamCtrlXml::characterHandler(void *inst_ptr, const char *s, int len) {
 	CStreamCtrlXml* parser_obj = (CStreamCtrlXml*)inst_ptr;
 	parser_obj->onXmlCharacters( string(s, len) );
+}
+
 }
 

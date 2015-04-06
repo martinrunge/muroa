@@ -59,6 +59,9 @@ public:
 
   virtual void onClose();
 
+  tcp::endpoint localEndpoint();
+  std::string localEndpointStr();
+
   tcp::endpoint remoteEndpoint();
   std::string remoteEndpointStr();
 

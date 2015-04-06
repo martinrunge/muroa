@@ -35,6 +35,7 @@ public:
 	CDnsSdAvahi(boost::asio::io_service& io_service, std::string service_name, unsigned short service_port, std::string service_type, std::vector<std::string> browselist);
 	virtual ~CDnsSdAvahi();
 
+	static bip::address AvahiToAsioAddress(const AvahiAddress& avahiAddr);
 //	void operator()();
 //	void cancel();
 
