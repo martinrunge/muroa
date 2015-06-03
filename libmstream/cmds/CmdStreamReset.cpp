@@ -31,7 +31,7 @@ namespace muroa {
 
 CmdStreamReset::CmdStreamReset(	uint32_t oldSessionID, uint32_t oldStreamID,
 		                        uint32_t newSessionID, uint32_t newStreamID)
-               : CmdStreamBase(E_RESET_STREAM)
+               : CmdStreamBase()
 {
 	m_oldSessionID = oldSessionID;
 	m_oldStreamID = oldStreamID;
@@ -39,7 +39,7 @@ CmdStreamReset::CmdStreamReset(	uint32_t oldSessionID, uint32_t oldStreamID,
 	m_newStreamID = newStreamID;
 }
 
-CmdStreamReset::CmdStreamReset(	CRTPPacket* resetPkt ) : CmdStreamBase(E_RESET_STREAM) {
+CmdStreamReset::CmdStreamReset(	CRTPPacket* resetPkt ) : CmdStreamBase() {
 	serialisation_buffer_t* serbuf = reinterpret_cast<serialisation_buffer_t*>(resetPkt->payloadBufferPtr());
 
 	m_oldSessionID = ntohl( serbuf->serialisation_vars.oldSessionID );

@@ -15,6 +15,7 @@ add_definitions( ${log4cplus_DEFINITIONS} )
 
 set( SRC           CStreamConnection.cpp
                    CStreamServer.cpp
+                   CStreamSrvSM.cpp
                    CStreamCtrlConnection.cpp
                    caudioframe.cpp
                    caudiooss.cpp
@@ -27,6 +28,7 @@ set( SRC           CStreamConnection.cpp
                    CTimeSyncPkt.cpp
                    CTimeService.cpp
                    CTimeServiceCtrl.cpp
+                   cmds/StreamCtrlIDs.cpp
                    cmds/CmdStreamBase.cpp
                    cmds/CmdStreamReset.cpp
                    cmds/CmdStreamConnect.cpp
@@ -37,6 +39,7 @@ set( SRC           CStreamConnection.cpp
 
 set( HEADERS       CStreamConnection.h
                    CStreamServer.h
+                   CStreamSrvSM.h
                    CStreamCtrlConnection.h
                    caudioframe.h
                    caudiooss.h
@@ -51,7 +54,9 @@ set( HEADERS       CStreamConnection.h
                    CTimeService.h
                    CTimeServiceCtrl.h
                    Exceptions.h
+                   cmds/StreamCtrlIDs.h
                    cmds/CmdStreamBase.h
+                   cmds/cmds.h
                    cmds/CmdStreamReset.h
                    cmds/CmdStreamConnect.h
                    ctrlrpcxml/IStreamCtrlRPC.h

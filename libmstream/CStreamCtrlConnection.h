@@ -41,8 +41,8 @@ public:
 	void openStreamConnection();
 	void closeStreamConnection();
 
-	void onOpen(uint32_t cmdID);
-	void onClose(uint32_t cmdID);
+	void onSetup(uint32_t cmdID);
+	void onShutdown(uint32_t cmdID);
 
 	void onAck(uint32_t cmdID);
 	void onError(uint32_t cmdID, int errorCode, std::string errmsg);

@@ -118,6 +118,10 @@ void CPlayer::stop()
   m_playloop_thread->StopThread();
 }
 
+int CPlayer::getRTPPort() {
+	return m_recvloop->getRTPPort();
+}
+
 
 /*!
     \fn CPlayer::sendSyncReq(CSync* sync_req)

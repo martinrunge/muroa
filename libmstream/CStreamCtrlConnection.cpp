@@ -26,7 +26,7 @@ namespace muroa {
 
 CStreamCtrlConnection::CStreamCtrlConnection(std::string serviceName, CStreamServer* stream_server, boost::asio::io_service& io_service)
                       : bip::tcp::socket(io_service),
-						m_stream_connection(0),
+                        m_stream_connection(0),
 					    m_stream_server(stream_server),
 						m_serviceName(serviceName),
 						m_RTP_port(0)
@@ -35,7 +35,8 @@ CStreamCtrlConnection::CStreamCtrlConnection(std::string serviceName, CStreamSer
 }
 
 CStreamCtrlConnection::~CStreamCtrlConnection() {
-
+	closeStreamConnection();
+	// close(); ?
 }
 
 void CStreamCtrlConnection::openStreamConnection() {
@@ -54,63 +55,63 @@ void CStreamCtrlConnection::closeStreamConnection() {
 }
 
 
-void muroa::CStreamCtrlConnection::onOpen(uint32_t cmdID) {
+void CStreamCtrlConnection::onSetup(uint32_t cmdID) {
 }
 
-void muroa::CStreamCtrlConnection::onClose(uint32_t cmdID) {
+void CStreamCtrlConnection::onShutdown(uint32_t cmdID) {
 }
 
-void muroa::CStreamCtrlConnection::onAck(uint32_t cmdID) {
+void CStreamCtrlConnection::onAck(uint32_t cmdID) {
 }
 
-void muroa::CStreamCtrlConnection::onError(uint32_t cmdID, int errorCode, std::string errmsg) {
+void CStreamCtrlConnection::onError(uint32_t cmdID, int errorCode, std::string errmsg) {
 }
 
-void muroa::CStreamCtrlConnection::onJoinSession(uint32_t cmdID, std::string name, boost::asio::ip::address session_srv) {
+void joinSession(uint32_t cmdID, std::string name, boost::asio::ip::address session_srv);
+
+void CStreamCtrlConnection::onJoinSession(uint32_t cmdID, std::string name, boost::asio::ip::address session_srv) {
 }
 
-void muroa::CStreamCtrlConnection::onJoinSessionLeave() {
+void CStreamCtrlConnection::onJoinSessionLeave() {
 }
 
-void muroa::CStreamCtrlConnection::onTakeFromSession(uint32_t cmdID, std::string name, boost::asio::ip::address session_srv) {
+void CStreamCtrlConnection::onTakeFromSession(uint32_t cmdID, std::string name, boost::asio::ip::address session_srv) {
 }
 
-void muroa::CStreamCtrlConnection::onSetTimeSrv(uint32_t cmdID, boost::asio::ip::address session_srv, uint32_t port) {
+void CStreamCtrlConnection::onSetTimeSrv(uint32_t cmdID, boost::asio::ip::address session_srv, uint32_t port) {
 }
 
-void muroa::CStreamCtrlConnection::onGetTimeSrv(uint32_t cmdID) {
+void CStreamCtrlConnection::onGetTimeSrv(uint32_t cmdID) {
 }
 
-void muroa::CStreamCtrlConnection::onGetRTPPort(uint32_t cmdID) {
+void CStreamCtrlConnection::onGetRTPPort(uint32_t cmdID) {
 }
 
-void muroa::CStreamCtrlConnection::onSetRTPPort(uint32_t cmdID, uint32_t port) {
+void CStreamCtrlConnection::onSetRTPPort(uint32_t cmdID, uint32_t port) {
 }
 
-void muroa::CStreamCtrlConnection::onJoinMCastGrp(uint32_t cmdID, boost::asio::ip::address mcast_addr) {
+void CStreamCtrlConnection::onJoinMCastGrp(uint32_t cmdID, boost::asio::ip::address mcast_addr) {
 }
 
-void muroa::CStreamCtrlConnection::onLeaveMCastGrp(uint32_t cmdID, boost::asio::ip::address mcast_addr) {
+void CStreamCtrlConnection::onLeaveMCastGrp(uint32_t cmdID, boost::asio::ip::address mcast_addr) {
 }
 
-void muroa::CStreamCtrlConnection::onGetMCastGrp(uint32_t cmdID) {
+void CStreamCtrlConnection::onGetMCastGrp(uint32_t cmdID) {
 }
 
-void muroa::CStreamCtrlConnection::onSetStreamTimeBase(uint32_t cmdID, uint32_t ssrc, uint64_t rtp_ts, uint64_t pts) {
+void CStreamCtrlConnection::onSetStreamTimeBase(uint32_t cmdID, uint32_t ssrc, uint64_t rtp_ts, uint64_t pts) {
 }
 
-void muroa::CStreamCtrlConnection::onGetStreamTimeBase(uint32_t cmdID,
-		uint32_t ssrc) {
+void CStreamCtrlConnection::onGetStreamTimeBase(uint32_t cmdID, uint32_t ssrc) {
 }
 
-void muroa::CStreamCtrlConnection::onResetStream(uint32_t cmdID,
-		uint32_t ssrc) {
+void CStreamCtrlConnection::onResetStream(uint32_t cmdID, uint32_t ssrc) {
 }
 
-void muroa::CStreamCtrlConnection::onGetVolume(uint32_t cmdID) {
+void CStreamCtrlConnection::onGetVolume(uint32_t cmdID) {
 }
 
-void muroa::CStreamCtrlConnection::onSetVolume(uint32_t cmdID, int percent) {
+void CStreamCtrlConnection::onSetVolume(uint32_t cmdID, int percent) {
 }
 
 

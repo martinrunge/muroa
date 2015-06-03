@@ -52,11 +52,11 @@ CStreamCtrlXml::~CStreamCtrlXml() {
 	XML_ParserFree(m_parser);
 }
 
-void CStreamCtrlXml::open() {
+void CStreamCtrlXml::setup() {
 	sendData(StreamCtrlXMLCmds::open);
 }
 
-void CStreamCtrlXml::close() {
+void CStreamCtrlXml::shutdown() {
 	sendData(StreamCtrlXMLCmds::close);
 	reset();
 }

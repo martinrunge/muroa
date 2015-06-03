@@ -38,14 +38,15 @@ public:
 					 INFO_STATE,
 		             SESSION_STATE
 	} state_t;
+
 };
 
 class IStreamCtrlRPC : public IStreamCtrl {
 public:
 	virtual ~IStreamCtrlRPC() {}
 
-	virtual void open() = 0;
-	virtual void close() = 0;
+	virtual void setup() = 0;
+	virtual void shutdown() = 0;
 
 	virtual void ack(uint32_t cmdID) = 0;
 	virtual void error(uint32_t cmdID, int errorCode, std::string errmsg) = 0;
@@ -83,8 +84,8 @@ class IStreamCtrlCBs : public IStreamCtrl {
 public:
 	virtual ~IStreamCtrlCBs() {}
 
-	virtual void onOpen(uint32_t cmdID) = 0;
-	virtual void onClose(uint32_t cmdID) = 0;
+	virtual void onSetup(uint32_t cmdID) = 0;
+	virtual void onShutdown(uint32_t cmdID) = 0;
 
 	virtual void onAck(uint32_t cmdID) = 0;
 	virtual void onError(uint32_t cmdID, int errorCode, std::string errmsg) = 0;

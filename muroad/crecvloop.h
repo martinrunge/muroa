@@ -53,6 +53,7 @@ public:
     void DoLoop();
     void sendRTPPacket(CRTPPacket* packet);
 
+    int getRTPPort();
 private:
     CSocket *m_socket;
 

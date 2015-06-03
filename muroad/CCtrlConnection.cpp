@@ -19,42 +19,62 @@
  */
 
 #include <CCtrlConnection.h>
+#include "CPlayerState.h"
+#include <cmds/StreamCtrlIDs.h>
+
+using namespace muroa;
+using namespace std;
 
 CCtrlConnection::CCtrlConnection(boost::asio::io_service& io_service) : CTcpConnection(io_service) {
 
 }
 
 CCtrlConnection::~CCtrlConnection() {
-
+	// shutdown();
 }
 
 
-void CCtrlConnection::onOpen(uint32_t cmdID) {
+void CCtrlConnection::onSetup(uint32_t cmdID) {
+	ack(cmdID);
 }
 
-void CCtrlConnection::onClose(uint32_t cmdID) {
+void CCtrlConnection::onShutdown(uint32_t cmdID) {
+	// m_player_state->shutDown();
+	ack(cmdID);
 }
 
 void CCtrlConnection::onAck(uint32_t cmdID) {
 }
 
-void CCtrlConnection::onError(uint32_t cmdID, int errorCode,
-		std::string errmsg) {
+void CCtrlConnection::onError(uint32_t cmdID, int errorCode, std::string errmsg) {
 }
 
-void CCtrlConnection::onJoinSession(uint32_t cmdID, std::string name,
-		boost::asio::ip::address session_srv) {
+void CCtrlConnection::onJoinSession(uint32_t cmdID, std::string name, boost::asio::ip::address session_srv) {
+	int rc = m_player_state->requestJoinSession(name, this);
+	if(rc == 0 || rc == 1) {
+		ack(cmdID);
+		setRTPPort(StreamCtrlIDs::getCmdID(), m_player_state->getRTPPort());
+	}
+	else {
+		if(rc == -1) {
+			ostringstream oss;
+			oss << "already member of session '" << m_player_state->getSessionName() << "'";
+			error(cmdID, StreamCtrlIDs::EC_MEMBER_OF_OTHER_SESSION, oss.str() );
+		}
+		else {
+			error(cmdID, StreamCtrlIDs::EC_OUT_OF_SERVICE, "out of service" );
+		}
+	}
 }
 
 void CCtrlConnection::onJoinSessionLeave() {
+	int rc = m_player_state->requestLeaveSession(this);
 }
 
-void CCtrlConnection::onTakeFromSession(uint32_t cmdID, std::string name,
-		boost::asio::ip::address session_srv) {
+void CCtrlConnection::onTakeFromSession(uint32_t cmdID, std::string name, boost::asio::ip::address session_srv) {
 }
 
-void CCtrlConnection::onSetTimeSrv(uint32_t cmdID,
-		boost::asio::ip::address session_srv, uint32_t port) {
+void CCtrlConnection::onSetTimeSrv(uint32_t cmdID, boost::asio::ip::address session_srv, uint32_t port) {
 }
 
 void CCtrlConnection::onGetTimeSrv(uint32_t cmdID) {
@@ -66,19 +86,16 @@ void CCtrlConnection::onGetRTPPort(uint32_t cmdID) {
 void CCtrlConnection::onSetRTPPort(uint32_t cmdID, uint32_t port) {
 }
 
-void CCtrlConnection::onJoinMCastGrp(uint32_t cmdID,
-		boost::asio::ip::address mcast_addr) {
+void CCtrlConnection::onJoinMCastGrp(uint32_t cmdID, boost::asio::ip::address mcast_addr) {
 }
 
-void CCtrlConnection::onLeaveMCastGrp(uint32_t cmdID,
-		boost::asio::ip::address mcast_addr) {
+void CCtrlConnection::onLeaveMCastGrp(uint32_t cmdID, boost::asio::ip::address mcast_addr) {
 }
 
 void CCtrlConnection::onGetMCastGrp(uint32_t cmdID) {
 }
 
-void CCtrlConnection::onSetStreamTimeBase(uint32_t cmdID, uint32_t ssrc,
-		uint64_t rtp_ts, uint64_t pts) {
+void CCtrlConnection::onSetStreamTimeBase(uint32_t cmdID, uint32_t ssrc, uint64_t rtp_ts, uint64_t pts) {
 }
 
 void CCtrlConnection::onGetStreamTimeBase(uint32_t cmdID, uint32_t ssrc) {

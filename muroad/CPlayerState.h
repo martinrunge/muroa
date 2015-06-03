@@ -21,10 +21,11 @@
 #ifndef MUROAD_CPLAYERSTATE_H_
 #define MUROAD_CPLAYERSTATE_H_
 
-#include "CConnectionManager.h"
+#include "CCtrlConnectionMgr.h"
 #include <boost/asio.hpp>
 
 class CPlayer;
+class CCtrlConnection;
 
 namespace muroa
 {
@@ -42,11 +43,26 @@ public:
 	CPlayerState(boost::asio::io_service& io_service);
 	virtual ~CPlayerState();
 
+	int requestJoinSession(std::string name, CCtrlConnection* ctrlConn);
+	int requestLeaveSession(CCtrlConnection* ctrlConn);
+
 	void startPlayer();
 	void stopPlayer();
 
+	int getRTPPort();
+
+	const CCtrlConnection* getSessionCtrlConn() const {
+		return m_session_ctrl_conn;
+	}
+
+	const std::string getSessionName() const {
+		return m_session_name;
+	}
+
 private:
-	muroa::CConnectionManager m_conn_mgr;
+	bool m_active;
+
+	CCtrlConnectionMgr m_conn_mgr;
     muroa::CTcpServer* m_tcp_server;
 
     muroa::CDnsSdAvahi *m_dnssd;
@@ -54,6 +70,10 @@ private:
     boost::asio::io_service& m_io_service;
 
     CPlayer* m_player;
+
+    std::string m_session_name;
+    CCtrlConnection* m_session_ctrl_conn;
+
 };
 
 } /* namespace muroa */

@@ -34,13 +34,14 @@ add_definitions(-D__STDC_CONSTANT_MACROS)
 set( SRCS             cpacketringbuffer.cpp
                       cplayloop.cpp
                       cresampler.cpp
-		      cfilterdef.cpp
+		              cfilterdef.cpp
                       cfixpointresampler.cpp
                       cfloatresampler.cpp
                       cmuroad.cpp
                       main.cpp
                       CPlayerState.cpp
                       CCtrlConnection.cpp
+                      CCtrlConnectionMgr.cpp
                       cplayer.cpp
                       crecvloop.cpp
                       cringbuffer.cpp 
@@ -49,13 +50,14 @@ set( SRCS             cpacketringbuffer.cpp
 set( HEADERS          cpacketringbuffer.h
                       cplayloop.h
                       cresampler.h
-		      cfilterdef.h
+		              cfilterdef.h
                       cfixpointresampler.h
                       cfloatresampler.h
                       cmuroad.h
                       cplayer.h
                       CPlayerState.h
                       CCtrlConnection.h
+                      CCtrlConnectionMgr.h
                       crecvloop.h
                       cringbuffer.h
                       )                    

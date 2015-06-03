@@ -64,6 +64,11 @@ CRecvloop::~CRecvloop()
   delete m_socket;
 }
 
+int CRecvloop::getRTPPort() {
+	return m_socket->getPort();
+}
+
+
 
 void CRecvloop::DoLoop()
 {

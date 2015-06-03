@@ -38,10 +38,10 @@ CStreamCtrlRpcDummy::~CStreamCtrlRpcDummy() {
 
 }
 
-void CStreamCtrlRpcDummy::onOpen(uint32_t cmdID) {
+void CStreamCtrlRpcDummy::onSetup(uint32_t cmdID) {
 }
 
-void CStreamCtrlRpcDummy::onClose(uint32_t cmdID) {
+void CStreamCtrlRpcDummy::onShutdown(uint32_t cmdID) {
 }
 
 void CStreamCtrlRpcDummy::onAck(uint32_t cmdID) {

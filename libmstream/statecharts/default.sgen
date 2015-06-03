@@ -1,0 +1,10 @@
+GeneratorModel for yakindu::cpp {
+
+	statechart stream_client_control {
+
+		feature Outlet {
+			targetProject = "statecharts"
+			targetFolder = "src-gen"
+		}
+	}
+}

@@ -1,7 +1,7 @@
 /*
  Copyright (c) 2002-2014 "Martin Runge"
 
- CmdStreamConnect.cpp is part of muroa, the  Multi Room Audio Player [http://www.muroa.org]
+ StreamCtrlIDs.h is part of muroa, the  Multi Room Audio Player [http://www.muroa.org]
 
  Muroa is free software: you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
@@ -18,36 +18,21 @@
 
  */
 
-#include "CmdStreamConnect.h"
-#include "crtppacket.h"
+#ifndef LIBMSTREAM_CTRLRPCXML_STREAMCTRLIDS_H_
+#define LIBMSTREAM_CTRLRPCXML_STREAMCTRLIDS_H_
 
-using namespace std;
+#include <cstdint>
 
 namespace muroa {
+namespace StreamCtrlIDs {
 
+const int EC_MEMBER_OF_OTHER_SESSION = 1;
+const int EC_OUT_OF_SERVICE = 2;
+uint32_t last_cmd_id = 0;
 
-CmdStreamConnect::CmdStreamConnect(CRTPPacket* connectPkt) : CmdStreamBase() {
+uint32_t getCmdID();
 
-}
-
-CmdStreamConnect::CmdStreamConnect(std::string timesrv_addr, int timesrv_port, std::string stream_mcast_grp) : CmdStreamBase() {
-	m_timesrv_addr = timesrv_addr;
-	m_timesrv_port = timesrv_port;
-	m_stream_mcast_grp = stream_mcast_grp;
-}
-
-CmdStreamConnect::~CmdStreamConnect() {
-
-}
-
-string CmdStreamConnect::serialize() {
-	string ser_str;
-
-	return ser_str;
-}
-
-void CmdStreamConnect::deserialize(std::string ser_str) {
-
-}
-
+}  /* namespace StreamCtrlIDs */
 } /* namespace muroa */
+
+#endif /* LIBMSTREAM_CTRLRPCXML_STREAMCTRLIDS_H_ */

@@ -22,7 +22,10 @@
 
 namespace muroa {
 
-CmdStreamBase::CmdStreamBase(enum cmd_stream_t type) : m_type(type) {
+std::map<std::type_info, int> CmdStreamBase::m_visitor_map;
+std::map<std::chrono::time_point<std::chrono::steady_clock>, CmdStreamBase*> CmdStreamBase::m_timeouts;
+
+CmdStreamBase::CmdStreamBase() {
 	// TODO Auto-generated constructor stub
 
 }

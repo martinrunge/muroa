@@ -61,6 +61,8 @@ public:
     ~CPlayer();
     void start();
     void stop();
+
+    int getRTPPort();
     void sendRTPPacket(CRTPPacket* packet);
 
     void onResetStream(const muroa::CmdStreamReset& cmd_rst);

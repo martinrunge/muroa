@@ -27,6 +27,7 @@ Class provides a server for a stream.
 */
 
 #include <iostream>
+#include <set>
 #include <list>
 #include <string>
 
@@ -76,14 +77,15 @@ public:
     int sendPacket(char* buffer, int length);
 
 
-    std::list<muroa::CStreamCtrlConnection*>::iterator addStreamConnection(muroa::CStreamCtrlConnection* conn);
-    muroa::CStreamCtrlConnection* removeStreamConnection(std::list<muroa::CStreamCtrlConnection*>::iterator conn_iterator);
+    // std::list<muroa::CStreamCtrlConnection*>::iterator addStreamConnection(muroa::CStreamCtrlConnection* conn);
+    // muroa::CStreamCtrlConnection* removeStreamConnection(std::list<muroa::CStreamCtrlConnection*>::iterator conn_iterator);
 
     void adjustReceiverList(std::vector<muroa::ServDescPtr> receivers);
 
+    int addClient(bip::tcp::endpoint endp, const std::string& name);
     void removeClient(const std::string& name);
     void removeClient(std::list<muroa::CStreamCtrlConnection*>::iterator iter);
-    std::list<muroa::CStreamCtrlConnection*>::iterator addClient(bip::tcp::endpoint endp, const std::string& name);
+
     CSync* getSyncObj(uint32_t session_id, uint32_t stream_id);
 
     /*!
@@ -129,7 +131,8 @@ private:
     CRTPPacket *m_rtp_packet;
     CSync m_syncobj;
 
-    std::list<muroa::CStreamCtrlConnection*> m_connection_list;
+    std::list<muroa::CStreamCtrlConnection*> m_joined_connections;
+    std::set<muroa::CStreamCtrlConnection*> m_loose_connections;
 
     CMutex m_connection_list_mutex;
 

@@ -34,9 +34,13 @@ using namespace muroa;
 
 namespace muroa {
 
-CPlayerState::CPlayerState(boost::asio::io_service& io_service) :           m_tcp_server(0),
+CPlayerState::CPlayerState(boost::asio::io_service& io_service) :           m_active(false),
+		                                                                    m_conn_mgr(this),
+		                                                                    m_tcp_server(0),
 		                                                                    m_io_service(io_service),
-																			m_player(0) {
+																			m_player(0),
+																			m_session_name(),
+																			m_session_ctrl_conn(0) {
 
 	boost::asio::ip::tcp protocol = tcp::v4();
 	if( CApp::settings().getConfigVal("muroad.useIPv6", "no").compare(string("yes")) == 0) {
@@ -57,7 +61,7 @@ CPlayerState::CPlayerState(boost::asio::io_service& io_service) :           m_tc
 //    m_dnssd = new CDnsSdAvahi(io_service, serviceName, 44400, serviceType, vector<string>());
 	m_dnssd->setServiceChangedHandler(boost::bind( &muroa::CApp::serviceChanged, CApp::getInstPtr()));
 
-	startPlayer();
+	// startPlayer();
 }
 
 CPlayerState::~CPlayerState() {
@@ -83,5 +87,58 @@ void CPlayerState::stopPlayer() {
 		m_player = 0;
 	}
 }
+
+
+int CPlayerState::getRTPPort() {
+	if(m_player != 0) return m_player->getRTPPort();
+	else              return 0;
+}
+
+/**
+ * \return: 0 on success (join request accepted, render client is now member of session)
+ *          1 render client was already member of session
+ *          -1 render client is member of another session
+ *          -2 access denied
+ */
+int CPlayerState::requestJoinSession(std::string name, CCtrlConnection* ctrlConn) {
+	if(!m_active) {
+		return -2;
+	}
+
+	if( name.compare(m_session_name) == 0 && m_session_ctrl_conn == ctrlConn ) {
+		LOG4CPLUS_INFO(CApp::logger(), "received request to join session " << name << " (" << ctrlConn->remoteEndpoint() << ") while already member of that session");
+		return 1;
+	}
+
+	if( name.empty() && m_session_ctrl_conn == 0 ) {
+		LOG4CPLUS_INFO(CApp::logger(), "accepting request to join session " << name << " (" << ctrlConn->remoteEndpoint() << ")");
+
+		startPlayer();
+		m_player->getRTPPort();
+
+		m_session_name = name;
+		m_session_ctrl_conn = ctrlConn;
+		return 0;
+	}
+
+	LOG4CPLUS_INFO(CApp::logger(), "denying request to join session " << name << " (" << ctrlConn->remoteEndpoint() << ")  because already member of session " << m_session_name << " (" << m_session_ctrl_conn->remoteEndpoint() << ").");
+	return -1;
+}
+
+
+int CPlayerState::requestLeaveSession(CCtrlConnection* ctrlConn) {
+	if( ctrlConn == m_session_ctrl_conn) {
+		stopPlayer();
+		m_conn_mgr.remove(m_session_ctrl_conn);
+		m_session_ctrl_conn = 0;
+		m_session_name.clear();
+		return 0;
+	}
+	else {
+		return -1;
+	}
+}
+
+
 
 } /* namespace muroa */

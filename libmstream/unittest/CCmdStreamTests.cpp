@@ -48,15 +48,15 @@ void CCmdStreamTests::setUp() {
 	m_rpc_s->setReceiver(m_rpc_r);
 	m_rpc_r->setReceiver(m_rpc_s);
 
-    m_rpc_r->open();
-    m_rpc_s->open();
+    m_rpc_r->setup();
+    m_rpc_s->setup();
     // uint32_t cmdID = m_rpc_->open();
 }
 
 void CCmdStreamTests::tearDown() {
 	// m_rpc_s->close();
-	m_rpc_r->close();
-	m_rpc_s->close();
+	m_rpc_r->shutdown();
+	m_rpc_s->shutdown();
 	delete m_rpc_s;
 	delete m_rpc_r;
 }

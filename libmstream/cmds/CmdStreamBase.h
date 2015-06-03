@@ -21,23 +21,27 @@
 #ifndef CMDSTREAMBASE_H_
 #define CMDSTREAMBASE_H_
 
+#include <cstdint>
+
+#include <typeinfo>
+#include <map>
+#include <chrono>
+
 namespace muroa {
 
 class CmdStreamBase {
 public:
-	enum cmd_stream_t {
-		E_CONNECT_STREAM,
-		E_RESET_STREAM,
-		E_UNKNOWN
-	};
 
 	virtual ~CmdStreamBase();
 
-	enum cmd_stream_t type() { return m_type; };
 
 protected:
-	CmdStreamBase(enum cmd_stream_t type);
-	const enum cmd_stream_t m_type;
+	CmdStreamBase();
+
+	static std::map<std::type_info, int> m_visitor_map;
+	static std::map<std::chrono::time_point<std::chrono::steady_clock>, CmdStreamBase*> m_timeouts;
+
+	uint32_t m_cmd_id;
 };
 
 } /* namespace muroa */

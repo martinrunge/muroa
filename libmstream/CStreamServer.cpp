@@ -23,6 +23,8 @@
 
 #include "cmds/CmdStreamReset.h"
 
+#include <CApp.h>
+
 #include <log4cplus/loggingmacros.h>
 #include <log4cplus/loglevel.h>
 
@@ -218,29 +220,29 @@ int CStreamServer::sendPacket(char* buffer, int length) {
 
 
 
-list<CStreamCtrlConnection*>::iterator CStreamServer::addStreamConnection(CStreamCtrlConnection* conn) {
-
-  list<CStreamCtrlConnection*>::iterator iter;
-
-  // do some checks on the socket here.
-
-  m_connection_list_mutex.Lock();
-  iter = m_connection_list.insert(m_connection_list.end(), conn);
-  m_connection_list_mutex.UnLock();
-}
-
-
-CStreamCtrlConnection* CStreamServer::removeStreamConnection(list<CStreamCtrlConnection*>::iterator conn_iterator) {
-
-  CStreamCtrlConnection* conn;
-  conn = *conn_iterator;
-  
-  m_connection_list_mutex.Lock();
-  m_connection_list.erase(conn_iterator);
-  m_connection_list_mutex.UnLock();
-
-  return conn;
-}
+//list<CStreamCtrlConnection*>::iterator CStreamServer::addStreamConnection(CStreamCtrlConnection* conn) {
+//
+//  list<CStreamCtrlConnection*>::iterator iter;
+//
+//  // do some checks on the socket here.
+//
+//  m_connection_list_mutex.Lock();
+//  iter = m_joined_connections.insert(m_joined_connections.end(), conn);
+//  m_connection_list_mutex.UnLock();
+//}
+//
+//
+//CStreamCtrlConnection* CStreamServer::removeStreamConnection(list<CStreamCtrlConnection*>::iterator conn_iterator) {
+//
+//  CStreamCtrlConnection* conn;
+//  conn = *conn_iterator;
+//
+//  m_connection_list_mutex.Lock();
+//  m_joined_connections.erase(conn_iterator);
+//  m_connection_list_mutex.UnLock();
+//
+//  return conn;
+//}
 
 
 
@@ -251,49 +253,58 @@ void CStreamServer::sendToAllClients(CRTPPacket* packet)
 {
     list<CStreamCtrlConnection*>::iterator iter;
     m_connection_list_mutex.Lock();
-    for(iter = m_connection_list.begin(); iter != m_connection_list.end(); iter++ ) {
+    for(iter = m_joined_connections.begin(); iter != m_joined_connections.end(); iter++ ) {
       (*iter)->getStreamConnection()->send(packet->bufferPtr(), packet->usedBufferSize());
     }
     m_connection_list_mutex.UnLock();
 }
 
 
-/*!
-    \fn CStreamServer::addClient(CIPv4Address* addr)
- */
-list<CStreamCtrlConnection*>::iterator CStreamServer::addClient(bip::tcp::endpoint endp, const string& serviceName)
+/** CStreamServer::addClient(CIPv4Address* addr)
+ *
+ * \return 0 if client was successfully added, 1 if client was already in the list and -1 if connection failed
+ *
+ **/
+int CStreamServer::addClient(bip::tcp::endpoint endp, const string& serviceName)
 {
-    bool known = false;
-
     list<CStreamCtrlConnection*>::iterator iter;
-    for(iter = m_connection_list.begin(); iter != m_connection_list.end(); iter++ ) {
+    for(iter = m_joined_connections.begin(); iter != m_joined_connections.end(); iter++ ) {
       bip::tcp::endpoint known_endp = (*iter)->remote_endpoint();
       if( known_endp == endp ) {
-          known = true;
+          return 1;
       }
     }
 
-    if( known == false ) {
-    	CStreamCtrlConnection* conn = new CStreamCtrlConnection(serviceName, this, m_io_service);
-    	boost::system::error_code ec;
-    	conn->connect(endp, ec);
-    	if(ec) {
+    set<CStreamCtrlConnection*>::iterator iter2;
+    for(iter2 = m_loose_connections.begin(); iter2 != m_loose_connections.end(); iter2++ ) {
+      bip::tcp::endpoint known_endp = (*iter2)->remote_endpoint();
+      if( known_endp == endp ) {
+          return 1;
+      }
+    }
 
-    	}
-    	else {
-    		conn->openStreamConnection();
-    	}
-//        return addStreamCtrlConnection(conn);
-    }
-    else {
-        return m_connection_list.end();
-    }
+   	CStreamCtrlConnection* conn = new CStreamCtrlConnection(serviceName, this, m_io_service);
+   	boost::system::error_code ec;
+  	conn->connect(endp, ec);
+   	if(ec) {
+   		LOG4CPLUS_ERROR(CApp::logger(), "could not establish control connection to render client " << serviceName << " (" << endp << ")" );
+   		delete conn;
+
+   		return -1;
+   	}
+   	else {
+   		conn->setup();
+   		conn->joinSession(0, "place session name here", bip::address() );
+   		m_loose_connections.insert(conn);
+
+   		return 0;
+   	}
 }
 
 void CStreamServer::adjustReceiverList(std::vector<ServDescPtr> receivers)
 {
     list<CStreamCtrlConnection*>::iterator iter;
-    for(iter = m_connection_list.begin(); iter != m_connection_list.end(); iter++ ) {
+    for(iter = m_joined_connections.begin(); iter != m_joined_connections.end(); iter++ ) {
 
         bool found = false;
         for(int i=0; i < receivers.size(); i++) {
@@ -322,7 +333,7 @@ void CStreamServer::adjustReceiverList(std::vector<ServDescPtr> receivers)
 void CStreamServer::removeClient(const string& name)
 {
     list<CStreamCtrlConnection*>::iterator iter;
-    for(iter = m_connection_list.begin(); iter != m_connection_list.end(); iter++ ) {
+    for(iter = m_joined_connections.begin(); iter != m_joined_connections.end(); iter++ ) {
         CStreamCtrlConnection* sc = *iter;
         if( name.compare( sc->getServiceName() ) == 0 ) {
             removeClient(iter);
@@ -333,7 +344,9 @@ void CStreamServer::removeClient(const string& name)
 
 
 void CStreamServer::removeClient(list<CStreamCtrlConnection*>::iterator iter) {
-  removeStreamConnection(iter);
+	m_connection_list_mutex.Lock();
+	m_joined_connections.erase(iter);
+	m_connection_list_mutex.UnLock();
 }
 
 /*!
@@ -377,7 +390,7 @@ void CStreamServer::listClients(void)
   list<CStreamCtrlConnection*>::iterator iter;
   cerr << "List of clients in session: " << endl;
   m_connection_list_mutex.Lock();
-  for(iter = m_connection_list.begin(); iter != m_connection_list.end(); iter++ ) {
+  for(iter = m_joined_connections.begin(); iter != m_joined_connections.end(); iter++ ) {
     cerr << (*iter)->remote_endpoint() << endl;
   }
   m_connection_list_mutex.UnLock();
