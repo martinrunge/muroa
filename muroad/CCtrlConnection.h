@@ -37,35 +37,10 @@ public:
 
 	void setPlayerStatePtr(muroa::CPlayerState* ps) { m_player_state = ps; };
 
-	void onSetup(uint32_t cmdID);
-	void onShutdown(uint32_t cmdID);
+	void onSetup();
+	void onShutdown();
 
-	void onAck(uint32_t cmdID);
-	void onError(uint32_t cmdID, int errorCode, std::string errmsg);
-
-	void onJoinSession(uint32_t cmdID, std::string name, boost::asio::ip::address session_srv);
-	void onJoinSessionLeave();
-
-	void onTakeFromSession(uint32_t cmdID, std::string name, boost::asio::ip::address session_srv);
-
-	void onSetTimeSrv(uint32_t cmdID, boost::asio::ip::address session_srv, uint32_t port);
-	void onGetTimeSrv(uint32_t cmdID);
-
-	void onGetRTPPort(uint32_t cmdID);
-	void onSetRTPPort(uint32_t cmdID, uint32_t port);
-
-	void onJoinMCastGrp(uint32_t cmdID, boost::asio::ip::address mcast_addr);
-	void onLeaveMCastGrp(uint32_t cmdID, boost::asio::ip::address mcast_addr);
-	void onGetMCastGrp(uint32_t cmdID);
-
-	void onSetStreamTimeBase(uint32_t cmdID, uint32_t ssrc, uint64_t rtp_ts, uint64_t pts);
-	void onGetStreamTimeBase(uint32_t cmdID, uint32_t ssrc);
-
-	void onResetStream(uint32_t cmdID, uint32_t ssrc);
-
-	void onGetVolume(uint32_t cmdID);
-	void onSetVolume(uint32_t cmdID, int percent);
-
+	bool onEvent(muroa::CmdStreamBase* ev);
 
 	void dataReceived( boost::array<char, 8192> buffer, int length);
 

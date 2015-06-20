@@ -34,49 +34,39 @@ state machine for the command parser
 #include <vector>
 #include "IStreamCtrlRPC.h"
 
+#include "cmds/CmdStream.h"
+
 namespace muroa {
 
 class CStreamCtrlParserSM : public IStreamCtrlCBs {
 public:
 	enum root_state_t {   XML_ROOT_STATE,
-						  XML_INFO_STATE,
-		                  XML_SESSION_STATE
+						  XML_OPEN_STATE
 	};
 
-	enum info_state_t {   XML_INFO_STATE_ROOT,
-		                  XML_INFO_GET_STATE
-	};
 
-	enum session_state_t {XML_SESSION_STATE_ROOT,
-					      XML_ADD_TO_SESSION,
-						  XML_REMOVE_FROM_SESSION,
-		                  XML_GET_TIME_SRV,
-						  XML_SET_TIME_SRV,
-						  XML_GET_RTP_PORT,
-						  XML_SET_RTP_PORT,
-						  XML_JOIN_MCAST_GRP,
-						  XML_LEAVE_MCAST_GRP,
-						  XML_GET_MCAST_GRP,
-						  XML_SET_TIME_BASE,
-						  XML_GET_TIME_BASE,
-						  XML_RESET_STREAM,
-						  XML_GET_VOLUME,
-						  XML_SET_VOLUME,
-						  XML_ERROR
+	enum open_state_t {XML_OPEN_STATE_ROOT,
+					      XML_EV_CLIENT_STATE,
+						  XML_EV_REQUEST_JOIN,
+		                  XML_EV_JOIN_ACCEPTED,
+						  XML_EV_JOIN_REJECTED,
+						  XML_EV_LEAVE,
+						  XML_EV_GET_SESSION_STATE,
+						  XML_EV_SESSION_STATE,
+						  XML_EV_RESET_STREAM,
+						  XML_EV_SYNC_STREAM,
+						  XML_EV_SET_VOLUME,
+						  XML_EV_ERROR
 	};
 
 	typedef struct {
 		root_state_t root_state;
-		info_state_t info_state;
-		session_state_t session_state;
+		open_state_t open_state;
 	} parser_state_t;
 
 
 	CStreamCtrlParserSM();
 	virtual ~CStreamCtrlParserSM() = 0;
-
-	void setState(IStreamCtrl::state_t state);
-	IStreamCtrl::state_t getState();
 
 	void onXmlStartDocument();
 	void onXmlEndDocument();
@@ -91,13 +81,15 @@ public:
 
 protected:
     void reset();
+	virtual bool onEvent(CmdStreamBase* ev) = 0;
+
 
 private:
 	std::string m_concatenate_dummy;
+	std::string  m_errorDescription;
 
 	enum action_flag { INIT, START, END};
 
-	state_t m_state;
 	parser_state_t m_xml_parser_state;
 
 	int m_xml_tag_depth;
@@ -106,51 +98,26 @@ private:
 
 	bool m_concatenate_chars_state;
 
-	uint32_t m_joinSession_CmdID;
-	std::string m_joinSession_Name;
-
 	uint32_t m_tmp_cmdID;
 	int m_errorCode;
-	std::string m_errorMsg;
+	CmdStreamBase* m_tmp_cmd_ptr;
 
-	std::string m_errorDescription;
-	std::string m_get_text;
-	std::string m_edit_text;
 
-	std::string m_tmp_name;
-	boost::asio::ip::address m_tmp_addr;
-	int m_tmp_port;
 
-	void infoState(const action_flag& init_start_end, const std::string& name, const char** attrs);
-	void sessionState(const action_flag& init_start_end, const std::string& name, const char** attrs);
-
-	void parseCmdID(const char** attrs);
+	void parseCmdID(const char** attrs, CmdStreamBase* cmd );
 	boost::asio::ip::address str2ip_addr(std::string addr_str);
 
-	void parseInfoArgs(const char** attrs);
-
-	void parseJoinSessionArgs(const char** attrs);
-	void parseTakeFromSessionArgs(const char** attrs);
-
-	void parseGetTimeSrvArgs(const char** attrs);
-	void parseSetTimeSrvArgs(const char** attrs);
-
-	void parseGetRtpPortArgs(const char** attrs);
-	void parseSetRtpPortArgs(const char** attrs);
-
-	void parseJoinMCastGrpArgs(const char** attrs);
-	void parseLeaveMCastGrpArgs(const char** attrs);
-	void parseGetMCastGrpArgs(const char** attrs);
-
-	void parseSetStreamTimebaseArgs(const char** attrs);
-	void parseGetStreamTimebaseArgs(const char** attrs);
-
-	void parseResetStreamArgs(const char** attrs);
-
-	void parseGetVolumeArgs(const char** attrs);
-	void parseSetVolumeArgs(const char** attrs);
-
-	void parseErrorArgs(const char** attrs);
+	void parseEvClientStateArgs(     const char** attrs, evClientState* cmd);
+	void parseEvRequestJoinArgs(     const char** attrs, evRequestJoin* cmd);
+	void parseEvJoinAcceptedArgs(    const char** attrs, evJoinAccepted* cmd);
+	void parseEvJoinRejectedArgs(    const char** attrs, evJoinRejected* cmd);
+	void parseEvLeaveArgs(           const char** attrs, evLeave* cmd);
+	void parseEvGetSessionStateArgs( const char** attrs, evGetSessionState* cmd);
+	void parseEvSessionStateArgs(    const char** attrs, evSessionState* cmd);
+	void parseEvResetStreamArgs(     const char** attrs, evResetStream* cmd);
+	void parseEvSyncStreamArgs(      const char** attrs, evSyncStream* cmd);
+	void parseEvSetVolumeArgs(       const char** attrs, evSetVolume* cmd);
+	void parseEvErrorArgs(           const char** attrs, evError* cmd);
 
 };
 }

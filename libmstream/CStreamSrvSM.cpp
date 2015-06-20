@@ -22,7 +22,9 @@
 
 namespace muroa {
 
-char const* const CStreamSrvSM::state_names[] = {  "awaitClientState", "knowingClientState", "awaitJoinResponse", "joinedSession", "error" };
+char const* const CStreamSrvSM::outer_state_names[] = {  "awaitClientState", "knowingClientState", "awaitJoinResponse", "joinedSession", "error" };
+char const* const CStreamSrvSM::inner_state_names[] = {  "awaitSessionState", "sessionMember", "noError", "errorExit" };
+
 
 CStreamSrvSM::CStreamSrvSM() {
 	// TODO Auto-generated constructor stub
@@ -31,6 +33,22 @@ CStreamSrvSM::CStreamSrvSM() {
 
 CStreamSrvSM::~CStreamSrvSM() {
 	// TODO Auto-generated destructor stub
+}
+
+void CStreamSrvSM::pstate() {
+    typedef msm::back::generate_state_set<stt>::type all_states;
+    static char const* state_names[mpl::size<all_states>::value];
+
+    // fill the names of the states defined in the state machine
+    mpl::for_each<all_states,boost::msm::wrap<mpl::placeholders::_1> >
+        (msm::back::fill_state_names<stt>(state_names));
+
+    for (unsigned int i=0;i<nr_regions::value;++i)
+    {
+        std::cout << " -> " << state_names[current_state()[i]] << std::endl;
+    }
+
+    // std::cout << " -> (" << outer_state_names[current_state()[0]] << ", " << inner_state_names[current_state()[1]] << ")" << std::endl;
 }
 
 } /* namespace muroa */

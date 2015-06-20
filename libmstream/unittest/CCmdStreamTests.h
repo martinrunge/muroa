@@ -30,15 +30,21 @@ namespace muroa {
 
 class CCmdStreamTests : public CppUnit::TestFixture {
 	  CPPUNIT_TEST_SUITE( CCmdStreamTests );
-	  CPPUNIT_TEST( serializeStreamReset );
+	  CPPUNIT_TEST( serializeClientState );
+	  CPPUNIT_TEST( serializeRequestJoin );
+	  CPPUNIT_TEST( serializeJoinAccepted );
+	  CPPUNIT_TEST( serializeJoinRejected );
+	  CPPUNIT_TEST( serializeLeave );
+
+	  CPPUNIT_TEST( serializeGetSessionState );
+	  CPPUNIT_TEST( serializeSessionState );
+
+	  CPPUNIT_TEST( serializeResetStream );
+	  CPPUNIT_TEST( serializeSyncStream );
+	  CPPUNIT_TEST( serializeSetVolume );
+
 	  CPPUNIT_TEST( serializeError );
-	  CPPUNIT_TEST( serializeJoinSession );
-	  CPPUNIT_TEST( serializeTakeFromSession );
-	  CPPUNIT_TEST( testGetSetTimeSrv );
-	  CPPUNIT_TEST( testGetSetStreamTimeBase );
-	  CPPUNIT_TEST( testGetSetRtpPort );
-	  CPPUNIT_TEST( testGetSetVolume );
-	  CPPUNIT_TEST( testGetSetLeaveMCastGrp );
+	  CPPUNIT_TEST( serializeAck );
 	  CPPUNIT_TEST_SUITE_END();
 
 public:
@@ -48,26 +54,24 @@ public:
 	void setUp();
     void tearDown();
 
+    void serializeClientState();
+
+    void serializeRequestJoin();
+    void serializeJoinAccepted();
+    void serializeJoinRejected();
+    void serializeLeave();
+
+    void serializeGetSessionState();
+    void serializeSessionState();
+
+	void serializeResetStream();
+	void serializeSyncStream();
+	void serializeSetVolume();
+
     void serializeError();
-
-    void serializeJoinSession();
-    void serializeTakeFromSession();
-
-	void serializeStreamReset();
-
-	void testGetSetTimeSrv();
-	void testGetSetStreamTimeBase();
-	void testGetSetRtpPort();
-	void testGetSetVolume();
-
-	void testGetSetLeaveMCastGrp();
-
-
+    void serializeAck();
 
 private:
-
-	void joinSession(std::string name = "default session");
-	void leaveSession();
 
 	CStreamCtrlRpcDummy* m_rpc_s;
 	CStreamCtrlRpcDummy* m_rpc_r;

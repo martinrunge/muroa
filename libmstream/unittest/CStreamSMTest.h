@@ -1,7 +1,7 @@
 /*
  Copyright (c) 2002-2014 "Martin Runge"
 
- CmdStreamBase.cpp is part of muroa, the  Multi Room Audio Player [http://www.muroa.org]
+ CStreamSMTest.h is part of muroa, the  Multi Room Audio Player [http://www.muroa.org]
 
  Muroa is free software: you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
@@ -18,18 +18,37 @@
 
  */
 
-#include "CmdStreamBase.h"
+#ifndef UNITTEST_CSTREAMSMTEST_H_
+#define UNITTEST_CSTREAMSMTEST_H_
+
+#include <cppunit/extensions/HelperMacros.h>
+#include <cppunit/TestFixture.h>
+
+#include "CStreamSrvSM.h"
 
 namespace muroa {
 
-std::map<std::type_info, int> CmdStreamBase::m_visitor_map;
-std::map<std::chrono::time_point<std::chrono::steady_clock>, CmdStreamBase*> CmdStreamBase::m_timeouts;
+class CStreamSMTest  : public CppUnit::TestFixture {
+	  CPPUNIT_TEST_SUITE( CStreamSMTest );
+	  CPPUNIT_TEST( joinRejectedTest );
+	  CPPUNIT_TEST( joinAcceptedTest );
+	  CPPUNIT_TEST_SUITE_END();
 
-CmdStreamBase::CmdStreamBase() {
-}
+public:
+	CStreamSMTest();
+	virtual ~CStreamSMTest();
 
-CmdStreamBase::~CmdStreamBase() {
-	// TODO Auto-generated destructor stub
-}
+	void setUp();
+    void tearDown();
+
+    void joinRejectedTest();
+    void joinAcceptedTest();
+
+private:
+    CStreamSrvSM *m_srv_sm;
+
+};
 
 } /* namespace muroa */
+
+#endif /* UNITTEST_CSTREAMSMTEST_H_ */

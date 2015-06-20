@@ -23,7 +23,6 @@
 
 #include "CStreamCtrlParserSM.h"
 #include "CUtils.h"
-#include "ctrlrpcxml/StreamCtrlXMLCmds.h"
 
 #include <iostream>
 #include <assert.h>
@@ -45,12 +44,11 @@ void CStreamCtrlParserSM::reset() {
 	// m_command_connection = parent;
 	// m_session = session;
 
-	m_state = ROOT_STATE;
 
 	m_xml_parser_state.root_state = XML_ROOT_STATE;
-	m_xml_parser_state.info_state = XML_INFO_STATE_ROOT;
-	m_xml_parser_state.session_state = XML_SESSION_STATE_ROOT;
+	m_xml_parser_state.open_state = XML_OPEN_STATE_ROOT;
 	m_xml_tag_depth = 0;
+	m_tmp_cmd_ptr = 0;
 	m_tag_unknown_depth = 0;
 	m_in_unknown_tag = false;
 }
@@ -63,13 +61,6 @@ void CStreamCtrlParserSM::onXmlVersion() {
 
 }
 
-void CStreamCtrlParserSM::setState(IStreamCtrl::state_t state) {
-	m_state = state;
-}
-
-IStreamCtrl::state_t CStreamCtrlParserSM::getState() {
-	return m_state;
-}
 
 void CStreamCtrlParserSM::onXmlStartDocument()
 {
@@ -83,45 +74,79 @@ void CStreamCtrlParserSM::onXmlEndDocument()
 
 void CStreamCtrlParserSM::onXmlStartElement(const std::string& name, const char** attributes)
 {
-	// std::cerr << "start node name=" << name << std::endl;
-
-	// Print attributes:
-	//for(int i=0; attributes[i]; i+=2)
-	//{
-		// std::cerr << attributes[i] << " = " << attributes[i + 1] << std::endl;
-	//}
-	// error reporting is defined in any state
-	if(name.compare(StreamCtrlXMLCmds::ack) == 0) {
-		parseCmdID(attributes);
-		onAck(m_tmp_cmdID);
-	}
-	if(name.compare(StreamCtrlXMLCmds::error) == 0) {
-		parseErrorArgs(attributes);
+	if(name.compare( evClientState::ev_name ) == 0) {
+		assert(m_tmp_cmd_ptr == 0);
+		evClientState* cmd = new evClientState();
+		parseCmdID(attributes, cmd);
+		parseEvClientStateArgs(attributes, cmd);
+		m_tmp_cmd_ptr = cmd;
+	} else if( name.compare( evRequestJoin::ev_name) == 0) {
+		assert(m_tmp_cmd_ptr == 0);
+		evRequestJoin* cmd = new evRequestJoin();
+		parseCmdID(attributes, cmd);
+		parseEvRequestJoinArgs(attributes, cmd);
+		m_tmp_cmd_ptr = cmd;
+	} else if( name.compare( evJoinAccepted::ev_name) == 0) {
+		assert(m_tmp_cmd_ptr == 0);
+		evJoinAccepted* cmd = new evJoinAccepted();
+		parseCmdID(attributes, cmd);
+		parseEvJoinAcceptedArgs(attributes, cmd);
+		m_tmp_cmd_ptr = cmd;
+	} else if( name.compare( evJoinRejected::ev_name) == 0) {
+		assert(m_tmp_cmd_ptr == 0);
+		evJoinRejected* cmd = new evJoinRejected();
+		parseCmdID(attributes, cmd);
+		parseEvJoinRejectedArgs(attributes, cmd);
+		m_tmp_cmd_ptr = cmd;
+	} else if( name.compare( evLeave::ev_name) == 0) {
+		assert(m_tmp_cmd_ptr == 0);
+		evLeave* cmd = new evLeave();
+		parseCmdID(attributes, cmd);
+		parseEvLeaveArgs(attributes, cmd);
+		m_tmp_cmd_ptr = cmd;
+	} else if( name.compare( evGetSessionState::ev_name) == 0) {
+		assert(m_tmp_cmd_ptr == 0);
+		evGetSessionState* cmd = new evGetSessionState();
+		parseCmdID(attributes, cmd);
+		parseEvGetSessionStateArgs(attributes, cmd);
+		m_tmp_cmd_ptr = cmd;
+	} else if( name.compare( evSessionState::ev_name) == 0) {
+		assert(m_tmp_cmd_ptr == 0);
+		evSessionState* cmd = new evSessionState();
+		parseCmdID(attributes, cmd);
+		parseEvSessionStateArgs(attributes, cmd);
+		m_tmp_cmd_ptr = cmd;
+	} else if( name.compare( evResetStream::ev_name) == 0) {
+		assert(m_tmp_cmd_ptr == 0);
+		evResetStream* cmd = new evResetStream();
+		parseCmdID(attributes, cmd);
+		parseEvResetStreamArgs(attributes, cmd);
+		m_tmp_cmd_ptr = cmd;
+	} else if( name.compare( evSyncStream::ev_name) == 0) {
+		assert(m_tmp_cmd_ptr == 0);
+		evSyncStream* cmd = new evSyncStream();
+		parseCmdID(attributes, cmd);
+		parseEvSyncStreamArgs(attributes, cmd);
+		m_tmp_cmd_ptr = cmd;
+	} else if( name.compare( evSetVolume::ev_name) == 0) {
+		assert(m_tmp_cmd_ptr == 0);
+		evSetVolume* cmd = new evSetVolume();
+		parseCmdID(attributes, cmd);
+		parseEvSetVolumeArgs(attributes, cmd);
+		m_tmp_cmd_ptr = cmd;
+	} else if( name.compare( evAck::ev_name) == 0) {
+		assert(m_tmp_cmd_ptr == 0);
+		evAck* cmd = new evAck();
+		parseCmdID(attributes, cmd);
+		m_tmp_cmd_ptr = cmd;
+	} else if( name.compare( evError::ev_name) == 0) {
+		assert(m_tmp_cmd_ptr == 0);
+		evError* cmd = new evError();
+		parseCmdID(attributes, cmd);
+		parseEvErrorArgs(attributes, cmd);
+		m_tmp_cmd_ptr = cmd;
 	}
 	else {
-		switch (m_state) {
-			case SESSION_STATE:
-				// state machine is in state 'IN_SESSION_STATE'. Whatever can happen from here is handled by the function 'sessionState'
-				sessionState(START, name, attributes);
-				break;
-
-			case INFO_STATE:
-				// ... whatever can happen from here is handled by the function 'infoState'
-				infoState(START, name, attributes);
-				break;
-
-			case ROOT_STATE:
-			default:
-
-				// the state machine is in state 'ROOT_STATE'. Only switch into INFO_SATE or SESSION_STATE is allowed from this state.
-				if(name.compare(StreamCtrlXMLCmds::joinSession) == 0) {
-					sessionState(INIT, name, attributes);
-				}
-				if(name.compare(StreamCtrlXMLCmds::requestInfo) == 0) {
-					infoState(INIT, name, attributes);
-				}
-				break;
-		}
 	}
 	return;
 }
@@ -131,34 +156,27 @@ void CStreamCtrlParserSM::onXmlEndElement(const std::string& name)
 	// std::cerr << "on_end_element()" << std::endl;
 	const char **null_ptr( 0 );
 
-	// error reporting alowed in any state
-	if(name.compare(StreamCtrlXMLCmds::error) == 0) {
-		onError(m_tmp_cmdID, m_errorCode, m_errorMsg);
+	if(	name.compare( evClientState::ev_name     ) == 0 ||
+		name.compare( evRequestJoin::ev_name     ) == 0 ||
+		name.compare( evJoinAccepted::ev_name    ) == 0 ||
+		name.compare( evJoinRejected::ev_name    ) == 0 ||
+		name.compare( evLeave::ev_name           ) == 0 ||
+		name.compare( evGetSessionState::ev_name ) == 0 ||
+		name.compare( evSessionState::ev_name    ) == 0 ||
+		name.compare( evResetStream::ev_name     ) == 0 ||
+		name.compare( evSyncStream::ev_name      ) == 0 ||
+		name.compare( evSetVolume::ev_name       ) == 0 ||
+		name.compare( evAck::ev_name             ) == 0 ||
+		name.compare( evError::ev_name           ) == 0)
+	{
+			assert(m_tmp_cmd_ptr != 0);
+			bool event_consumed = onEvent(m_tmp_cmd_ptr);
+			if(event_consumed) {
+				delete m_tmp_cmd_ptr;
+			}
+			m_tmp_cmd_ptr = 0;
 	}
 	else {
-		switch (m_state) {
-			case SESSION_STATE:
-				// state machine is in state 'IN_SESSION_STATE'. Whatever can happen from here is handled by the function 'sessionState'
-				sessionState(END, name, null_ptr);
-				break;
-
-			case INFO_STATE:
-				// ... whatever can happen from here is handled by the function 'infoState'
-				infoState(END, name, null_ptr);
-				break;
-
-			case ROOT_STATE:
-			default:
-
-				// state machine is in state 'ROOT_STATE'. Whatever can happen from here is handled by the function 'rootState'
-				if(name.compare(StreamCtrlXMLCmds::joinSession) == 0) {
-					m_xml_parser_state.root_state = XML_ROOT_STATE;
-				}
-				if(name.compare(StreamCtrlXMLCmds::requestInfo) == 0) {
-					m_xml_parser_state.root_state = XML_ROOT_STATE;
-				}
-				break;
-		}
 	}
 	return;
 }
@@ -166,8 +184,8 @@ void CStreamCtrlParserSM::onXmlEndElement(const std::string& name)
 void CStreamCtrlParserSM::onXmlCharacters(const std::string& text)
 {
 	// std::cerr << "on_characters(): " << text << std::endl;
-	switch(m_xml_parser_state.session_state) {
-	case XML_ERROR:
+	switch(m_xml_parser_state.open_state) {
+	case XML_EV_ERROR:
 		m_errorDescription += text;
 		break;
 
@@ -191,546 +209,419 @@ void CStreamCtrlParserSM::onXmlError(const std::string& text)
 	std::cerr << "on_error(): " << text << std::endl;
 }
 
-void CStreamCtrlParserSM::infoState(const action_flag& init_start_end, const std::string& name, const char** attrs) {
-	switch (init_start_end) {
-	case INIT:
-		m_xml_tag_depth = 1;
-		parseInfoArgs(attrs);
-		m_xml_parser_state.root_state = XML_INFO_STATE;
-		break;
-
-	case START:
-		if (name.compare(StreamCtrlXMLCmds::getState) == 0) {
-			m_xml_parser_state.info_state = XML_INFO_GET_STATE;
-		}
-		else if (name.compare(StreamCtrlXMLCmds::takeFromSession) == 0) {
-			parseTakeFromSessionArgs(attrs);
-		}
-
-		else {
-			cerr << "CParserStateMachine::processSessionState (START): unknown tag received :'" << name << "' !" << endl;
-			m_tag_unknown_depth++;
-			m_xml_tag_depth++;
-		}
-		break;
-	case END:
-		if (name.compare(StreamCtrlXMLCmds::getState) == 0) {
-			m_xml_parser_state.info_state = XML_INFO_STATE_ROOT;
-		}
-		else if (name.compare(StreamCtrlXMLCmds::takeFromSession) == 0) {
-		}
-		if (name.compare(StreamCtrlXMLCmds::requestInfo) == 0) {
-			m_xml_parser_state.root_state = XML_ROOT_STATE;
-		}
-		else {
-			cerr << "unknown end tag received :'" << name << "' !" << endl;
-			m_tag_unknown_depth--;
-			m_xml_tag_depth--;
-		}
-		break;
-	}
-}
-
-void CStreamCtrlParserSM::parseInfoArgs(const char** attrs) {
-
-}
 
 
-void CStreamCtrlParserSM::sessionState(const action_flag& init_start_end, const std::string& name, const char** attrs) {
 
-	// std::cerr << "CParserStateMachine::sessionState" << std::endl;
-	switch (init_start_end) {
-	case INIT:
-		m_xml_tag_depth = 1;
-		parseJoinSessionArgs(attrs);
-		m_xml_parser_state.root_state = XML_SESSION_STATE;
-		onJoinSession(m_tmp_cmdID, m_tmp_name, m_tmp_addr);
-		break;
-
-	case START:
-		if (name.compare(StreamCtrlXMLCmds::getTimeSrv) == 0) {
-			parseGetTimeSrvArgs(attrs);
-			m_xml_parser_state.session_state = XML_GET_TIME_SRV;
-		}
-		else if (name.compare(StreamCtrlXMLCmds::setTimeSrv) == 0) {
-			parseSetTimeSrvArgs(attrs);
-			m_xml_parser_state.session_state = XML_SET_TIME_SRV;
-		}
-		else if (name.compare(StreamCtrlXMLCmds::getRTPPort) == 0) {
-			parseGetRtpPortArgs(attrs);
-			m_xml_parser_state.session_state = XML_GET_RTP_PORT;
-		}
-		else if (name.compare(StreamCtrlXMLCmds::setRTPPort) == 0) {
-			parseSetRtpPortArgs(attrs);
-			m_xml_parser_state.session_state = XML_SET_RTP_PORT;
-		}
-		else if (name.compare(StreamCtrlXMLCmds::joinMCastGrp) == 0) {
-			parseJoinMCastGrpArgs(attrs);
-			m_xml_parser_state.session_state = XML_JOIN_MCAST_GRP;
-		}
-		else if (name.compare(StreamCtrlXMLCmds::leaveMCastGrp) == 0) {
-			parseLeaveMCastGrpArgs(attrs);
-			m_xml_parser_state.session_state = XML_LEAVE_MCAST_GRP;
-		}
-		else if (name.compare(StreamCtrlXMLCmds::getMCastGrp) == 0) {
-			parseGetMCastGrpArgs(attrs);
-			m_xml_parser_state.session_state = XML_GET_MCAST_GRP;
-		}
-		else if (name.compare(StreamCtrlXMLCmds::getStreamTimeBase) == 0) {
-			parseGetStreamTimebaseArgs(attrs);
-			m_xml_parser_state.session_state = XML_GET_TIME_BASE;
-		}
-		else if (name.compare(StreamCtrlXMLCmds::setStreamTimeBase) == 0) {
-			parseSetStreamTimebaseArgs(attrs);
-			m_xml_parser_state.session_state = XML_SET_TIME_BASE;
-		}
-		else if (name.compare(StreamCtrlXMLCmds::resetStream) == 0) {
-			parseResetStreamArgs(attrs);
-			m_xml_parser_state.session_state = XML_RESET_STREAM;
-		}
-		else if (name.compare(StreamCtrlXMLCmds::getVolume) == 0) {
-			parseGetVolumeArgs(attrs);
-			m_xml_parser_state.session_state = XML_GET_VOLUME;
-		}
-		else if (name.compare(StreamCtrlXMLCmds::setVolume) == 0) {
-			parseSetVolumeArgs(attrs);
-			m_xml_parser_state.session_state = XML_SET_VOLUME;
-		}
-
-		else {
-			cerr << "CParserStateMachine::processSessionState (START): unknown tag received :'" << name << "' !" << endl;
-			m_tag_unknown_depth++;
-			m_xml_tag_depth++;
-		}
-		break;
-
-	case END:
-		if (name.compare(StreamCtrlXMLCmds::getTimeSrv) == 0) {
-			m_xml_parser_state.session_state = XML_SESSION_STATE_ROOT;
-		}
-		else if (name.compare(StreamCtrlXMLCmds::setTimeSrv) == 0) {
-			m_xml_parser_state.session_state = XML_SESSION_STATE_ROOT;
-		}
-		else if (name.compare(StreamCtrlXMLCmds::getRTPPort) == 0) {
-			m_xml_parser_state.session_state = XML_SESSION_STATE_ROOT;
-		}
-		else if (name.compare(StreamCtrlXMLCmds::setRTPPort) == 0) {
-			m_xml_parser_state.session_state = XML_SESSION_STATE_ROOT;
-		}
-		else if (name.compare(StreamCtrlXMLCmds::joinMCastGrp) == 0) {
-			m_xml_parser_state.session_state = XML_SESSION_STATE_ROOT;
-		}
-		else if (name.compare(StreamCtrlXMLCmds::leaveMCastGrp) == 0) {
-			m_xml_parser_state.session_state = XML_SESSION_STATE_ROOT;
-		}
-		else if (name.compare(StreamCtrlXMLCmds::getMCastGrp) == 0) {
-			m_xml_parser_state.session_state = XML_SESSION_STATE_ROOT;
-		}
-		else if (name.compare(StreamCtrlXMLCmds::getStreamTimeBase) == 0) {
-			m_xml_parser_state.session_state = XML_SESSION_STATE_ROOT;
-		}
-		else if (name.compare(StreamCtrlXMLCmds::setStreamTimeBase) == 0) {
-			m_xml_parser_state.session_state = XML_SESSION_STATE_ROOT;
-		}
-		else if (name.compare(StreamCtrlXMLCmds::resetStream) == 0) {
-			m_xml_parser_state.session_state = XML_SESSION_STATE_ROOT;
-		}
-		else if (name.compare(StreamCtrlXMLCmds::getVolume) == 0) {
-			m_xml_parser_state.session_state = XML_SESSION_STATE_ROOT;
-		}
-		else if (name.compare(StreamCtrlXMLCmds::setVolume) == 0) {
-			m_xml_parser_state.session_state = XML_SESSION_STATE_ROOT;
-		}
-		else if (name.compare(StreamCtrlXMLCmds::joinSession) == 0) {
-			m_xml_parser_state.root_state = XML_ROOT_STATE;
-			onJoinSessionLeave( );
-		}
-		else {
-			cerr << "unknown end tag received :'" << name << "' !" << endl;
-			m_tag_unknown_depth--;
-			m_xml_tag_depth--;
-		}
-		break;
-	default:
-		break;
-	}
-
-}
-
-void CStreamCtrlParserSM::parseCmdID(const char** attrs) {
-	m_tmp_cmdID = 0;
-
+void CStreamCtrlParserSM::parseCmdID(const char** attrs, CmdStreamBase* cmd) {
 	for(int i=0; attrs[i]; i+=2)
 	{
 		string name  = attrs[i];
 		string value = attrs[i + 1];
 
 		if(name.compare("cmdID") == 0) {
-			m_tmp_cmdID = CUtils::str2uint32(value);
+			cmd->m_cmd_id = CUtils::str2uint32(value);
 		}
 	}
 }
+
+void CStreamCtrlParserSM::parseEvClientStateArgs(     const char** attrs, evClientState* cmd) {
+	string name_str;
+	string addr_str;
+	string vol_str;
+
+	parseCmdID(attrs, cmd);
+
+	for(int i=0; attrs[i]; i+=2)
+	{
+		string name  = attrs[i];
+		string value = attrs[i + 1];
+
+		if(name.compare("member_of_session") == 0) {
+			name_str = value;
+		}
+		if(name.compare("session_srv") == 0) {
+			addr_str = value;
+		}
+		if(name.compare("volume") == 0) {
+			vol_str = value;
+		}
+	}
+
+	if( name_str.empty() || addr_str.empty() || vol_str.empty() ) {
+		ostringstream oss;
+		oss << "evClientState: ";
+		if( name_str.empty() ) {
+			oss << " argument 'member_of_session' missing; ";
+		}
+		if( addr_str.empty() ) {
+			oss << " argument 'session_srv' missing; ";
+		}
+		if( vol_str.empty() ) {
+			oss << " argument 'volume' missing; ";
+		}
+		throw ExRpcError(oss.str());
+	}
+	cmd->m_member_of_session = name_str;
+	cmd->m_session_srv = str2ip_addr(addr_str);
+	cmd->m_current_volume = CUtils::str2uint32(vol_str);
+}
+
+void CStreamCtrlParserSM::parseEvRequestJoinArgs(     const char** attrs, evRequestJoin* cmd) {
+	string name_str;
+	string addr_str;
+	string ts_str;
+
+	parseCmdID(attrs, cmd);
+
+	for(int i=0; attrs[i]; i+=2)
+	{
+		string name  = attrs[i];
+		string value = attrs[i + 1];
+
+		if(name.compare("session_name") == 0) {
+			name_str = value;
+		}
+		if(name.compare("mcast_addr") == 0) {
+			addr_str = value;
+		}
+		if(name.compare("timesrv_port") == 0) {
+			ts_str = value;
+		}
+	}
+
+	if( name_str.empty() || addr_str.empty() || ts_str.empty() ) {
+		ostringstream oss;
+		oss << "evRequestJoin: ";
+		if( name_str.empty() ) {
+			oss << " argument 'session_name' missing; ";
+		}
+		if( addr_str.empty() ) {
+			oss << " argument 'mcast_addr' missing; ";
+		}
+		if( ts_str.empty() ) {
+			oss << " argument 'timesrv_port' missing; ";
+		}
+		throw ExRpcError(oss.str());
+	}
+	cmd->m_session_name = name_str;
+	cmd->m_mcast_addr = str2ip_addr(addr_str);
+	cmd->m_timesrv_port = CUtils::str2uint32(ts_str);
+}
+
+void CStreamCtrlParserSM::parseEvJoinAcceptedArgs(    const char** attrs, evJoinAccepted* cmd) {
+	string name_str;
+
+	parseCmdID(attrs, cmd);
+	for(int i=0; attrs[i]; i+=2)
+	{
+		string name  = attrs[i];
+		string value = attrs[i + 1];
+
+		// argument may be empty
+		if(name.compare("former_session") == 0) {
+			name_str = value;
+		}
+	}
+
+	cmd->m_former_session = name_str;
+}
+
+void CStreamCtrlParserSM::parseEvJoinRejectedArgs(    const char** attrs, evJoinRejected* cmd) {
+	string name_str;
+	string message_str;
+
+	parseCmdID(attrs, cmd);
+	for(int i=0; attrs[i]; i+=2)
+	{
+		string name  = attrs[i];
+		string value = attrs[i + 1];
+
+		if(name.compare("owner_session") == 0) {
+			name_str = value;
+		}
+		if(name.compare("message") == 0) {
+			message_str = value;
+		}
+	}
+
+	if( name_str.empty() || message_str.empty() ) {
+		ostringstream oss;
+		oss << "evJoinRejected: ";
+		if( name_str.empty() ) {
+			oss << " argument 'owner_session' missing; ";
+		}
+		if( message_str.empty() ) {
+			oss << " argument 'message' missing; ";
+		}
+		throw ExRpcError(oss.str());
+	}
+	cmd->m_owner_session = name_str;
+	cmd->m_message = message_str;
+}
+
+void CStreamCtrlParserSM::parseEvLeaveArgs(           const char** attrs, evLeave* cmd) {
+	string name_str;
+
+	parseCmdID(attrs, cmd);
+	for(int i=0; attrs[i]; i+=2)
+	{
+		string name  = attrs[i];
+		string value = attrs[i + 1];
+
+		// argument may be empty
+		if(name.compare("triggered_by_session") == 0) {
+			name_str = value;
+		}
+	}
+
+	cmd->m_triggered_by_session = name_str;
+}
+
+void CStreamCtrlParserSM::parseEvGetSessionStateArgs( const char** attrs, evGetSessionState* cmd) {
+	string name_str;
+
+	parseCmdID(attrs, cmd);
+	for(int i=0; attrs[i]; i+=2)
+	{
+		string name  = attrs[i];
+		string value = attrs[i + 1];
+
+		// argument may be empty
+		if(name.compare("session_name") == 0) {
+			name_str = value;
+		}
+	}
+	if( name_str.empty() ) {
+		ostringstream oss;
+		oss << "evGetSessionState: ";
+		if( name_str.empty() ) {
+			oss << " argument 'session_name' missing; ";
+		}
+		throw ExRpcError(oss.str());
+	}
+
+	cmd->m_session_name = name_str;
+}
+
+void CStreamCtrlParserSM::parseEvSessionStateArgs( const char** attrs, evSessionState* cmd) {
+	string name_str;
+	string addr_str;
+	string timesrv_port_str;
+	string rtp_port_str;
+	string vol_str;
+
+	parseCmdID(attrs, cmd);
+
+	for(int i=0; attrs[i]; i+=2)
+	{
+		string name  = attrs[i];
+		string value = attrs[i + 1];
+
+		if(name.compare("session_name") == 0) {
+			name_str = value;
+		}
+		if(name.compare("timesrv_port") == 0) {
+			timesrv_port_str = value;
+		}
+		if(name.compare("mcast_addr") == 0) {
+			addr_str = value;
+		}
+		if(name.compare("rtp_unicast_port") == 0) {
+			rtp_port_str = value;
+		}
+		if(name.compare("volume") == 0) {
+				vol_str = value;
+		}
+	}
+
+	if( name_str.empty() || addr_str.empty() || timesrv_port_str.empty() || rtp_port_str.empty() || vol_str.empty() ) {
+		ostringstream oss;
+		oss << "evSessionState: ";
+		if( name_str.empty() ) {
+			oss << " argument 'session_name' missing; ";
+		}
+		if( addr_str.empty() ) {
+			oss << " argument 'mcast_addr' missing; ";
+		}
+		if( timesrv_port_str.empty() ) {
+			oss << " argument 'timesrv_port' missing; ";
+		}
+		if( rtp_port_str.empty() ) {
+			oss << " argument 'rtp_unicast_port' missing; ";
+		}
+		if( vol_str.empty() ) {
+			oss << " argument 'volume' missing; ";
+		}
+		throw ExRpcError(oss.str());
+	}
+	cmd->m_session_name = name_str;
+	cmd->m_mcast_addr = str2ip_addr(addr_str);
+	cmd->m_timesrv_port = CUtils::str2uint32(timesrv_port_str);
+	cmd->m_rtp_unicast_port = CUtils::str2uint32(rtp_port_str);
+	cmd->m_volume = CUtils::str2uint32(vol_str);
+}
+
+void CStreamCtrlParserSM::parseEvResetStreamArgs(     const char** attrs, evResetStream* cmd) {
+	string ssrc_str;;
+	string rtp_ts_str;
+	string pts_str;
+
+	parseCmdID(attrs, cmd);
+
+	for(int i=0; attrs[i]; i+=2)
+	{
+		string name  = attrs[i];
+		string value = attrs[i + 1];
+
+		if(name.compare("ssrc") == 0) {
+			ssrc_str = value;
+		}
+		if(name.compare("rtp_ts") == 0) {
+			rtp_ts_str = value;
+		}
+		if(name.compare("media_clock_pts") == 0) {
+			pts_str = value;
+		}
+	}
+
+	if( ssrc_str.empty() || rtp_ts_str.empty() || pts_str.empty() ) {
+		ostringstream oss;
+		oss << "evResetStream: ";
+		if( ssrc_str.empty() ) {
+			oss << " argument 'ssrc' missing; ";
+		}
+		if( rtp_ts_str.empty() ) {
+			oss << " argument 'rtp_ts' missing; ";
+		}
+		if( pts_str.empty() ) {
+			oss << " argument 'media_clock_pts' missing; ";
+		}
+		throw ExRpcError(oss.str());
+	}
+	cmd->m_ssrc = CUtils::str2uint32(ssrc_str);
+	cmd->m_rtp_ts = CUtils::str2uint32(rtp_ts_str);
+	cmd->m_media_clock_pts = CUtils::str2uint64(pts_str);
+}
+
+void CStreamCtrlParserSM::parseEvSyncStreamArgs(      const char** attrs, evSyncStream* cmd) {
+	string ssrc_str;;
+	string rtp_ts_str;
+	string pts_str;
+
+	parseCmdID(attrs, cmd);
+
+	for(int i=0; attrs[i]; i+=2)
+	{
+		string name  = attrs[i];
+		string value = attrs[i + 1];
+
+		if(name.compare("ssrc") == 0) {
+			ssrc_str = value;
+		}
+		if(name.compare("rtp_ts") == 0) {
+			rtp_ts_str = value;
+		}
+		if(name.compare("media_clock_pts") == 0) {
+			pts_str = value;
+		}
+	}
+
+	if( ssrc_str.empty() || rtp_ts_str.empty() || pts_str.empty() ) {
+		ostringstream oss;
+		oss << "evResetStream: ";
+		if( ssrc_str.empty() ) {
+			oss << " argument 'ssrc' missing; ";
+		}
+		if( rtp_ts_str.empty() ) {
+			oss << " argument 'rtp_ts' missing; ";
+		}
+		if( pts_str.empty() ) {
+			oss << " argument 'media_clock_pts' missing; ";
+		}
+		throw ExRpcError(oss.str());
+	}
+	cmd->m_ssrc = CUtils::str2uint32(ssrc_str);
+	cmd->m_rtp_ts = CUtils::str2uint32(rtp_ts_str);
+	cmd->m_media_clock_pts = CUtils::str2uint64(pts_str);
+}
+
+void CStreamCtrlParserSM::parseEvSetVolumeArgs(       const char** attrs, evSetVolume* cmd) {
+	string ssrc_str;;
+	string vol_str;
+
+	parseCmdID(attrs, cmd);
+
+	for(int i=0; attrs[i]; i+=2)
+	{
+		string name  = attrs[i];
+		string value = attrs[i + 1];
+
+		if(name.compare("ssrc") == 0) {
+			ssrc_str = value;
+		}
+		if(name.compare("volume") == 0) {
+			vol_str = value;
+		}
+	}
+
+	if( ssrc_str.empty() || vol_str.empty() ) {
+		ostringstream oss;
+		oss << "evSetVolume: ";
+		if( ssrc_str.empty() ) {
+			oss << " argument 'ssrc' missing; ";
+		}
+		if( vol_str.empty() ) {
+			oss << " argument 'volume' missing; ";
+		}
+		throw ExRpcError(oss.str());
+	}
+	cmd->m_ssrc = CUtils::str2uint32(ssrc_str);
+	cmd->m_volume = CUtils::str2uint32(vol_str);
+}
+
+void CStreamCtrlParserSM::parseEvErrorArgs(           const char** attrs, evError* cmd) {
+	string message_str;
+
+	parseCmdID(attrs, cmd);
+	for(int i=0; attrs[i]; i+=2)
+	{
+		string name  = attrs[i];
+		string value = attrs[i + 1];
+
+		if(name.compare("message") == 0) {
+			message_str = value;
+		}
+	}
+
+	if( message_str.empty() ) {
+		ostringstream oss;
+		oss << "evError: ";
+		if( message_str.empty() ) {
+			oss << " argument 'message' missing; ";
+		}
+		throw ExRpcError(oss.str());
+	}
+	cmd->m_error_msg = message_str;
+}
+
 
 boost::asio::ip::address CStreamCtrlParserSM::str2ip_addr(std::string addr_str)
 {
 	boost::system::error_code ec;
 	ip::address ipaddr = ip::address::from_string(addr_str, ec);
 
-	if(ec.value() == boost::system::errc::success) {
-		onJoinMCastGrp(m_tmp_cmdID, ipaddr);
-	}
-	else {
-		ostringstream oss;
-		oss << "joinMCastGroup: did not understand argument 'addr' (" << m_tmp_addr << "):" << endl;
-		oss << ec.message();
-		throw ExRpcError(oss.str());
-	}
+//	if(ec.value() == boost::system::errc::success) {
+//		onJoinMCastGrp(m_tmp_cmdID, ipaddr);
+//	}
+//	else {
+//		ostringstream oss;
+//		oss << "joinMCastGroup: did not understand argument 'addr' (" << m_tmp_addr << "):" << endl;
+//		oss << ec.message();
+//		throw ExRpcError(oss.str());
+//	}
 	return ipaddr;
 }
 
 
-void CStreamCtrlParserSM::parseJoinSessionArgs(const char** attrs) {
-	m_tmp_name.clear();
-	string addr_str;
-
-	parseCmdID(attrs);
-
-	for(int i=0; attrs[i]; i+=2)
-	{
-		string name  = attrs[i];
-		string value = attrs[i + 1];
-
-		if(name.compare("name") == 0) {
-			m_tmp_name = value;
-		}
-		if(name.compare("addr") == 0) {
-			addr_str = value;
-		}
-	}
-
-	if( m_tmp_name.empty() || addr_str.empty() ) {
-		ostringstream oss;
-		oss << "addToSession: ";
-		if( m_tmp_name.empty() ) {
-			oss << " argument 'name' missing; ";
-		}
-		if( addr_str.empty() ) {
-			oss << " argument 'addr' missing; ";
-		}
-		throw ExRpcError(oss.str());
-	}
-	m_joinSession_CmdID = m_tmp_cmdID;
-	m_joinSession_Name = m_tmp_name;
-
-	m_tmp_addr = str2ip_addr(addr_str);
-}
-
-
-void CStreamCtrlParserSM::parseTakeFromSessionArgs(const char** attrs) {
-	m_tmp_name.clear();
-	string addr_str;
-
-	parseCmdID(attrs);
-
-	for(int i=0; attrs[i]; i+=2)
-	{
-		string name  = attrs[i];
-		string value = attrs[i + 1];
-
-		if(name.compare("name") == 0) {
-			m_tmp_name = value;
-		}
-		if(name.compare("addr") == 0) {
-			addr_str = value;
-		}
-	}
-
-	if( m_tmp_name.empty() || addr_str.empty() ) {
-		ostringstream oss;
-		oss << "addToSession: ";
-		if( m_tmp_name.empty() ) {
-			oss << " argument 'name' missing; ";
-		}
-		if( addr_str.empty() ) {
-			oss << " argument 'addr' missing; ";
-		}
-		throw ExRpcError(oss.str());
-	}
-
-	m_tmp_addr = str2ip_addr(addr_str);
-
-	onTakeFromSession(m_tmp_cmdID, m_tmp_name, m_tmp_addr);
-}
-
-void CStreamCtrlParserSM::parseGetTimeSrvArgs(const char** attrs) {
-	parseCmdID(attrs);
-	onGetTimeSrv(m_tmp_cmdID);
-}
-
-void CStreamCtrlParserSM::parseSetTimeSrvArgs(const char** attrs) {
-	m_tmp_port = 0;
-	string addr_str;
-
-	parseCmdID(attrs);
-
-	for(int i=0; attrs[i]; i+=2)
-	{
-		string name  = attrs[i];
-		string value = attrs[i + 1];
-
-		if(name.compare("addr") == 0) {
-			addr_str = value;
-		}
-		if(name.compare("port") == 0) {
-			m_tmp_port = CUtils::str2uint32(value);
-		}
-	}
-
-	if( addr_str.empty() || m_tmp_port == 0 ) {
-		ostringstream oss;
-		oss << "setTimeSrv: ";
-		if( addr_str.empty() ) {
-			oss << " argument 'addr' missing; ";
-		}
-		if( m_tmp_port == 0 ) {
-			oss << " argument 'port' missing; ";
-		}
-		throw ExRpcError(oss.str());
-	}
-	m_tmp_addr = str2ip_addr(addr_str);
-
-	onSetTimeSrv(m_tmp_cmdID, m_tmp_addr, m_tmp_port);
-}
-
-void CStreamCtrlParserSM::parseGetRtpPortArgs(const char** attrs) {
-	parseCmdID(attrs);
-	onGetRTPPort(m_tmp_cmdID);
-}
-
-void CStreamCtrlParserSM::parseSetRtpPortArgs(const char** attrs) {
-	m_tmp_port = 0;
-
-	parseCmdID(attrs);
-
-	for(int i=0; attrs[i]; i+=2)
-	{
-		string name  = attrs[i];
-		string value = attrs[i + 1];
-
-		if(name.compare("port") == 0) {
-			m_tmp_port = CUtils::str2uint32(value);
-		}
-	}
-
-	if( m_tmp_port == 0 ) {
-		ostringstream oss;
-		oss << "setRtpPort: ";
-		oss << " argument 'port' missing; ";
-		throw ExRpcError(oss.str());
-	}
-
-	onSetRTPPort(m_tmp_cmdID, m_tmp_port);
-}
-
-void CStreamCtrlParserSM::parseJoinMCastGrpArgs(const char** attrs) {
-	string addr_str;
-
-	parseCmdID(attrs);
-
-	for(int i=0; attrs[i]; i+=2)
-	{
-		string name  = attrs[i];
-		string value = attrs[i + 1];
-
-		if(name.compare("addr") == 0) {
-			addr_str = value;
-		}
-	}
-
-	m_tmp_addr = str2ip_addr(addr_str);
-
-	onJoinMCastGrp(m_tmp_cmdID, m_tmp_addr);
-}
-
-void CStreamCtrlParserSM::parseLeaveMCastGrpArgs(const char** attrs) {
-	string addr_str;
-
-	parseCmdID(attrs);
-
-	for(int i=0; attrs[i]; i+=2)
-	{
-		string name  = attrs[i];
-		string value = attrs[i + 1];
-
-		if(name.compare("addr") == 0) {
-			addr_str = value;
-		}
-	}
-
-	m_tmp_addr = str2ip_addr(addr_str);
-
-	onLeaveMCastGrp(m_tmp_cmdID, m_tmp_addr);
-}
-
-void CStreamCtrlParserSM::parseGetMCastGrpArgs(const char** attrs) {
-	parseCmdID(attrs);
-	onGetMCastGrp(m_tmp_cmdID);
-}
-
-void CStreamCtrlParserSM::parseSetStreamTimebaseArgs(const char** attrs) {
-	uint32_t ssrc = 0;
-	bool ssrc_given = false;
-
-	uint64_t rtp_ts = 0;
-	bool rtp_ts_given = false;
-
-	uint64_t pts = 0;
-	bool pts_given = false;
-
-	parseCmdID(attrs);
-
-	for(int i=0; attrs[i]; i+=2)
-	{
-		string name  = attrs[i];
-		string value = attrs[i + 1];
-
-		if(name.compare("ssrc") == 0) {
-			ssrc = CUtils::str2uint32(value);
-			ssrc_given = true;
-		}
-		if(name.compare("rtp_ts") == 0) {
-			rtp_ts = CUtils::str2uint64(value);
-			rtp_ts_given = true;
-		}
-		if(name.compare("pts") == 0) {
-			pts = CUtils::str2uint64(value);
-			pts_given = true;
-		}
-	}
-
-	if( ssrc_given && rtp_ts_given && pts_given) {
-		onSetStreamTimeBase(m_tmp_cmdID, ssrc, rtp_ts, pts);
-	}
-	else {
-		ostringstream oss;
-		oss << "SetStreamTimeBase: ";
-		if( !ssrc_given ) {
-			oss << " argument 'ssrc' missing; ";
-		}
-		if( !rtp_ts_given ) {
-			oss << " argument 'rtp_ts' missing; ";
-		}
-		if( !pts_given ) {
-			oss << " argument 'pts' missing; ";
-		}
-		throw ExRpcError(oss.str());
-	}
-}
-
-void CStreamCtrlParserSM::parseGetStreamTimebaseArgs(const char** attrs) {
-	uint32_t ssrc = 0;
-	bool ssrc_given = false;
-
-	parseCmdID(attrs);
-
-	for(int i=0; attrs[i]; i+=2)
-	{
-		string name  = attrs[i];
-		string value = attrs[i + 1];
-
-		if(name.compare("ssrc") == 0) {
-			ssrc = CUtils::str2uint32(value);
-			ssrc_given = true;
-		}
-	}
-
-	if( ssrc_given ) {
-		onGetStreamTimeBase(m_tmp_cmdID, ssrc);
-	}
-	else {
-		ostringstream oss;
-		oss << "GetStreamTimeBase: ";
-		oss << " argument 'ssrc' missing; ";
-		throw ExRpcError(oss.str());
-	}
-}
-
-void CStreamCtrlParserSM::parseResetStreamArgs(const char** attrs) {
-	uint32_t ssrc = 0;
-	bool ssrc_given = false;
-
-	parseCmdID(attrs);
-
-	for(int i=0; attrs[i]; i+=2)
-	{
-		string name  = attrs[i];
-		string value = attrs[i + 1];
-
-		if(name.compare("ssrc") == 0) {
-			ssrc = CUtils::str2uint32(value);
-			ssrc_given = true;
-		}
-	}
-
-	if( ssrc_given ) {
-		onResetStream(m_tmp_cmdID, ssrc);
-	}
-	else {
-		ostringstream oss;
-		oss << "resetStream: ";
-		oss << " argument 'ssrc' missing; ";
-		throw ExRpcError(oss.str());
-	}
-}
-
-void CStreamCtrlParserSM::parseGetVolumeArgs(const char** attrs) {
-	parseCmdID(attrs);
-	onGetVolume(m_tmp_cmdID);
-}
-
-void CStreamCtrlParserSM::parseSetVolumeArgs(const char** attrs) {
-	int percent = 0;
-	bool percent_given = false;
-
-	parseCmdID(attrs);
-
-	for(int i=0; attrs[i]; i+=2)
-	{
-		string name  = attrs[i];
-		string value = attrs[i + 1];
-
-		if(name.compare("percent") == 0) {
-			percent = CUtils::str2long(value);
-			percent_given = true;
-		}
-	}
-
-	if( percent_given ) {
-		onSetVolume(m_tmp_cmdID, percent);
-	}
-	else {
-		ostringstream oss;
-		oss << "setVolume: ";
-		oss << " argument 'percent' missing; ";
-		throw ExRpcError(oss.str());
-	}
-}
-
-void CStreamCtrlParserSM::parseErrorArgs(const char** attrs) {
-	parseCmdID(attrs);
-
-	for(int i=0; attrs[i]; i+=2)
-	{
-		string name  = attrs[i];
-		string value = attrs[i + 1];
-
-        if(name.compare("code") == 0) {
-			m_errorCode = CUtils::str2long(value);
-		}
-		else if(name.compare("msg") == 0) {
-			m_errorMsg = value;
-		}
-	}
-}
 
 }  // namespace muroa

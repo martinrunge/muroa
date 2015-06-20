@@ -31,9 +31,9 @@ namespace muroa {
 
 class CmdStreamBase {
 public:
-
 	virtual ~CmdStreamBase();
-
+	uint32_t getID() { return m_cmd_id; };
+	uint32_t m_cmd_id;
 
 protected:
 	CmdStreamBase();
@@ -41,7 +41,7 @@ protected:
 	static std::map<std::type_info, int> m_visitor_map;
 	static std::map<std::chrono::time_point<std::chrono::steady_clock>, CmdStreamBase*> m_timeouts;
 
-	uint32_t m_cmd_id;
+
 };
 
 } /* namespace muroa */

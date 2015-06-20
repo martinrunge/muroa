@@ -294,7 +294,7 @@ int CStreamServer::addClient(bip::tcp::endpoint endp, const string& serviceName)
    	}
    	else {
    		conn->setup();
-   		conn->joinSession(0, "place session name here", bip::address() );
+   		// conn->joinSession(0, "place session name here", bip::address() );
    		m_loose_connections.insert(conn);
 
    		return 0;

@@ -28,6 +28,7 @@ set( SRC           CStreamConnection.cpp
                    CTimeSyncPkt.cpp
                    CTimeService.cpp
                    CTimeServiceCtrl.cpp
+                   cmds/CmdStream.cpp
                    cmds/StreamCtrlIDs.cpp
                    cmds/CmdStreamBase.cpp
                    cmds/CmdStreamReset.cpp
@@ -54,9 +55,9 @@ set( HEADERS       CStreamConnection.h
                    CTimeService.h
                    CTimeServiceCtrl.h
                    Exceptions.h
+                   cmds/CmdStream.h
                    cmds/StreamCtrlIDs.h
                    cmds/CmdStreamBase.h
-                   cmds/cmds.h
                    cmds/CmdStreamReset.h
                    cmds/CmdStreamConnect.h
                    ctrlrpcxml/IStreamCtrlRPC.h

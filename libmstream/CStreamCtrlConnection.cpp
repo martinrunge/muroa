@@ -55,64 +55,16 @@ void CStreamCtrlConnection::closeStreamConnection() {
 }
 
 
-void CStreamCtrlConnection::onSetup(uint32_t cmdID) {
+void CStreamCtrlConnection::onSetup() {
 }
 
-void CStreamCtrlConnection::onShutdown(uint32_t cmdID) {
+void CStreamCtrlConnection::onShutdown() {
 }
 
-void CStreamCtrlConnection::onAck(uint32_t cmdID) {
+bool CStreamCtrlConnection::onEvent(muroa::CmdStreamBase* ev) {
+
 }
 
-void CStreamCtrlConnection::onError(uint32_t cmdID, int errorCode, std::string errmsg) {
-}
-
-void joinSession(uint32_t cmdID, std::string name, boost::asio::ip::address session_srv);
-
-void CStreamCtrlConnection::onJoinSession(uint32_t cmdID, std::string name, boost::asio::ip::address session_srv) {
-}
-
-void CStreamCtrlConnection::onJoinSessionLeave() {
-}
-
-void CStreamCtrlConnection::onTakeFromSession(uint32_t cmdID, std::string name, boost::asio::ip::address session_srv) {
-}
-
-void CStreamCtrlConnection::onSetTimeSrv(uint32_t cmdID, boost::asio::ip::address session_srv, uint32_t port) {
-}
-
-void CStreamCtrlConnection::onGetTimeSrv(uint32_t cmdID) {
-}
-
-void CStreamCtrlConnection::onGetRTPPort(uint32_t cmdID) {
-}
-
-void CStreamCtrlConnection::onSetRTPPort(uint32_t cmdID, uint32_t port) {
-}
-
-void CStreamCtrlConnection::onJoinMCastGrp(uint32_t cmdID, boost::asio::ip::address mcast_addr) {
-}
-
-void CStreamCtrlConnection::onLeaveMCastGrp(uint32_t cmdID, boost::asio::ip::address mcast_addr) {
-}
-
-void CStreamCtrlConnection::onGetMCastGrp(uint32_t cmdID) {
-}
-
-void CStreamCtrlConnection::onSetStreamTimeBase(uint32_t cmdID, uint32_t ssrc, uint64_t rtp_ts, uint64_t pts) {
-}
-
-void CStreamCtrlConnection::onGetStreamTimeBase(uint32_t cmdID, uint32_t ssrc) {
-}
-
-void CStreamCtrlConnection::onResetStream(uint32_t cmdID, uint32_t ssrc) {
-}
-
-void CStreamCtrlConnection::onGetVolume(uint32_t cmdID) {
-}
-
-void CStreamCtrlConnection::onSetVolume(uint32_t cmdID, int percent) {
-}
 
 
 void CStreamCtrlConnection::dataReceived( boost::array<char, 8192> buffer, int length) {

@@ -24,6 +24,8 @@
 #ifndef CMUROAXML_H_
 #define CMUROAXML_H_
 
+#include "cmds/CmdStreamBase.h"
+
 #include "IStreamCtrlRPC.h"
 #include "CStreamCtrlParserSM.h"
 #include <MuroaExceptions.h>
@@ -31,13 +33,16 @@
 #include <expat.h>
 #include <cstdint>
 
+#include <typeinfo>
+#include <typeindex>
+#include <unordered_map>
 #include <boost/asio.hpp>
 
 namespace muroa {
 
 class CStreamCtrlXml: public muroa::IStreamCtrlRPC, public muroa::CStreamCtrlParserSM {
 	enum state_t {   ROOT_STATE,
-					 INFO_STATE,
+					 CMDINFO_STATE,
 		             SESSION_STATE
 	};
 
@@ -48,44 +53,36 @@ public:
 	void setup();
 	void shutdown();
 
-	void ack(uint32_t cmdID);
-	void error(uint32_t cmdID, int errorCode, std::string errmsg);
-
-	virtual void joinSession(uint32_t cmdID, std::string name, boost::asio::ip::address session_srv);
-	void joinSessionLeave();
-
-	virtual void takeFromSession(uint32_t cmdID, std::string name, boost::asio::ip::address session_srv);
-
-	virtual void setTimeSrv(uint32_t cmdID, boost::asio::ip::address session_srv, uint32_t port);
-	virtual void getTimeSrv(uint32_t cmdID);
-
-	virtual void getRTPPort(uint32_t cmdID);
-	virtual void setRTPPort(uint32_t cmdID, uint32_t port);
-
-	virtual void joinMCastGrp(uint32_t cmdID, boost::asio::ip::address mcast_addr);
-	virtual void leaveMCastGrp(uint32_t cmdID, boost::asio::ip::address mcast_addr);
-	virtual void getMCastGrp(uint32_t cmdID);
-
-	virtual void setStreamTimeBase(uint32_t cmdID, uint32_t ssrc, uint64_t rtp_ts, uint64_t pts);
-	virtual void getStreamTimeBase(uint32_t cmdID, uint32_t ssrc);
-
-	virtual void resetStream(uint32_t cmdID, uint32_t ssrc);
-
-	virtual void getVolume(uint32_t cmdID);
-	virtual void setVolume(uint32_t cmdID, int percent);
+	void sendEvent(CmdStreamBase* ev);
+//	void onRecvEvent(CmdStreamBase* ev);
 
 	void newData(const char* data, int len);
 
 private:
+
+	void sendEvClientState     ( CmdStreamBase* ev);
+	void sendEvRequestJoin     ( CmdStreamBase* ev);
+	void sendEvJoinAccepted    ( CmdStreamBase* ev);
+	void sendEvJoinRejected    ( CmdStreamBase* ev);
+	void sendEvLeave           ( CmdStreamBase* ev);
+	void sendEvGetSessionState ( CmdStreamBase* ev);
+	void sendEvSessionState    ( CmdStreamBase* ev);
+	void sendEvResetStream     ( CmdStreamBase* ev);
+	void sendEvSyncStream      ( CmdStreamBase* ev);
+	void sendEvSetVolume       ( CmdStreamBase* ev);
+	void sendEvAck             ( CmdStreamBase* ev);
+	void sendEvError           ( CmdStreamBase* ev);
+
 	void sendData(std::string data);
 
     static void XMLCALL startTagHandler(void *inst_ptr, const char *el, const char **attr);
     static void XMLCALL endTagHandler(void *inst_ptr, const char *el);
     static void XMLCALL characterHandler(void *inst_ptr, const char *s, int len);
 
+    typedef void (CStreamCtrlXml::*serializeFunc_t)(CmdStreamBase*);
+	std::unordered_map<std::type_index, serializeFunc_t> type_serializers;
 
-	XML_Parser m_parser;
-
+    XML_Parser m_parser;
 	uint32_t m_sessionID;
 };
 

@@ -9,6 +9,7 @@ find_package ( CppUnit REQUIRED )
 add_definitions( ${QT4_DEFINITIONS} -D__STDC_CONSTANT_MACROS ${CPPUNIT_DEFINITIONS})
 
 set( unittests_SRCS   CCmdStreamTests.cpp
+                      CStreamSMTest.cpp
                       CStreamCtrlRpcDummy.cpp
                       LibMStreamTestApp.cpp
                       )
@@ -17,6 +18,7 @@ set( unittests_H
                       )
                     
 set( HEADERS          CCmdStreamTests.h
+                      CStreamSMTest.h
                       CStreamCtrlRpcDummy.h 
                       )                    
   
