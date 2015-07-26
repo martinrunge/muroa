@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xmi:XMI xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:notation="http://www.eclipse.org/gmf/runtime/1.0.2/notation" xmlns:sgraph="http://www.yakindu.org/sct/sgraph/2.0.0">
-  <sgraph:Statechart xmi:id="_YqCcwALZEeWUZYxhcKJK6w" specification="interface Socket:&#xA;&#x9;in event connect&#xA;&#x9;in event disconnect&#xA;    &#xA;interface ClientConn:&#xA;&#x9;in event request_info&#xA;&#x9;in event onClientState&#xA;&#x9;in event onGetClientStateTimedout&#xA;&#x9;in event onRequestJoin&#xA;&#x9;in event onRequestJoinTimedout&#xA;&#x9;in event onJoinRejected&#xA;&#x9;in event onJoinAccepted&#xA;&#x9;in event onLeave&#xA;&#x9;operation getClientState():integer&#xA;&#x9;operation reportError()&#xA;&#x9;&#xA;interface Session:&#xA;&#x9;in event evGetState&#xA;&#x9;in event onGetState&#xA;&#x9;in event evSetVolume&#xA;&#x9;in event evResetStream&#xA;&#x9;in event evSyncStream&#xA;&#x9;&#xA;&#x9;in event evCmdSent&#xA;&#x9;in event evCmdAck&#xA;&#x9;in event evCmdError&#xA;&#x9;in event evError&#xA;&#x9;&#xA;&#x9;&#xA;&#x9;operation getState(): integer&#xA;&#x9;operation reportError()&#xA;&#x9;&#xA;&#x9;" name="RenderClientConnection">
+  <sgraph:Statechart xmi:id="_YqCcwALZEeWUZYxhcKJK6w" specification="interface Socket:&#xA;&#x9;in event connect&#xA;&#x9;in event disconnect&#xA;    &#xA;interface ClientConn:&#xA;&#x9;in event request_info&#xA;&#x9;in event onClientState&#xA;&#x9;in event onGetClientStateTimedout&#xA;&#x9;in event evDontJoin&#xA;&#x9;in event onRequestJoin&#xA;&#x9;in event onRequestJoinTimedout&#xA;&#x9;in event onJoinRejected&#xA;&#x9;in event onJoinAccepted&#xA;&#x9;in event onLeave&#xA;&#x9;operation getClientState():integer&#xA;&#x9;operation reportError()&#xA;&#x9;&#xA;interface Session:&#xA;&#x9;in event evGetState&#xA;&#x9;in event onGetState&#xA;&#x9;in event evSetVolume&#xA;&#x9;in event evResetStream&#xA;&#x9;in event evSyncStream&#xA;&#x9;&#xA;&#x9;in event evCmdSent&#xA;&#x9;in event evCmdAck&#xA;&#x9;in event evCmdError&#xA;&#x9;in event evError&#xA;&#x9;&#xA;&#x9;operation sendAck()&#xA;&#x9;operation getState(): integer&#xA;&#x9;operation reportError()&#xA;&#x9;&#xA;&#x9;" name="RenderClientConnection">
     <regions xmi:id="_YqyDoALZEeWUZYxhcKJK6w" name="main region">
       <vertices xsi:type="sgraph:Entry" xmi:id="_Yr3owALZEeWUZYxhcKJK6w">
         <outgoingTransitions xmi:id="_YsGSQALZEeWUZYxhcKJK6w" target="_Yr76MALZEeWUZYxhcKJK6w"/>
@@ -20,6 +20,7 @@
           </vertices>
           <vertices xsi:type="sgraph:State" xmi:id="_IMV6QALkEeWaSaiuBoxKzQ" name="knowingClientState" incomingTransitions="_LYHSsALkEeWaSaiuBoxKzQ _ov3rUALuEeWaSaiuBoxKzQ">
             <outgoingTransitions xmi:id="_wtatgALqEeWaSaiuBoxKzQ" specification="ClientConn.onRequestJoin" target="_paYkwALqEeWaSaiuBoxKzQ"/>
+            <outgoingTransitions xmi:id="_-JB2wBgiEeWygclz1JbYxQ" specification="ClientConn.evDontJoin" target="_qwee4ALzEeWaSaiuBoxKzQ"/>
           </vertices>
           <vertices xsi:type="sgraph:State" xmi:id="_paYkwALqEeWaSaiuBoxKzQ" specification="" name="awaitJoinResponse" incomingTransitions="_wtatgALqEeWaSaiuBoxKzQ">
             <outgoingTransitions xmi:id="_KF0Y0ALuEeWaSaiuBoxKzQ" specification="ClientConn.onJoinAccepted" target="_7Pv8cALtEeWaSaiuBoxKzQ"/>
@@ -40,7 +41,7 @@
             </regions>
             <regions xmi:id="_7PxKkALtEeWaSaiuBoxKzQ" name="session region">
               <vertices xsi:type="sgraph:Entry" xmi:id="_js3EcALuEeWaSaiuBoxKzQ">
-                <outgoingTransitions xmi:id="_M80lsALvEeWaSaiuBoxKzQ" specification="" target="_1e7X4ALuEeWaSaiuBoxKzQ"/>
+                <outgoingTransitions xmi:id="_M80lsALvEeWaSaiuBoxKzQ" specification="/Session.sendAck()" target="_1e7X4ALuEeWaSaiuBoxKzQ"/>
               </vertices>
               <vertices xsi:type="sgraph:State" xmi:id="_1e7X4ALuEeWaSaiuBoxKzQ" specification="entry/Session.getState()" name="awaitSessionState" incomingTransitions="_M80lsALvEeWaSaiuBoxKzQ _Leu6wAkIEeWi_pG3yE8UxA">
                 <outgoingTransitions xmi:id="_SDSwQALvEeWaSaiuBoxKzQ" specification="Session.onGetState" target="_PLfcsALvEeWaSaiuBoxKzQ"/>
@@ -53,7 +54,7 @@
           <vertices xsi:type="sgraph:State" xmi:id="_-0qbYALyEeWaSaiuBoxKzQ" specification="entry/ClientConn.reportError()" name="error" incomingTransitions="_QXupgALzEeWaSaiuBoxKzQ _hdsr8ALzEeWaSaiuBoxKzQ _m1tScALzEeWaSaiuBoxKzQ">
             <outgoingTransitions xmi:id="_rejs4ALzEeWaSaiuBoxKzQ" specification="always" target="_qwee4ALzEeWaSaiuBoxKzQ"/>
           </vertices>
-          <vertices xsi:type="sgraph:FinalState" xmi:id="_qwee4ALzEeWaSaiuBoxKzQ" incomingTransitions="_rejs4ALzEeWaSaiuBoxKzQ"/>
+          <vertices xsi:type="sgraph:FinalState" xmi:id="_qwee4ALzEeWaSaiuBoxKzQ" incomingTransitions="_rejs4ALzEeWaSaiuBoxKzQ _-JB2wBgiEeWygclz1JbYxQ"/>
         </regions>
       </vertices>
     </regions>
@@ -527,6 +528,16 @@
       <styles xsi:type="notation:FontStyle" xmi:id="_aDnZIQkLEeWi_pG3yE8UxA" fontName="Verdana"/>
       <bendpoints xsi:type="notation:RelativeBendpoints" xmi:id="_aDnZIAkLEeWi_pG3yE8UxA" points="[-4, 6, 68, -111]$[-70, 111, 2, -6]"/>
       <targetAnchor xsi:type="notation:IdentityAnchor" xmi:id="_aDp1YAkLEeWi_pG3yE8UxA" id="(0.25748502994011974,0.1320754716981132)"/>
+    </edges>
+    <edges xmi:id="_-JDr8BgiEeWygclz1JbYxQ" type="Transition" element="_-JB2wBgiEeWygclz1JbYxQ" source="_IMYWgALkEeWaSaiuBoxKzQ" target="_qwftAALzEeWaSaiuBoxKzQ">
+      <children xsi:type="notation:DecorationNode" xmi:id="_-JDr9BgiEeWygclz1JbYxQ" type="TransitionExpression">
+        <styles xsi:type="notation:ShapeStyle" xmi:id="_-JDr9RgiEeWygclz1JbYxQ"/>
+        <layoutConstraint xsi:type="notation:Location" xmi:id="_-JETABgiEeWygclz1JbYxQ" x="-46" y="5"/>
+      </children>
+      <styles xsi:type="notation:ConnectorStyle" xmi:id="_-JDr8RgiEeWygclz1JbYxQ" lineColor="4210752"/>
+      <styles xsi:type="notation:FontStyle" xmi:id="_-JDr8xgiEeWygclz1JbYxQ" fontName="Verdana"/>
+      <bendpoints xsi:type="notation:RelativeBendpoints" xmi:id="_-JDr8hgiEeWygclz1JbYxQ" points="[15, 13, -21, -191]$[36, 33, 0, -171]$[36, 196, 0, -8]"/>
+      <sourceAnchor xsi:type="notation:IdentityAnchor" xmi:id="_-JE6EBgiEeWygclz1JbYxQ" id="(0.9377593360995851,0.6981132075471698)"/>
     </edges>
   </notation:Diagram>
 </xmi:XMI>

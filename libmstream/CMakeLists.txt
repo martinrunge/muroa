@@ -14,9 +14,10 @@ find_package( Boost 1.36.0 COMPONENTS filesystem system date_time program_option
 add_definitions( ${log4cplus_DEFINITIONS} )
 
 set( SRC           CStreamConnection.cpp
+                   CStreamCtrlConnection.cpp
                    CStreamServer.cpp
                    CStreamSrvSM.cpp
-                   CStreamCtrlConnection.cpp
+                   CStreamClientSM.cpp
                    caudioframe.cpp
                    caudiooss.cpp
                    crtppacket.cpp
@@ -36,12 +37,13 @@ set( SRC           CStreamConnection.cpp
                    ctrlrpcxml/CStreamCtrlParserSM.cpp
                    ctrlrpcxml/CStreamCtrlXml.cpp
                    ctrlrpcxml/StreamCtrlXMLCmds.cpp
-                                      )                  
+                   )                  
 
 set( HEADERS       CStreamConnection.h
+                   CStreamCtrlConnection.h
                    CStreamServer.h
                    CStreamSrvSM.h
-                   CStreamCtrlConnection.h
+                   CStreamClientSM.h
                    caudioframe.h
                    caudiooss.h
                    crtppacket.h
@@ -70,11 +72,11 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR}
                     ${CMAKE_CURRENT_SOURCE_DIR}/../libmcommons
                     ${Boost_INCLUDE_DIRS}  
                     ${log4cplus_INCLUDE_DIRS}
-		    ${CMAKE_CURRENT_SOURCE_DIR}/../libsock++ 
-		    ${CMAKE_CURRENT_SOURCE_DIR}/../libmuroadaemon )
+                    ${CMAKE_CURRENT_SOURCE_DIR}/../libsock++ 
+                    ${CMAKE_CURRENT_SOURCE_DIR}/../libmuroadaemon )
 
 link_directories( "${CMAKE_SOURCE_DIR}/../libsock++/build_x86" 
-                  ${BOOST_LIBRARYDIR})
+                   ${BOOST_LIBRARYDIR})
 
 add_library( mstream SHARED  ${SRC} ${HEADERS} )
 target_link_libraries( mstream ${CMAKE_THREAD_LIBS_INIT} 
