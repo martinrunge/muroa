@@ -24,9 +24,13 @@
 #include <cppunit/extensions/HelperMacros.h>
 #include <cppunit/TestFixture.h>
 
+#include "CClientSMActions.h"
 #include "CStreamClientSM.h"
 
+
 namespace muroa {
+
+class IClientSMActions;
 
 class CStreamClientSMTest  : public CppUnit::TestFixture {
 	  CPPUNIT_TEST_SUITE( CStreamClientSMTest );
@@ -52,6 +56,7 @@ public:
 
 private:
     CStreamClientSM *m_clnt_sm;
+    IClientSMActions *m_clnt_actions;
 
 };
 

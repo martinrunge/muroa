@@ -35,7 +35,7 @@
 
 #include "cfixpointresampler.h"
 #include "csync.h"
-#include "cplayer.h"
+#include <CMediaStreamConnection.h>
 #include "cmuroad.h"
 #include "crtppacket.h"
 
@@ -54,11 +54,11 @@ using namespace muroa;
 using namespace log4cplus;
 /** C-tor */
 
-CPlayloop::CPlayloop(CPlayer* parent, CPacketRingBuffer* packet_ringbuffer)
+CPlayloop::CPlayloop(CMediaStreamConnection* parent, CPacketRingBuffer* packet_ringbuffer)
 : CThreadSlave(), m_counter(0), m_average_size(32), m_after_sync(false), m_stream_reset_threshold(0.2f)
 {
 
-	m_player = parent;
+	m_media_stream_conn = parent;
 
 	m_timing_logger = Logger::getInstance("timing");
 
@@ -147,7 +147,7 @@ CAudioFrame* CPlayloop::getAudioPacket(bool block) {
 		switch( rtp_packet->payloadType() )
 		{
 		case PAYLOAD_SYNC_OBJ:
-			m_player->setSyncObj(rtp_packet);
+			m_media_stream_conn->setSyncObj(rtp_packet);
 			delete rtp_packet;
 			break;
 
@@ -176,20 +176,20 @@ CAudioFrame* CPlayloop::getAudioPacket(bool block) {
  */
 bool CPlayloop::waitForData() {
 
-	int retval = m_player->m_traffic_cond.Wait(1);
+	int retval = m_media_stream_conn->m_traffic_cond.Wait(1);
 	if(retval == 0) {
 		string audio_device = CApp::settings().getConfigVal(string("muroad.AudioDevice"), string("hw:0,0"));
 
 		m_audio_sink->open(audio_device, m_desired_sample_rate, m_num_channels);
 		m_write_granularity = m_audio_sink->getWriteGranularity();
-		m_player->idleTime(0);
+		m_media_stream_conn->idleTime(0);
 	}
 	else {
 		if(retval == ETIMEDOUT) {
-			m_player->idleTime( m_player->idleTime() + 1);
+			m_media_stream_conn->idleTime( m_media_stream_conn->idleTime() + 1);
 		}
 	}
-	if(m_player->idleTime() > m_max_idle) {
+	if(m_media_stream_conn->idleTime() > m_max_idle) {
 		m_audio_sink->close();
 	}
 
@@ -298,7 +298,7 @@ int CPlayloop::startStream() {
  * All audio frames with PTS in the past may not be played any more. Discard them.
  */
 ptime CPlayloop::discardPastPTSFrames() {
-	while(m_nr_of_last_frame_decoded == -1 || (!m_player->syncObj()->isValid())) {
+	while(m_nr_of_last_frame_decoded == -1 || (!m_media_stream_conn->syncObj()->isValid())) {
 		addPacket2RingBuffer(true);
 	}
 	LOG4CPLUS_DEBUG(m_timing_logger, "step 1: discard frames with PTS in the past.");
@@ -399,8 +399,8 @@ void CPlayloop::adjustResamplingFactor()
  * based on the reference time stamp of the current sync object.
  */
 ptime CPlayloop::getPreResamplerPTS() {
-	ptime* pts = m_player->syncObj()->getPtimePtr();
-	uint32_t pts_frame_nr = m_player->syncObj()->frameNr();
+	ptime* pts = m_media_stream_conn->syncObj()->getPtimePtr();
+	uint32_t pts_frame_nr = m_media_stream_conn->syncObj()->frameNr();
 
 	// time and frame diff between last sync and stream state just before the resampler
 	int64_t pre_resampler_frame_diff = m_nr_of_last_frame_decoded - pts_frame_nr;
@@ -514,7 +514,7 @@ bool CPlayloop::checkStream(CRTPPacket* packet)
 		// this packet does not belong to the actual stream
 		cerr << "Got RTP packet of different stream (" << tmp_session_id << "/" << tmp_stream_id
 				<< "). Self (" << m_session_id << "/" << m_stream_id << "). " << endl;
-		m_player->requestSync(tmp_session_id, tmp_stream_id);
+		m_media_stream_conn->requestSync(tmp_session_id, tmp_stream_id);
 		return false;
 	}
 	else
@@ -523,7 +523,7 @@ bool CPlayloop::checkStream(CRTPPacket* packet)
 
 
 /*!
-    \fn CPlayer::initSoundSystem()
+    \fn CPlayloop::initSoundSystem()
  */
 IAudioIO* CPlayloop::initSoundSystem()
 {

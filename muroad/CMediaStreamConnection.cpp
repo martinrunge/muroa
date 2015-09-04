@@ -17,8 +17,7 @@
  *   Free Software Foundation, Inc.,                                       *
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
-#include "cplayer.h"
-
+#include <CMediaStreamConnection.h>
 #include <iostream>
 
 #include <cstdlib>
@@ -48,7 +47,7 @@ using namespace std;
 using namespace boost::posix_time;
 using namespace muroa;
 
-CPlayer::CPlayer(boost::asio::io_service& io_service) : m_io_service(io_service)
+CMediaStreamConnection::CMediaStreamConnection(boost::asio::io_service& io_service) : m_io_service(io_service)
 {
   
   int num;
@@ -85,7 +84,7 @@ CPlayer::CPlayer(boost::asio::io_service& io_service) : m_io_service(io_service)
 }
 
 
-CPlayer::~CPlayer()
+CMediaStreamConnection::~CMediaStreamConnection()
 {
   m_ts->stop();
   delete m_ts;
@@ -103,7 +102,7 @@ CPlayer::~CPlayer()
 /*!
     \fn CPlayer::start()
  */
-void CPlayer::start()
+void CMediaStreamConnection::start()
 {
   m_recvloop_thread->StartThread();
   m_playloop_thread->StartThread(true);
@@ -112,13 +111,13 @@ void CPlayer::start()
 /*!
     \fn CPlayer::stop()
  */
-void CPlayer::stop()
+void CMediaStreamConnection::stop()
 {
   m_recvloop_thread->StopThread();
   m_playloop_thread->StopThread();
 }
 
-int CPlayer::getRTPPort() {
+int CMediaStreamConnection::getRTPPort() {
 	return m_recvloop->getRTPPort();
 }
 
@@ -126,7 +125,7 @@ int CPlayer::getRTPPort() {
 /*!
     \fn CPlayer::sendSyncReq(CSync* sync_req)
  */
-void CPlayer::sendRTPPacket(CRTPPacket* packet)
+void CMediaStreamConnection::sendRTPPacket(CRTPPacket* packet)
 {
     m_recvloop->sendRTPPacket(packet);
 }
@@ -140,7 +139,7 @@ void CPlayer::sendRTPPacket(CRTPPacket* packet)
 //  // m_playloop->sync();
 //}
 
-void CPlayer::setSyncObj(CRTPPacket* rtp_packet) {
+void CMediaStreamConnection::setSyncObj(CRTPPacket* rtp_packet) {
   m_sync_obj.deserialize( rtp_packet);
   m_playloop->setSync(&m_sync_obj);
 }
@@ -148,7 +147,7 @@ void CPlayer::setSyncObj(CRTPPacket* rtp_packet) {
 /*!
     \fn CPlayer::setRequestedSyncObj(CRTPPacket* rtp_packet)
  */
-void CPlayer::setRequestedSyncObj(CRTPPacket* rtp_packet)
+void CMediaStreamConnection::setRequestedSyncObj(CRTPPacket* rtp_packet)
 {
     m_sync_requested_for_stream_id = -1;
     setSyncObj(rtp_packet);
@@ -158,7 +157,7 @@ void CPlayer::setRequestedSyncObj(CRTPPacket* rtp_packet)
 /*!
     \fn CPlayer::requestSync(int stream_id)
  */
-void CPlayer::requestSync(int session_id, int stream_id)
+void CMediaStreamConnection::requestSync(int session_id, int stream_id)
 {
   if( m_sync_requested_for_stream_id == -1) {  // no request is underway yet  
     CSync *sync_req = new CSync(SYNC_REQ_STREAM);
@@ -183,7 +182,7 @@ void CPlayer::requestSync(int session_id, int stream_id)
   }
 }
 
-void CPlayer::onResetStream(const CmdStreamReset& cmd_rst) {
+void CMediaStreamConnection::onResetStream(const CmdStreamReset& cmd_rst) {
     cerr << "CPlayer::onResetStream: sessionID: " << cmd_rst.getOldSessionId()
          << " streamID: " << cmd_rst.getOldStreamId() << endl
          << " newSessionID: " << cmd_rst.getNewSessionId()
@@ -194,6 +193,6 @@ void CPlayer::onResetStream(const CmdStreamReset& cmd_rst) {
 
 
 
-void CPlayer::useTimeService(boost::asio::ip::address ip_address, int port, boost::asio::ip::udp protocol) {
+void CMediaStreamConnection::useTimeService(boost::asio::ip::address ip_address, int port, boost::asio::ip::udp protocol) {
 	m_ts->start(false, ip_address, port, protocol);
 }

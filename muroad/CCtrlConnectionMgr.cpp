@@ -20,11 +20,11 @@
 
 #include <CCtrlConnectionMgr.h>
 #include "CCtrlConnection.h"
-#include "CPlayerState.h"
+#include "CPlayer.h"
 
 using namespace muroa;
 
-CCtrlConnectionMgr::CCtrlConnectionMgr(muroa::CPlayerState* ps) : m_player_state(ps) {
+CCtrlConnectionMgr::CCtrlConnectionMgr(muroa::CPlayer* pf) : m_player_frame(pf) {
 
 }
 
@@ -35,7 +35,7 @@ CCtrlConnectionMgr::~CCtrlConnectionMgr() {
 /// Add the specified connection to the manager and start it.
 void CCtrlConnectionMgr::add(CTcpConnection* c) {
 	  CCtrlConnection* cc = reinterpret_cast<CCtrlConnection*>(c);
-	  cc->setPlayerStatePtr(m_player_state);
+	  cc->setPlayerStatePtr(m_player_frame);
 	  m_connections.insert(c);
 	  c->start();
 }

@@ -18,11 +18,11 @@
 
  */
 
-#include <CPlayerState.h>
+#include <CMediaStreamConnection.h>
+#include <CPlayer.h>
 
 #include "CApp.h"
 #include "CSettings.h"
-#include "cplayer.h"
 #include "CTcpServer.h"
 #include "CCtrlConnection.h"
 #include "avahi/CDnsSdAvahi.h"
@@ -34,7 +34,7 @@ using namespace muroa;
 
 namespace muroa {
 
-CPlayerState::CPlayerState(boost::asio::io_service& io_service) :           m_active(false),
+CPlayer::CPlayer(boost::asio::io_service& io_service) :           m_active(false),
 		                                                                    m_conn_mgr(this),
 		                                                                    m_tcp_server(0),
 		                                                                    m_io_service(io_service),
@@ -64,7 +64,7 @@ CPlayerState::CPlayerState(boost::asio::io_service& io_service) :           m_ac
 	// startPlayer();
 }
 
-CPlayerState::~CPlayerState() {
+CPlayer::~CPlayer() {
 
 	delete m_dnssd;
 
@@ -76,12 +76,12 @@ CPlayerState::~CPlayerState() {
 }
 
 
-void CPlayerState::startPlayer() {
+void CPlayer::startPlayer() {
 	assert(m_player == 0);
-	m_player = new CPlayer(m_io_service);
+	m_player = new CMediaStreamConnection(m_io_service);
 }
 
-void CPlayerState::stopPlayer() {
+void CPlayer::stopPlayer() {
 	if(m_player != 0) {
 		delete m_player;
 		m_player = 0;
@@ -89,7 +89,7 @@ void CPlayerState::stopPlayer() {
 }
 
 
-int CPlayerState::getRTPPort() {
+int CPlayer::getRTPPort() {
 	if(m_player != 0) return m_player->getRTPPort();
 	else              return 0;
 }
@@ -100,7 +100,7 @@ int CPlayerState::getRTPPort() {
  *          -1 render client is member of another session
  *          -2 access denied
  */
-int CPlayerState::requestJoinSession(std::string name, CCtrlConnection* ctrlConn) {
+int CPlayer::requestJoinSession(std::string name, CCtrlConnection* ctrlConn) {
 	if(!m_active) {
 		return -2;
 	}
@@ -126,7 +126,7 @@ int CPlayerState::requestJoinSession(std::string name, CCtrlConnection* ctrlConn
 }
 
 
-int CPlayerState::requestLeaveSession(CCtrlConnection* ctrlConn) {
+int CPlayer::requestLeaveSession(CCtrlConnection* ctrlConn) {
 	if( ctrlConn == m_session_ctrl_conn) {
 		stopPlayer();
 		m_conn_mgr.remove(m_session_ctrl_conn);

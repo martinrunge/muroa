@@ -25,14 +25,18 @@ namespace muroa {
 char const* const CStreamClientSM::outer_state_names[] = {  "awaitClientState", "knowingClientState", "awaitJoinResponse", "joinedSession", "error" };
 char const* const CStreamClientSM::inner_state_names[] = {  "awaitSessionState", "sessionMember", "noError", "errorExit" };
 
+class IClientSMActions;
 
-CStreamClientSM::CStreamClientSM() {
-	// TODO Auto-generated constructor stub
-
+CStreamClientSM::CStreamClientSM(IClientSMActions* actions) {
+	_actions = actions;
 }
 
 CStreamClientSM::~CStreamClientSM() {
 	// TODO Auto-generated destructor stub
+}
+
+void CStreamClientSM::activeStates(VisitorBase& vis) {
+	visit_current_states(boost::ref(vis));
 }
 
 void CStreamClientSM::pstate() {

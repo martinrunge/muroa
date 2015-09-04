@@ -23,19 +23,21 @@
 
 #include <CTcpConnection.h>
 #include <ctrlrpcxml/CStreamCtrlXml.h>
+#include <CStreamClientSM.h>
+#include <IClientSMActions.h>
 
 namespace muroa {
-  class CPlayerState;
+  class CPlayer;
 }
 
-class CCtrlConnection: public muroa::CTcpConnection, muroa::CStreamCtrlXml {
+class CCtrlConnection: public muroa::IClientSMActions, public 	muroa::CTcpConnection, muroa::CStreamCtrlXml {
 public:
 	static CCtrlConnection* create(boost::asio::io_service& io_service) {
 	    return new CCtrlConnection(io_service);
 	}
 	virtual ~CCtrlConnection();
 
-	void setPlayerStatePtr(muroa::CPlayerState* ps) { m_player_state = ps; };
+	void setPlayerStatePtr(muroa::CPlayer* ps) { m_player_state = ps; };
 
 	void onSetup();
 	void onShutdown();
@@ -44,12 +46,15 @@ public:
 
 	void dataReceived( boost::array<char, 8192> buffer, int length);
 
+	// IClientSMActions
+	void sendEvent(CCmdStreamBase* cmd);
+
 private:
 	CCtrlConnection(boost::asio::io_service& io_service);
-
 	void onDataToSend(const char* data, int len);
 
-	muroa::CPlayerState* m_player_state;
+	muroa::CStreamClientSM m_clnt_sm;
+	muroa::CPlayer* m_player_state;
 };
 
 #endif /* MUROAD_CCTRLCONNECTION_H_ */

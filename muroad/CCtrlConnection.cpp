@@ -19,13 +19,13 @@
  */
 
 #include <CCtrlConnection.h>
-#include "CPlayerState.h"
+#include "CPlayer.h"
 #include <cmds/StreamCtrlIDs.h>
 
 using namespace muroa;
 using namespace std;
 
-CCtrlConnection::CCtrlConnection(boost::asio::io_service& io_service) : CTcpConnection(io_service) {
+CCtrlConnection::CCtrlConnection(boost::asio::io_service& io_service) : CTcpConnection(io_service), m_clnt_sm(this) {
 
 }
 
@@ -44,8 +44,14 @@ void CCtrlConnection::onShutdown() {
 }
 
 bool CCtrlConnection::onEvent(CmdStreamBase* ev) {
+	m_clnt_sm.process_event(*ev);
 
 	return true;
+}
+
+// IClientSMActions
+void CCtrlConnection::sendEvent(CCmdStreamBase* cmd) {
+
 }
 
 

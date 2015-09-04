@@ -17,12 +17,11 @@
  *   Free Software Foundation, Inc.,                                       *
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
+#include <CMediaStreamConnection.h>
 #include "crecvloop.h"
 #include "caudioframe.h"
 #include "csocket.h"
 #include "cpacketringbuffer.h"
-#include "cplayer.h"
-
 #include "CApp.h"
 
 #include <log4cplus/loggingmacros.h>
@@ -35,11 +34,11 @@ using namespace log4cplus;
 using namespace boost::asio::ip;
 
 
-CRecvloop::CRecvloop(CPlayer* parent, CPacketRingBuffer* packet_ringbuffer):
+CRecvloop::CRecvloop(CMediaStreamConnection* parent, CPacketRingBuffer* packet_ringbuffer):
 		CThreadSlave()
 {
 
-  m_player = parent;
+  m_media_stream_conn = parent;
   m_timing_logger = Logger::getInstance("timing");
   
   m_packet_ringbuffer = packet_ringbuffer;
@@ -87,9 +86,9 @@ void CRecvloop::DoLoop()
       {
           m_tmp_sync_obj.deserialize(rtp_packet);
           LOG4CPLUS_INFO(m_timing_logger, "Received SyncObj: " << m_tmp_sync_obj);
-        if(m_tmp_sync_obj.streamId() == m_player->syncRequestedForStreamID()) {
+        if(m_tmp_sync_obj.streamId() == m_media_stream_conn->syncRequestedForStreamID()) {
           // this sync object has been requested by the client. Use it immediately
-          m_player->setRequestedSyncObj(rtp_packet);
+          m_media_stream_conn->setRequestedSyncObj(rtp_packet);
           delete rtp_packet;
         }
         else {
@@ -103,13 +102,13 @@ void CRecvloop::DoLoop()
         	CIPv4Address *sender = m_socket->latestSender();
         	address_v4 tmp_addr(sender->sock_addr_in_ptr()->sin_addr.s_addr);
         	address sender_addr(tmp_addr);
-        	m_player->useTimeService(sender_addr, m_ts_port);
+        	m_media_stream_conn->useTimeService(sender_addr, m_ts_port);
 
         }
 
         // wake up playback thread
         //if(m_player->idleTime() > m_max_idle && m_max_idle != 0) {
-        m_player->m_traffic_cond.Signal();
+        m_media_stream_conn->m_traffic_cond.Signal();
         //}
         
         break;
@@ -118,7 +117,7 @@ void CRecvloop::DoLoop()
       {
     	  CmdStreamReset* cmd_rst = new CmdStreamReset(rtp_packet);
     	  delete rtp_packet;
-    	  m_player->onResetStream(*cmd_rst);
+    	  m_media_stream_conn->onResetStream(*cmd_rst);
     	  delete cmd_rst;
     	  break;
       }
@@ -132,7 +131,7 @@ void CRecvloop::DoLoop()
         
         // wake up playback thread
         //if(m_player->idleTime() > m_max_idle && m_max_idle != 0) {
-        m_player->m_traffic_cond.Signal();
+        m_media_stream_conn->m_traffic_cond.Signal();
         //}
 
         break;

@@ -41,12 +41,12 @@ namespace muroa
 class CRTPPacket;
 class CSocket;
 class CPacketRingBuffer;
-class CPlayer;
+class CMediaStreamConnection;
 
 class CRecvloop : public CThreadSlave
 {
 public:
-    CRecvloop(CPlayer* parent, CPacketRingBuffer* packet_ringbuffer);
+    CRecvloop(CMediaStreamConnection* parent, CPacketRingBuffer* packet_ringbuffer);
 
     ~CRecvloop();
   
@@ -59,7 +59,7 @@ private:
 
     log4cplus::Logger m_timing_logger;
     CPacketRingBuffer *m_packet_ringbuffer;
-    CPlayer* m_player;
+    CMediaStreamConnection* m_media_stream_conn;
 
     CSync m_tmp_sync_obj;
     int m_max_idle;

@@ -21,9 +21,11 @@
 #ifndef LIBMSTREAM_CSTREAMCLIENTSM_H_
 #define LIBMSTREAM_CSTREAMCLIENTSM_H_
 
+
 // msm back-end
 #include <boost/msm/back/state_machine.hpp>
 #include <boost/msm/back/tools.hpp>
+
 
 //msm front-end
 #include <boost/msm/front/state_machine_def.hpp>
@@ -35,28 +37,45 @@
 // for func_state and func_state_machine
 #include <boost/msm/front/euml/state_grammar.hpp>
 
-namespace msm = boost::msm;
-namespace mpl = boost::mpl;
-using namespace msm::front;
+// using namespace boost::msm::front;
 // for And_ operator
-using namespace msm::front::euml;
+// using namespace msm::front::euml;
 #include <typeinfo>
 #include <string>
 #include <cmds/CmdStream.h>
+
+#include <IClientSMActions.h>
 
 using namespace muroa;
 using namespace std;
 
 namespace muroa {
 
+namespace msm = boost::msm;
+namespace mpl = boost::mpl;
 
 struct VisitorBase
 {
     template <class T>
     void visit_state(T* astate,int i)
     {
-        std::cout << "visiting state:" << typeid(*astate).name() << std::endl;
+        std::cout << "visiting state:" << astate->state_name << "[" << typeid(*astate).name() << "]" << std::endl;
     }
+
+    void addState(const std::string state_name) {
+    	active_states.push_back(state_name);
+    }
+
+    void clear() {
+    	active_states.clear();
+    }
+
+    void printActiveStates() {
+    	for(vector<string>::iterator it = active_states.begin(); it != active_states.end(); it++  ) {
+    		cout << *it << endl;
+    	}
+    }
+    vector<string> active_states;
 };
 
 
@@ -69,8 +88,9 @@ struct VisitableState
     // we also want polymorphic states
     virtual ~VisitableState() {}
     // default implementation for states who do not need to be visited
-    void accept(VisitorBase&) const {};
-    const std::string state_name;
+    void accept(VisitorBase& vis) const {
+    	vis.addState("<state without accept method>");
+    };
 };
 
 struct clnt_ : public msm::front::state_machine_def<clnt_, VisitableState>
@@ -79,6 +99,7 @@ struct clnt_ : public msm::front::state_machine_def<clnt_, VisitableState>
 	std::string m_ownerSession;
 	uint32_t m_open_join_cmd_ID;
 
+	IClientSMActions* _actions;
     // The list of FSM states
 
     struct awaitReaction : public msm::front::state<VisitableState>
@@ -92,23 +113,23 @@ struct clnt_ : public msm::front::state_machine_def<clnt_, VisitableState>
     	void on_exit(Event const&,FSM& ) {
     	    std::cout << "leaving: awaitClientState" << std::endl;
     	}
-    	void accept(VisitorBase&) const     	{
-    	    std::cout << "in " << typeid(this).name() << std::endl;
+    	void accept(VisitorBase& vis) const     	{
+        	vis.addState("awaitReaction");
     	};
     };
 
 
     // awaitAck
     struct awaitAck : public msm::front::state<VisitableState>  {
-    	void accept(VisitorBase&) const     	{
-    	    std::cout << "in " << typeid(this).name() << std::endl;
+    	void accept(VisitorBase& vis) const     	{
+        	vis.addState("awaitAck");
     	};
     };
 
     // sessionMember
     struct sessionMember : public msm::front::state<VisitableState>  {
-    	void accept(VisitorBase&) const     	{
-    	    std::cout << "in " << typeid(this).name() << std::endl;
+    	void accept(VisitorBase& vis) const {
+    	    vis.addState("sessionMember");
     	};
     };
 
@@ -119,8 +140,8 @@ struct clnt_ : public msm::front::state_machine_def<clnt_, VisitableState>
     	void on_entry(Event const&,FSM& ) {std::cout << "starting: exitState" << std::endl;}
     	template <class Event,class FSM>
     	void on_exit(Event const&,FSM& ) {std::cout << "finishing: exitState" << std::endl;}
-    	void accept(VisitorBase&) const     	{
-    	    std::cout << "in " << typeid(this).name() << std::endl;
+    	void accept(VisitorBase& vis) const     	{
+    		vis.addState("exitState");
     	};
     };
 
@@ -210,10 +231,11 @@ struct clnt_ : public msm::front::state_machine_def<clnt_, VisitableState>
 
 class CStreamClientSM :public msm::back::state_machine<clnt_, VisitableState> {
 public:
-	CStreamClientSM();
+	CStreamClientSM(IClientSMActions* actions);
 	virtual ~CStreamClientSM();
 
 
+	void activeStates(VisitorBase& vis);
     void pstate();
 
 protected:
@@ -225,9 +247,6 @@ protected:
     //
     static char const* const outer_state_names[];
     static char const* const inner_state_names[];
-
-
-
 };
 
 } /* namespace muroa */

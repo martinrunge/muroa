@@ -29,13 +29,13 @@
 
 
 namespace muroa {
-  class CPlayerState;
+  class CPlayer;
   class CTcpConnection;
 }
 
 class CCtrlConnectionMgr: public muroa::IConnectionManager {
 public:
-	CCtrlConnectionMgr(muroa::CPlayerState* ps);
+	CCtrlConnectionMgr(muroa::CPlayer* pf);
 	virtual ~CCtrlConnectionMgr();
     /// Add the specified connection to the manager and start it.
 	void add(muroa::CTcpConnection* c);
@@ -52,7 +52,7 @@ private:
     /// The managed connections.
 	std::set<muroa::CTcpConnection*> m_connections;
 
-	muroa::CPlayerState* m_player_state;
+	muroa::CPlayer* m_player_frame;
 
 };
 

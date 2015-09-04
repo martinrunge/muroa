@@ -51,7 +51,7 @@ class CSync;
 class CPacketRingBuffer;
 class CRingBuffer;
 class CResampler;
-class CPlayer;
+class CMediaStreamConnection;
 class Cmuroad;
 class CRTPPacket;
 
@@ -60,7 +60,7 @@ using namespace boost::posix_time;
 class CPlayloop : public CThreadSlave
 {
 public:
-	CPlayloop(CPlayer* parent, CPacketRingBuffer* packet_ringbuffer );
+	CPlayloop(CMediaStreamConnection* parent, CPacketRingBuffer* packet_ringbuffer );
     ~CPlayloop();
 
     void DoLoop();
@@ -121,7 +121,7 @@ private:
 
     FILE* m_debug_fd1;
     
-    CPlayer* m_player;
+    CMediaStreamConnection* m_media_stream_conn;
     
     CPacketRingBuffer *m_packet_ringbuffer;
     CRingBuffer *m_ringbuffer;

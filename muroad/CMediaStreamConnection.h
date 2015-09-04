@@ -17,8 +17,8 @@
  *   Free Software Foundation, Inc.,                                       *
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
-#ifndef CPLAYER_H
-#define CPLAYER_H
+#ifndef CMEDIA_STREAM_CONNECTION_H
+#define CMEDIA_STREAM_CONNECTION_H
 
 /**
 Class encapsulates all the playback functioinalty. It inplements an interface to the res of a media player, so it can easyly be serperated from GUI functions like playlist handling.
@@ -54,11 +54,11 @@ class CPThread;
 class CPacketRingBuffer;
 
 
-class CPlayer : public muroa::IRenderCmds {
+class CMediaStreamConnection : public muroa::IRenderCmds {
 public:
-    CPlayer(boost::asio::io_service& io_service);
+	CMediaStreamConnection(boost::asio::io_service& io_service);
+    ~CMediaStreamConnection();
 
-    ~CPlayer();
     void start();
     void stop();
 

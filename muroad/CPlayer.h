@@ -18,13 +18,13 @@
 
  */
 
-#ifndef MUROAD_CPLAYERSTATE_H_
-#define MUROAD_CPLAYERSTATE_H_
+#ifndef MUROAD_CPLAYER_H_
+#define MUROAD_CPLAYER_H_
 
 #include "CCtrlConnectionMgr.h"
 #include <boost/asio.hpp>
 
-class CPlayer;
+class CMediaStreamConnection;
 class CCtrlConnection;
 
 namespace muroa
@@ -38,10 +38,10 @@ namespace muroa
   class CStreamCtrlConnection;
 
 
-class CPlayerState {
+class CPlayer {
 public:
-	CPlayerState(boost::asio::io_service& io_service);
-	virtual ~CPlayerState();
+	CPlayer(boost::asio::io_service& io_service);
+	virtual ~CPlayer();
 
 	int requestJoinSession(std::string name, CCtrlConnection* ctrlConn);
 	int requestLeaveSession(CCtrlConnection* ctrlConn);
@@ -69,7 +69,7 @@ private:
 
     boost::asio::io_service& m_io_service;
 
-    CPlayer* m_player;
+    CMediaStreamConnection* m_player;
 
     std::string m_session_name;
     CCtrlConnection* m_session_ctrl_conn;
@@ -78,4 +78,4 @@ private:
 
 } /* namespace muroa */
 
-#endif /* MUROAD_CPLAYERSTATE_H_ */
+#endif /* MUROAD_CPLAYER_H_ */

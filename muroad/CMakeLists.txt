@@ -31,34 +31,34 @@ find_package ( log4cplus REQUIRED )
 
 add_definitions(-D__STDC_CONSTANT_MACROS)
 
-set( SRCS             cpacketringbuffer.cpp
+set( SRCS             main.cpp
+                      cmuroad.cpp
+                      CPlayer.cpp
+                      CCtrlConnectionMgr.cpp
+                      CCtrlConnection.cpp
+                      CMediaStreamConnection.cpp
+                      crecvloop.cpp
                       cplayloop.cpp
+                      cpacketringbuffer.cpp
                       cresampler.cpp
 		              cfilterdef.cpp
                       cfixpointresampler.cpp
                       cfloatresampler.cpp
-                      cmuroad.cpp
-                      main.cpp
-                      CPlayerState.cpp
-                      CCtrlConnection.cpp
-                      CCtrlConnectionMgr.cpp
-                      cplayer.cpp
-                      crecvloop.cpp
                       cringbuffer.cpp 
                       )
 
-set( HEADERS          cpacketringbuffer.h
+set( HEADERS          cmuroad.h
+                      CPlayer.h
+                      CCtrlConnectionMgr.h
+                      CCtrlConnection.h
+                      CMediaStreamConnection.h
+                      crecvloop.h
                       cplayloop.h
+                      cpacketringbuffer.h
                       cresampler.h
 		              cfilterdef.h
                       cfixpointresampler.h
                       cfloatresampler.h
-                      cmuroad.h
-                      cplayer.h
-                      CPlayerState.h
-                      CCtrlConnection.h
-                      CCtrlConnectionMgr.h
-                      crecvloop.h
                       cringbuffer.h
                       )                    
 
