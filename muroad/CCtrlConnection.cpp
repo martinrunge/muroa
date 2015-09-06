@@ -33,6 +33,10 @@ CCtrlConnection::~CCtrlConnection() {
 	// shutdown();
 }
 
+void CCtrlConnection::start() {
+	CTcpConnection::start();
+	m_clnt_sm.start();
+}
 
 void CCtrlConnection::onSetup() {
 	// ack(cmdID);

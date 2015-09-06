@@ -30,7 +30,7 @@ namespace muroa {
   class CPlayer;
 }
 
-class CCtrlConnection: public muroa::IClientSMActions, public 	muroa::CTcpConnection, muroa::CStreamCtrlXml {
+class CCtrlConnection: public muroa::CTcpConnection, public muroa::IClientSMActions, public muroa::CStreamCtrlXml {
 public:
 	static CCtrlConnection* create(boost::asio::io_service& io_service) {
 	    return new CCtrlConnection(io_service);
@@ -38,6 +38,8 @@ public:
 	virtual ~CCtrlConnection();
 
 	void setPlayer(muroa::CPlayer* ps) { m_player = ps; };
+
+	void start();
 
 	void onSetup();
 	void onShutdown();

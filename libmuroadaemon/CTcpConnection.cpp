@@ -33,6 +33,9 @@ using namespace log4cplus;
 namespace muroa {
 
 CTcpConnection::CTcpConnection(boost::asio::io_service& io_service) : m_socket(io_service) {
+	if(m_socket.is_open()) {
+		m_socket.close();
+	}
 }
 
 CTcpConnection::~CTcpConnection() {

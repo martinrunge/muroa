@@ -49,7 +49,7 @@ public:
   }
 
   tcp::socket& socket() {
-    return m_socket;
+    return this->m_socket;
   }
 
   virtual void start();

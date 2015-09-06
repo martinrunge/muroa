@@ -148,5 +148,13 @@ int CPlayer::getVolume() {
 }
 
 boost::asio::ip::address CPlayer::getSessionServer() {
-	return m_session_ctrl_conn->remoteEndpoint().address();
+	boost::asio::ip::address addr;
+
+	if(m_session_ctrl_conn != 0) {
+		addr = m_session_ctrl_conn->remoteEndpoint().address();
+	}
+	else {
+		addr = boost::asio::ip::address::from_string("0.0.0.0");
+	}
+	return addr;
 }
