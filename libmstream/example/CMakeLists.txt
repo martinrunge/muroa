@@ -1,7 +1,10 @@
 cmake_minimum_required (VERSION 2.6)
 
-set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../cmake" ${CMAKE_MODULE_PATH})
-set(VERBOSE 1)
+if(NOT MUROA_AUX_DIR)
+set(MUROA_AUX_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../../aux")
+endif()
+
+set(CMAKE_MODULE_PATH "${MUROA_AUX_DIR}/cmake/Modules" ${CMAKE_MODULE_PATH})
 
 
 add_definitions( -D__STDC_CONSTANT_MACROS )

@@ -1,6 +1,11 @@
 cmake_minimum_required (VERSION 2.6)
 
-set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../aux/cmake/Modules" ${CMAKE_MODULE_PATH})
+if(NOT MUROA_AUX_DIR)
+set(MUROA_AUX_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../aux")
+endif()
+
+set(CMAKE_MODULE_PATH "${MUROA_AUX_DIR}/cmake/Modules" ${CMAKE_MODULE_PATH})
+include( MacroGDBIndex )
 
 set(VERBOSE 1)
 
@@ -20,8 +25,6 @@ find_package( log4cplus REQUIRED )
 find_package( libxdiff REQUIRED )
 find_package( Avahi COMPONENTS common client REQUIRED ) 
 
-
-# add_subdirectory(unittest)
 
 add_definitions(-D__STDC_CONSTANT_MACROS)
 
@@ -133,96 +136,5 @@ TARGET_LINK_LIBRARIES(msessiond    muroadaemon
 file(COPY   etc/muroa.conf  DESTINATION etc)
 file(COPY   log.properties  DESTINATION .)                                                            
                                    
-################################################################################
-# This step merges a gdb_index section into the binary to speed up debugging.
-# Doing this by add_custom_command will become obsolete as soon as the linker does it. 
-################################################################################
-
-add_custom_command(TARGET msessiond
-                   POST_BUILD  
-                   COMMAND  ${CMAKE_CURRENT_SOURCE_DIR}/../aux/scripts/mkgdbindex.sh msessiond 
-                   WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-                   COMMENT "building gdb index")
-
-###############################################################################                                   
-                                   
-                                   
-if( ${unittests} )
-
-    find_package ( Qt4 REQUIRED COMPONENTS QtCore QtGui QtNetwork QtXml QtDbus )
-    
-    include ( ${QT_USE_FILE} )
-                                       
-    set(unittests_SRCS     unittest/SessionTest.cpp
-                           unittest/CFakeMediaCollection.cpp 
-                           unittest/CDecoderTest.cpp 
-                           # unittest/CMediaFileTest.cpp 
-                           unittest/CDataBaseTest.cpp
-                           # unittest/CTimeTest.cpp
-                           # unittest/CSubProcessTest.cpp
-                           # unittest/CMediaScannerTest.cpp
-                           ../mmscanner/CStateDbUpdater.cpp
-                           ../mmscanner/CMediaColUpdater.cpp
-                           ../mmscanner/CFsScanner.cpp
-                           ../mmscanner/CMediaScanner.cpp
-                           ../mmscanner/CEventLoop.cpp
-                           ../mmscanner/CMediaItemCategorizer.cpp
-                           )
-    
-    set(unittests_HEADERS  unittest/CFakeMediaCollection.h 
-                           unittest/CDecoderTest.h
-                           # unittest/CMediaFileTest.h 
-                           unittest/CDataBaseTest.h
-                           
-                           # unittest/CTimeTest.h
-                           # unittest/CSubProcessTest.h
-                           # unittest/CMediaScannerTest.h
-                           ../mmscanner/CStateDbUpdater.h
-                           ../mmscanner/CMediaColUpdater.h
-                           ../mmscanner/CFsScanner.h
-                           ../mmscanner/CMediaScanner.h
-                           ../mmscanner/CEventLoop.h
-                           ../mmscanner/CMediaItemCategorizer.h
-                           )
-                                       
-    ADD_EXECUTABLE(msessiondtest ${unittests_SRCS} ${unittests_HEADERS} ${SRCS} ${HEADERS} ${CPPUNIT_INCLUDE_DIRS})
-    
-    set_target_properties( msessiondtest PROPERTIES  COMPILE_FLAGS "-std=gnu++0x" ) 
-    
-    TARGET_LINK_LIBRARIES(msessiondtest  ${CPPUNIT_LIBRARIES} 
-                                         muroa++
-                                         muroadaemon
-                                         mstream
-                                         sock++
-                                         ${Boost_LIBRARIES} 
-                                         ${Taglib_LIBRARIES} 
-                                         ${QT_LIBRARIES} 
-                                         ${SQLITE_LIBRARIES} 
-                                         ${libxdiff_LIBRARIES}
-                                         ${ALSA_LIBRARY}
-                                         ${LibAO_LIBRARIES}
-                                         avahi-client
-                                         avahi-qt4
-                                         ${libavformat_LIBRARY}
-                                         ${libavcodec_LIBRARY}
-                                         ${libavutil_LIBRARY} 
-                                         ${log4cplus_LIBRARIES}                              
-                                         qxcppunitd 
-                                         qxrunnerd
-                                         )
-                                         
-    ################################################################################
-    # This step merges a gdb_index section into the binary to speed up debugging.
-    # Doing this by add_custom_command will become obsolete as soon as the linker does it. 
-    ################################################################################
-    
-    add_custom_command(TARGET msessiondtest
-                       POST_BUILD  
-                       COMMAND  ${CMAKE_CURRENT_SOURCE_DIR}/../aux/scripts/mkgdbindex.sh msessiondtest 
-                       WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-                       COMMENT "building gdb index")
-    
-    ################################################################################                                     
-                                       
-endif( ${unittests} )
+ADD_GDB_INDEX( msessiond )                                   
                                    

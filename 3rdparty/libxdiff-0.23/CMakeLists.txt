@@ -1,7 +1,13 @@
 cmake_minimum_required (VERSION 2.6)
 project (libxdiff)
 
-set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../../aux/cmake/Modules" ${CMAKE_MODULE_PATH})
+if(NOT MUROA_AUX_DIR)
+set(MUROA_AUX_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../../aux")
+endif()
+
+set(CMAKE_MODULE_PATH "${MUROA_AUX_DIR}/cmake/Modules" ${CMAKE_MODULE_PATH})
+
+include( MacroGDBIndex )
 
 
 add_definitions( -DHAVE_STDIO_H  
@@ -52,17 +58,8 @@ add_library( xdiff SHARED ${SRC} ${HEADERS} )
 # target_link_libraries( muroa++  ${Boost_LIBRARIES} ${EXPAT_LIBRARIES})
 # set_target_properties( muroa++  PROPERTIES  COMPILE_FLAGS "-std=gnu++0x" )
 
-###################################################################################
-# This step merges a gdb_index section into the binary to speed up debugging.
-# Doing this by add_custom_command will become obsolete as soon as the linker does it. 
-###################################################################################
-add_custom_command(TARGET xdiff
-                   POST_BUILD  
-                   COMMAND  ${CMAKE_CURRENT_SOURCE_DIR}/../../aux/scripts/mkgdbindex.sh libxdiff.so 
-                   WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-                   COMMENT "building gdb index")
-                                   
-###################################################################################                                   
+
+ADD_GDB_INDEX( xdiff )
  
 
 install(TARGETS   xdiff DESTINATION  lib)

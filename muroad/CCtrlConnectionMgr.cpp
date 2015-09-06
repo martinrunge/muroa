@@ -24,7 +24,7 @@
 
 using namespace muroa;
 
-CCtrlConnectionMgr::CCtrlConnectionMgr(muroa::CPlayer* pf) : m_player_frame(pf) {
+CCtrlConnectionMgr::CCtrlConnectionMgr(muroa::CPlayer* pf) : m_player(pf) {
 
 }
 
@@ -35,7 +35,7 @@ CCtrlConnectionMgr::~CCtrlConnectionMgr() {
 /// Add the specified connection to the manager and start it.
 void CCtrlConnectionMgr::add(CTcpConnection* c) {
 	  CCtrlConnection* cc = reinterpret_cast<CCtrlConnection*>(c);
-	  cc->setPlayerStatePtr(m_player_frame);
+	  cc->setPlayer(m_player);
 	  m_connections.insert(c);
 	  c->start();
 }

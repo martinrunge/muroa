@@ -23,14 +23,16 @@
 
 namespace muroa {
 
-class CCmdStreamBase;
+class CmdStreamBase;
 
 class IClientSMActions {
 public:
 	IClientSMActions() {};
 	virtual ~IClientSMActions() {};
 
-	virtual void sendEvent(CCmdStreamBase* cmd) = 0;
+	// virtual void sendEvent(CmdStreamBase* cmd) = 0;
+
+	virtual void sendClientState() = 0;
 };
 
 } /* namespace muroa */

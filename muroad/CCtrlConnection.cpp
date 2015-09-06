@@ -49,10 +49,6 @@ bool CCtrlConnection::onEvent(CmdStreamBase* ev) {
 	return true;
 }
 
-// IClientSMActions
-void CCtrlConnection::sendEvent(CCmdStreamBase* cmd) {
-
-}
 
 
 void CCtrlConnection::dataReceived( boost::array<char, 8192> buffer, int length) {
@@ -61,4 +57,15 @@ void CCtrlConnection::dataReceived( boost::array<char, 8192> buffer, int length)
 
 void CCtrlConnection::onDataToSend(const char* data, int len) {
 	writeData(data, len);
+}
+
+// IClientSMActions
+void CCtrlConnection::sendClientState() {
+	evClientState *ev = new evClientState();
+
+	ev->m_member_of_session = m_player->getSessionName();
+	ev->m_current_volume    = m_player->getVolume();
+	ev->m_session_srv       = m_player->getSessionServer();
+
+	sendEvent(ev);
 }

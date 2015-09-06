@@ -12,6 +12,7 @@
 #include "../../mmscanner/CFsScanner.h"
 #include "../../mmscanner/CMediaScanner.h"
 #include "../../mmscanner/CMediaItemCategorizer.h"
+#include <CSessionContainer.h>
 #include <CSession.h>
 #include <CRootItem.h>
 #include <CMediaItem.h>
@@ -56,10 +57,13 @@ void CDataBaseTest::setUp()
 	m_stateDbUpdater = new CStateDbUpdater( dbname );
     m_fsScanner = new CFsScanner( m_mediaScanner );
     m_fakeCollection = new CFakeMediaCollection(".");
+
+    m_sessionContainer = new CSessionContainer();
 }
 
 void CDataBaseTest::tearDown()
 {
+	delete m_sessionContainer;
 	delete m_fakeCollection;
 	delete m_fsScanner;
 	delete m_stateDbUpdater;
@@ -183,7 +187,7 @@ void CDataBaseTest::prepareSession() {
 	m_testHashPos = mItems->size() / 2;
 	m_testHash = mItems->at(m_testHashPos)->getHash();
 
-	m_session = new muroa::CSession("unittest", m_io_service, 0);
+	m_session = new muroa::CSession("unittest", m_io_service, m_sessionContainer, 0);
 
 	m_categorizer = new muroa::CMediaItemCategorizer();
 
@@ -254,7 +258,7 @@ void CDataBaseTest::restoreSession() {
 	muroa::CSession* restoredSession;
 	m_stateDB->open();
 	try {
-		restoredSession = new muroa::CSession("unittest", m_io_service, 0);
+		restoredSession = new muroa::CSession("unittest", m_io_service, m_sessionContainer, 0);
 		m_stateDB->restoreSession(restoredSession);
 	}
 	catch(...) {

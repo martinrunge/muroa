@@ -1,8 +1,13 @@
 cmake_minimum_required (VERSION 2.6)
 project (libsock++)
 
-set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../aux/cmake/Modules" ${CMAKE_MODULE_PATH})
+if(NOT MUROA_AUX_DIR)
+set(MUROA_AUX_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../aux")
+endif()
 
+set(CMAKE_MODULE_PATH "${MUROA_AUX_DIR}/cmake/Modules" ${CMAKE_MODULE_PATH})
+
+include( MacroGDBIndex )
 find_package( Threads REQUIRED )
 
 # set(Boost_USE_MULTITHREADED ON)
@@ -43,17 +48,7 @@ target_link_libraries( sock++ ${CMAKE_THREAD_LIBS_INIT}
                               ${ALSA_LIBRARY} )
                               
 set_target_properties( sock++  PROPERTIES  COMPILE_FLAGS "-std=gnu++0x -pthread" ) 
-###################################################################################
-# This step merges a gdb_index section into the binary to speed up debugging.
-# Doing this by add_custom_command will become obsolete as soon as the linker does it. 
-###################################################################################
-add_custom_command(TARGET sock++
-                   POST_BUILD  
-                   COMMAND  ${CMAKE_CURRENT_SOURCE_DIR}/../aux/scripts/mkgdbindex.sh libsock++.so 
-                   WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-                   COMMENT "building gdb index")
-                                   
-###################################################################################                                   
 
+ADD_GDB_INDEX( sock++ )
 
 install(TARGETS  sock++ DESTINATION  lib)

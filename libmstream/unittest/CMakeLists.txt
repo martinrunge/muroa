@@ -1,10 +1,15 @@
 cmake_minimum_required (VERSION 2.6)
 
-set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../cmake" ${CMAKE_MODULE_PATH})
-set(VERBOSE 1)
+if(NOT MUROA_AUX_DIR)
+set(MUROA_AUX_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../../aux")
+endif()
+
+set(CMAKE_MODULE_PATH "${MUROA_AUX_DIR}/cmake/Modules" ${CMAKE_MODULE_PATH})
 
 find_package ( Qt4 REQUIRED COMPONENTS QtCore QtGui )
 find_package ( CppUnit REQUIRED )
+
+include( MacroGDBIndex )
 
 add_definitions( ${QT4_DEFINITIONS} -D__STDC_CONSTANT_MACROS ${CPPUNIT_DEFINITIONS})
 
@@ -48,3 +53,5 @@ TARGET_LINK_LIBRARIES( libmstreamtest ${CPPUNIT_LIBRARIES}
                                       qxcppunitd 
                                       qxrunnerd
                                       )
+
+ADD_GDB_INDEX( libmstreamtest )

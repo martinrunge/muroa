@@ -52,7 +52,7 @@ private:
     /// The managed connections.
 	std::set<muroa::CTcpConnection*> m_connections;
 
-	muroa::CPlayer* m_player_frame;
+	muroa::CPlayer* m_player;
 
 };
 

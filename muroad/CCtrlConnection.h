@@ -37,7 +37,7 @@ public:
 	}
 	virtual ~CCtrlConnection();
 
-	void setPlayerStatePtr(muroa::CPlayer* ps) { m_player_state = ps; };
+	void setPlayer(muroa::CPlayer* ps) { m_player = ps; };
 
 	void onSetup();
 	void onShutdown();
@@ -47,14 +47,14 @@ public:
 	void dataReceived( boost::array<char, 8192> buffer, int length);
 
 	// IClientSMActions
-	void sendEvent(CCmdStreamBase* cmd);
+	void sendClientState();
 
 private:
 	CCtrlConnection(boost::asio::io_service& io_service);
 	void onDataToSend(const char* data, int len);
 
 	muroa::CStreamClientSM m_clnt_sm;
-	muroa::CPlayer* m_player_state;
+	muroa::CPlayer* m_player;
 };
 
 #endif /* MUROAD_CCTRLCONNECTION_H_ */

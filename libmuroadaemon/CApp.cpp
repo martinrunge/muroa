@@ -60,8 +60,13 @@ CApp::CApp(int argc, char** argv) throw(configEx) : m_settings(this)
     if( m_settings.parse(argc, argv) != 0) {
     	throw configEx("error parsing commandline parameters");
     }
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"   // to get rid of warning "auto_ptr is deprecated"
 
     m_error_handler_ptr = auto_ptr<log4cplus::ErrorHandler>(new CAppenderErrorHandler);
+
+    #pragma GCC diagnostic pop
+
     initLog();
 
     m_settings.readConfigFile();
@@ -109,7 +114,14 @@ void CApp::initLog() {
     }
     SharedAppenderPtr log_appender(appender);
 	log_appender->setName("LogAppender");
+
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"   // to get rid of warning "auto_ptr is deprecated"
+
 	std::auto_ptr<Layout> myLayout = std::auto_ptr<Layout>(new log4cplus::PatternLayout("%d{%H:%M:%S,%q} [ %t: %-5p ] %m%n"));
+
+#pragma GCC diagnostic pop
+
 	log_appender->setLayout(myLayout);
 
 	m_logger.addAppender(log_appender);

@@ -1,11 +1,17 @@
 cmake_minimum_required (VERSION 2.6)
 project (libmcommons)
 
+if(NOT MUROA_AUX_DIR)
+set(MUROA_AUX_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../aux")
+endif()
 
-set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../aux/cmake/Modules" ${CMAKE_MODULE_PATH})
+set(CMAKE_MODULE_PATH "${MUROA_AUX_DIR}/cmake/Modules" ${CMAKE_MODULE_PATH})
+
 
 find_package( Threads REQUIRED )
 find_package( log4cplus REQUIRED )
+
+include( MacroGDBIndex )
 
 # set(Boost_USE_MULTITHREADED ON )
 # find_package( Boost 1.36.0 COMPONENTS filesystem system date_time program_options REQUIRED )
@@ -34,17 +40,6 @@ target_link_libraries( mcommons  ${CMAKE_THREAD_LIBS_INIT}
                                  
 set_target_properties( mcommons  PROPERTIES  COMPILE_FLAGS "-std=gnu++0x -pthread" ) 
 
-###################################################################################
-# This step merges a gdb_index section into the binary to speed up debugging.
-# Doing this by add_custom_command will become obsolete as soon as the linker does it. 
-###################################################################################
-add_custom_command(TARGET mcommons
-                   POST_BUILD  
-                   COMMAND  ${CMAKE_CURRENT_SOURCE_DIR}/../aux/scripts/mkgdbindex.sh libmcommons.so 
-                   WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-                   COMMENT "building gdb index")
-                                   
-###################################################################################                                   
-
+ADD_GDB_INDEX( mcommons )
 
 install(TARGETS mcommons DESTINATION  lib)

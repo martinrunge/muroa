@@ -1,7 +1,8 @@
 cmake_minimum_required (VERSION 2.6)
 
 set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../cmake" ${CMAKE_MODULE_PATH})
-set(VERBOSE 1)
+
+include( MacroGDBIndex )
 
 find_package ( Qt4 REQUIRED COMPONENTS QtCore QtGui )
 find_package ( CppUnit REQUIRED )
@@ -59,3 +60,7 @@ TARGET_LINK_LIBRARIES(libmuroatest ${CPPUNIT_LIBRARIES}
                                    qxcppunitd 
                                    qxrunnerd
                                    )
+
+ADD_GDB_INDEX( libmuroatest )
+
+                                   

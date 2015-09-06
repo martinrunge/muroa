@@ -46,10 +46,13 @@ public:
 	int requestJoinSession(std::string name, CCtrlConnection* ctrlConn);
 	int requestLeaveSession(CCtrlConnection* ctrlConn);
 
-	void startPlayer();
-	void stopPlayer();
+	void setupMediaStreamConn();
+	void shutdownMediaStreamConn();
 
 	int getRTPPort();
+	int getVolume();
+	boost::asio::ip::address getSessionServer();
+
 
 	const CCtrlConnection* getSessionCtrlConn() const {
 		return m_session_ctrl_conn;
@@ -69,7 +72,7 @@ private:
 
     boost::asio::io_service& m_io_service;
 
-    CMediaStreamConnection* m_player;
+    CMediaStreamConnection* m_media_stream_conn;
 
     std::string m_session_name;
     CCtrlConnection* m_session_ctrl_conn;

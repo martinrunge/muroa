@@ -13,7 +13,7 @@ save gdb-index ${BASEDIR}
 quit
 EOF
 
-gdb -x $CMDFILE
+gdb --quiet -x $CMDFILE
 
 if [ -f $FILENAME.gdb-index ]; then
   objcopy --add-section .gdb_index=$FILENAME.gdb-index --set-section-flags .gdb_index=readonly $FILENAME $FILENAME

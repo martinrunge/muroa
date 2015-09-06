@@ -1,8 +1,13 @@
 cmake_minimum_required (VERSION 2.6)
 project (libmstream)
 
+if(NOT MUROA_AUX_DIR)
+set(MUROA_AUX_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../aux")
+endif()
 
-set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../aux/cmake/Modules" ${CMAKE_MODULE_PATH})
+set(CMAKE_MODULE_PATH "${MUROA_AUX_DIR}/cmake/Modules" ${CMAKE_MODULE_PATH})
+
+include( MacroGDBIndex )
 
 find_package( Threads REQUIRED )
 find_package( log4cplus REQUIRED )
@@ -44,6 +49,7 @@ set( HEADERS       CStreamConnection.h
                    CStreamServer.h
                    CStreamSrvSM.h
                    CStreamClientSM.h
+                   IClientSMActions.h
                    caudioframe.h
                    caudiooss.h
                    crtppacket.h
@@ -87,17 +93,7 @@ target_link_libraries( mstream ${CMAKE_THREAD_LIBS_INIT}
                                 muroadaemon 
                                 )
 set_target_properties( mstream  PROPERTIES  COMPILE_FLAGS "-std=gnu++0x -pthread" ) 
-###################################################################################
-# This step merges a gdb_index section into the binary to speed up debugging.
-# Doing this by add_custom_command will become obsolete as soon as the linker does it. 
-###################################################################################
-add_custom_command(TARGET mstream
-                   POST_BUILD  
-                   COMMAND  ${CMAKE_CURRENT_SOURCE_DIR}/../aux/scripts/mkgdbindex.sh libmstream.so 
-                   WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-                   COMMENT "building gdb index")
-                                   
-###################################################################################                                   
 
+ADD_GDB_INDEX( mstream )
 
 install(TARGETS mstream DESTINATION  lib)

@@ -105,9 +105,9 @@ struct clnt_ : public msm::front::state_machine_def<clnt_, VisitableState>
     struct awaitReaction : public msm::front::state<VisitableState>
     {
     	template <class Event,class FSM>
-    	void on_entry(Event const&,FSM& ) {
-    		// sendClientState();
+    	void on_entry(Event const& evt, FSM& fsm) {
     		std::cout << "entering: awaitReaction" << std::endl;
+    		fsm._actions->sendClientState();
     	}
     	template <class Event,class FSM>
     	void on_exit(Event const&,FSM& ) {

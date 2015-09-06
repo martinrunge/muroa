@@ -34,13 +34,14 @@ using namespace muroa;
 
 namespace muroa {
 
-CPlayer::CPlayer(boost::asio::io_service& io_service) :           m_active(false),
-		                                                                    m_conn_mgr(this),
-		                                                                    m_tcp_server(0),
-		                                                                    m_io_service(io_service),
-																			m_player(0),
-																			m_session_name(),
-																			m_session_ctrl_conn(0) {
+CPlayer::CPlayer(boost::asio::io_service& io_service) :
+		m_active(false),
+		m_conn_mgr(this),
+		m_tcp_server(0),
+		m_io_service(io_service),
+		m_media_stream_conn(0),
+		m_session_name(),
+		m_session_ctrl_conn(0) {
 
 	boost::asio::ip::tcp protocol = tcp::v4();
 	if( CApp::settings().getConfigVal("muroad.useIPv6", "no").compare(string("yes")) == 0) {
@@ -57,11 +58,10 @@ CPlayer::CPlayer(boost::asio::io_service& io_service) :           m_active(false
 	string serviceType = CApp::settings().getConfigVal("muroad.ServiceType", "_muroad._tcp");
 //	string serviceType = CApp::settings().getConfigVal("muroad.ServiceType", "_muroad._udp");
 
-     m_dnssd = new CDnsSdAvahi(io_service, serviceName, endp.port(), serviceType, vector<string>());
+    m_dnssd = new CDnsSdAvahi(io_service, serviceName, endp.port(), serviceType, vector<string>());
 //    m_dnssd = new CDnsSdAvahi(io_service, serviceName, 44400, serviceType, vector<string>());
 	m_dnssd->setServiceChangedHandler(boost::bind( &muroa::CApp::serviceChanged, CApp::getInstPtr()));
 
-	// startPlayer();
 }
 
 CPlayer::~CPlayer() {
@@ -69,28 +69,28 @@ CPlayer::~CPlayer() {
 	delete m_dnssd;
 
 	delete m_tcp_server;
-	if(m_player != 0) {
-		delete m_player;
-		m_player = 0;
+	if(m_media_stream_conn != 0) {
+		delete m_media_stream_conn;
+		m_media_stream_conn = 0;
 	}
 }
 
 
-void CPlayer::startPlayer() {
-	assert(m_player == 0);
-	m_player = new CMediaStreamConnection(m_io_service);
+void CPlayer::setupMediaStreamConn() {
+	assert(m_media_stream_conn == 0);
+	m_media_stream_conn = new CMediaStreamConnection(m_io_service);
 }
 
-void CPlayer::stopPlayer() {
-	if(m_player != 0) {
-		delete m_player;
-		m_player = 0;
+void CPlayer::shutdownMediaStreamConn() {
+	if(m_media_stream_conn != 0) {
+		delete m_media_stream_conn;
+		m_media_stream_conn = 0;
 	}
 }
 
 
 int CPlayer::getRTPPort() {
-	if(m_player != 0) return m_player->getRTPPort();
+	if(m_media_stream_conn != 0) return m_media_stream_conn->getRTPPort();
 	else              return 0;
 }
 
@@ -113,8 +113,8 @@ int CPlayer::requestJoinSession(std::string name, CCtrlConnection* ctrlConn) {
 	if( name.empty() && m_session_ctrl_conn == 0 ) {
 		LOG4CPLUS_INFO(CApp::logger(), "accepting request to join session " << name << " (" << ctrlConn->remoteEndpoint() << ")");
 
-		startPlayer();
-		m_player->getRTPPort();
+		setupMediaStreamConn();
+		m_media_stream_conn->getRTPPort();
 
 		m_session_name = name;
 		m_session_ctrl_conn = ctrlConn;
@@ -128,7 +128,7 @@ int CPlayer::requestJoinSession(std::string name, CCtrlConnection* ctrlConn) {
 
 int CPlayer::requestLeaveSession(CCtrlConnection* ctrlConn) {
 	if( ctrlConn == m_session_ctrl_conn) {
-		stopPlayer();
+		shutdownMediaStreamConn();
 		m_conn_mgr.remove(m_session_ctrl_conn);
 		m_session_ctrl_conn = 0;
 		m_session_name.clear();
@@ -142,3 +142,11 @@ int CPlayer::requestLeaveSession(CCtrlConnection* ctrlConn) {
 
 
 } /* namespace muroa */
+
+int CPlayer::getVolume() {
+	return 50;
+}
+
+boost::asio::ip::address CPlayer::getSessionServer() {
+	return m_session_ctrl_conn->remoteEndpoint().address();
+}

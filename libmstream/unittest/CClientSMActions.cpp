@@ -36,4 +36,9 @@ void CClientSMActions::sendEvent(CCmdStreamBase* cmd) {
 
 }
 
+
+void CClientSMActions::sendClientState() {
+
+}
+
 } /* namespace muroa */

@@ -33,6 +33,7 @@ public:
 	virtual ~CClientSMActions();
 
 	void sendEvent(CCmdStreamBase* cmd);
+	void sendClientState();
 };
 
 } /* namespace muroa */

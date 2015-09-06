@@ -141,13 +141,13 @@ void CFakeMediaCollection::createMp3File(std::string filename) {
 	cerr << "Audio encoding" << endl;
 
 	/* find the MP2 encoder */
-	codec = avcodec_find_encoder(CODEC_ID_MP3);
+	codec = avcodec_find_encoder(AV_CODEC_ID_MP3);
 	if (!codec) {
 		fprintf(stderr, "codec not found\n");
 		return;
 	}
 
-	c= avcodec_alloc_context();
+	c= avcodec_alloc_context3(codec);
 
 	/* put sample parameters */
 	c->bit_rate = 64000;
@@ -155,7 +155,7 @@ void CFakeMediaCollection::createMp3File(std::string filename) {
 	c->channels = 2;
 
 	/* open it */
-	if (avcodec_open(c, codec) < 0) {
+	if (avcodec_open2(c, codec, NULL) < 0) {
 		fprintf(stderr, "could not open codec\n");
 		return;
 	}
@@ -182,7 +182,7 @@ void CFakeMediaCollection::createMp3File(std::string filename) {
 			t += tincr;
 		}
 		/* encode the samples */
-		out_size = avcodec_encode_audio(c, outbuf, outbuf_size, samples);
+		// out_size = avcodec_encode_audio2(c, outbuf, outbuf_size, samples);
 		fwrite(outbuf, 1, out_size, f);
 	}
 	fclose(f);

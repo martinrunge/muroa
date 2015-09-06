@@ -1,7 +1,13 @@
 cmake_minimum_required (VERSION 2.6)
 project (mqtclient)
 
-set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../aux/cmake/Modules" ${CMAKE_MODULE_PATH})
+if(NOT MUROA_AUX_DIR)
+set(MUROA_AUX_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../aux")
+endif()
+
+set(CMAKE_MODULE_PATH "${MUROA_AUX_DIR}/cmake/Modules" ${CMAKE_MODULE_PATH})
+
+include( MacroGDBIndex )
 
 find_package ( Qt4 COMPONENTS QtGui QtCore QtNetwork REQUIRED )
 find_package( Avahi COMPONENTS common client qt4 REQUIRED ) 
@@ -113,20 +119,8 @@ target_link_libraries( mqtclient   muroa++
                                    ${QT_LIBRARIES} )
 
 set_target_properties( mqtclient PROPERTIES  COMPILE_FLAGS "-std=gnu++0x" ) 
-# SET_TARGET_PROPERTIES( mqtclient PROPERTIES  LINK_FLAGS -Wl,--eh-frame-hdr)
-# SET_TARGET_PROPERTIES( mqtclient PROPERTIES  LINK_FLAGS -Wl,-shared-libgcc)
-###################################################################################
-# This step merges a gdb_index section into the binary to speed up debugging.
-# Doing this by add_custom_command will become obsolete as soon as the linker does it. 
-###################################################################################
-add_custom_command(TARGET mqtclient
-                   POST_BUILD  
-                   COMMAND  ${CMAKE_CURRENT_SOURCE_DIR}/../aux/scripts/mkgdbindex.sh mqtclient 
-                   WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-                   COMMENT "building gdb index")
-                                   
-###################################################################################                                   
 
+ADD_GDB_INDEX( mqtclient )
 
 install(TARGETS   mqtclient
         DESTINATION  bin)

@@ -1,19 +1,20 @@
 cmake_minimum_required (VERSION 2.6)
 
+if(NOT MUROA_AUX_DIR)
+set(MUROA_AUX_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../aux")
+endif()
 
-set(VERBOSE 1)
+set(CMAKE_MODULE_PATH "${MUROA_AUX_DIR}/cmake/Modules" ${CMAKE_MODULE_PATH})
 
 if( "${ARCH}" STREQUAL "")
 MESSAGE("Setting ARCH to x86")
 SET(ARCH x86)
 endif( "${ARCH}" STREQUAL "")
 
-set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../aux/cmake/Modules" ${CMAKE_MODULE_PATH})
+include( MacroGDBIndex )
 
 find_package(PkgConfig)
-
 find_package( Threads REQUIRED )
-
 set(Boost_USE_MULTITHREADED ON )
 find_package( Boost 1.36.0 COMPONENTS filesystem system date_time program_options REQUIRED )
 #find_package( EXPAT REQUIRED )
@@ -122,18 +123,6 @@ file(COPY   muroa.conf      DESTINATION .)
 file(COPY   log.properties  DESTINATION .)                              
       
                                    
-################################################################################
-# This step merges a gdb_index section into the binary to speed up debugging.
-# Doing this by add_custom_command will become obsolete as soon as the linker does it. 
-################################################################################
-
-add_custom_command(TARGET muroad
-                   POST_BUILD  
-                   COMMAND  ${CMAKE_CURRENT_SOURCE_DIR}/../aux/scripts/mkgdbindex.sh muroad 
-                   WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-                   COMMENT "building gdb index")
-
-###############################################################################                                   
-                                   
+ADD_GDB_INDEX( muroad )                                   
 
                                    

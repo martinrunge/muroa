@@ -1,6 +1,12 @@
 cmake_minimum_required (VERSION 2.6)
 
-set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../aux/cmake/Modules" ${CMAKE_MODULE_PATH})
+if(NOT MUROA_AUX_DIR)
+set(MUROA_AUX_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../aux")
+endif()
+
+set(CMAKE_MODULE_PATH "${MUROA_AUX_DIR}/cmake/Modules" ${CMAKE_MODULE_PATH})
+
+include( MacroGDBIndex )
 
 set(Boost_USE_MULTITHREADED ON )
 
@@ -80,22 +86,10 @@ TARGET_LINK_LIBRARIES(mmscanner ${CMAKE_THREAD_LIBS_INIT}
                                 )
 
                               
-###################################################################################
-# This step merges a gdb_index section into the binary to speed up debugging.
-# Doing this by add_custom_command will become obsolete as soon as the linker does it. 
-###################################################################################
-add_custom_command(TARGET mmscanner
-                   POST_BUILD  
-                   COMMAND  ${CMAKE_CURRENT_SOURCE_DIR}/../aux/scripts/mkgdbindex.sh mmscanner 
-                   WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-                   COMMENT "building gdb index")
-                                   
-###################################################################################      
+ADD_GDB_INDEX( mmscanner )
 
 
-
-
-if(${unittests})
+if(unittests)
     find_package( CppUnit REQUIRED )
     find_package ( Qt4 REQUIRED COMPONENTS QtCore QtGui QtNetwork QtXml QtDbus )
     
@@ -130,18 +124,7 @@ if(${unittests})
                                          qxrunnerd
                                          )
                                          
-    ################################################################################
-    # This step merges a gdb_index section into the binary to speed up debugging.
-    # Doing this by add_custom_command will become obsolete as soon as the linker does it. 
-    ################################################################################
+    ADD_GDB_INDEX( mmscannertest )
     
-    add_custom_command(TARGET mmscannertest
-                       POST_BUILD  
-                       COMMAND  ${CMAKE_CURRENT_SOURCE_DIR}/../aux/scripts/mkgdbindex.sh mmscannertest 
-                       WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-                       COMMENT "building gdb index")
-    
-    ################################################################################                                     
-                                                                    
-endif(${unittests})                    
+endif()                    
             
