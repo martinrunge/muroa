@@ -8,3 +8,5 @@ core.*
 CMakeFiles
 cmake_install.cmake
 Makefile
+/debug/
+/debug_arm/
