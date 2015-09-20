@@ -29,6 +29,7 @@ CStreamCtrlConnection::CStreamCtrlConnection(std::string serviceName, CStreamSer
                         m_stream_connection(0),
 					    m_stream_server(stream_server),
 						m_serviceName(serviceName),
+						m_srv_sm(this),
 						m_RTP_port(0)
 {
 
@@ -38,6 +39,19 @@ CStreamCtrlConnection::~CStreamCtrlConnection() {
 	closeStreamConnection();
 	// close(); ?
 }
+
+void CStreamCtrlConnection::connect(const endpoint_type & peer_endpoint, boost::system::error_code & ec) {
+	bip::tcp::socket::connect(peer_endpoint, ec);
+	if(!ec) {
+		m_srv_sm.start();
+		m_srv_sm.pstate();
+		// m_srv_sm.process_event( evClientState() );
+		start_read();
+	}
+}
+
+
+
 
 void CStreamCtrlConnection::openStreamConnection() {
 
@@ -62,9 +76,9 @@ void CStreamCtrlConnection::onShutdown() {
 }
 
 bool CStreamCtrlConnection::onEvent(muroa::CmdStreamBase* ev) {
-
+	m_srv_sm.onEvent(ev);
+	return true;
 }
-
 
 
 void CStreamCtrlConnection::dataReceived( boost::array<char, 8192> buffer, int length) {
@@ -74,6 +88,44 @@ void CStreamCtrlConnection::dataReceived( boost::array<char, 8192> buffer, int l
 void CStreamCtrlConnection::onDataToSend(const char* data, int len) {
 	boost::asio::write(*this, boost::asio::buffer(data, len));
 }
+
+void CStreamCtrlConnection::reportError(std::string) {
+
+}
+
+void CStreamCtrlConnection::reportTimeout(std::string) {
+
+}
+
+void CStreamCtrlConnection::reportClientState(const CmdStreamBase* evt) {
+	m_stream_server->reportClientState(evt);
+}
+
+void CStreamCtrlConnection::start_read() {
+	async_read_some(boost::asio::buffer(m_buffer),
+                    boost::bind(&CStreamCtrlConnection::handle_read, this,
+                                boost::asio::placeholders::error,
+                                boost::asio::placeholders::bytes_transferred));
+}
+
+
+void CStreamCtrlConnection::handle_read(const boost::system::error_code& error, size_t bytes_transferred) {
+    if (!error) {
+    	dataReceived(m_buffer, bytes_transferred);
+    	start_read();
+    }
+    else {
+    	if(error == boost::asio::error::eof ) {
+    		// connection was closed
+    		assert(m_stream_server != 0);
+    		m_stream_server->removeClient(this);
+    	}
+    	// LOG4CPLUS_ERROR(CApp::logger(), "error in handle_read:  " << error.message());
+    	// delete this;
+    }
+}
+
+
 
 } /* namespace muroa */
 

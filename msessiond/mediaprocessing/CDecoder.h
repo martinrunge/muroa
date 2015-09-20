@@ -14,7 +14,7 @@ extern "C" {
 #include <libavresample/avresample.h>
 }
 
-using namespace std;
+// using namespace std;
 
 #include <string>
 #include <stdint.h>

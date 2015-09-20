@@ -40,7 +40,6 @@
 #include "CSettings.h"
 #include "CTcpServer.h"
 #include "CTimeServiceCtrl.h"
-#include "CStreamCtrlConnection.h"
 
 
 using namespace std;

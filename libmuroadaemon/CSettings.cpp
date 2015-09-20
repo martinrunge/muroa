@@ -62,9 +62,11 @@ int CSettings::parse(int argc, char** argv) throw(configEx) {
         {"foreground", 0, 0, 'f'},
         {"debuglevel", 1, 0, 'd'},
         {"port", 1, 0, 'p'},
+        {"tsport", 1, 0, 't'},
         {"searchport", 0, 0, 's'},
         {"logfile", 1, 0, 'l'},
         {"reset", 0, 0, 'r'},
+        {"muroad", 1, 0, 'm'},
         {"help", 0, 0, '?'},
         {0, 0, 0, 0}
     };
@@ -73,7 +75,7 @@ int CSettings::parse(int argc, char** argv) throw(configEx) {
         int this_option_optind = optind ? optind : 1;
         int option_index = 0;
 
-        c = getopt_long(argc, argv, "a:c:fsl:p:r?", long_options, &option_index);
+        c = getopt_long(argc, argv, "a:c:fst:l:m:p:r?", long_options, &option_index);
         if (c == -1)
             break;
 
@@ -116,12 +118,24 @@ int CSettings::parse(int argc, char** argv) throw(configEx) {
             m_search_free_port = true;
             break;
 
+        case 't':
+        	m_ts_port = strtoul(optarg, NULL, 10);
+            break;
+
         case 'l':
             if (optarg) {
                 m_logfile = optarg;
             }
             else {
             	throw configEx("--logfile option requires an argument");
+            }
+            break;
+
+        case 'm':
+            if (optarg) {
+                m_muroad = optarg;
+            } else {
+              	throw configEx("--muroad option requires an argument");
             }
             break;
 

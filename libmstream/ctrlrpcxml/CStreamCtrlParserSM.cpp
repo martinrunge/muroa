@@ -229,6 +229,10 @@ void CStreamCtrlParserSM::parseEvClientStateArgs(     const char** attrs, evClie
 	string addr_str;
 	string vol_str;
 
+	bool name_found = false;
+	bool addr_found = false;
+	bool vol_found = false;
+
 	parseCmdID(attrs, cmd);
 
 	for(int i=0; attrs[i]; i+=2)
@@ -238,25 +242,28 @@ void CStreamCtrlParserSM::parseEvClientStateArgs(     const char** attrs, evClie
 
 		if(name.compare("member_of_session") == 0) {
 			name_str = value;
+			name_found = true;
 		}
 		if(name.compare("session_srv") == 0) {
 			addr_str = value;
+			addr_found = true;
 		}
 		if(name.compare("volume") == 0) {
 			vol_str = value;
+			vol_found = true;
 		}
 	}
 
-	if( name_str.empty() || addr_str.empty() || vol_str.empty() ) {
+	if( !name_found || !addr_found || !vol_found ) {
 		ostringstream oss;
 		oss << "evClientState: ";
-		if( name_str.empty() ) {
+		if( !name_found ) {
 			oss << " argument 'member_of_session' missing; ";
 		}
-		if( addr_str.empty() ) {
+		if( !addr_found ) {
 			oss << " argument 'session_srv' missing; ";
 		}
-		if( vol_str.empty() ) {
+		if( !vol_found ) {
 			oss << " argument 'volume' missing; ";
 		}
 		throw ExRpcError(oss.str());

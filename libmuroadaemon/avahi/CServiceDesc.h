@@ -8,9 +8,10 @@
 #ifndef CSERVICEDESC_H_
 #define CSERVICEDESC_H_
 
-#include <string>
-#include <boost/shared_ptr.hpp>
 #include <boost/asio.hpp>
+#include <string>
+#include <memory>
+// include <boost/shared_ptr.hpp>
 
 namespace bip=boost::asio::ip;
 
@@ -128,7 +129,7 @@ private:
 
 };
 
-typedef boost::shared_ptr<CServiceDesc> ServDescPtr ;
+typedef std::shared_ptr<CServiceDesc> ServDescPtr ;
 
 }
 

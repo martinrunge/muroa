@@ -14,14 +14,14 @@
 #include "CAudioIOAlsa.h"
 #include "CSession.h"
 
-#include "CStreamServer.h"
-
 #include <cmds/CmdProgress.h>
 #include <cmds/CmdFinished.h>
 
 #include <log4cplus/logger.h>
 #include <log4cplus/loggingmacros.h>
 #include "CApp.h"
+
+#include "CStreamServer.h"
 
 using namespace log4cplus;
 using namespace muroa;

@@ -58,6 +58,9 @@ public:
     inline bool searchFreePort() { return m_search_free_port; };
     unsigned short ipversion() {return m_ip_version; };
 
+    unsigned short timeserver_port() { return m_ts_port; };
+    std::string muroad_addr() { return m_muroad; };
+
     inline std::string logfile() { return m_logfile; };
 
     inline std::string serviceName() {return m_service_name; };
@@ -102,6 +105,11 @@ private:
     unsigned short m_port;
     bool m_search_free_port;
     bool m_reset_cache;
+
+    // address of muroad for manual setting for testing
+    std::string m_muroad;
+    unsigned short m_ts_port;
+
 
     std::string m_service_name;
     std::string m_service_type;

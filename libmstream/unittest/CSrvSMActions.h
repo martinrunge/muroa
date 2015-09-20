@@ -1,7 +1,7 @@
 /*
  Copyright (c) 2002-2014 "Martin Runge"
 
- CStreamSMTest.h is part of muroa, the  Multi Room Audio Player [http://www.muroa.org]
+ CSrcSMActions.h is part of muroa, the  Multi Room Audio Player [http://www.muroa.org]
 
  Muroa is free software: you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
@@ -18,39 +18,26 @@
 
  */
 
-#ifndef UNITTEST_CSTREAMSMTEST_H_
-#define UNITTEST_CSTREAMSMTEST_H_
+#ifndef LIBMSTREAM_UNITTEST_CSRVSMACTIONS_H_
+#define LIBMSTREAM_UNITTEST_CSRVSMACTIONS_H_
 
-#include <cppunit/extensions/HelperMacros.h>
-#include <cppunit/TestFixture.h>
-
-#include "CStreamSrvSM.h"
+#include <ISrvSMActions.h>
 
 namespace muroa {
 
-class CSrvSMActions;
+class CmdStreamBase;
 
-class CStreamSMTest  : public CppUnit::TestFixture {
-	  CPPUNIT_TEST_SUITE( CStreamSMTest );
-	  CPPUNIT_TEST( joinRejectedTest );
-	  CPPUNIT_TEST( joinAcceptedTest );
-	  CPPUNIT_TEST_SUITE_END();
-
+class CSrvSMActions : public ISrvSMActions {
 public:
-	CStreamSMTest();
-	virtual ~CStreamSMTest();
+	CSrvSMActions();
+	virtual ~CSrvSMActions();
 
-	void setUp();
-    void tearDown();
+	void reportError(std::string msg);
+	void reportTimeout(std::string msg);
+	void reportClientState(const CmdStreamBase* evt);
 
-    void joinRejectedTest();
-    void joinAcceptedTest();
-
-private:
-    CStreamSrvSM *m_srv_sm;
-    CSrvSMActions *m_actions;
 };
 
 } /* namespace muroa */
 
-#endif /* UNITTEST_CSTREAMSMTEST_H_ */
+#endif /* LIBMSTREAM_UNITTEST_CSRVSMACTIONS_H_ */

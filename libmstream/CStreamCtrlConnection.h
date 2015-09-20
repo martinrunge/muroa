@@ -22,9 +22,16 @@
 #define CCTRLCONNECTION_H_
 
 #include "ctrlrpcxml/CStreamCtrlXml.h"
-#include <boost/shared_ptr.hpp>
+// #include <boost/shared_ptr.hpp>
 #include <boost/enable_shared_from_this.hpp>
 #include <boost/asio.hpp>
+#include <boost/array.hpp>
+
+
+
+#include <ISrvSMActions.h>
+#include <CStreamSrvSM.h>
+
 
 class CStreamConnection;
 class CStreamServer;
@@ -33,10 +40,12 @@ namespace bip=boost::asio::ip;
 
 namespace muroa {
 
-class CStreamCtrlConnection : public bip::tcp::socket, public muroa::CStreamCtrlXml {
+class CStreamCtrlConnection : public bip::tcp::socket, public muroa::CStreamCtrlXml, public muroa::ISrvSMActions {
 public:
 	CStreamCtrlConnection(std::string serviceName, CStreamServer* stream_server, boost::asio::io_service& io_service);
 	virtual ~CStreamCtrlConnection();
+
+	void connect(const endpoint_type & peer_endpoint, boost::system::error_code & ec);
 
 	void openStreamConnection();
 	void closeStreamConnection();
@@ -70,8 +79,14 @@ public:
 		m_stream_server = streamServer;
 	}
 
+	void reportError(std::string);
+	void reportTimeout(std::string);
+	void reportClientState(const CmdStreamBase* evt);
 
 private:
+	void start_read();
+	void handle_read(const boost::system::error_code& error, size_t bytes_transferred);
+
 	void onDataToSend(const char* data, int len);
 
 	CStreamServer* m_stream_server;
@@ -79,8 +94,13 @@ private:
 
 	CStreamConnection* m_stream_connection;
 
+	muroa::CStreamSrvSM m_srv_sm;
 
 	unsigned short m_RTP_port;
+
+	/// Buffer for incoming data.
+	boost::array<char, 8192> m_buffer;
+
 };
 
 } /* namespace muroa */

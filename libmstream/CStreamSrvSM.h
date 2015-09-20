@@ -28,21 +28,22 @@
 //msm front-end
 #include <boost/msm/front/state_machine_def.hpp>
 // functors
-#include <boost/msm/front/functor_row.hpp>
-#include <boost/msm/front/euml/common.hpp>
+//#include <boost/msm/front/functor_row.hpp>
+//#include <boost/msm/front/euml/common.hpp>
 // for And_ operator
-#include <boost/msm/front/euml/operator.hpp>
+// #include <boost/msm/front/euml/operator.hpp>
 // for func_state and func_state_machine
-#include <boost/msm/front/euml/state_grammar.hpp>
+// #include <boost/msm/front/euml/state_grammar.hpp>
 
 namespace msm = boost::msm;
 namespace mpl = boost::mpl;
-using namespace msm::front;
+using namespace boost::msm::front;
 // for And_ operator
-using namespace msm::front::euml;
+// using namespace boost::msm::front::euml;
 #include <typeinfo>
 #include <string>
 #include <cmds/CmdStream.h>
+#include <ISrvSMActions.h>
 
 using namespace muroa;
 using namespace std;
@@ -64,7 +65,7 @@ struct VisitorBase
 struct VisitableState
 {
     // signature of the accept function
-    typedef msm::back::args<void, VisitorBase&> accept_sig;
+    typedef boost::msm::back::args<void, VisitorBase&> accept_sig;
 
     // we also want polymorphic states
     virtual ~VisitableState() {}
@@ -73,11 +74,13 @@ struct VisitableState
     const std::string state_name;
 };
 
-struct srv_ : public msm::front::state_machine_def<srv_, VisitableState>
+struct srv_ : public boost::msm::front::state_machine_def<srv_, VisitableState>
 {
-    // The list of FSM states
+	ISrvSMActions* _actions;
 
-    struct awaitClientState : public msm::front::state<VisitableState>
+	// The list of FSM states
+
+    struct awaitClientState : public boost::msm::front::state<VisitableState>
     {
     	template <class Event,class FSM>
     	void on_entry(Event const&,FSM& ) {
@@ -94,31 +97,33 @@ struct srv_ : public msm::front::state_machine_def<srv_, VisitableState>
 
 
     // knowingClientState
-    struct knowingClientState : public msm::front::state<VisitableState>  {
+    struct knowingClientState : public boost::msm::front::state<VisitableState>  {
+       	template <class Event, class FSM> void on_entry(Event const& evt, FSM& fsm) {
+        		std::cout << "entering: knowingClientState" << std::endl;
+        		fsm._actions->reportClientState(&evt);
+        }
     	void accept(VisitorBase&) const     	{
     	    std::cout << "in " << typeid(this).name() << std::endl;
     	};
     };
 
     // awaitJoinResponse
-    struct awaitJoinResponse : public msm::front::state<VisitableState>  {
+    struct awaitJoinResponse : public boost::msm::front::state<VisitableState>  {
     	void accept(VisitorBase&) const     	{
     	    std::cout << "in " << typeid(this).name() << std::endl;
     	};
     };
 
     // error
-    struct error : public msm::front::state<VisitableState>  {
+    struct error : public boost::msm::front::state<VisitableState>  {
     	void accept(VisitorBase&) const     	{
     	    std::cout << "in " << typeid(this).name() << std::endl;
     	};
     };
 
-    // the initial state of the player SM. Must be defined
-    typedef awaitClientState initial_state;
 
     // joinedSession composite state with inner state machine
-    struct joinedSession_ : public msm::front::state_machine_def<joinedSession_, VisitableState>  {
+    struct joinedSession_ : public boost::msm::front::state_machine_def<joinedSession_, VisitableState>  {
         // inner FSM states
 
     	void accept(VisitorBase&) const     	{
@@ -126,7 +131,7 @@ struct srv_ : public msm::front::state_machine_def<srv_, VisitableState>
     	};
 
     	// definition of awaitSessionState
-        struct awaitSessionState : public msm::front::state<VisitableState>
+        struct awaitSessionState : public boost::msm::front::state<VisitableState>
         {
         	template <class Event,class FSM>
         	void on_entry(Event const&,FSM& )
@@ -145,7 +150,7 @@ struct srv_ : public msm::front::state_machine_def<srv_, VisitableState>
 
 
     	// definition of sessionMember
-        struct sessionMember : public msm::front::state<VisitableState>
+        struct sessionMember : public boost::msm::front::state<VisitableState>
         {
         	template <class Event,class FSM>
         	void on_entry(Event const&,FSM& )
@@ -164,14 +169,14 @@ struct srv_ : public msm::front::state_machine_def<srv_, VisitableState>
         };
 
         // noError
-        struct noError : public msm::front::state<VisitableState>  {
+        struct noError : public boost::msm::front::state<VisitableState>  {
         	void accept(VisitorBase&) const     	{
         	    std::cout << "in " << typeid(this).name() << std::endl;
         	};
         };
 
         // errorExit
-        struct errorExit : public msm::front::terminate_state<VisitableState> // errorExit terminates the state machine
+        struct errorExit : public boost::msm::front::terminate_state<VisitableState> // errorExit terminates the state machine
         {
         	template <class Event,class FSM>
         	void on_entry(Event const&,FSM& ) {std::cout << "starting: errorExit" << std::endl;}
@@ -183,7 +188,7 @@ struct srv_ : public msm::front::state_machine_def<srv_, VisitableState>
         };
 
         // the initial state of the player SM. Must be defined
-        typedef mpl::vector<awaitSessionState, noError> initial_state;
+        typedef boost::mpl::vector<awaitSessionState, noError> initial_state;
 
         // transition actions
         void report_error(const evError& err) {
@@ -195,15 +200,15 @@ struct srv_ : public msm::front::state_machine_def<srv_, VisitableState>
         typedef joinedSession_ j; // makes transition table cleaner
 
         // Transition table for joinedSession
-        struct transition_table : mpl::vector<
+        struct transition_table : boost::mpl::vector<
             //    Start                 Event                Next               Action                     Guard
             //  +------------------- +------------------+----------------------+---------------------------+----------------------+
-            Row < awaitSessionState  , evSessionState   , sessionMember        , none                      , none                 >,
-            Row < sessionMember      , evResetStream    , none                 , none                      , none                 >,
-            Row < sessionMember      , evSyncStream     , none                 , none                      , none                 >,
-            Row < sessionMember      , evSetVolume      , none                 , none                      , none                 >,
+           _row < awaitSessionState  , evSessionState   , sessionMember                                                           >,
+          _irow < sessionMember      , evResetStream                                                                              >,
+          _irow < sessionMember      , evSyncStream                                                                               >,
+          _irow < sessionMember      , evSetVolume                                                                                >,
             //  +------------------- +------------------+----------------------+---------------------------+----------------------+
-            Row < noError            , evCmdSent        , noError              , none                      , none                 >,
+          _irow < noError            , evCmdSent                                                                                  >,
 			a_row < noError          , evError          , errorExit            , &j::report_error                                 >,
             a_row < noError          , evTimeout        , errorExit            , &j::report_timeout                               >
         > {};
@@ -211,14 +216,17 @@ struct srv_ : public msm::front::state_machine_def<srv_, VisitableState>
         template <class FSM,class Event>
         void no_transition(Event const& e, FSM&,int state)
         {
-            std::cout << "no transition from state " << state
+            std::cout << " (sub state machine) no transition from state " << state
                 << " on event " << typeid(e).name() << std::endl;
         }
 
     };
     // Pick a back-end for inner state machine
-    typedef msm::back::state_machine<joinedSession_> joinedSession;
+    typedef boost::msm::back::state_machine<joinedSession_> joinedSession;
 
+
+    // the initial state of the player SM. Must be defined
+    typedef awaitClientState initial_state;
 
     // transitions
 
@@ -226,30 +234,31 @@ struct srv_ : public msm::front::state_machine_def<srv_, VisitableState>
     typedef srv_ s; // makes transition table cleaner
 
     // Transition table for player
-    struct transition_table : mpl::vector<
+    struct transition_table : boost::mpl::vector<
         //    Start                 Event                Next               Action                     Guard
         //  +------------------- +------------------+----------------------+---------------------------+----------------------+
-        Row < awaitClientState   , evClientState    , knowingClientState   , none                      , none                 >,
-        Row < knowingClientState , evRequestJoin    , awaitJoinResponse    , none                      , none                 >,
-        Row < awaitJoinResponse  , evJoinAccepted   , joinedSession        , none                      , none                 >,
-        Row < joinedSession      , evLeave          , knowingClientState   , none                      , none                 >,
-        Row < awaitJoinResponse  , evJoinRejected   , error                , none                      , none                 >
+       _row < awaitClientState   , evClientState    , knowingClientState                                                      >,
+       _row < knowingClientState , evRequestJoin    , awaitJoinResponse                                                       >,
+       _row < awaitJoinResponse  , evJoinAccepted   , joinedSession                                                           >,
+       _row < joinedSession      , evLeave          , knowingClientState                                                      >,
+       _row < awaitJoinResponse  , evJoinRejected   , error                                                                   >
     > {};
+
     // Replaces the default no-transition response.
     template <class FSM,class Event>
     void no_transition(Event const& e, FSM&,int state)
     {
-        std::cout << "no transition from state " << state
-            << " on event " << typeid(e).name() << std::endl;
+        std::cout << "(outer) no transition from state " << state << " on event " << typeid(e).name() << std::endl;
     }
 
 };
 
-class CStreamSrvSM :public msm::back::state_machine<srv_, VisitableState> {
+class CStreamSrvSM :public boost::msm::back::state_machine<srv_, VisitableState> {
 public:
-	CStreamSrvSM();
+	CStreamSrvSM(ISrvSMActions* actions);
 	virtual ~CStreamSrvSM();
 
+	virtual bool onEvent(muroa::CmdStreamBase* ev);
 
     void pstate();
 

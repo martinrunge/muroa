@@ -20,11 +20,13 @@
 
 #include "CStreamSMTest.h"
 
+#include <unittest/CSrvSMActions.h>
+
 namespace muroa {
 
 CPPUNIT_TEST_SUITE_REGISTRATION( CStreamSMTest );
 
-CStreamSMTest::CStreamSMTest() : m_srv_sm(0) {
+CStreamSMTest::CStreamSMTest() : m_srv_sm(0), m_actions(0) {
 	// TODO Auto-generated constructor stub
 
 }
@@ -35,13 +37,19 @@ CStreamSMTest::~CStreamSMTest() {
 
 
 void CStreamSMTest::setUp() {
+	assert(m_actions == 0);
+	m_actions = new CSrvSMActions();
+
 	assert(m_srv_sm == 0);
-    m_srv_sm = new CStreamSrvSM();
+    m_srv_sm = new CStreamSrvSM(m_actions);
 }
 
 void CStreamSMTest::tearDown() {
     delete m_srv_sm;
     m_srv_sm = 0;
+
+    delete m_actions;
+    m_actions = 0;
 }
 
 void CStreamSMTest::joinRejectedTest() {
@@ -50,7 +58,9 @@ void CStreamSMTest::joinRejectedTest() {
 	m_srv_sm->start();
     m_srv_sm->visit_current_states(boost::ref(vis));
 
-	m_srv_sm->process_event( evClientState() );
+    evClientState cs;
+    cerr << "type of evClientState: " << typeid(cs).name() << endl;
+	m_srv_sm->process_event( cs );
 	m_srv_sm->visit_current_states(boost::ref(vis));
 
     m_srv_sm->process_event( evRequestJoin() );

@@ -32,9 +32,10 @@ Class provides a server for a stream.
 #include <string>
 
 #include <sys/time.h>
+#include "avahi/CServiceDesc.h"
 
-#include <boost/date_time/posix_time/posix_time.hpp>
-#include <boost/asio.hpp>
+// #include <boost/date_time/posix_time/posix_time.hpp>
+// #include <boost/asio.hpp>
 // #include "libsock++.h"
 // #include "libdsaudio.h"
 
@@ -43,7 +44,6 @@ Class provides a server for a stream.
 #include "cmutex.h"
 #include "crtppacket.h"
 
-#include "avahi/CServiceDesc.h"
 
 #include <log4cplus/logger.h>
 
@@ -84,7 +84,9 @@ public:
 
     int addClient(bip::tcp::endpoint endp, const std::string& name);
     void removeClient(const std::string& name);
+    void removeClient(const muroa::CStreamCtrlConnection* connPtr);
     void removeClient(std::list<muroa::CStreamCtrlConnection*>::iterator iter);
+
 
     CSync* getSyncObj(uint32_t session_id, uint32_t stream_id);
 
@@ -99,6 +101,9 @@ public:
     void stdClientPort(int port);
     int stdClientPort(void);
     void listClients(void);
+
+	void reportClientState(const CmdStreamBase* evt);
+
 
 private:
     unsigned long m_num;

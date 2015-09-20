@@ -112,68 +112,16 @@ int main(int argc, char *argv[]) {
 		return EXIT_FAILURE;
 	}
 
-    while (1)
-      {
-        static struct option long_options[] =
-          {
-            /* These options set a flag. */
-            {"verbose", no_argument,       &verbose_flag, 1},
-            /* These options don't set a flag.
-               We distinguish them by their indices. */
-            {"muroad",      required_argument, 0, 'm'},
-            {"tsport",      required_argument, 0, 't'},
-            {"sessionid",   required_argument, 0, 's'},
-            {0, 0, 0, 0}
-          };
-        /* getopt_long stores the option index here. */
-        int option_index = 0;
+	if(!app->settings().muroad_addr().empty()) {
+		string addr_str = app->settings().muroad_addr();
+		clients.push_back( string_to_endpoint(addr_str, 5556));
+	}
 
-        c = getopt_long (argc, argv, "c:s:t:",
-                         long_options, &option_index);
+	if(app->settings().timeserver_port() != 0) {
+		timeSrvPort = app->settings().timeserver_port();
+	}
 
-        /* Detect the end of the options. */
-        if (c == -1)
-          break;
-
-        switch (c)
-          {
-          case 0:
-            /* If this option set a flag, do nothing else now. */
-            if (long_options[option_index].flag != 0)
-              break;
-            printf ("option %s", long_options[option_index].name);
-            if (optarg)
-              printf (" with arg %s", optarg);
-            printf ("\n");
-            break;
-
-          case 'c':
-          {
-            cerr <<"option -c with value '" <<  optarg << "'"<< endl;
-            bip::tcp::endpoint endp = string_to_endpoint(optarg, 5556);
-            clients.push_back(endp);
-            break;
-          }
-          case 's':
-          {
-            sessionID = strtol(optarg, NULL, 10);
-            cerr << "option -s with value '"<< sessionID << "'" << endl;
-            break;
-          }
-          case 't':
-          {
-            timeSrvPort = strtol(optarg, NULL, 10);
-            cerr << "option -t with value '"<< timeSrvPort << "'" << endl;
-            break;
-          }
-          case 'h':
-          default:
-            usage(argv[0]);
-            exit(0);
-          }
-      }
-
-    if(clients.size() == 0) {
+	if(clients.size() == 0) {
         bip::tcp::endpoint endp = string_to_endpoint("127.0.0.1", 5556);
         clients.push_back(endp);
     }

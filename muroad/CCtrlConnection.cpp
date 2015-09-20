@@ -35,6 +35,7 @@ CCtrlConnection::~CCtrlConnection() {
 
 void CCtrlConnection::start() {
 	CTcpConnection::start();
+	setup();
 	m_clnt_sm.start();
 }
 

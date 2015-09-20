@@ -342,12 +342,24 @@ void CStreamServer::removeClient(const string& name)
     }
 }
 
+void CStreamServer::removeClient(const muroa::CStreamCtrlConnection* connPtr) {
+
+}
+
+
 
 void CStreamServer::removeClient(list<CStreamCtrlConnection*>::iterator iter) {
 	m_connection_list_mutex.Lock();
 	m_joined_connections.erase(iter);
 	m_connection_list_mutex.UnLock();
 }
+
+void CStreamServer::reportClientState(const CmdStreamBase* evt) {
+	// evt may be of type evClientState or evLeave
+
+}
+
+
 
 /*!
     \fn CStreamServer::getSyncObj(uint32_t session_id, uint32_t stream_id)

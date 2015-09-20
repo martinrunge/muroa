@@ -48,6 +48,7 @@ set( HEADERS       CStreamConnection.h
                    CStreamCtrlConnection.h
                    CStreamServer.h
                    CStreamSrvSM.h
+                   ISrvSMActions.h
                    CStreamClientSM.h
                    IClientSMActions.h
                    caudioframe.h

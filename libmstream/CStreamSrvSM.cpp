@@ -19,6 +19,7 @@
  */
 
 #include <CStreamSrvSM.h>
+#include <Exceptions.h>
 
 namespace muroa {
 
@@ -26,22 +27,46 @@ char const* const CStreamSrvSM::outer_state_names[] = {  "awaitClientState", "kn
 char const* const CStreamSrvSM::inner_state_names[] = {  "awaitSessionState", "sessionMember", "noError", "errorExit" };
 
 
-CStreamSrvSM::CStreamSrvSM() {
-	// TODO Auto-generated constructor stub
-
+CStreamSrvSM::CStreamSrvSM(ISrvSMActions* actions) {
+	_actions = actions;
 }
 
 CStreamSrvSM::~CStreamSrvSM() {
 	// TODO Auto-generated destructor stub
 }
 
+/// @brief: cast events to their types and process them
+//
+// this is needed, because boost::msm's process_event method takes the event as template parameter.
+// No need for a common base type, but the actual type must be known at compile time because of
+// template instantiation.
+bool CStreamSrvSM::onEvent(muroa::CmdStreamBase* ev) {
+
+	if      ( typeid(*ev) == typeid(evClientState) )     process_event( *reinterpret_cast<evClientState*>(ev) );
+	else if ( typeid(*ev) == typeid(evRequestJoin) )     process_event( *reinterpret_cast<evRequestJoin*>(ev) );
+	else if ( typeid(*ev) == typeid(evJoinAccepted) )    process_event( *reinterpret_cast<evJoinAccepted*>(ev) );
+	else if ( typeid(*ev) == typeid(evJoinRejected) )    process_event( *reinterpret_cast<evJoinRejected*>(ev) );
+	else if ( typeid(*ev) == typeid(evLeave) )           process_event( *reinterpret_cast<evLeave*>(ev) );
+	else if ( typeid(*ev) == typeid(evGetSessionState) ) process_event( *reinterpret_cast<evGetSessionState*>(ev) );
+	else if ( typeid(*ev) == typeid(evSessionState) )    process_event( *reinterpret_cast<evSessionState*>(ev) );
+	else if ( typeid(*ev) == typeid(evResetStream) )     process_event( *reinterpret_cast<evResetStream*>(ev) );
+	else if ( typeid(*ev) == typeid(evSyncStream) )      process_event( *reinterpret_cast<evSyncStream*>(ev) );
+	else if ( typeid(*ev) == typeid(evSetVolume) )       process_event( *reinterpret_cast<evSetVolume*>(ev) );
+	else if ( typeid(*ev) == typeid(evAck) )             process_event( *reinterpret_cast<evAck*>(ev) );
+	else if ( typeid(*ev) == typeid(evError) )           process_event( *reinterpret_cast<evError*>(ev) );
+	else {
+		throw CException("CStreamSrvSM::onEvent: unknown event type");
+	}
+}
+
+
 void CStreamSrvSM::pstate() {
-    typedef msm::back::generate_state_set<stt>::type all_states;
-    static char const* state_names[mpl::size<all_states>::value];
+    typedef boost::msm::back::generate_state_set<stt>::type all_states;
+    static char const* state_names[boost::mpl::size<all_states>::value];
 
     // fill the names of the states defined in the state machine
-    mpl::for_each<all_states,boost::msm::wrap<mpl::placeholders::_1> >
-        (msm::back::fill_state_names<stt>(state_names));
+    boost::mpl::for_each<all_states,boost::msm::wrap<boost::mpl::placeholders::_1> >
+        (boost::msm::back::fill_state_names<stt>(state_names));
 
     for (unsigned int i=0;i<nr_regions::value;++i)
     {

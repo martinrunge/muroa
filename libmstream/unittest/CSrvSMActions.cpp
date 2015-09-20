@@ -1,7 +1,7 @@
 /*
  Copyright (c) 2002-2014 "Martin Runge"
 
- IClientSMActions.cpp is part of muroa, the  Multi Room Audio Player [http://www.muroa.org]
+ CSrcSMActions.cpp is part of muroa, the  Multi Room Audio Player [http://www.muroa.org]
 
  Muroa is free software: you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
@@ -18,17 +18,32 @@
 
  */
 
-#include "IClientSMActions.h"
+#include <unittest/CSrvSMActions.h>
+
+#include <cmds/CmdStreamBase.h>
 
 namespace muroa {
 
-IClientSMActions::IClientSMActions() {
+CSrvSMActions::CSrvSMActions() {
 	// TODO Auto-generated constructor stub
 
 }
 
-IClientSMActions::~IClientSMActions() {
+CSrvSMActions::~CSrvSMActions() {
 	// TODO Auto-generated destructor stub
+}
+
+
+void CSrvSMActions::reportError(std::string msg) {
+
+}
+
+void CSrvSMActions::reportTimeout(std::string msg) {
+
+}
+
+void CSrvSMActions::reportClientState(const CmdStreamBase* evt) {
+
 }
 
 } /* namespace muroa */

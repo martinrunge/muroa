@@ -14,6 +14,7 @@ include( MacroGDBIndex )
 add_definitions( ${QT4_DEFINITIONS} -D__STDC_CONSTANT_MACROS ${CPPUNIT_DEFINITIONS})
 
 set( unittests_SRCS   CCmdStreamTests.cpp
+                      CSrvSMActions.cpp
                       CStreamSMTest.cpp
                       CClientSMActions.cpp
                       CStreamClientSMTest.cpp
@@ -25,6 +26,7 @@ set( unittests_H
                       )
                     
 set( HEADERS          CCmdStreamTests.h
+                      CSrvSMActions.h
                       CClientSMActions.h
                       CStreamSMTest.h
                       CStreamClientSMTest.h
