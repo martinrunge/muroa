@@ -30,7 +30,7 @@
 */
 namespace muroa {
 	class CStreamCtrlConnection;
-}
+
 
 class CStreamConnection
 {
@@ -52,4 +52,5 @@ private:
     CIPv4Address m_client_address;
 };
 
+} // namespace muroa
 #endif

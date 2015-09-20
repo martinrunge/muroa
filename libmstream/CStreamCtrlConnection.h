@@ -33,16 +33,17 @@
 #include <CStreamSrvSM.h>
 
 
-class CStreamConnection;
-class CStreamServer;
 
 namespace bip=boost::asio::ip;
 
 namespace muroa {
 
+class CStreamConnection;
+class CStreamServer;
+
 class CStreamCtrlConnection : public bip::tcp::socket, public muroa::CStreamCtrlXml, public muroa::ISrvSMActions {
 public:
-	CStreamCtrlConnection(std::string serviceName, CStreamServer* stream_server, boost::asio::io_service& io_service);
+	CStreamCtrlConnection(std::string serviceName, muroa::CStreamServer* stream_server, boost::asio::io_service& io_service);
 	virtual ~CStreamCtrlConnection();
 
 	void connect(const endpoint_type & peer_endpoint, boost::system::error_code & ec);
@@ -82,6 +83,7 @@ public:
 	void reportError(std::string);
 	void reportTimeout(std::string);
 	void reportClientState(const CmdStreamBase* evt);
+	void requestJoin(const evRequestJoin* evt);
 
 private:
 	void start_read();

@@ -109,6 +109,10 @@ struct srv_ : public boost::msm::front::state_machine_def<srv_, VisitableState>
 
     // awaitJoinResponse
     struct awaitJoinResponse : public boost::msm::front::state<VisitableState>  {
+       	template <class Event, class FSM> void on_entry(Event const& evt, FSM& fsm) {
+        		std::cout << "entering: awaitJoinResponse" << std::endl;
+        		fsm._actions->requestJoin(&evt);
+        }
     	void accept(VisitorBase&) const     	{
     	    std::cout << "in " << typeid(this).name() << std::endl;
     	};

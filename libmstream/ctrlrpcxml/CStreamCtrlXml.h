@@ -53,25 +53,25 @@ public:
 	void setup();
 	void shutdown();
 
-	void sendEvent(CmdStreamBase* ev);
+	void sendEvent(const CmdStreamBase* ev);
 //	void onRecvEvent(CmdStreamBase* ev);
 
 	void newData(const char* data, int len);
 
 private:
 
-	void sendEvClientState     ( CmdStreamBase* ev);
-	void sendEvRequestJoin     ( CmdStreamBase* ev);
-	void sendEvJoinAccepted    ( CmdStreamBase* ev);
-	void sendEvJoinRejected    ( CmdStreamBase* ev);
-	void sendEvLeave           ( CmdStreamBase* ev);
-	void sendEvGetSessionState ( CmdStreamBase* ev);
-	void sendEvSessionState    ( CmdStreamBase* ev);
-	void sendEvResetStream     ( CmdStreamBase* ev);
-	void sendEvSyncStream      ( CmdStreamBase* ev);
-	void sendEvSetVolume       ( CmdStreamBase* ev);
-	void sendEvAck             ( CmdStreamBase* ev);
-	void sendEvError           ( CmdStreamBase* ev);
+	void sendEvClientState     ( const CmdStreamBase* ev);
+	void sendEvRequestJoin     ( const CmdStreamBase* ev);
+	void sendEvJoinAccepted    ( const CmdStreamBase* ev);
+	void sendEvJoinRejected    ( const CmdStreamBase* ev);
+	void sendEvLeave           ( const CmdStreamBase* ev);
+	void sendEvGetSessionState ( const CmdStreamBase* ev);
+	void sendEvSessionState    ( const CmdStreamBase* ev);
+	void sendEvResetStream     ( const CmdStreamBase* ev);
+	void sendEvSyncStream      ( const CmdStreamBase* ev);
+	void sendEvSetVolume       ( const CmdStreamBase* ev);
+	void sendEvAck             ( const CmdStreamBase* ev);
+	void sendEvError           ( const CmdStreamBase* ev);
 
 	void sendData(std::string data);
 
@@ -79,7 +79,7 @@ private:
     static void XMLCALL endTagHandler(void *inst_ptr, const char *el);
     static void XMLCALL characterHandler(void *inst_ptr, const char *s, int len);
 
-    typedef void (CStreamCtrlXml::*serializeFunc_t)(CmdStreamBase*);
+    typedef void (CStreamCtrlXml::*serializeFunc_t)(const CmdStreamBase*);
 	std::unordered_map<std::type_index, serializeFunc_t> type_serializers;
 
     XML_Parser m_parser;

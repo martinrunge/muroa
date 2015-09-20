@@ -22,6 +22,7 @@ public:
 	virtual void reportError(std::string msg) = 0;
 	virtual void reportTimeout(std::string msg) = 0;
 	virtual void reportClientState(const CmdStreamBase* evt) = 0;
+	virtual void requestJoin(const evRequestJoin* evt) = 0;
 };
 
 } /* namespace muroa */

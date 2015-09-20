@@ -33,16 +33,17 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 namespace bip=boost::asio::ip;
 
 
-class cppserver {
+class cppserver :public CStreamServer {
 public:
 	cppserver(std::vector<bip::tcp::endpoint> clients, int timeServerPort, int sessionID );
 	~cppserver();
 	void run();
 	void sendData();
 
+	void reportClientState(muroa::CStreamCtrlConnection* conn, const muroa::CmdStreamBase* evt);
+
 private:
 	boost::asio::io_service m_io_service;
-	CStreamServer m_ss;
 	FILE* m_in_fd;
 };
 

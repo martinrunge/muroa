@@ -24,7 +24,7 @@
 
 namespace muroa {
 
-CStreamCtrlConnection::CStreamCtrlConnection(std::string serviceName, CStreamServer* stream_server, boost::asio::io_service& io_service)
+CStreamCtrlConnection::CStreamCtrlConnection(std::string serviceName, muroa::CStreamServer* stream_server, boost::asio::io_service& io_service)
                       : bip::tcp::socket(io_service),
                         m_stream_connection(0),
 					    m_stream_server(stream_server),
@@ -98,8 +98,13 @@ void CStreamCtrlConnection::reportTimeout(std::string) {
 }
 
 void CStreamCtrlConnection::reportClientState(const CmdStreamBase* evt) {
-	m_stream_server->reportClientState(evt);
+	m_stream_server->reportClientState(this, evt);
 }
+
+void CStreamCtrlConnection::requestJoin(const evRequestJoin* evt) {
+	sendEvent(evt);
+}
+
 
 void CStreamCtrlConnection::start_read() {
 	async_read_some(boost::asio::buffer(m_buffer),

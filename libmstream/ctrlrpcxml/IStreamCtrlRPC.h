@@ -40,7 +40,7 @@ public:
 	virtual void setup() = 0;
 	virtual void shutdown() = 0;
 
-	virtual void sendEvent(CmdStreamBase* ev) = 0;
+	virtual void sendEvent(const CmdStreamBase* ev) = 0;
 	/// return true if event was completely consumed an can be deleted, false, if comumer will take care about delete.
 	virtual bool onEvent(CmdStreamBase* ev) = 0;
 };
@@ -52,7 +52,7 @@ public:
 	virtual void setup() = 0;
 	virtual void shutdown() = 0;
 
-	virtual void sendEvent(CmdStreamBase* ev) = 0;
+	virtual void sendEvent(const CmdStreamBase* ev) = 0;
 };
 
 class IStreamCtrlCBs : public IStreamCtrl {

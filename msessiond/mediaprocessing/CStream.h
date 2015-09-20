@@ -21,9 +21,9 @@ class IAudioIO;
 namespace muroa {
   class CSession;
   class CMediaItem;
+  class CStreamServer;
 }
 
-class CStreamServer;
 
 enum sessionState {
 	e_stopped = 0,
@@ -76,7 +76,7 @@ private:
  	std::thread* m_thread;
 	bool m_run;
 
-    CStreamServer *m_streamserver;
+    muroa::CStreamServer *m_streamserver;
     boost::asio::io_service& m_io_service;
 };
 

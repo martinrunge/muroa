@@ -80,7 +80,7 @@ void CStreamCtrlXml::shutdown() {
 
 
 
-void CStreamCtrlXml::sendEvent(CmdStreamBase* ev) {
+void CStreamCtrlXml::sendEvent(const CmdStreamBase* ev) {
 	try {
 		((*this).*type_serializers[type_index( typeid(*ev) ) ])(ev);
 	}
@@ -92,8 +92,8 @@ void CStreamCtrlXml::sendEvent(CmdStreamBase* ev) {
 //void CStreamCtrlXml::onRecvEvent(CmdStreamBase* ev) {
 //}
 
-void CStreamCtrlXml::sendEvClientState(CmdStreamBase* ev) {
-	evClientState* e = dynamic_cast<evClientState*>(ev);
+void CStreamCtrlXml::sendEvClientState(const CmdStreamBase* ev) {
+	const evClientState* e = dynamic_cast<const evClientState*>(ev);
 	ostringstream oss;
 	oss << "<" << e->ev_name << " cmdID=\"" << e->getID() << "\""
                                             << " member_of_session=\"" << e->m_member_of_session << "\""
@@ -103,8 +103,8 @@ void CStreamCtrlXml::sendEvClientState(CmdStreamBase* ev) {
 	sendData(oss.str());
 }
 
-void CStreamCtrlXml::sendEvRequestJoin(CmdStreamBase* ev) {
-	evRequestJoin* e = dynamic_cast<evRequestJoin*>(ev);
+void CStreamCtrlXml::sendEvRequestJoin(const CmdStreamBase* ev) {
+	const evRequestJoin* e = dynamic_cast<const evRequestJoin*>(ev);
 	ostringstream oss;
 	oss << "<" << e->ev_name << " cmdID=\"" << e->getID() << "\""
                                             << " session_name=\"" << e->m_session_name << "\""
@@ -114,8 +114,8 @@ void CStreamCtrlXml::sendEvRequestJoin(CmdStreamBase* ev) {
 	sendData(oss.str());
 }
 
-void CStreamCtrlXml::sendEvJoinAccepted(CmdStreamBase* ev) {
-	evJoinAccepted* e = dynamic_cast<evJoinAccepted*>(ev);
+void CStreamCtrlXml::sendEvJoinAccepted(const CmdStreamBase* ev) {
+	const evJoinAccepted* e = dynamic_cast<const evJoinAccepted*>(ev);
 	ostringstream oss;
 	oss << "<" << e->ev_name << " cmdID=\"" << e->getID() << "\""
                                             << " former_session=\"" << e->m_former_session << "\"/>" << endl;
@@ -123,8 +123,8 @@ void CStreamCtrlXml::sendEvJoinAccepted(CmdStreamBase* ev) {
 	sendData(oss.str());
 }
 
-void CStreamCtrlXml::sendEvJoinRejected(CmdStreamBase* ev) {
-	evJoinRejected* e = dynamic_cast<evJoinRejected*>(ev);
+void CStreamCtrlXml::sendEvJoinRejected(const CmdStreamBase* ev) {
+	const evJoinRejected* e = dynamic_cast<const evJoinRejected*>(ev);
 	ostringstream oss;
 	oss << "<" << e->ev_name << " cmdID=\"" << e->getID() << "\""
                                             << " owner_session=\"" << e->m_owner_session << "\""
@@ -133,24 +133,24 @@ void CStreamCtrlXml::sendEvJoinRejected(CmdStreamBase* ev) {
 	sendData(oss.str());
 }
 
-void CStreamCtrlXml::sendEvLeave(CmdStreamBase* ev) {
-	evLeave* e = dynamic_cast<evLeave* >(ev);
+void CStreamCtrlXml::sendEvLeave(const CmdStreamBase* ev) {
+	const evLeave* e = dynamic_cast<const evLeave* >(ev);
 	ostringstream oss;
 	oss << "<" << e->ev_name << " cmdID=\"" << e->getID() << "\""
                                             << " triggered_by_session=\"" << e->m_triggered_by_session << "\"/>" << endl;
 	sendData(oss.str());
 }
 
-void CStreamCtrlXml::sendEvGetSessionState(CmdStreamBase* ev) {
-	evGetSessionState* e = dynamic_cast<evGetSessionState*>(ev);
+void CStreamCtrlXml::sendEvGetSessionState(const CmdStreamBase* ev) {
+	const evGetSessionState* e = dynamic_cast<const evGetSessionState*>(ev);
 	ostringstream oss;
 	oss << "<" << e->ev_name << " cmdID=\"" << e->getID() << "\""
                                             << " session_name=\"" << e->m_session_name << "\"/>" << endl;
 	sendData(oss.str());
 }
 
-void CStreamCtrlXml::sendEvSessionState(CmdStreamBase* ev) {
-	evSessionState* e = dynamic_cast<evSessionState*>(ev);
+void CStreamCtrlXml::sendEvSessionState(const CmdStreamBase* ev) {
+	const evSessionState* e = dynamic_cast<const evSessionState*>(ev);
 	ostringstream oss;
 	oss << "<" << e->ev_name << " cmdID=\"" << e->getID() << "\""
                                             << " session_name=\"" << e->m_session_name << "\""
@@ -161,8 +161,8 @@ void CStreamCtrlXml::sendEvSessionState(CmdStreamBase* ev) {
 	sendData(oss.str());
 }
 
-void CStreamCtrlXml::sendEvResetStream(CmdStreamBase* ev) {
-	evResetStream* e = dynamic_cast<evResetStream*>(ev);
+void CStreamCtrlXml::sendEvResetStream(const CmdStreamBase* ev) {
+	const evResetStream* e = dynamic_cast<const evResetStream*>(ev);
 	ostringstream oss;
 	oss << "<" << e->ev_name << " cmdID=\"" << e->getID() << "\""
                                             << " ssrc=\"" << e->m_ssrc << "\""
@@ -171,8 +171,8 @@ void CStreamCtrlXml::sendEvResetStream(CmdStreamBase* ev) {
 	sendData(oss.str());
 }
 
-void CStreamCtrlXml::sendEvSyncStream(CmdStreamBase* ev) {
-	evSyncStream* e = dynamic_cast<evSyncStream*>(ev);
+void CStreamCtrlXml::sendEvSyncStream(const CmdStreamBase* ev) {
+	const evSyncStream* e = dynamic_cast<const evSyncStream*>(ev);
 	ostringstream oss;
 	oss << "<" << e->ev_name << " cmdID=\"" << e->getID() << "\""
                                             << " ssrc=\"" << e->m_ssrc << "\""
@@ -181,8 +181,8 @@ void CStreamCtrlXml::sendEvSyncStream(CmdStreamBase* ev) {
 	sendData(oss.str());
 }
 
-void CStreamCtrlXml::sendEvSetVolume(CmdStreamBase* ev) {
-	evSetVolume* e = dynamic_cast<evSetVolume*>(ev);
+void CStreamCtrlXml::sendEvSetVolume(const CmdStreamBase* ev) {
+	const evSetVolume* e = dynamic_cast<const evSetVolume*>(ev);
 	ostringstream oss;
 	oss << "<" << e->ev_name << " cmdID=\"" << e->getID() << "\""
                                             << " ssrc=\"" << e->m_ssrc << "\""
@@ -190,16 +190,16 @@ void CStreamCtrlXml::sendEvSetVolume(CmdStreamBase* ev) {
 	sendData(oss.str());
 }
 
-void CStreamCtrlXml::sendEvAck(CmdStreamBase* ev) {
-	evAck* e = dynamic_cast<evAck*>(ev);
+void CStreamCtrlXml::sendEvAck(const CmdStreamBase* ev) {
+	const evAck* e = dynamic_cast<const evAck*>(ev);
 	ostringstream oss;
 	oss << "<" << e->ev_name << " cmdID=\"" << e->getID() << "\"/>" << endl;
 	sendData(oss.str());
 }
 
 
-void CStreamCtrlXml::sendEvError(CmdStreamBase* ev) {
-	evError* e = dynamic_cast<evError*>(ev);
+void CStreamCtrlXml::sendEvError(const CmdStreamBase* ev) {
+	const evError* e = dynamic_cast<const evError*>(ev);
 	ostringstream oss;
 	oss << "<" << e->ev_name << " cmdID=\"" << e->getID() << "\""
                                             << " message=\"" << e->m_error_msg << "\"/>" << endl;

@@ -34,14 +34,14 @@ using namespace std;
 
 
 
-cppserver::cppserver(vector<bip::tcp::endpoint> clients, int timeServerPort, int sessionID ) : m_ss(m_io_service, timeServerPort, sessionID) {
+cppserver::cppserver(vector<bip::tcp::endpoint> clients, int timeServerPort, int sessionID ) : CStreamServer(m_io_service, timeServerPort, sessionID) {
 	try {
 
 		for(int i = 0; i < clients.size(); i++) {
-			m_ss.addClient(clients[i], "example session");
+			addClient(clients[i], "example session");
 		}
 		m_in_fd = fopen("infile.raw", "r");
-		m_ss.open();
+		open();
 
 		boost::asio::deadline_timer t(m_io_service, boost::posix_time::milliseconds(10) );
 		t.async_wait( boost::bind(&cppserver::sendData, this) );
@@ -51,7 +51,7 @@ cppserver::cppserver(vector<bip::tcp::endpoint> clients, int timeServerPort, int
 }
 cppserver::~cppserver() {
 	fclose(m_in_fd);
-    m_ss.close();
+    close();
 
 }
 
@@ -66,10 +66,24 @@ void cppserver::sendData()
 	  char buffer[buffersize];
 
 	  num = fread((void*)buffer, buffersize, 1, m_in_fd);
-	  m_ss.write(buffer, num * buffersize);
+	  write(buffer, num * buffersize);
 
 	  if(num > 0) {
 			boost::asio::deadline_timer t(m_io_service, boost::posix_time::milliseconds(10) );
 			t.async_wait( boost::bind(&cppserver::sendData, this) );
 	  }
 }
+
+void cppserver::reportClientState(muroa::CStreamCtrlConnection* conn, const muroa::CmdStreamBase* evt) {
+	if(typeid(*evt) == typeid(evClientState)) {
+		const evClientState* ct = reinterpret_cast<const evClientState*>(evt);
+
+		evRequestJoin* evj = new evRequestJoin();
+		evj->m_session_name = "testsession";
+		// evj->m_mcast_addr =
+		evj->m_timesrv_port = 12345;
+		conn->onEvent(evj);
+	}
+
+}
+

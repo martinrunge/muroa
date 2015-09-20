@@ -32,7 +32,7 @@ namespace muroa {
 class CmdStreamBase {
 public:
 	virtual ~CmdStreamBase();
-	uint32_t getID() { return m_cmd_id; };
+	uint32_t getID() const { return m_cmd_id; };
 	uint32_t m_cmd_id;
 
 protected:

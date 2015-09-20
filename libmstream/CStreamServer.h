@@ -30,7 +30,6 @@ Class provides a server for a stream.
 #include <set>
 #include <list>
 #include <string>
-
 #include <sys/time.h>
 #include "avahi/CServiceDesc.h"
 
@@ -40,6 +39,8 @@ Class provides a server for a stream.
 // #include "libdsaudio.h"
 
 #include "CStreamCtrlConnection.h"
+#include "CMediaStreamProvider.h"
+
 #include "csync.h"
 #include "cmutex.h"
 #include "crtppacket.h"
@@ -51,8 +52,9 @@ class CIPv4Address;
 
 namespace bip=boost::asio::ip;
 
+namespace muroa {
 
-class CStreamServer{
+class CStreamServer : public CMediaStreamProvider {
 public:
     /**
      * @brief CStreamServer constructor.
@@ -66,92 +68,26 @@ public:
      * between send timestamp and presentation timestamp.
      */
     CStreamServer(boost::asio::io_service& io_service, int timeServerPort, int session_id = 1, int transport_buffer_size_in_ms = 1500);
-
     ~CStreamServer();
 
-    int open(int audio_bytes_per_second = 2 * 2 * 44100);
-    void close();
-    void flush();
 
-    int write(char* buffer, int length);
-    int sendPacket(char* buffer, int length);
+    // void adjustReceiverList(std::vector<muroa::ServDescPtr> receivers);
+    virtual int addClient(bip::tcp::endpoint endp, const std::string& name);
+    virtual void removeClient(const std::string& name);
+    virtual void removeClient(const muroa::CStreamCtrlConnection* connPtr);
 
-
-    // std::list<muroa::CStreamCtrlConnection*>::iterator addStreamConnection(muroa::CStreamCtrlConnection* conn);
-    // muroa::CStreamCtrlConnection* removeStreamConnection(std::list<muroa::CStreamCtrlConnection*>::iterator conn_iterator);
-
-    void adjustReceiverList(std::vector<muroa::ServDescPtr> receivers);
-
-    int addClient(bip::tcp::endpoint endp, const std::string& name);
-    void removeClient(const std::string& name);
-    void removeClient(const muroa::CStreamCtrlConnection* connPtr);
-    void removeClient(std::list<muroa::CStreamCtrlConnection*>::iterator iter);
-
-
-    CSync* getSyncObj(uint32_t session_id, uint32_t stream_id);
-
-    /*!
-      \fn CStreamServer::adjustClientListTo(std::vector<std::string> clients)
-      \brief  specify a new list of clients and adjust the used list to that new list.
-
-      This is done in two steps: first, search the connection list for client connections not listed any more in the new list and remove them. Second, search the new list for clients, that are not yet listed in the modified connection list and add them.
-    */
-    // void adjustClientListTo(std::list<std::string> clients);
-
-    void stdClientPort(int port);
-    int stdClientPort(void);
-    void listClients(void);
-
-	void reportClientState(const CmdStreamBase* evt);
-
+	virtual void reportClientState(muroa::CStreamCtrlConnection* conn, const muroa::CmdStreamBase* evt);
 
 private:
-    unsigned long m_num;
-    int m_payload_size;
-
-    int m_num_clients;
-
-    int m_audio_bytes_per_second;
-    int m_audio_bytes_per_frame;
-
-    long m_frames_in_sync_period;
-
-    /** system time when the first packet was sent */
-    boost::posix_time::ptime m_first_send_time;
-
-    /** the actual system time when the last packet was sent */
-    boost::posix_time::ptime m_last_send_time;
-
-    boost::posix_time::ptime m_send_time;
-
-    boost::posix_time::time_duration m_time_since_last_packet;
-    boost::posix_time::time_duration m_payload_duration_sum;
-    boost::posix_time::time_duration m_last_payload_duration;
-    boost::posix_time::time_duration m_total_play_time;
-
-    boost::posix_time::time_duration m_transport_buffer_duration;
-
-    log4cplus::Logger m_timing_logger;
-  
-    CRTPPacket *m_rtp_packet;
-    CSync m_syncobj;
-
-    std::list<muroa::CStreamCtrlConnection*> m_joined_connections;
-    std::set<muroa::CStreamCtrlConnection*> m_loose_connections;
-
-    CMutex m_connection_list_mutex;
-
-    unsigned long m_session_id;
-
-    unsigned long m_stream_id;
-
-    int m_std_client_port;
     int m_time_server_port;
+
+    set<CStreamCtrlConnection*> m_sessionless_connections;
 
     boost::asio::io_service& m_io_service;
 
-private:
-    void sendToAllClients(CRTPPacket* packet);
+    void removeClient(set<CStreamCtrlConnection*>::iterator iter);
 };
+
+} // namespace muroa
 
 #endif

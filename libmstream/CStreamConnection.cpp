@@ -27,6 +27,8 @@
 using namespace std;
 using namespace muroa;
 
+namespace muroa {
+
 CStreamConnection::CStreamConnection(CStreamCtrlConnection* parent, unsigned short bind_port) : m_socket(SOCK_DGRAM, bind_port )
 {
   m_stream_ctrl_conn = parent;
@@ -38,8 +40,6 @@ CStreamConnection::~CStreamConnection()
 {
 
 }
-
-
 
 
 /*!
@@ -115,3 +115,5 @@ CIPv4Address* CStreamConnection::getClientAddress()
 {
     return &m_client_address;
 }
+
+} // namespace muroa
