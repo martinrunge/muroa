@@ -103,7 +103,7 @@ public:
 class evSessionState: public CmdStreamBase {
 public:
 	bool operator==(const evSessionState& rhs) {
-		return  m_session_name.compare( rhs.m_session_name ) == 0 &
+		return  m_session_name.compare( rhs.m_session_name ) == 0 &&
 				m_mcast_addr == rhs.m_mcast_addr &&
 				m_timesrv_port == rhs.m_timesrv_port &&
 				m_rtp_unicast_port == rhs.m_rtp_unicast_port &&

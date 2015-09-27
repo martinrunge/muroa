@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xmi:XMI xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:notation="http://www.eclipse.org/gmf/runtime/1.0.2/notation" xmlns:sgraph="http://www.yakindu.org/sct/sgraph/2.0.0">
-  <sgraph:Statechart xmi:id="_YqCcwALZEeWUZYxhcKJK6w" specification="interface Socket:&#xA;&#x9;in event connect&#xA;&#x9;in event disconnect&#xA;    &#xA;interface ClientConn:&#xA;&#x9;in event request_info&#xA;&#x9;in event onClientState&#xA;&#x9;in event onGetClientStateTimedout&#xA;&#x9;in event evDontJoin&#xA;&#x9;in event onRequestJoin&#xA;&#x9;in event onRequestJoinTimedout&#xA;&#x9;in event onJoinRejected&#xA;&#x9;in event onJoinAccepted&#xA;&#x9;in event onLeave&#xA;&#x9;operation getClientState():integer&#xA;&#x9;operation reportError()&#xA;&#x9;&#xA;interface Session:&#xA;&#x9;in event evGetState&#xA;&#x9;in event onGetState&#xA;&#x9;in event evSetVolume&#xA;&#x9;in event evResetStream&#xA;&#x9;in event evSyncStream&#xA;&#x9;&#xA;&#x9;in event evCmdSent&#xA;&#x9;in event evCmdAck&#xA;&#x9;in event evCmdError&#xA;&#x9;in event evError&#xA;&#x9;&#xA;&#x9;operation sendAck()&#xA;&#x9;operation getState(): integer&#xA;&#x9;operation reportError()&#xA;&#x9;&#xA;&#x9;" name="RenderClientConnection">
+  <sgraph:Statechart xmi:id="_YqCcwALZEeWUZYxhcKJK6w" specification="interface Socket:&#xA;&#x9;in event connect&#xA;&#x9;in event disconnect&#xA;    &#xA;interface ClientConn:&#xA;&#x9;in event request_info&#xA;&#x9;in event onClientState&#xA;&#x9;in event onGetClientStateTimedout&#xA;&#x9;in event evDontJoin&#xA;&#x9;in event onRequestJoin&#xA;&#x9;in event onRequestJoinTimedout&#xA;&#x9;in event onJoinRejected&#xA;&#x9;in event onJoinAccepted&#xA;&#x9;in event onLeave&#xA;&#x9;operation getClientState():integer&#xA;&#x9;operation reportError()&#xA;&#x9;&#xA;interface Session:&#xA;&#x9;in event evGetState&#xA;&#x9;in event onSessionState&#xA;&#x9;in event evSetVolume&#xA;&#x9;in event evResetStream&#xA;&#x9;in event evSyncStream&#xA;&#x9;&#xA;&#x9;in event evCmdSent&#xA;&#x9;in event evCmdAck&#xA;&#x9;in event evCmdError&#xA;&#x9;in event evError&#xA;&#x9;&#xA;&#x9;operation sendAck()&#xA;&#x9;operation getState(): integer&#xA;&#x9;operation reportError()&#xA;&#x9;&#xA;&#x9;" name="RenderClientConnection">
     <regions xmi:id="_YqyDoALZEeWUZYxhcKJK6w" name="main region">
       <vertices xsi:type="sgraph:Entry" xmi:id="_Yr3owALZEeWUZYxhcKJK6w">
         <outgoingTransitions xmi:id="_YsGSQALZEeWUZYxhcKJK6w" target="_Yr76MALZEeWUZYxhcKJK6w"/>
@@ -41,10 +41,10 @@
             </regions>
             <regions xmi:id="_7PxKkALtEeWaSaiuBoxKzQ" name="session region">
               <vertices xsi:type="sgraph:Entry" xmi:id="_js3EcALuEeWaSaiuBoxKzQ">
-                <outgoingTransitions xmi:id="_M80lsALvEeWaSaiuBoxKzQ" specification="/Session.sendAck()" target="_1e7X4ALuEeWaSaiuBoxKzQ"/>
+                <outgoingTransitions xmi:id="_M80lsALvEeWaSaiuBoxKzQ" specification="" target="_1e7X4ALuEeWaSaiuBoxKzQ"/>
               </vertices>
               <vertices xsi:type="sgraph:State" xmi:id="_1e7X4ALuEeWaSaiuBoxKzQ" specification="entry/Session.getState()" name="awaitSessionState" incomingTransitions="_M80lsALvEeWaSaiuBoxKzQ _Leu6wAkIEeWi_pG3yE8UxA">
-                <outgoingTransitions xmi:id="_SDSwQALvEeWaSaiuBoxKzQ" specification="Session.onGetState" target="_PLfcsALvEeWaSaiuBoxKzQ"/>
+                <outgoingTransitions xmi:id="_SDSwQALvEeWaSaiuBoxKzQ" specification="Session.onSessionState" target="_PLfcsALvEeWaSaiuBoxKzQ"/>
               </vertices>
               <vertices xsi:type="sgraph:State" xmi:id="_PLfcsALvEeWaSaiuBoxKzQ" specification="Session.evResetStream/Session.cmdResetStream()&#xA;Session.evSyncStream/Session.cmdSyncStream()" name="sessionMember" incomingTransitions="_SDSwQALvEeWaSaiuBoxKzQ">
                 <outgoingTransitions xmi:id="_Leu6wAkIEeWi_pG3yE8UxA" specification="Session.getSessionState" target="_1e7X4ALuEeWaSaiuBoxKzQ"/>
@@ -428,7 +428,7 @@
     <edges xmi:id="_M83pAALvEeWaSaiuBoxKzQ" type="Transition" element="_M80lsALvEeWaSaiuBoxKzQ" source="_FemG1QkUEeWi_pG3yE8UxA" target="_FemG3gkUEeWi_pG3yE8UxA">
       <children xsi:type="notation:DecorationNode" xmi:id="_M84QEQLvEeWaSaiuBoxKzQ" type="TransitionExpression">
         <styles xsi:type="notation:ShapeStyle" xmi:id="_M84QEgLvEeWaSaiuBoxKzQ"/>
-        <layoutConstraint xsi:type="notation:Location" xmi:id="_M843IALvEeWaSaiuBoxKzQ" y="10"/>
+        <layoutConstraint xsi:type="notation:Location" xmi:id="_M843IALvEeWaSaiuBoxKzQ" x="-1" y="16"/>
       </children>
       <styles xsi:type="notation:ConnectorStyle" xmi:id="_M83pAQLvEeWaSaiuBoxKzQ" lineColor="4210752"/>
       <styles xsi:type="notation:FontStyle" xmi:id="_M84QEALvEeWaSaiuBoxKzQ" fontName="Verdana"/>

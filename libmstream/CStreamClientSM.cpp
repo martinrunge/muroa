@@ -19,6 +19,7 @@
  */
 
 #include <CStreamClientSM.h>
+#include <Exceptions.h>
 
 namespace muroa {
 
@@ -34,6 +35,29 @@ CStreamClientSM::CStreamClientSM(IClientSMActions* actions) {
 CStreamClientSM::~CStreamClientSM() {
 	// TODO Auto-generated destructor stub
 }
+
+/// @brief: cast events to their types and process them
+//
+// this is needed, because boost::msm's process_event method takes the event as template parameter.
+// No need for a common base type, but the actual type must be known at compile time because of
+// template instantiation.
+bool CStreamClientSM::onEvent(muroa::CmdStreamBase* ev) {
+
+    if      ( typeid(*ev) == typeid(evRequestJoin) )     process_event( *reinterpret_cast<evRequestJoin*>(ev) );
+	else if ( typeid(*ev) == typeid(evJoinRejected) )    process_event( *reinterpret_cast<evJoinRejected*>(ev) );
+	else if ( typeid(*ev) == typeid(evLeave) )           process_event( *reinterpret_cast<evLeave*>(ev) );
+	else if ( typeid(*ev) == typeid(evGetSessionState) ) process_event( *reinterpret_cast<evGetSessionState*>(ev) );
+	else if ( typeid(*ev) == typeid(evSessionState) )    process_event( *reinterpret_cast<evSessionState*>(ev) );
+	else if ( typeid(*ev) == typeid(evResetStream) )     process_event( *reinterpret_cast<evResetStream*>(ev) );
+	else if ( typeid(*ev) == typeid(evSyncStream) )      process_event( *reinterpret_cast<evSyncStream*>(ev) );
+	else if ( typeid(*ev) == typeid(evSetVolume) )       process_event( *reinterpret_cast<evSetVolume*>(ev) );
+	else if ( typeid(*ev) == typeid(evAck) )             process_event( *reinterpret_cast<evAck*>(ev) );
+	else if ( typeid(*ev) == typeid(evError) )           process_event( *reinterpret_cast<evError*>(ev) );
+	else {
+		throw CException("CStreamSrvSM::onEvent: unknown event type");
+	}
+}
+
 
 void CStreamClientSM::activeStates(VisitorBase& vis) {
 	visit_current_states(boost::ref(vis));

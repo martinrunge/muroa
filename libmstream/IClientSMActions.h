@@ -33,6 +33,9 @@ public:
 	// virtual void sendEvent(CmdStreamBase* cmd) = 0;
 
 	virtual void sendClientState() = 0;
+	virtual void confirmJoinRequest(const evRequestJoin& evt ) = 0;
+	virtual bool mayJoinSession(const evRequestJoin& rj) = 0;
+	virtual void becomeSessionMember(const evRequestJoin& evt) = 0;
 };
 
 } /* namespace muroa */

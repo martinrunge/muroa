@@ -105,6 +105,13 @@ void CStreamCtrlConnection::requestJoin(const evRequestJoin* evt) {
 	sendEvent(evt);
 }
 
+void CStreamCtrlConnection::sendAck(const evJoinAccepted* evt) {
+	evAck* ack = new evAck();
+	ack->m_cmd_id = evt->getID();
+
+	sendEvent(ack);
+}
+
 
 void CStreamCtrlConnection::start_read() {
 	async_read_some(boost::asio::buffer(m_buffer),

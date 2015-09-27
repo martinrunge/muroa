@@ -22,6 +22,7 @@
 #define MUROAD_CPLAYER_H_
 
 #include "CCtrlConnectionMgr.h"
+#include <cmds/CmdStream.h>
 #include <boost/asio.hpp>
 
 class CMediaStreamConnection;
@@ -46,10 +47,13 @@ public:
 	int requestJoinSession(std::string name, CCtrlConnection* ctrlConn);
 	int requestLeaveSession(CCtrlConnection* ctrlConn);
 
-	void setupMediaStreamConn();
+	bool mayJoinSession(const evRequestJoin& rj, CCtrlConnection* ctrlConn);
+	int becomeSessionMember(const evRequestJoin& evt, CCtrlConnection* ctrlConn);
+
+	void setupMediaStreamConn(  boost::asio::ip::address mcast_addr, int timesrv_port );
 	void shutdownMediaStreamConn();
 
-	int getRTPPort();
+	const int getRTPUnicastPort() const;
 	int getVolume();
 	boost::asio::ip::address getSessionServer();
 
@@ -61,6 +65,7 @@ public:
 	const std::string getSessionName() const {
 		return m_session_name;
 	}
+
 
 private:
 	bool m_active;
@@ -75,8 +80,10 @@ private:
     CMediaStreamConnection* m_media_stream_conn;
 
     std::string m_session_name;
-    CCtrlConnection* m_session_ctrl_conn;
+    boost::asio::ip::address m_mcast_addr;
+    int m_timesrv_port;
 
+    CCtrlConnection* m_session_ctrl_conn;
 };
 
 } /* namespace muroa */

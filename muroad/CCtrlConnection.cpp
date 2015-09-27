@@ -49,7 +49,7 @@ void CCtrlConnection::onShutdown() {
 }
 
 bool CCtrlConnection::onEvent(CmdStreamBase* ev) {
-	m_clnt_sm.process_event(*ev);
+	m_clnt_sm.onEvent(ev);
 
 	return true;
 }
@@ -73,4 +73,27 @@ void CCtrlConnection::sendClientState() {
 	ev->m_session_srv       = m_player->getSessionServer();
 
 	sendEvent(ev);
+}
+
+void CCtrlConnection::confirmJoinRequest(const evRequestJoin& evt) {
+	m_player->requestJoinSession(evt.m_session_name, this);
+	evJoinAccepted *ev = new evJoinAccepted();
+	sendEvent(ev);
+}
+
+bool CCtrlConnection::mayJoinSession(const evRequestJoin& rj) {
+	return m_player->mayJoinSession(rj, this);
+}
+
+
+void CCtrlConnection::becomeSessionMember(const evRequestJoin& evt) {
+	m_player->becomeSessionMember(evt, this);
+
+	evSessionState* sstate = new evSessionState();
+	sstate->m_session_name = m_player->getSessionName();
+	sstate->m_timesrv_port = evt.m_timesrv_port;
+	sstate->m_volume = m_player->getVolume();
+	sstate->m_rtp_unicast_port = m_player->getRTPUnicastPort();
+
+	sendEvent(sstate);
 }

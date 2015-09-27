@@ -85,6 +85,8 @@ public:
 	void reportClientState(const CmdStreamBase* evt);
 	void requestJoin(const evRequestJoin* evt);
 
+	void sendAck(const evJoinAccepted* evt);
+
 private:
 	void start_read();
 	void handle_read(const boost::system::error_code& error, size_t bytes_transferred);

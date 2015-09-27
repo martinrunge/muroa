@@ -56,13 +56,13 @@ class CPacketRingBuffer;
 
 class CMediaStreamConnection : public muroa::IRenderCmds {
 public:
-	CMediaStreamConnection(boost::asio::io_service& io_service);
+	CMediaStreamConnection(boost::asio::io_service& io_service, boost::asio::ip::address mcast_addr, int timesrv_port);
     ~CMediaStreamConnection();
 
     void start();
     void stop();
 
-    int getRTPPort();
+    int getRTPUnicastPort();
     void sendRTPPacket(CRTPPacket* packet);
 
     void onResetStream(const muroa::CmdStreamReset& cmd_rst);
@@ -117,6 +117,8 @@ private:
 	muroa::CTimeServiceCtrl *m_ts;
 
     boost::asio::io_service& m_io_service;
+    boost::asio::ip::address m_mcast_addr;
+    int m_timesrv_port;
 };
 
 #endif

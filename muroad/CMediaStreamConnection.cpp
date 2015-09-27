@@ -46,24 +46,12 @@ using namespace std;
 using namespace boost::posix_time;
 using namespace muroa;
 
-CMediaStreamConnection::CMediaStreamConnection(boost::asio::io_service& io_service) : m_io_service(io_service)
+CMediaStreamConnection::CMediaStreamConnection(boost::asio::io_service& io_service, boost::asio::ip::address mcast_addr, int timesrv_port ) :
+		                   m_io_service(io_service),
+						   m_mcast_addr(mcast_addr),
+						   m_timesrv_port(timesrv_port)
 {
   
-  int num;
-
-//  boost::asio::ip::tcp protocol = tcp::v4();
-//  if( m_settings.ipversion() == 6 ) {
-//    protocol = tcp::v6();
-//  }
-//
-//  tcp::endpoint endp = tcp::endpoint(protocol, m_settings.getConfigVal("muroad/ControlPort", 5555));
-//
-//  m_tcp_server = new CTcpServer(io_service, &m_conn_mgr, endp, reinterpret_cast<factory_ptr_t>(&CCtrlConnection::create)),
-//
-//  m_settings.setPersistentVal(string("ControlPort"), (const int)endp.port());
-//
-
-   
   m_packet_ringbuffer = new CPacketRingBuffer(10);
 
   m_recvloop = new CRecvloop(this, m_packet_ringbuffer);
@@ -116,7 +104,7 @@ void CMediaStreamConnection::stop()
   m_playloop_thread->StopThread();
 }
 
-int CMediaStreamConnection::getRTPPort() {
+int CMediaStreamConnection::getRTPUnicastPort() {
 	return m_recvloop->getRTPPort();
 }
 

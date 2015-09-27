@@ -50,6 +50,9 @@ public:
 
 	// IClientSMActions
 	void sendClientState();
+	void confirmJoinRequest(const evRequestJoin& evt);
+	bool mayJoinSession(const evRequestJoin& rj);
+	void becomeSessionMember(const evRequestJoin& evt);
 
 private:
 	CCtrlConnection(boost::asio::io_service& io_service);

@@ -30,12 +30,12 @@
 //msm front-end
 #include <boost/msm/front/state_machine_def.hpp>
 // functors
-#include <boost/msm/front/functor_row.hpp>
-#include <boost/msm/front/euml/common.hpp>
+// #include <boost/msm/front/functor_row.hpp>
+// #include <boost/msm/front/euml/common.hpp>
 // for And_ operator
-#include <boost/msm/front/euml/operator.hpp>
+// #include <boost/msm/front/euml/operator.hpp>
 // for func_state and func_state_machine
-#include <boost/msm/front/euml/state_grammar.hpp>
+// #include <boost/msm/front/euml/state_grammar.hpp>
 
 // using namespace boost::msm::front;
 // for And_ operator
@@ -96,8 +96,7 @@ struct VisitableState
 struct clnt_ : public msm::front::state_machine_def<clnt_, VisitableState>
 {
 
-	std::string m_ownerSession;
-	uint32_t m_open_join_cmd_ID;
+	// evRequestJoin openJoinReq;
 
 	IClientSMActions* _actions;
     // The list of FSM states
@@ -111,7 +110,7 @@ struct clnt_ : public msm::front::state_machine_def<clnt_, VisitableState>
     	}
     	template <class Event,class FSM>
     	void on_exit(Event const&,FSM& ) {
-    	    std::cout << "leaving: awaitClientState" << std::endl;
+    	    std::cout << "leaving: awaitReaction" << std::endl;
     	}
     	void accept(VisitorBase& vis) const     	{
         	vis.addState("awaitReaction");
@@ -119,15 +118,25 @@ struct clnt_ : public msm::front::state_machine_def<clnt_, VisitableState>
     };
 
 
-    // awaitAck
-    struct awaitAck : public msm::front::state<VisitableState>  {
-    	void accept(VisitorBase& vis) const     	{
-        	vis.addState("awaitAck");
-    	};
-    };
+//    // awaitAck
+//    struct awaitAck : public msm::front::state<VisitableState>  {
+//    	template <class Event,class FSM>
+//    	void on_entry(Event const& evt, FSM& fsm) {
+//    		std::cout << "entering: awaitAck" << std::endl;
+//    		fsm._actions->confirmJoinRequest(evt);
+//    	}
+//    	void accept(VisitorBase& vis) const     	{
+//        	vis.addState("awaitAck");
+//    	};
+//    };
 
     // sessionMember
     struct sessionMember : public msm::front::state<VisitableState>  {
+    	template <class Event,class FSM>
+    	void on_entry(Event const& evt, FSM& fsm) {
+    		std::cout << "entering: sessionMember" << std::endl;
+        	fsm._actions->becomeSessionMember(evt);
+    	}
     	void accept(VisitorBase& vis) const {
     	    vis.addState("sessionMember");
     	};
@@ -150,8 +159,7 @@ struct clnt_ : public msm::front::state_machine_def<clnt_, VisitableState>
      };
 
      void sendEvJoinAccepted(const evRequestJoin& rj) {
-    	 m_ownerSession = rj.m_session_name;
-    	 m_open_join_cmd_ID = rj.m_cmd_id;
+    	 _actions->confirmJoinRequest(rj);
      };
 
      void becomeSessionMember(const evAck& ack) {
@@ -185,14 +193,14 @@ struct clnt_ : public msm::front::state_machine_def<clnt_, VisitableState>
 
      // guards
      bool mayJoin(const evRequestJoin& rj) {
-    	 if(m_ownerSession.compare("none") == 0 || m_ownerSession.compare( rj.m_session_name ) == 0) {
-    		 return true;
-    	 }
-    	 else {
-    		 return false;
-    	 }
-
+    	 bool retval = _actions->mayJoinSession( rj );
+    	 return retval;
      }
+
+     bool mayNotJoin(const evRequestJoin& rj) {
+    	 return !mayJoin(rj);
+     }
+
 
     // the initial state of the player SM. Must be defined
     typedef awaitReaction initial_state;
@@ -206,13 +214,13 @@ struct clnt_ : public msm::front::state_machine_def<clnt_, VisitableState>
         //    Start                 Event                Next               Action                     Guard
         //    +--------------------+------------------+----------------------+---------------------------+----------------------+
         a_row < awaitReaction      , evLeave          , exitState            , &c::sendEvLeave           >,
-          row < awaitReaction      , evRequestJoin    , exitState            , &c::sendEvJoinRejected    , &c::mayJoin          >,
-          row < awaitReaction      , evRequestJoin    , awaitAck             , &c::sendEvJoinAccepted    , &c::mayJoin          >,
-        a_row < awaitReaction      , evTimeout        , exitState            , &c::sendEvLeave           >,
+          row < awaitReaction      , evRequestJoin    , exitState            , &c::sendEvJoinRejected    , &c::mayNotJoin       >,
+          row < awaitReaction      , evRequestJoin    , sessionMember        , &c::sendEvJoinAccepted    , &c::mayJoin          >,
+        a_row < awaitReaction      , evTimeout        , exitState            , &c::sendEvLeave                                  >,
         //    +--------------------+------------------+----------------------+---------------------------+----------------------+
-        a_row < awaitAck           , evError          , exitState            , &c::sendEvError           >,
-        a_row < awaitAck           , evTimeout        , exitState            , &c::sendEvError           >,
-        a_row < awaitAck           , evAck            , sessionMember        , &c::becomeSessionMember   >,
+//        a_row < awaitAck           , evError          , exitState            , &c::sendEvError           >,
+//        a_row < awaitAck           , evTimeout        , exitState            , &c::sendEvError           >,
+//        a_row < awaitAck           , evAck            , sessionMember        , &c::becomeSessionMember   >,
         //    +--------------------+------------------+----------------------+---------------------------+----------------------+
         a_irow < sessionMember      , evResetStream                          , &c::resetStream           >,
 		a_irow < sessionMember      , evSyncStream                           , &c::syncStream            >,
@@ -234,6 +242,7 @@ public:
 	CStreamClientSM(IClientSMActions* actions);
 	virtual ~CStreamClientSM();
 
+	bool onEvent(muroa::CmdStreamBase* ev);
 
 	void activeStates(VisitorBase& vis);
     void pstate();

@@ -76,9 +76,9 @@ CPlayer::~CPlayer() {
 }
 
 
-void CPlayer::setupMediaStreamConn() {
+void CPlayer::setupMediaStreamConn( boost::asio::ip::address mcast_addr, int timesrv_port) {
 	assert(m_media_stream_conn == 0);
-	m_media_stream_conn = new CMediaStreamConnection(m_io_service);
+	m_media_stream_conn = new CMediaStreamConnection(m_io_service, mcast_addr, timesrv_port);
 }
 
 void CPlayer::shutdownMediaStreamConn() {
@@ -88,11 +88,6 @@ void CPlayer::shutdownMediaStreamConn() {
 	}
 }
 
-
-int CPlayer::getRTPPort() {
-	if(m_media_stream_conn != 0) return m_media_stream_conn->getRTPPort();
-	else              return 0;
-}
 
 /**
  * \return: 0 on success (join request accepted, render client is now member of session)
@@ -113,11 +108,11 @@ int CPlayer::requestJoinSession(std::string name, CCtrlConnection* ctrlConn) {
 	if( name.empty() && m_session_ctrl_conn == 0 ) {
 		LOG4CPLUS_INFO(CApp::logger(), "accepting request to join session " << name << " (" << ctrlConn->remoteEndpoint() << ")");
 
-		setupMediaStreamConn();
-		m_media_stream_conn->getRTPPort();
+		// setupMediaStreamConn();
+		// m_media_stream_conn->getRTPPort();
 
-		m_session_name = name;
-		m_session_ctrl_conn = ctrlConn;
+		// m_session_name = name;
+		// m_session_ctrl_conn = ctrlConn;
 		return 0;
 	}
 
@@ -139,6 +134,17 @@ int CPlayer::requestLeaveSession(CCtrlConnection* ctrlConn) {
 	}
 }
 
+bool CPlayer::mayJoinSession(const evRequestJoin& rj, CCtrlConnection* ctrlConn) {
+	return true;
+}
+
+int CPlayer::becomeSessionMember(const evRequestJoin& evt, CCtrlConnection* ctrlConn) {
+	// setup session
+	m_session_name = evt.m_session_name;
+//    m_mcast_addr = evt.m_mcast_addr;
+//    m_timesrv_port = evt.m_timesrv_port;
+    setupMediaStreamConn(evt.m_mcast_addr, evt.m_timesrv_port);
+}
 
 
 } /* namespace muroa */
@@ -157,4 +163,11 @@ boost::asio::ip::address CPlayer::getSessionServer() {
 		addr = boost::asio::ip::address::from_string("0.0.0.0");
 	}
 	return addr;
+}
+
+const int CPlayer::getRTPUnicastPort() const {
+	if(m_media_stream_conn != 0)
+		return m_media_stream_conn->getRTPUnicastPort();
+	else
+		return 0;
 }
