@@ -378,19 +378,21 @@ void CSettings::usage(string appname) {
 void CSettings::applyDefaults() {
 	m_logfile = "/var/log/muroad.log";
 
-	m_search_config_file.push("muroa.conf");
-	m_search_config_file.push("etc/muroa.conf");
-	m_search_config_file.push("/etc/muroa.conf");
-
-	m_search_persist_file.push("muroa.cache");
-	m_search_persist_file.push("var/cache/muroa.cache");
-	m_search_persist_file.push("/var/cache/muroa.cache");
 
     m_service_name = "Muroa streaming client";
     m_service_type = "_muroad._udp";
 
     m_ip_version = 4;
 }
+
+void CSettings::pushConfigFilePath(boost::filesystem::path cf) {
+	m_search_config_file.push(cf.native());
+}
+
+void CSettings::pushPersistFilePath(boost::filesystem::path cf) {
+	m_search_persist_file.push(cf.native());
+}
+
 
 bool CSettings::accessible(string filename) {
 	bfs::path lf(filename);

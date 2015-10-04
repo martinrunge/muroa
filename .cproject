@@ -5,16 +5,16 @@
 			<storageModule buildSystemId="org.eclipse.cdt.managedbuilder.core.configurationDataProvider" id="org.eclipse.cdt.cmake.toolChain.debug.1835841992" moduleId="org.eclipse.cdt.core.settings" name="debug">
 				<externalSettings/>
 				<extensions>
-					<extension id="org.eclipse.cdt.core.MachO64" point="org.eclipse.cdt.core.BinaryParser"/>
-					<extension id="org.eclipse.cdt.core.Cygwin_PE" point="org.eclipse.cdt.core.BinaryParser"/>
-					<extension id="org.eclipse.cdt.core.PE" point="org.eclipse.cdt.core.BinaryParser"/>
-					<extension id="org.eclipse.cdt.core.ELF" point="org.eclipse.cdt.core.BinaryParser"/>
-					<extension id="org.eclipse.cdt.core.GNU_ELF" point="org.eclipse.cdt.core.BinaryParser"/>
 					<extension id="org.eclipse.core.GCCErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
 					<extension id="org.eclipse.cdt.core.GmakeErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
 					<extension id="org.eclipse.cdt.core.GLDErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
 					<extension id="org.eclipse.cdt.core.CWDLocator" point="org.eclipse.cdt.core.ErrorParser"/>
 					<extension id="org.eclipse.cdt.core.GCCErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+					<extension id="org.eclipse.cdt.core.MachO64" point="org.eclipse.cdt.core.BinaryParser"/>
+					<extension id="org.eclipse.cdt.core.Cygwin_PE" point="org.eclipse.cdt.core.BinaryParser"/>
+					<extension id="org.eclipse.cdt.core.PE" point="org.eclipse.cdt.core.BinaryParser"/>
+					<extension id="org.eclipse.cdt.core.ELF" point="org.eclipse.cdt.core.BinaryParser"/>
+					<extension id="org.eclipse.cdt.core.GNU_ELF" point="org.eclipse.cdt.core.BinaryParser"/>
 				</extensions>
 			</storageModule>
 			<storageModule moduleId="cdtBuildSystem" version="4.0.0">
@@ -22,7 +22,7 @@
 					<folderInfo id="org.eclipse.cdt.cmake.toolChain.debug.1835841992.237804947" name="/" resourcePath="">
 						<toolChain errorParsers="" id="org.eclipse.cdt.cmake.toolChain.debug.761999474" name="CMake provided toolchain" superClass="org.eclipse.cdt.cmake.toolChain.debug">
 							<targetPlatform id="org.eclipse.cdt.cmake.targetPlatform1.1746970077" isAbstract="false" name="CMake target platform" superClass="org.eclipse.cdt.cmake.targetPlatform1"/>
-							<builder arguments="-j 4" buildPath="/home/martin/git/muroa/debug" command="make" errorParsers="" id="org.eclipse.cdt.cmake.builder.651275491" keepEnvironmentInBuildfile="false" managedBuildOn="false" name="CMake Builder" superClass="org.eclipse.cdt.cmake.builder"/>
+							<builder arguments="VERBOSE=1 -j 4" buildPath="/home/martin/git/muroa/debug" command="make" errorParsers="" id="org.eclipse.cdt.cmake.builder.651275491" keepEnvironmentInBuildfile="false" managedBuildOn="false" name="CMake Builder" superClass="org.eclipse.cdt.cmake.builder"/>
 							<tool errorParsers="" id="org.eclipse.cdt.cmake.cmake.1871034427" name="CMake" superClass="org.eclipse.cdt.cmake.cmake">
 								<option id="org.eclipse.cdt.cmake.option.toolchainFile.1132838671" name="toolchain to use (-DCMAKE_TOOLCHAIN_FILE)" superClass="org.eclipse.cdt.cmake.option.toolchainFile" value="" valueType="string"/>
 								<option id="org.eclipse.cdt.cmake.option.buildType.2075066354" name="build type (-DCMAKE_BUILD_TYPE)" superClass="org.eclipse.cdt.cmake.option.buildType" value="Debug" valueType="string"/>
@@ -47,12 +47,12 @@
 			<storageModule buildSystemId="org.eclipse.cdt.managedbuilder.core.configurationDataProvider" id="org.eclipse.cdt.cmake.toolChain.debug.1835841992.1989302545" moduleId="org.eclipse.cdt.core.settings" name="debug_arm">
 				<externalSettings/>
 				<extensions>
+					<extension id="org.eclipse.core.GCCErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
 					<extension id="org.eclipse.cdt.core.MachO64" point="org.eclipse.cdt.core.BinaryParser"/>
 					<extension id="org.eclipse.cdt.core.Cygwin_PE" point="org.eclipse.cdt.core.BinaryParser"/>
 					<extension id="org.eclipse.cdt.core.PE" point="org.eclipse.cdt.core.BinaryParser"/>
 					<extension id="org.eclipse.cdt.core.ELF" point="org.eclipse.cdt.core.BinaryParser"/>
 					<extension id="org.eclipse.cdt.core.GNU_ELF" point="org.eclipse.cdt.core.BinaryParser"/>
-					<extension id="org.eclipse.core.GCCErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
 				</extensions>
 			</storageModule>
 			<storageModule moduleId="cdtBuildSystem" version="4.0.0">
@@ -91,10 +91,10 @@
 	<storageModule moduleId="org.eclipse.cdt.core.LanguageSettingsProviders"/>
 	<storageModule moduleId="org.eclipse.cdt.make.core.buildtargets"/>
 	<storageModule moduleId="refreshScope" versionNumber="2">
-		<configuration configurationName="debug">
+		<configuration configurationName="debug_arm">
 			<resource resourceType="PROJECT" workspacePath="/muroa"/>
 		</configuration>
-		<configuration configurationName="debug_arm">
+		<configuration configurationName="debug">
 			<resource resourceType="PROJECT" workspacePath="/muroa"/>
 		</configuration>
 	</storageModule>

@@ -69,6 +69,14 @@ CApp::CApp(int argc, char** argv) throw(configEx) : m_settings(this)
 
     initLog();
 
+	m_settings.pushConfigFilePath(m_abs_prog_dir/"muroa.conf");
+	m_settings.pushConfigFilePath(m_abs_prog_dir/"etc/muroa.conf");
+	m_settings.pushConfigFilePath("/etc/muroa.conf");
+
+	m_settings.pushPersistFilePath(m_abs_prog_dir/"muroa.cache");
+	m_settings.pushPersistFilePath(m_abs_prog_dir/"var/cache/muroa.cache");
+	m_settings.pushPersistFilePath("/var/cache/muroa.cache");
+
     m_settings.readConfigFile();
     m_settings.readCacheFile();
 }

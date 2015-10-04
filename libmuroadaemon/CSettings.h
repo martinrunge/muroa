@@ -45,6 +45,9 @@ public:
 	CSettings(CApp* app) throw();
 	virtual ~CSettings() throw();
 
+	void pushConfigFilePath(boost::filesystem::path cf);
+	void pushPersistFilePath(boost::filesystem::path cf);
+
 	int parse(int argc, char** argv) throw(muroa::configEx);
 	int readConfigFile() throw(muroa::configEx);
 	int readCacheFile() throw(muroa::configEx);
