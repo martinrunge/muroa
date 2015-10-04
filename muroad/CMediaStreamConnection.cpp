@@ -68,11 +68,14 @@ CMediaStreamConnection::CMediaStreamConnection(boost::asio::io_service& io_servi
 
   m_ts = new CTimeServiceCtrl();
   //CSync syncobj;
+
+  start();
 }
 
 
 CMediaStreamConnection::~CMediaStreamConnection()
 {
+  stop();
   m_ts->stop();
   delete m_ts;
   delete m_recvloop_thread;
@@ -103,6 +106,12 @@ void CMediaStreamConnection::stop()
   m_recvloop_thread->StopThread();
   m_playloop_thread->StopThread();
 }
+
+const bool CMediaStreamConnection::multicastSupported() const {
+	/// TODO: check here, if recvloop was able to join to multicast group
+	return false;
+}
+
 
 int CMediaStreamConnection::getRTPUnicastPort() {
 	return m_recvloop->getRTPPort();

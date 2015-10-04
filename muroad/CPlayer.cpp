@@ -146,8 +146,12 @@ int CPlayer::becomeSessionMember(const evRequestJoin& evt, CCtrlConnection* ctrl
     setupMediaStreamConn(evt.m_mcast_addr, evt.m_timesrv_port);
 }
 
+int CPlayer::leaveSession(const evLeave& evt, CCtrlConnection* ctrlConn) {
 
-} /* namespace muroa */
+	return 0;
+}
+
+
 
 int CPlayer::getVolume() {
 	return 50;
@@ -165,9 +169,18 @@ boost::asio::ip::address CPlayer::getSessionServer() {
 	return addr;
 }
 
+const bool CPlayer::multicastSupported() const {
+	if(m_media_stream_conn != 0)
+		return m_media_stream_conn->multicastSupported();
+	else
+		return false;
+}
+
 const int CPlayer::getRTPUnicastPort() const {
 	if(m_media_stream_conn != 0)
 		return m_media_stream_conn->getRTPUnicastPort();
 	else
 		return 0;
 }
+
+} /* namespace muroa */

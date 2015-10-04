@@ -49,10 +49,12 @@ public:
 
 	bool mayJoinSession(const evRequestJoin& rj, CCtrlConnection* ctrlConn);
 	int becomeSessionMember(const evRequestJoin& evt, CCtrlConnection* ctrlConn);
+	int leaveSession(const evLeave& evt, CCtrlConnection* ctrlConn);
 
 	void setupMediaStreamConn(  boost::asio::ip::address mcast_addr, int timesrv_port );
 	void shutdownMediaStreamConn();
 
+	const bool multicastSupported() const;
 	const int getRTPUnicastPort() const;
 	int getVolume();
 	boost::asio::ip::address getSessionServer();

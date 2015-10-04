@@ -62,6 +62,7 @@ public:
     void start();
     void stop();
 
+    const bool multicastSupported() const;
     int getRTPUnicastPort();
     void sendRTPPacket(CRTPPacket* packet);
 
