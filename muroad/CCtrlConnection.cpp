@@ -39,6 +39,11 @@ void CCtrlConnection::start() {
 	m_clnt_sm.start();
 }
 
+void CCtrlConnection::onClose() {
+	evLeave evt;
+	m_player->leaveSession(evt, this);
+}
+
 void CCtrlConnection::onSetup() {
 	// ack(cmdID);
 }

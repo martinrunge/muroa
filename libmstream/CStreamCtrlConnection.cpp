@@ -105,6 +105,26 @@ void CStreamCtrlConnection::requestJoin(const evRequestJoin* evt) {
 	sendEvent(evt);
 }
 
+void CStreamCtrlConnection::gotSessionState(const CmdStreamBase* cmd) {
+
+	if(typeid(*cmd) == typeid(evSessionState)) {
+		const evSessionState* evt = reinterpret_cast<const evSessionState*>(cmd);
+		if(evt->m_fallback_to_rtp_unicast != 0) {
+			// use unicast
+			m_use_multicast_rtp = false;
+			m_RTP_port = evt->m_rtp_unicast_port;
+			if(m_RTP_port != 0) {
+				openStreamConnection();
+			}
+		}
+		else {
+			// this lcient is served via multicast RTP
+			m_use_multicast_rtp = true;
+		}
+	}
+}
+
+
 void CStreamCtrlConnection::sendAck(const evJoinAccepted* evt) {
 	evAck* ack = new evAck();
 	ack->m_cmd_id = evt->getID();

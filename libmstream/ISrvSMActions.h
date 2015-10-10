@@ -24,6 +24,7 @@ public:
 	virtual void reportClientState(const CmdStreamBase* evt) = 0;
 	virtual void requestJoin(const evRequestJoin* evt) = 0;
 
+	virtual void gotSessionState(const CmdStreamBase* cmd) = 0;
 	virtual void sendAck(const evJoinAccepted* evt) = 0;
 };
 

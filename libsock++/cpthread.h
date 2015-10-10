@@ -57,7 +57,7 @@ private:
 
     inline void ThreadSlave(CThreadSlave* thread_slave) { m_thread_slave = thread_slave; };
 
-		inline CThreadSlave* ThreadSlave(void) { return m_thread_slave; };
+	inline CThreadSlave* ThreadSlave(void) { return m_thread_slave; };
 
     pthread_t m_thread_id;
     pthread_attr_t m_thread_attr;

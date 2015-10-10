@@ -40,6 +40,7 @@ public:
 	void setPlayer(muroa::CPlayer* ps) { m_player = ps; };
 
 	void start();
+	void onClose();
 
 	void onSetup();
 	void onShutdown();

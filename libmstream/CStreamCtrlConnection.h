@@ -57,6 +57,8 @@ public:
 
 	void dataReceived( boost::array<char, 8192> buffer, int length);
 
+	const bool m_useMulticastRTP() const { return m_use_multicast_rtp; };
+
 	const std::string& getServiceName() const {
 		return m_serviceName;
 	}
@@ -84,6 +86,7 @@ public:
 	void reportTimeout(std::string);
 	void reportClientState(const CmdStreamBase* evt);
 	void requestJoin(const evRequestJoin* evt);
+	void gotSessionState(const CmdStreamBase* cmd);
 
 	void sendAck(const evJoinAccepted* evt);
 
@@ -101,7 +104,7 @@ private:
 	muroa::CStreamSrvSM m_srv_sm;
 
 	unsigned short m_RTP_port;
-
+	bool m_use_multicast_rtp;
 	/// Buffer for incoming data.
 	boost::array<char, 8192> m_buffer;
 

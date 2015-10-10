@@ -23,12 +23,19 @@
   *@author Martin Runge
   */
 
+class CPThread;
+
 class CThreadSlave {
 public: 
 	CThreadSlave();
 	virtual ~CThreadSlave();
   /** To be overloaded by all classes that implement threaded operations. */
   virtual void DoLoop() = 0;
+
+  CPThread* getPThreadPtr() { return m_pthread; };
+  void setPThreadPtr(CPThread* ptr) { m_pthread = ptr; };
+private:
+  CPThread* m_pthread;
 };
 
 #endif

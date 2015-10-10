@@ -68,8 +68,8 @@ void CTcpConnection::setNonBlocking(bool mode) {
 }
 
 void CTcpConnection::onClose() {
-
 }
+
 tcp::endpoint CTcpConnection::localEndpoint() {
 	return m_socket.local_endpoint();
 }

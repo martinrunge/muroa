@@ -130,11 +130,13 @@ struct srv_ : public boost::msm::front::state_machine_def<srv_, VisitableState>
     struct joinedSession_ : public boost::msm::front::state_machine_def<joinedSession_, VisitableState>  {
         // inner FSM states
 
+    	ISrvSMActions* _inner_actions;
+
     	template <class Event,class FSM>
     	void on_entry(Event const& evt, FSM& fsm)
     	{
     		std::cout << "entering: joinedSession_" << std::endl;
-    		// fsm._actions->sendAck(&evt);
+    		_inner_actions = fsm._actions;
     	}
     	template <class Event,class FSM>
     	void on_exit(Event const&,FSM& )
@@ -168,9 +170,12 @@ struct srv_ : public boost::msm::front::state_machine_def<srv_, VisitableState>
         struct sessionMember : public boost::msm::front::state<VisitableState>
         {
         	template <class Event,class FSM>
-        	void on_entry(Event const&,FSM& )
+        	void on_entry(Event const& evt ,FSM& fsm)
         	{
-        		std::cout << "entering: state sessionMember" << std::endl;
+        		std::cout << "entering: state sessionMember: by event" << typeid(evt).name() << " ." << std::endl;
+        		if(typeid(evt) == typeid(evSessionState)) {
+        			fsm._inner_actions->gotSessionState(&evt);
+        		}
         	}
         	template <class Event,class FSM>
         	void on_exit(Event const&,FSM& )

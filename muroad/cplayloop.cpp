@@ -23,6 +23,7 @@
 #include <iostream>
 #include "libdsaudio.h"
 #include "libsock++.h"
+#include "cpthread.h"
 #include "cpacketringbuffer.h"
 #include "cringbuffer.h"
 
@@ -134,7 +135,7 @@ CAudioFrame* CPlayloop::getAudioPacket(bool block) {
 		if(m_packet_ringbuffer->getRingbufferSize() == 0) {
 			if(block) {
 				bool dataAvail = false;
-				while(!dataAvail || m_packet_ringbuffer->getRingbufferSize() == 0) {
+				while((!dataAvail || m_packet_ringbuffer->getRingbufferSize() == 0) && getPThreadPtr()->IsRunning()) {
 					dataAvail = waitForData();
 				};
 			} else {

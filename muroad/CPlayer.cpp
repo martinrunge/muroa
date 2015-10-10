@@ -141,14 +141,24 @@ bool CPlayer::mayJoinSession(const evRequestJoin& rj, CCtrlConnection* ctrlConn)
 int CPlayer::becomeSessionMember(const evRequestJoin& evt, CCtrlConnection* ctrlConn) {
 	// setup session
 	m_session_name = evt.m_session_name;
+	m_session_ctrl_conn = ctrlConn;
 //    m_mcast_addr = evt.m_mcast_addr;
 //    m_timesrv_port = evt.m_timesrv_port;
     setupMediaStreamConn(evt.m_mcast_addr, evt.m_timesrv_port);
 }
 
-int CPlayer::leaveSession(const evLeave& evt, CCtrlConnection* ctrlConn) {
+int CPlayer::leaveSession(CCtrlConnection* ctrlConn) {
+	if(m_session_ctrl_conn == ctrlConn) {
+		m_session_ctrl_conn = 0;
+		m_session_name.clear();
+	}
+	m_conn_mgr.remove(ctrlConn);
+	shutdownMediaStreamConn();
+}
 
-	return 0;
+int CPlayer::leaveSession(const evLeave& evt, CCtrlConnection* ctrlConn) {
+	// evt.m_triggered_by_session;
+	leaveSession(ctrlConn);
 }
 
 
