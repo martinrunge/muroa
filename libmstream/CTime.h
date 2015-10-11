@@ -158,6 +158,10 @@ public:
 		return CTime( m_time_in_ns + rhs.m_time_in_ns );
 	}
 
+	CTime operator+=( const CDuration& rhs ) const {
+		return CTime( m_time_in_ns + rhs.m_time_in_ns );
+	}
+
 	CTime operator-( const CDuration& rhs ) const {
 		return CTime( m_time_in_ns - rhs.m_time_in_ns );
 	}

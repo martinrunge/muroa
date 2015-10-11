@@ -125,11 +125,13 @@ public:
 	bool operator==(const evResetStream& rhs) {
 		return  m_ssrc == rhs.m_ssrc &&
 				m_rtp_ts == rhs.m_rtp_ts &&
-				m_media_clock_pts == rhs.m_media_clock_pts;
+				m_media_clock_pts == rhs.m_media_clock_pts &&
+				m_utc_media_clock_pts.compare( rhs.m_utc_media_clock_pts ) == 0 ;
 	}
 	uint32_t m_ssrc;
 	uint32_t m_rtp_ts;
-	uint64_t m_media_clock_pts;
+	uint64_t m_media_clock_pts;  // used if muroa's time service is active else zero
+	std::string m_utc_media_clock_pts;  // used if system time is synced externally, e.g. by NTP, else empty string
 
 	static const std::string ev_name;
 };
@@ -139,12 +141,14 @@ public:
 	bool operator==(const evSyncStream& rhs) {
 		return  m_ssrc == rhs.m_ssrc &&
 				m_rtp_ts == rhs.m_rtp_ts &&
-				m_media_clock_pts == rhs.m_media_clock_pts;
+				m_media_clock_pts == rhs.m_media_clock_pts &&
+				m_utc_media_clock_pts.compare( rhs.m_utc_media_clock_pts ) == 0 ;
 	}
 
 	uint32_t m_ssrc;
 	uint32_t m_rtp_ts;
-	uint64_t m_media_clock_pts;
+	uint64_t m_media_clock_pts;  // used if muroa's time service is active else zero
+	std::string m_utc_media_clock_pts;  // used if system time is synced externally, e.g. by NTP, else empty string
 
 	static const std::string ev_name;
 };

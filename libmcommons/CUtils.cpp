@@ -2,8 +2,8 @@
  *
  *   CUtils.cpp
  *
- *   This file is part of libmuroa++                                  *
- *   Copyright (C) 2011 by Martin Runge <martin.runge@web.de>           *
+ *   This file is part of libmuroa++                                       *
+ *   Copyright (C) 2011 by Martin Runge <martin.runge@web.de>              *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -80,6 +80,33 @@ long CUtils::str2long(std::string str) throw(std::invalid_argument) {
 	return iVal;
 }
 
+int32_t CUtils::str2int32(std::string str) throw(std::invalid_argument) {
+	errno = 0;
+	char* endptr;
+	long iVal = strtol( str.c_str(), &endptr, 10);
+	if (errno != 0 || *endptr != '\0' ) {
+		switch (errno) {
+		case ERANGE:
+			throw invalid_argument("convert string to int (out of range)");
+			break;
+		case EINVAL:
+			throw invalid_argument("convert string to int");
+			break;
+		default:
+			throw invalid_argument("convert string to int");
+			break;
+		}
+	}
+//	if(iVal > UINT32_MAX) {
+//		throw invalid_argument("convert string to int (out of range)");
+//	}
+//	if(iVal < UINT32_MIN) {
+//		throw invalid_argument("convert string to int (out of range)");
+//	}
+
+	return iVal;
+}
+
 
 uint32_t CUtils::str2uint32(std::string str) throw(std::invalid_argument) {
 	errno = 0;
@@ -108,6 +135,32 @@ uint32_t CUtils::str2uint32(std::string str) throw(std::invalid_argument) {
 	return iVal;
 }
 
+int64_t CUtils::str2int64(std::string str) throw(std::invalid_argument) {
+	errno = 0;
+	char* endptr;
+	long long iVal = strtoll( str.c_str(), &endptr, 10);
+	if (errno != 0 || *endptr != '\0' ) {
+		switch (errno) {
+		case ERANGE:
+			throw invalid_argument("convert string to int (out of range)");
+			break;
+		case EINVAL:
+			throw invalid_argument("convert string to int");
+			break;
+		default:
+			throw invalid_argument("convert string to int");
+			break;
+		}
+	}
+//	if(iVal > UINT32_MAX) {
+//		throw invalid_argument("convert string to int (out of range)");
+//	}
+//	if(iVal < UINT32_MIN) {
+//		throw invalid_argument("convert string to int (out of range)");
+//	}
+
+	return iVal;
+}
 
 uint64_t CUtils::str2uint64(std::string str) throw(std::invalid_argument) {
 	errno = 0;

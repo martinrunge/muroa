@@ -81,13 +81,15 @@ private:
     log4cplus::Logger m_timing_logger;
 
     CRTPPacket *m_rtp_packet;
-    CSync m_syncobj;
+    muroa::evSyncStream m_sync_info;
+    uint32_t m_ssrc;
 
     CMutex m_connection_list_mutex;
     std::set<CStreamCtrlConnection*> m_joined_connections;
 
     muroa::CUDPSocket m_mcast_sock;
     bool m_use_mcast;
+    bool m_builtin_time_service_used;
 
     unsigned long m_session_id;
 
@@ -99,6 +101,7 @@ private:
     boost::asio::io_service& m_io_service;
 
     void sendToAllClients(CRTPPacket* packet);
+    void sendToAllClients(const CmdStreamBase* cmd);
 };
 
 } /* namespace muroa */

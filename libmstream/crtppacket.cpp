@@ -81,7 +81,7 @@ CRTPPacket::CRTPPacket(unsigned long session_id, unsigned long stream_id, int pa
   m_rtp_header->rtp_header_bits.marker = 0;
   m_rtp_header->rtp_header_bits.sequence_number = 0;
   m_rtp_header->rtp_header_bits.timestamp = 0;
-
+  m_rtp_header->rtp_header_bits.SSRC = 0;
 
   m_delete_buffer_in_dtor = delete_buffer_in_dtor;
 

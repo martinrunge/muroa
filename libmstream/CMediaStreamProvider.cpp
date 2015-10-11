@@ -30,6 +30,7 @@ CMediaStreamProvider::CMediaStreamProvider(boost::asio::io_service& io_service, 
                                            m_last_send_time(not_a_date_time),
         		                           m_time_server_port(12345),
 										   m_use_mcast(false),
+										   m_builtin_time_service_used(false),
 										   // m_mcast_sock(io_service),
         			                       m_io_service(io_service) {
 
@@ -60,6 +61,7 @@ void CMediaStreamProvider::addJoinedConnection(CStreamCtrlConnection* conn) {
 		m_use_mcast = true;
 	}
 	m_joined_connections.insert(conn);
+	conn->sendEvent(&m_sync_info);
 	m_connection_list_mutex.UnLock();
 }
 
@@ -97,20 +99,33 @@ int CMediaStreamProvider::open(int audio_bytes_per_second)
 
   m_stream_id++;
 
-  m_syncobj.setTimeToNow();
-  m_syncobj.addDuration(m_transport_buffer_duration);
-  m_syncobj.frameNr(0);
-  m_syncobj.streamId(m_stream_id);
-  m_syncobj.sessionId(m_session_id);
-  m_syncobj.setMediaClockSrv(boost::asio::ip::address(), m_time_server_port);
-  m_syncobj.serialize();
+  m_sync_info.m_ssrc = lrand48();
+  m_sync_info.m_rtp_ts = 0;
+  if(m_builtin_time_service_used) {
+	  /// TODO: activeate builtin time service
+	  m_sync_info.m_media_clock_pts = 0;
+	  m_sync_info.m_utc_media_clock_pts = string();
+  }
+  else {
+	  m_sync_info.m_media_clock_pts = 0;
+	  m_sync_info.m_utc_media_clock_pts = to_simple_string(m_last_send_time + m_transport_buffer_duration);
+  }
 
-  m_rtp_packet->sessionID(m_session_id);
-  m_rtp_packet->streamID(m_stream_id);
 
-  m_rtp_packet->seqNum(m_rtp_packet->seqNum() + 1);
-  m_rtp_packet->payloadType(PAYLOAD_SYNC_OBJ);
-  m_rtp_packet->copyInPayload(m_syncobj.getSerialisationBufferPtr(), m_syncobj.getSerialisationBufferSize());
+//  m_syncobj.setTimeToNow();
+//  m_syncobj.addDuration(m_transport_buffer_duration);
+//  m_syncobj.frameNr(0);
+//  m_syncobj.streamId(m_stream_id);
+//  m_syncobj.sessionId(m_session_id);
+//  m_syncobj.setMediaClockSrv(boost::asio::ip::address(), m_time_server_port);
+//  m_syncobj.serialize();
+
+//  m_rtp_packet->sessionID(m_session_id);
+//  m_rtp_packet->streamID(m_stream_id);
+//
+//  m_rtp_packet->seqNum(m_rtp_packet->seqNum() + 1);
+//  m_rtp_packet->payloadType(PAYLOAD_SYNC_OBJ);
+//  m_rtp_packet->copyInPayload(m_syncobj.getSerialisationBufferPtr(), m_syncobj.getSerialisationBufferSize());
 
   m_audio_bytes_per_second = audio_bytes_per_second;
 
@@ -122,7 +137,9 @@ int CMediaStreamProvider::open(int audio_bytes_per_second)
 
   LOG4CPLUS_DEBUG(m_timing_logger, "open stream " << m_transport_buffer_duration.total_milliseconds() << " ms." );
 
-  sendToAllClients(m_rtp_packet);
+  // send evSyncStream via control channels
+  // sendToAllClients(m_rtp_packet);
+  sendToAllClients(&m_sync_info);
 
   return 0;	LOG4CPLUS_DEBUG(m_timing_logger, "sync");
 }
@@ -257,6 +274,18 @@ void CMediaStreamProvider::sendToAllClients(CRTPPacket* packet)
     m_connection_list_mutex.UnLock();
 }
 
+/*!
+    \fn CStreamServer::sendToAllClients(CRTPPacket* packet)
+ */
+void CMediaStreamProvider::sendToAllClients(const CmdStreamBase* cmd)
+{
+    set<CStreamCtrlConnection*>::iterator iter;
+    m_connection_list_mutex.Lock();
+    for(iter = m_joined_connections.begin(); iter != m_joined_connections.end(); iter++ ) {
+    	(*iter)->sendEvent(cmd);
+    }
+    m_connection_list_mutex.UnLock();
+}
 
 
 /*!
@@ -264,13 +293,13 @@ void CMediaStreamProvider::sendToAllClients(CRTPPacket* packet)
  */
 CSync* CMediaStreamProvider::getSyncObj(uint32_t session_id, uint32_t stream_id)
 {
-    if(m_syncobj.sessionId() == session_id && m_syncobj.streamId() == stream_id) {
-      m_syncobj.serialize();
-      return &m_syncobj;
-    }
-    else {
+//    if(m_syncobj.sessionId() == session_id && m_syncobj.streamId() == stream_id) {
+//      m_syncobj.serialize();
+//      return &m_syncobj;
+//    }
+//    else {
       return 0;
-    }
+//    }
 }
 
 

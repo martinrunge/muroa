@@ -177,7 +177,8 @@ void CStreamCtrlXml::sendEvSyncStream(const CmdStreamBase* ev) {
 	oss << "<" << e->ev_name << " cmdID=\"" << e->getID() << "\""
                                             << " ssrc=\"" << e->m_ssrc << "\""
 											<< " rtp_ts=\"" << e->m_rtp_ts << "\""
-											<< " media_clock_pts=\"" << e->m_media_clock_pts << "\"/>" << endl;
+											<< " media_clock_pts=\"" << e->m_media_clock_pts << "\""
+											<< " utc_media_clock_pts=\"" << e->m_utc_media_clock_pts << "\"/>" << endl;
 	sendData(oss.str());
 }
 

@@ -472,6 +472,7 @@ void CStreamCtrlParserSM::parseEvResetStreamArgs(     const char** attrs, evRese
 	string ssrc_str;;
 	string rtp_ts_str;
 	string pts_str;
+	bool utc_pts_found = false;
 
 	parseCmdID(attrs, cmd);
 
@@ -489,6 +490,10 @@ void CStreamCtrlParserSM::parseEvResetStreamArgs(     const char** attrs, evRese
 		if(name.compare("media_clock_pts") == 0) {
 			pts_str = value;
 		}
+		if(name.compare("utc_media_clock_pts") == 0) {
+			cmd->m_utc_media_clock_pts = value;
+			utc_pts_found = true;
+		}
 	}
 
 	if( ssrc_str.empty() || rtp_ts_str.empty() || pts_str.empty() ) {
@@ -502,6 +507,9 @@ void CStreamCtrlParserSM::parseEvResetStreamArgs(     const char** attrs, evRese
 		}
 		if( pts_str.empty() ) {
 			oss << " argument 'media_clock_pts' missing; ";
+		}
+		if( !utc_pts_found ) {
+			oss << " argument 'utc_media_clock_pts' missing; ";
 		}
 		throw ExRpcError(oss.str());
 	}
@@ -514,6 +522,7 @@ void CStreamCtrlParserSM::parseEvSyncStreamArgs(      const char** attrs, evSync
 	string ssrc_str;;
 	string rtp_ts_str;
 	string pts_str;
+	bool utc_pts_found = false;
 
 	parseCmdID(attrs, cmd);
 
@@ -531,6 +540,10 @@ void CStreamCtrlParserSM::parseEvSyncStreamArgs(      const char** attrs, evSync
 		if(name.compare("media_clock_pts") == 0) {
 			pts_str = value;
 		}
+		if(name.compare("utc_media_clock_pts") == 0) {
+			cmd->m_utc_media_clock_pts = value;
+			utc_pts_found = true;
+		}
 	}
 
 	if( ssrc_str.empty() || rtp_ts_str.empty() || pts_str.empty() ) {
@@ -544,6 +557,9 @@ void CStreamCtrlParserSM::parseEvSyncStreamArgs(      const char** attrs, evSync
 		}
 		if( pts_str.empty() ) {
 			oss << " argument 'media_clock_pts' missing; ";
+		}
+		if( !utc_pts_found ) {
+			oss << " argument 'utc_media_clock_pts' missing; ";
 		}
 		throw ExRpcError(oss.str());
 	}

@@ -107,6 +107,9 @@ public:
     inline unsigned long timestamp() { return m_rtp_header->rtp_header_bits.timestamp; };
     inline void timestamp(unsigned long ts) { m_rtp_header->rtp_header_bits.timestamp = ts; };
 
+    inline uint32_t ssrc() { return m_rtp_header->rtp_header_bits.SSRC; };
+    inline void ssrc(uint32_t ssrc) { m_rtp_header->rtp_header_bits.SSRC = ssrc; };
+
     unsigned long sessionID(void);
     void sessionID(unsigned long session_id);
       
