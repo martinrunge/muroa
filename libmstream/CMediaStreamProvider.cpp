@@ -29,6 +29,8 @@ CMediaStreamProvider::CMediaStreamProvider(boost::asio::io_service& io_service, 
                                            m_send_time(not_a_date_time),
                                            m_last_send_time(not_a_date_time),
         		                           m_time_server_port(12345),
+										   m_use_mcast(false),
+										   // m_mcast_sock(io_service),
         			                       m_io_service(io_service) {
 
 	  m_timing_logger = Logger::getInstance("timing");
@@ -54,14 +56,32 @@ CMediaStreamProvider::~CMediaStreamProvider() {
 
 void CMediaStreamProvider::addJoinedConnection(CStreamCtrlConnection* conn) {
 	m_connection_list_mutex.Lock();
+	if(conn->m_useMulticastRTP()) {
+		m_use_mcast = true;
+	}
 	m_joined_connections.insert(conn);
 	m_connection_list_mutex.UnLock();
 }
 
-void CMediaStreamProvider::removeJoinedConnection(CStreamCtrlConnection* conn) {
-	m_connection_list_mutex.Lock();
-	m_joined_connections.erase(conn);
-	m_connection_list_mutex.UnLock();
+int CMediaStreamProvider::removeJoinedConnection(CStreamCtrlConnection* conn) {
+	int num_removed = 0;
+    set<CStreamCtrlConnection*>::iterator iter;
+    bool still_use_mcast = false;
+
+    m_connection_list_mutex.Lock();
+    num_removed = m_joined_connections.erase(conn);
+
+    for(iter = m_joined_connections.begin(); iter != m_joined_connections.end(); iter++ ) {
+    	if((*iter)->m_useMulticastRTP()) {
+    		// there is at least one multicast receiver left
+    		still_use_mcast = true;
+    		break;
+    	}
+    }
+    m_use_mcast = still_use_mcast;
+
+    m_connection_list_mutex.UnLock();
+    return num_removed;
 }
 
 
@@ -223,8 +243,16 @@ void CMediaStreamProvider::sendToAllClients(CRTPPacket* packet)
 {
     set<CStreamCtrlConnection*>::iterator iter;
     m_connection_list_mutex.Lock();
+
+    if(m_use_mcast) {
+    	m_mcast_sock.send(packet->bufferPtr(), packet->usedBufferSize());
+    }
+
     for(iter = m_joined_connections.begin(); iter != m_joined_connections.end(); iter++ ) {
-      (*iter)->getStreamConnection()->send(packet->bufferPtr(), packet->usedBufferSize());
+    	CStreamConnection* cc = (*iter)->getStreamConnection();
+    	if(cc != 0) {
+    		cc->send(packet->bufferPtr(), packet->usedBufferSize());
+    	} // else connection uses multicast
     }
     m_connection_list_mutex.UnLock();
 }

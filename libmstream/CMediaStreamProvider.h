@@ -16,6 +16,7 @@
 #include <sys/time.h>
 
 #include "CStreamCtrlConnection.h"
+#include "CUDPSocket.h"
 
 #include "crtppacket.h"
 
@@ -41,7 +42,7 @@ public:
     int sendPacket(char* buffer, int length);
 
     void addJoinedConnection(CStreamCtrlConnection* conn);
-    void removeJoinedConnection(CStreamCtrlConnection* conn);
+    int removeJoinedConnection(CStreamCtrlConnection* conn);
 
 
     CSync* getSyncObj(uint32_t session_id, uint32_t stream_id);
@@ -84,6 +85,9 @@ private:
 
     CMutex m_connection_list_mutex;
     std::set<CStreamCtrlConnection*> m_joined_connections;
+
+    muroa::CUDPSocket m_mcast_sock;
+    bool m_use_mcast;
 
     unsigned long m_session_id;
 

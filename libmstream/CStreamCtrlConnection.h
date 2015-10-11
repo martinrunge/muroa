@@ -70,9 +70,9 @@ public:
 	CStreamConnection*& getStreamConnection() {
 		return m_stream_connection;
 	}
-	void setStreamConnection(CStreamConnection* const streamConnection) {
-		m_stream_connection = streamConnection;
-	}
+//	void setStreamConnection(CStreamConnection* const streamConnection) {
+//		m_stream_connection = streamConnection;
+//	}
 
 	CStreamServer* getStreamServer() {
 		return m_stream_server;

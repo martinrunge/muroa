@@ -99,11 +99,9 @@ void CCtrlConnection::becomeSessionMember(const evRequestJoin& evt) {
 	sstate->m_timesrv_port = evt.m_timesrv_port;
 	sstate->m_volume = m_player->getVolume();
 	if(m_player->multicastSupported()) {
-		sstate->m_fallback_to_rtp_unicast = 0;
 		sstate->m_rtp_unicast_port = 0;
 	}
 	else {
-		sstate->m_fallback_to_rtp_unicast = 1;
 		sstate->m_rtp_unicast_port = m_player->getRTPUnicastPort();
 	}
 

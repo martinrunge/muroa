@@ -54,11 +54,21 @@ void CStreamCtrlConnection::connect(const endpoint_type & peer_endpoint, boost::
 
 
 void CStreamCtrlConnection::openStreamConnection() {
-
-// Hier weitermachen: RTP stream connection gemäß der Daten über Ctrl Connection aufbauen.
-
 	assert(m_stream_connection == 0);
 	m_stream_connection = new CStreamConnection(this, m_RTP_port);
+
+	boost::system::error_code ec;
+	bip::tcp::endpoint endpoint = remote_endpoint(ec);
+	if (ec)	{
+	  // An error occurred.
+	}
+	else {
+		bip::address addr = endpoint.address();
+		if(addr.is_v4()) {
+			CIPv4Address v4addr(addr.to_v4(), m_RTP_port);
+			m_stream_connection->connect(&v4addr);
+		}
+	}
 }
 
 void CStreamCtrlConnection::closeStreamConnection() {
@@ -109,7 +119,7 @@ void CStreamCtrlConnection::gotSessionState(const CmdStreamBase* cmd) {
 
 	if(typeid(*cmd) == typeid(evSessionState)) {
 		const evSessionState* evt = reinterpret_cast<const evSessionState*>(cmd);
-		if(evt->m_fallback_to_rtp_unicast != 0) {
+		if(evt->m_rtp_unicast_port != 0) {
 			// use unicast
 			m_use_multicast_rtp = false;
 			m_RTP_port = evt->m_rtp_unicast_port;
@@ -121,6 +131,7 @@ void CStreamCtrlConnection::gotSessionState(const CmdStreamBase* cmd) {
 			// this lcient is served via multicast RTP
 			m_use_multicast_rtp = true;
 		}
+		m_stream_server->clientBecameSessionMember(this, evt);
 	}
 }
 

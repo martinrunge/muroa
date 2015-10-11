@@ -40,7 +40,11 @@ cppserver::cppserver(vector<bip::tcp::endpoint> clients, int timeServerPort, int
 		for(int i = 0; i < clients.size(); i++) {
 			addClient(clients[i], "example session");
 		}
+
 		m_in_fd = fopen("infile.raw", "r");
+		if(m_in_fd == NULL) {
+			perror("fopen('infile.raw')");
+		}
 		open();
 
 		boost::asio::deadline_timer t(m_io_service, boost::posix_time::milliseconds(10) );

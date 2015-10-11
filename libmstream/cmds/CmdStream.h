@@ -106,7 +106,6 @@ public:
 		return  m_session_name.compare( rhs.m_session_name ) == 0 &&
 				m_mcast_addr == rhs.m_mcast_addr &&
 				m_timesrv_port == rhs.m_timesrv_port &&
-				m_fallback_to_rtp_unicast == rhs.m_fallback_to_rtp_unicast &&
 				m_rtp_unicast_port == rhs.m_rtp_unicast_port &&
 				m_volume == rhs.m_volume;
 	}
@@ -114,7 +113,6 @@ public:
 	std::string m_session_name;
 	boost::asio::ip::address m_mcast_addr;
 	uint32_t m_timesrv_port;
-	uint32_t m_fallback_to_rtp_unicast;
 	uint32_t m_rtp_unicast_port;
 	uint32_t m_volume;
 

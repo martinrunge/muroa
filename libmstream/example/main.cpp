@@ -88,8 +88,6 @@ bip::tcp::endpoint string_to_endpoint(std::string addr_str, int default_port) {
 		}
 	}
 
-
-
 	return endp;
 }
 

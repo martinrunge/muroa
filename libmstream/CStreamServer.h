@@ -74,9 +74,18 @@ public:
     // void adjustReceiverList(std::vector<muroa::ServDescPtr> receivers);
     virtual int addClient(bip::tcp::endpoint endp, const std::string& name);
     virtual void removeClient(const std::string& name);
-    virtual void removeClient(const muroa::CStreamCtrlConnection* connPtr);
 
 	virtual void reportClientState(muroa::CStreamCtrlConnection* conn, const muroa::CmdStreamBase* evt);
+
+	virtual void clientRejectedSessionMember(muroa::CStreamCtrlConnection* conn, const muroa::evJoinRejected* evt);
+	virtual void clientBecameSessionMember(muroa::CStreamCtrlConnection* conn, const muroa::evSessionState* evt);
+	virtual void clientLeftSession(muroa::CStreamCtrlConnection* conn, const muroa::evLeave* evt);
+
+    void removeClient(muroa::CStreamCtrlConnection* connPtr);
+protected:
+    void removeClient(set<CStreamCtrlConnection*>::iterator iter);
+    int removeSessionlessConnection(muroa::CStreamCtrlConnection* connPtr);
+
 
 private:
     int m_time_server_port;
@@ -85,7 +94,6 @@ private:
 
     boost::asio::io_service& m_io_service;
 
-    void removeClient(set<CStreamCtrlConnection*>::iterator iter);
 };
 
 } // namespace muroa

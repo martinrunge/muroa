@@ -55,6 +55,8 @@ void CStreamServer::reportClientState(muroa::CStreamCtrlConnection* conn, const 
 }
 
 
+
+
 /** CStreamServer::addClient(CIPv4Address* addr)
  *
  * \return 0 if client was successfully added, 1 if client was already in the list and -1 if connection failed
@@ -125,6 +127,26 @@ int CStreamServer::addClient(bip::tcp::endpoint endp, const std::string& name)
 /*!
     \fn CStreamServer::removeClient(CIPv4Address* addr);
  */
+
+
+/** remove client irrespective of it is a session member or not
+ *  called when tcp ctrl connection was closed by the other end.
+ */
+void CStreamServer::removeClient(muroa::CStreamCtrlConnection* connPtr) {
+	// first check, if it is a session member
+	int num_removed = removeJoinedConnection(connPtr);
+	if(num_removed > 0) {
+		// that client was part of the session
+		m_sessionless_connections.insert(connPtr);
+
+	}
+
+	removeSessionlessConnection(connPtr);
+}
+
+
+
+
 void CStreamServer::removeClient(const string& name)
 {
     set<CStreamCtrlConnection*>::iterator iter;
@@ -137,14 +159,41 @@ void CStreamServer::removeClient(const string& name)
     }
 }
 
-void CStreamServer::removeClient(const muroa::CStreamCtrlConnection* connPtr) {
-
+int CStreamServer::removeSessionlessConnection(muroa::CStreamCtrlConnection* connPtr) {
+	int num_removed = 0;
+    set<CStreamCtrlConnection*>::iterator iter;
+    for(iter = m_sessionless_connections.begin(); iter != m_sessionless_connections.end(); iter++ ) {
+        CStreamCtrlConnection* sc = *iter;
+        if( *iter == connPtr ) {
+            removeClient(iter);
+            num_removed++;
+        }
+    }
+    return num_removed;
 }
 
 
 
 void CStreamServer::removeClient(set<CStreamCtrlConnection*>::iterator iter) {
 	m_sessionless_connections.erase(iter);
+}
+
+
+void CStreamServer::clientRejectedSessionMember( muroa::CStreamCtrlConnection* conn, const muroa::evJoinRejected* evt) {
+}
+
+void CStreamServer::clientBecameSessionMember( muroa::CStreamCtrlConnection* conn, const muroa::evSessionState* evt) {
+	// remove conn from the list of connections not associated with a session
+	int num_ptr = removeSessionlessConnection(conn);
+	if(num_ptr > 0) {
+		// it was found in the list of connections not associated with a session
+		addJoinedConnection(conn);
+	}
+}
+
+void CStreamServer::clientLeftSession(muroa::CStreamCtrlConnection* conn, const muroa::evLeave* evt) {
+	removeJoinedConnection(conn);
+	m_sessionless_connections.insert(conn);
 }
 
 } // namespace muroa

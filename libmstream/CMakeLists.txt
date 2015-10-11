@@ -22,6 +22,7 @@ set( SRC           CStreamServer.cpp
                    CStreamCtrlConnection.cpp
                    CMediaStreamProvider.cpp
                    CStreamConnection.cpp
+                   CUDPSocket.cpp
                    CStreamSrvSM.cpp
                    CStreamClientSM.cpp
                    caudioframe.cpp
@@ -49,6 +50,7 @@ set( HEADERS       CStreamServer.h
                    CStreamCtrlConnection.h
                    CMediaStreamProvider.h
                    CStreamConnection.h
+                   CUDPSocket.h
                    CStreamSrvSM.h
                    ISrvSMActions.h
                    CStreamClientSM.h
