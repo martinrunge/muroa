@@ -47,6 +47,7 @@ using namespace boost::posix_time;
 using namespace muroa;
 
 CMediaStreamConnection::CMediaStreamConnection(boost::asio::io_service& io_service, boost::asio::ip::address mcast_addr, int timesrv_port ) :
+                           m_sync_info(0),
 		                   m_io_service(io_service),
 						   m_mcast_addr(mcast_addr),
 						   m_timesrv_port(timesrv_port)
@@ -127,6 +128,29 @@ void CMediaStreamConnection::sendRTPPacket(CRTPPacket* packet)
 }
 
 
+//muroa::evSyncStream* CMediaStreamConnection::getSyncInfo() {
+//	list<evSyncStream*>::iterator it;
+//	for(it = m_sync_info_list.begin(); it != m_sync_info_list.end(); it++) {
+//		if((*it)->m_ssrc == ssrc) {
+//			return *it;
+//		}
+//	}
+//	return 0;
+//}
+
+void CMediaStreamConnection::syncInfo(const evSyncStream& evt) {
+	evSyncStream* tmp = m_sync_info;
+
+	m_sync_info = new evSyncStream(evt);
+	if(tmp != 0) {
+		delete tmp;
+	}
+}
+
+void CMediaStreamConnection::resetStream(const evResetStream& evt) {
+
+}
+
 ///*!
 //    \fn CPlayer::sync()
 // */
@@ -135,10 +159,10 @@ void CMediaStreamConnection::sendRTPPacket(CRTPPacket* packet)
 //  // m_playloop->sync();
 //}
 
-void CMediaStreamConnection::setSyncObj(CRTPPacket* rtp_packet) {
-  m_sync_obj.deserialize( rtp_packet);
-  m_playloop->setSync(&m_sync_obj);
-}
+//void CMediaStreamConnection::setSyncObj(CRTPPacket* rtp_packet) {
+//  m_sync_obj.deserialize( rtp_packet);
+//  m_playloop->setSync(&m_sync_obj);
+//}
 
 /*!
     \fn CPlayer::setRequestedSyncObj(CRTPPacket* rtp_packet)
@@ -146,7 +170,7 @@ void CMediaStreamConnection::setSyncObj(CRTPPacket* rtp_packet) {
 void CMediaStreamConnection::setRequestedSyncObj(CRTPPacket* rtp_packet)
 {
     m_sync_requested_for_stream_id = -1;
-    setSyncObj(rtp_packet);
+    // setSyncObj(rtp_packet);
 }
 
 

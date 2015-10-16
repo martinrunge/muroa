@@ -24,6 +24,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "CmdStreamBase.h"
 
 #include <boost/asio.hpp>
+#include <boost/date_time/posix_time/posix_time.hpp>
+
 
 namespace muroa {
 
@@ -138,11 +140,29 @@ public:
 
 class evSyncStream: public CmdStreamBase {
 public:
+	evSyncStream() : m_ssrc(0), m_rtp_ts(0), m_media_clock_pts(0), m_ptime(0) {};
+
 	bool operator==(const evSyncStream& rhs) {
 		return  m_ssrc == rhs.m_ssrc &&
 				m_rtp_ts == rhs.m_rtp_ts &&
 				m_media_clock_pts == rhs.m_media_clock_pts &&
 				m_utc_media_clock_pts.compare( rhs.m_utc_media_clock_pts ) == 0 ;
+	}
+
+	boost::posix_time::ptime* getUTCMediaClock() {
+		if(m_ptime == 0) {
+			m_ptime = new boost::posix_time::ptime();
+			*m_ptime = boost::posix_time::time_from_string( m_utc_media_clock_pts );
+		}
+		return m_ptime;
+	}
+
+	void setUTCMediaClock(boost::posix_time::ptime* t) {
+		if(m_ptime == 0) {
+			m_ptime = new boost::posix_time::ptime();
+		}
+		*m_ptime = *t;
+		m_utc_media_clock_pts = boost::posix_time::to_simple_string(*m_ptime);
 	}
 
 	uint32_t m_ssrc;
@@ -151,6 +171,8 @@ public:
 	std::string m_utc_media_clock_pts;  // used if system time is synced externally, e.g. by NTP, else empty string
 
 	static const std::string ev_name;
+private:
+	boost::posix_time::ptime* m_ptime;
 };
 
 class evSetVolume: public CmdStreamBase {

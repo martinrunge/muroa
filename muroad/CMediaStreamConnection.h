@@ -27,9 +27,11 @@ Class encapsulates all the playback functioinalty. It inplements an interface to
 */
 
 #include <string>
+#include <list>
 #include "csync.h"
 #include "cposixcond.h"
 #include "IRenderCmds.h"
+#include <cmds/CmdStream.h>
 // #include "cmds/CmdStreamReset.h"
 #include "CConnectionManager.h"
 
@@ -72,9 +74,12 @@ public:
 
 	void useTimeService(boost::asio::ip::address ip_address, int port, boost::asio::ip::udp protocol = boost::asio::ip::udp::v4());
 
+	muroa::evSyncStream* getSyncInfo() { return m_sync_info; };
+    void syncInfo(const muroa::evSyncStream& evt);
+	void resetStream(const muroa::evResetStream& evt);
 
-    inline CSync* syncObj() {return &m_sync_obj; };
-    void setSyncObj(CRTPPacket* rtp_packet);
+//    inline CSync* syncObj() {return &m_sync_obj; };
+//    void setSyncObj(CRTPPacket* rtp_packet);
     // void sync();
 
     inline int syncRequestedForStreamID(void) { 
@@ -109,7 +114,9 @@ private:
 //    muroa::CConnectionManager m_conn_mgr;
 //    muroa::CTcpServer* m_tcp_server;
 
-    CSync m_sync_obj;
+//    CSync m_sync_obj;
+    // the last sync info arrived will be prepended at the beginning of the list
+    muroa::evSyncStream* m_sync_info;
 
     int m_sync_requested_for_stream_id;
     boost::posix_time::ptime m_sync_requested_at;

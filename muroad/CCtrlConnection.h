@@ -54,6 +54,8 @@ public:
 	void confirmJoinRequest(const evRequestJoin& evt);
 	bool mayJoinSession(const evRequestJoin& rj);
 	void becomeSessionMember(const evRequestJoin& evt);
+    void syncInfo(const evSyncStream& evt);
+	void resetStream(const evResetStream& evt);
 
 private:
 	CCtrlConnection(boost::asio::io_service& io_service);

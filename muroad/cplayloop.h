@@ -69,6 +69,7 @@ public:
 
 private:
 
+    uint32_t m_current_ssrc;
     double m_resample_factor;
     double m_correction_factor;
 

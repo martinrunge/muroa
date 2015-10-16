@@ -161,6 +161,17 @@ int CPlayer::leaveSession(const evLeave& evt, CCtrlConnection* ctrlConn) {
 	leaveSession(ctrlConn);
 }
 
+void CPlayer::syncInfo(const evSyncStream& evt, CCtrlConnection* ctrlConn) {
+	if(ctrlConn == m_session_ctrl_conn) {
+		m_media_stream_conn->syncInfo(evt);
+	}
+}
+
+void CPlayer::resetStream(const evResetStream& evt, CCtrlConnection* ctrlConn) {
+	if(ctrlConn == m_session_ctrl_conn) {
+		m_media_stream_conn->resetStream(evt);
+	}
+}
 
 
 int CPlayer::getVolume() {

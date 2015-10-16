@@ -178,9 +178,11 @@ struct clnt_ : public msm::front::state_machine_def<clnt_, VisitableState>
      };
 
      void resetStream(const evResetStream& rs) {
+    	 _actions->resetStream(rs);
      };
 
      void syncStream(const evSyncStream& ss) {
+    	 _actions->syncInfo(ss);
      };
 
      void setVolume(const evSetVolume& sv) {

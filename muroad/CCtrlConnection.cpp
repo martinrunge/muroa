@@ -107,3 +107,12 @@ void CCtrlConnection::becomeSessionMember(const evRequestJoin& evt) {
 
 	sendEvent(sstate);
 }
+
+void CCtrlConnection::syncInfo(const evSyncStream& evt) {
+	m_player->syncInfo(evt, this);
+}
+
+void CCtrlConnection::resetStream(const evResetStream& evt) {
+	m_player->resetStream(evt, this);
+}
+

@@ -148,7 +148,7 @@ CAudioFrame* CPlayloop::getAudioPacket(bool block) {
 		switch( rtp_packet->payloadType() )
 		{
 		case PAYLOAD_SYNC_OBJ:
-			m_media_stream_conn->setSyncObj(rtp_packet);
+			// m_media_stream_conn->setSyncObj(rtp_packet);
 			delete rtp_packet;
 			break;
 
@@ -251,6 +251,12 @@ void CPlayloop::DoLoop() {
 
 
 int CPlayloop::startStream() {
+	// stream can only start if sync info is available
+	muroa::evSyncStream* si = m_media_stream_conn->getSyncInfo();
+	if(si == 0) {
+		return -2;
+	}
+
 
 	// first: fill soundcard buffer with as many data as possible
 	int rc = 1;
@@ -299,7 +305,7 @@ int CPlayloop::startStream() {
  * All audio frames with PTS in the past may not be played any more. Discard them.
  */
 ptime CPlayloop::discardPastPTSFrames() {
-	while(m_nr_of_last_frame_decoded == -1 || (!m_media_stream_conn->syncObj()->isValid())) {
+	while(m_nr_of_last_frame_decoded == -1 ) {
 		addPacket2RingBuffer(true);
 	}
 	LOG4CPLUS_DEBUG(m_timing_logger, "step 1: discard frames with PTS in the past.");
@@ -400,8 +406,10 @@ void CPlayloop::adjustResamplingFactor()
  * based on the reference time stamp of the current sync object.
  */
 ptime CPlayloop::getPreResamplerPTS() {
-	ptime* pts = m_media_stream_conn->syncObj()->getPtimePtr();
-	uint32_t pts_frame_nr = m_media_stream_conn->syncObj()->frameNr();
+	evSyncStream* si = m_media_stream_conn->getSyncInfo();
+
+	ptime* pts = si->getUTCMediaClock();
+	uint32_t pts_frame_nr = si->m_rtp_ts;
 
 	// time and frame diff between last sync and stream state just before the resampler
 	int64_t pre_resampler_frame_diff = m_nr_of_last_frame_decoded - pts_frame_nr;
@@ -508,18 +516,18 @@ int CPlayloop::sleepuntil(boost::posix_time::ptime wakeup_time) {
  */
 bool CPlayloop::checkStream(CRTPPacket* packet)
 {
-	uint32_t tmp_session_id = packet->sessionID();
-	uint32_t tmp_stream_id = packet->streamID();
+	muroa::evSyncStream* si = m_media_stream_conn->getSyncInfo();
 
-	if(tmp_session_id != m_session_id || tmp_stream_id != m_stream_id ) {
+	if(si->m_ssrc == packet->ssrc() ) {
+		return true;
+	}
+	else {
 		// this packet does not belong to the actual stream
-		cerr << "Got RTP packet of different stream (" << tmp_session_id << "/" << tmp_stream_id
-				<< "). Self (" << m_session_id << "/" << m_stream_id << "). " << endl;
-		m_media_stream_conn->requestSync(tmp_session_id, tmp_stream_id);
+		cerr << "Got RTP packet of different stream (" << packet->ssrc()
+				<< "). Self (" << si->m_ssrc << "). " << endl;
+		//m_media_stream_conn->requestSync(tmp_session_id, tmp_stream_id);
 		return false;
 	}
-	else
-		return true;
 }
 
 

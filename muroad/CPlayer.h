@@ -52,6 +52,10 @@ public:
 	int leaveSession(CCtrlConnection* ctrlConn);
 	int leaveSession(const evLeave& evt, CCtrlConnection* ctrlConn);
 
+    void syncInfo(const evSyncStream& evt, CCtrlConnection* ctrlConn);
+	void resetStream(const evResetStream& evt, CCtrlConnection* ctrlConn);
+
+
 	void setupMediaStreamConn(  boost::asio::ip::address mcast_addr, int timesrv_port );
 	void shutdownMediaStreamConn();
 

@@ -45,7 +45,7 @@ cppserver::cppserver(vector<bip::tcp::endpoint> clients, int timeServerPort, int
 		if(m_in_fd == NULL) {
 			perror("fopen('infile.raw')");
 		}
-		open();
+		open(2 * 2 * 48000);
 
 		boost::asio::deadline_timer t(m_io_service, boost::posix_time::milliseconds(10) );
 		t.async_wait( boost::bind(&cppserver::sendData, this) );

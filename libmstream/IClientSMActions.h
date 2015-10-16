@@ -36,6 +36,8 @@ public:
 	virtual void confirmJoinRequest(const evRequestJoin& evt ) = 0;
 	virtual bool mayJoinSession(const evRequestJoin& rj) = 0;
 	virtual void becomeSessionMember(const evRequestJoin& evt) = 0;
+	virtual void syncInfo(const evSyncStream& evt) = 0;
+	virtual void resetStream(const evResetStream& evt) = 0;
 };
 
 } /* namespace muroa */
