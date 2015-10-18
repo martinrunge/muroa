@@ -110,8 +110,9 @@ int main(int argc, char *argv[]) {
 		return EXIT_FAILURE;
 	}
 
-	if(!app->settings().muroad_addr().empty()) {
-		string addr_str = app->settings().muroad_addr();
+	vector<string> addrs = app->settings().muroad_addrs();
+	for(int i = 0; i < addrs.size(); i++) {
+		string addr_str = addrs[i];
 		clients.push_back( string_to_endpoint(addr_str, 5556));
 	}
 

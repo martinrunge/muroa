@@ -71,6 +71,8 @@ int CSettings::parse(int argc, char** argv) throw(configEx) {
         {0, 0, 0, 0}
     };
 
+    m_muroad.clear();
+
     while (1) {
         int this_option_optind = optind ? optind : 1;
         int option_index = 0;
@@ -133,7 +135,7 @@ int CSettings::parse(int argc, char** argv) throw(configEx) {
 
         case 'm':
             if (optarg) {
-                m_muroad = optarg;
+                m_muroad.push_back(optarg);
             } else {
               	throw configEx("--muroad option requires an argument");
             }

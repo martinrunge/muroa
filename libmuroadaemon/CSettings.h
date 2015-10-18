@@ -62,7 +62,7 @@ public:
     unsigned short ipversion() {return m_ip_version; };
 
     unsigned short timeserver_port() { return m_ts_port; };
-    std::string muroad_addr() { return m_muroad; };
+    std::vector<std::string> muroad_addrs() { return m_muroad; };
 
     inline std::string logfile() { return m_logfile; };
 
@@ -110,7 +110,7 @@ private:
     bool m_reset_cache;
 
     // address of muroad for manual setting for testing
-    std::string m_muroad;
+    std::vector<std::string> m_muroad;
     unsigned short m_ts_port;
 
 
