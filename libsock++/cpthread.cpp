@@ -90,7 +90,7 @@ int CPThread::StopThread() {
     int retval;
 
     Run(false);
-    // pthread_kill(m_thread_id, SIGUSR1);
+
     retval = pthread_join(m_thread_id, NULL);
     perror("CPThread::StopThread (pthread_join)");
     return retval;

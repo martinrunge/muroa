@@ -135,7 +135,7 @@ CAudioFrame* CPlayloop::getAudioPacket(bool block) {
 		if(m_packet_ringbuffer->getRingbufferSize() == 0) {
 			if(block) {
 				bool dataAvail = false;
-				while((!dataAvail || m_packet_ringbuffer->getRingbufferSize() == 0) && getPThreadPtr()->IsRunning()) {
+				while((!dataAvail || m_packet_ringbuffer->getRingbufferSize() == 0)) {
 					dataAvail = waitForData();
 				};
 			} else {
@@ -144,6 +144,8 @@ CAudioFrame* CPlayloop::getAudioPacket(bool block) {
 		}
 
 		CRTPPacket* rtp_packet = m_packet_ringbuffer->readPacket();
+
+		if( isCancelled() ) { return 0; };  // check for cancellation of playloop
 
 		switch( rtp_packet->payloadType() )
 		{
@@ -178,6 +180,9 @@ CAudioFrame* CPlayloop::getAudioPacket(bool block) {
 bool CPlayloop::waitForData() {
 
 	int retval = m_media_stream_conn->m_traffic_cond.Wait(1);
+	if(isCancelled()) {
+		throw InterruptedEx();
+	}
 	if(retval == 0) {
 		string audio_device = CApp::settings().getConfigVal(string("muroad.AudioDevice"), string("hw:0,0"));
 
@@ -214,39 +219,48 @@ int CPlayloop::addPacket2RingBuffer(bool block) {
 
 /** the main loop for this thread */
 void CPlayloop::DoLoop() {
-	CAudioFrame* frame;
-	int pb_state = m_audio_sink->state();
+	try {
+		CAudioFrame* frame;
+		int pb_state = m_audio_sink->state();
 
-	if(pb_state != IAudioIO::E_RUNNING) {
-		int rc = startStream();
-		if(rc) {
-			// stream could not be started, possibly bestartStreamcause not enough packets were available. Try again
-			LOG4CPLUS_WARN(m_timing_logger, "  could not start stream. Possibly not enough data available ");
+		if(pb_state != IAudioIO::E_RUNNING) {
+			int rc = startStream();
+			if(rc) {
+				if( isCancelled() ) { return; };  // check for cancellation of playloop
+
+				// stream could not be started, possibly bestartStreamcause not enough packets were available. Try again
+				LOG4CPLUS_WARN(m_timing_logger, "  could not start stream. Possibly not enough data available ");
+				return;
+			}
+		}
+
+		// if possibly, read as many packets out of the packet ringbuffer as neccessary to fill soundcard ringbuffer
+		// completely, but do not block if there are not enough packets available.
+		int frames_writable = m_audio_sink->getSpace();
+		int num_frames;
+		while( m_ringbuffer->sizeInFrames() < m_write_granularity) {
+			if( isCancelled() ) { return; };  // check for cancellation of playloop
+
+			num_frames = addPacket2RingBuffer(true);
+			// LOG4CPLUS_DEBUG(m_timing_logger, "  ringbuffer was low (" << m_ringbuffer->sizeInFrames() << "), added " << num_frames << " frames.");
+		}
+
+		char* playbuffer = m_ringbuffer->readFrames(m_write_granularity);
+
+		int retval = m_audio_sink->write(playbuffer, m_write_granularity * m_num_channels * m_sample_size);
+		delete[] playbuffer;
+		if(retval == 0 ) {
+			LOG4CPLUS_WARN(m_timing_logger, "*** soundcard buffer underrun ***");
 			return;
 		}
+		else {
+			// LOG4CPLUS_DEBUG(m_timing_logger, "  wrote chunk of " << retval << " frames. Space for: " <<  m_audio_sink->getSpace() << " frames left. state: " << m_audio_sink->state());
+		}
+		adjustResamplingFactor();
 	}
+	catch(muroa::InterruptedEx iex) {
 
-	// if possibly, read as many packets out of the packet ringbuffer as neccessary to fill soundcard ringbuffer
-	// completely, but do not block if there are not enough packets available.
-	int frames_writable = m_audio_sink->getSpace();
-	int num_frames;
-	while( m_ringbuffer->sizeInFrames() < m_write_granularity) {
-		num_frames = addPacket2RingBuffer(true);
-		// LOG4CPLUS_DEBUG(m_timing_logger, "  ringbuffer was low (" << m_ringbuffer->sizeInFrames() << "), added " << num_frames << " frames.");
 	}
-
-	char* playbuffer = m_ringbuffer->readFrames(m_write_granularity);
-
-	int retval = m_audio_sink->write(playbuffer, m_write_granularity * m_num_channels * m_sample_size);
-	delete[] playbuffer;
-	if(retval == 0 ) {
-		LOG4CPLUS_WARN(m_timing_logger, "*** soundcard buffer underrun ***");
-		return;
-	}
-	else {
-		// LOG4CPLUS_DEBUG(m_timing_logger, "  wrote chunk of " << retval << " frames. Space for: " <<  m_audio_sink->getSpace() << " frames left. state: " << m_audio_sink->state());
-	}
-	adjustResamplingFactor();
 }
 
 
@@ -271,6 +285,8 @@ int CPlayloop::startStream() {
 
 	while(m_ringbuffer->sizeInFrames() < m_write_granularity * m_periods_to_start) {
 		addPacket2RingBuffer(true);
+
+		if( isCancelled() ) { return -2; };  // check for cancellation of playloop
 	}
 
 	LOG4CPLUS_INFO(m_timing_logger, "step 2: filling soundcard buffer with: " <<  m_write_granularity * m_periods_to_start << " frames (writable: " <<  m_audio_sink->getSpace() << ", state: " << m_audio_sink->state() << ")");

@@ -31,6 +31,7 @@
 #include "cmutex.h"
 
 #include "CSettings.h"
+#include "MuroaExceptions.h"
 
 #include <boost/date_time/posix_time/posix_time.hpp>
 #include <boost/date_time/time_duration.hpp>

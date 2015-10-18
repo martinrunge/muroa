@@ -21,3 +21,4 @@ CThreadSlave::CThreadSlave(){
 }
 CThreadSlave::~CThreadSlave(){
 }
+

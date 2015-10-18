@@ -26,7 +26,7 @@ using namespace log4cplus;
 
 namespace muroa {
 
-CTimeServiceCtrl::CTimeServiceCtrl() : m_server_role(false), m_used_port(0) {
+CTimeServiceCtrl::CTimeServiceCtrl() : m_thread(0), m_server_role(false), m_used_port(0) {
 	m_logger =  Logger::getInstance("main");
 }
 
@@ -35,13 +35,19 @@ CTimeServiceCtrl::~CTimeServiceCtrl() {
 }
 
 void CTimeServiceCtrl::start(bool server_role, boost::asio::ip::address ip_address, int portNr, boost::asio::ip::udp protocol) {
+	assert(m_thread == 0);
 	m_server_role = server_role;
 	m_thread = new std::thread(bind(&CTimeServiceCtrl::threadfunc, this, server_role, ip_address, portNr, protocol));
 }
 
 void CTimeServiceCtrl::stop() {
-	//m_thread->
-	delete m_thread;
+	if(m_thread != 0) {
+		if(m_thread->joinable()) {
+			m_thread->join();
+		}
+		delete m_thread;
+		m_thread = 0;
+	}
 }
 
 void CTimeServiceCtrl::threadfunc(bool server_role, boost::asio::ip::address ip_address, int portNr, boost::asio::ip::udp protocol) {

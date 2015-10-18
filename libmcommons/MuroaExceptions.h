@@ -136,6 +136,10 @@ private:
 	std::string m_reason;
 };
 
-// } // namespace muroa  // activate later on
+namespace muroa {
+class InterruptedEx: public std::exception {
+};
+
+} // namespace muroa
 
 #endif /* MUROAEXCEPTIONS_H_ */
