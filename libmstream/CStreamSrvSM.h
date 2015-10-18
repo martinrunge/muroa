@@ -120,7 +120,11 @@ struct srv_ : public boost::msm::front::state_machine_def<srv_, VisitableState>
 
     // error
     struct error : public boost::msm::front::state<VisitableState>  {
-    	void accept(VisitorBase&) const     	{
+       	template <class Event, class FSM> void on_entry(Event const& evt, FSM& fsm) {
+        		std::cout << "entering: error" << std::endl;
+        		fsm._actions->reportError(&evt);
+        }
+   	    void accept(VisitorBase&) const     	{
     	    std::cout << "in " << typeid(this).name() << std::endl;
     	};
     };

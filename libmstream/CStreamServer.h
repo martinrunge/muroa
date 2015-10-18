@@ -81,6 +81,8 @@ public:
 	virtual void clientBecameSessionMember(muroa::CStreamCtrlConnection* conn, const muroa::evSessionState* evt);
 	virtual void clientLeftSession(muroa::CStreamCtrlConnection* conn, const muroa::evLeave* evt);
 
+	virtual void  reportError(muroa::CStreamCtrlConnection* conn, const evJoinRejected* evt);
+
     void removeClient(muroa::CStreamCtrlConnection* connPtr);
 protected:
     void removeClient(set<CStreamCtrlConnection*>::iterator iter);

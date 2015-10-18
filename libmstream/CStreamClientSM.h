@@ -146,7 +146,10 @@ struct clnt_ : public msm::front::state_machine_def<clnt_, VisitableState>
     struct exitState : public msm::front::terminate_state<VisitableState> // errorExit terminates the state machine
     {
     	template <class Event,class FSM>
-    	void on_entry(Event const&,FSM& ) {std::cout << "starting: exitState" << std::endl;}
+    	void on_entry(Event const& evt, FSM& fsm) {
+    		std::cout << "starting: exitState" << std::endl;
+    		fsm._actions->rejectJoin(evt);
+    	}
     	template <class Event,class FSM>
     	void on_exit(Event const&,FSM& ) {std::cout << "finishing: exitState" << std::endl;}
     	void accept(VisitorBase& vis) const     	{

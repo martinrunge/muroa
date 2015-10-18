@@ -83,6 +83,8 @@ public:
 	}
 
 	void reportError(std::string);
+    void reportError(const evJoinRejected* evt);
+
 	void reportTimeout(std::string);
 	void reportClientState(const CmdStreamBase* evt);
 	void requestJoin(const evRequestJoin* evt);

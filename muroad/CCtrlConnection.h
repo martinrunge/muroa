@@ -22,6 +22,7 @@
 #define MUROAD_CCTRLCONNECTION_H_
 
 #include <CTcpConnection.h>
+#include <IConnectionManager.h>
 #include <ctrlrpcxml/CStreamCtrlXml.h>
 #include <CStreamClientSM.h>
 #include <IClientSMActions.h>
@@ -38,8 +39,10 @@ public:
 	virtual ~CCtrlConnection();
 
 	void setPlayer(muroa::CPlayer* ps) { m_player = ps; };
+	void setConnectionMgr(muroa::IConnectionManager* conn_mgr) { m_conn_mgr = conn_mgr; };
 
 	void start();
+	void stop();
 	void onClose();
 
 	void onSetup();
@@ -56,6 +59,9 @@ public:
 	void becomeSessionMember(const evRequestJoin& evt);
     void syncInfo(const evSyncStream& evt);
 	void resetStream(const evResetStream& evt);
+	void rejectJoin(const evRequestJoin& evt);
+	void rejectJoin(const evLeave& evt);
+	void rejectJoin(const evTimeout& evt);
 
 private:
 	CCtrlConnection(boost::asio::io_service& io_service);
@@ -63,6 +69,7 @@ private:
 
 	muroa::CStreamClientSM m_clnt_sm;
 	muroa::CPlayer* m_player;
+	muroa::IConnectionManager* m_conn_mgr;
 };
 
 #endif /* MUROAD_CCTRLCONNECTION_H_ */

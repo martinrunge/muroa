@@ -103,6 +103,10 @@ void CStreamCtrlConnection::reportError(std::string) {
 
 }
 
+void CStreamCtrlConnection::reportError(const evJoinRejected* evt) {
+	m_stream_server->reportError(this, evt);
+}
+
 void CStreamCtrlConnection::reportTimeout(std::string) {
 
 }

@@ -135,7 +135,12 @@ int CPlayer::requestLeaveSession(CCtrlConnection* ctrlConn) {
 }
 
 bool CPlayer::mayJoinSession(const evRequestJoin& rj, CCtrlConnection* ctrlConn) {
-	return true;
+	if(m_session_name.empty() && m_session_ctrl_conn == 0 ) {
+		return true;
+	}
+	else {
+		return false;
+	}
 }
 
 int CPlayer::becomeSessionMember(const evRequestJoin& evt, CCtrlConnection* ctrlConn) {

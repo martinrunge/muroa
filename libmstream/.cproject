@@ -10,7 +10,7 @@
 					<extension id="org.eclipse.cdt.core.PE" point="org.eclipse.cdt.core.BinaryParser"/>
 					<extension id="org.eclipse.cdt.core.ELF" point="org.eclipse.cdt.core.BinaryParser"/>
 					<extension id="org.eclipse.cdt.core.GNU_ELF" point="org.eclipse.cdt.core.BinaryParser"/>
-					<extension id="org.eclipse.core.GCCErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+					<extension id="org.eclipse.cdt.core.GCCErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
 				</extensions>
 			</storageModule>
 			<storageModule moduleId="cdtBuildSystem" version="4.0.0">
@@ -18,15 +18,21 @@
 					<folderInfo id="org.eclipse.cdt.cmake.toolChain.debug.1976657396.593623488" name="/" resourcePath="">
 						<toolChain id="org.eclipse.cdt.cmake.toolChain.debug.545972383" name="CMake provided toolchain" superClass="org.eclipse.cdt.cmake.toolChain.debug">
 							<targetPlatform id="org.eclipse.cdt.cmake.targetPlatform1.1601880753" isAbstract="false" name="CMake target platform" superClass="org.eclipse.cdt.cmake.targetPlatform1"/>
-							<builder id="org.eclipse.cdt.cmake.builder.1303891546" managedBuildOn="false" name="CMake Builder.debug" superClass="org.eclipse.cdt.cmake.builder"/>
+							<builder buildPath="/home/martin/git/muroa/libmstream/debug_arm" id="org.eclipse.cdt.cmake.builder.1303891546" managedBuildOn="false" name="CMake Builder.debug" superClass="org.eclipse.cdt.cmake.builder"/>
 							<tool id="org.eclipse.cdt.cmake.cmake.806769683" name="CMake" superClass="org.eclipse.cdt.cmake.cmake"/>
-							<tool id="org.eclipse.cdt.cmake.compiler.c++.2033291100" name="GCC C++ Compiler" superClass="org.eclipse.cdt.cmake.compiler.c++">
+							<tool id="org.eclipse.cdt.cmake.compiler.c++.2033291100" name="GCC C++ Compiler">
 								<inputType id="cdt.managedbuild.tool.gnu.cpp.compiler.input.1462866187" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.input"/>
-								<inputType id="org.eclipse.cdt.cmake.inputType.cpp.1704653962" name="cpp-input" superClass="org.eclipse.cdt.cmake.inputType.cpp"/>
+								<inputType id="org.eclipse.cdt.cmake.inputType.cpp.1704653962" name="cpp-input"/>
 							</tool>
-							<tool id="org.eclipse.cdt.cmake.compiler.c.1388075644" name="GCC C Compiler" superClass="org.eclipse.cdt.cmake.compiler.c">
+							<tool id="org.eclipse.cdt.cmake.compiler.c.1388075644" name="GCC C Compiler">
 								<inputType id="cdt.managedbuild.tool.gnu.c.compiler.input.1031776020" superClass="cdt.managedbuild.tool.gnu.c.compiler.input"/>
-								<inputType id="org.eclipse.cdt.cmake.inputType.c.943103422" name="c-input" superClass="org.eclipse.cdt.cmake.inputType.c"/>
+								<inputType id="org.eclipse.cdt.cmake.inputType.c.943103422" name="c-input"/>
+							</tool>
+							<tool id="org.eclipse.cdt.cmake.gpp.41329386" name="g++" superClass="org.eclipse.cdt.cmake.gpp">
+								<inputType id="cdt.managedbuild.tool.gnu.cpp.compiler.input.1846452637" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.input"/>
+							</tool>
+							<tool id="org.eclipse.cdt.cmake.gcc.1670951825" name="gcc" superClass="org.eclipse.cdt.cmake.gcc">
+								<inputType id="cdt.managedbuild.tool.gnu.c.compiler.input.130070598" superClass="cdt.managedbuild.tool.gnu.c.compiler.input"/>
 							</tool>
 						</toolChain>
 					</folderInfo>
@@ -64,4 +70,5 @@
 		<project id="libmstream.null.2029023932" name="libmstream"/>
 	</storageModule>
 	<storageModule moduleId="org.eclipse.cdt.core.LanguageSettingsProviders"/>
+	<storageModule moduleId="refreshScope"/>
 </cproject>

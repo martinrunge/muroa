@@ -30,13 +30,18 @@ CCtrlConnection::CCtrlConnection(boost::asio::io_service& io_service) : CTcpConn
 }
 
 CCtrlConnection::~CCtrlConnection() {
-	// shutdown();
+
 }
 
 void CCtrlConnection::start() {
 	CTcpConnection::start();
 	setup();
 	m_clnt_sm.start();
+}
+
+void CCtrlConnection::stop() {
+	shutdown();
+	CTcpConnection::stop();
 }
 
 void CCtrlConnection::onClose() {
@@ -55,11 +60,8 @@ void CCtrlConnection::onShutdown() {
 
 bool CCtrlConnection::onEvent(CmdStreamBase* ev) {
 	m_clnt_sm.onEvent(ev);
-
 	return true;
 }
-
-
 
 void CCtrlConnection::dataReceived( boost::array<char, 8192> buffer, int length) {
 	newData(buffer.data(), length);
@@ -114,5 +116,25 @@ void CCtrlConnection::syncInfo(const evSyncStream& evt) {
 
 void CCtrlConnection::resetStream(const evResetStream& evt) {
 	m_player->resetStream(evt, this);
+}
+
+void CCtrlConnection::rejectJoin(const evRequestJoin& evt) {
+	evJoinRejected rj;
+
+	rj.m_owner_session = m_player->getSessionName();
+	rj.m_message = "Client is already member of another seession.";
+
+	sendEvent(&rj);
+    getIoService().post(boost::bind( &IConnectionManager::remove, m_conn_mgr, this));
+}
+
+void CCtrlConnection::rejectJoin(const evLeave& evt) {
+	sendEvent(&evt);
+    getIoService().post(boost::bind( &IConnectionManager::remove, m_conn_mgr, this));
+}
+
+void CCtrlConnection::rejectJoin(const evTimeout& evt) {
+	// sendEvent(&evt);
+    getIoService().post(boost::bind( &IConnectionManager::remove, m_conn_mgr, this));
 }
 

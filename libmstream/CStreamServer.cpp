@@ -196,4 +196,9 @@ void CStreamServer::clientLeftSession(muroa::CStreamCtrlConnection* conn, const 
 	m_sessionless_connections.insert(conn);
 }
 
+void  CStreamServer::reportError(muroa::CStreamCtrlConnection* conn, const evJoinRejected* evt) {
+
+}
+
+
 } // namespace muroa

@@ -38,6 +38,10 @@ public:
 	virtual void becomeSessionMember(const evRequestJoin& evt) = 0;
 	virtual void syncInfo(const evSyncStream& evt) = 0;
 	virtual void resetStream(const evResetStream& evt) = 0;
+
+	virtual void rejectJoin(const evRequestJoin& evt) = 0;
+	virtual void rejectJoin(const evLeave& evt) = 0;
+	virtual void rejectJoin(const evTimeout& evt) = 0;
 };
 
 } /* namespace muroa */

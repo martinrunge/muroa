@@ -36,6 +36,7 @@ CCtrlConnectionMgr::~CCtrlConnectionMgr() {
 void CCtrlConnectionMgr::add(CTcpConnection* c) {
 	  CCtrlConnection* cc = reinterpret_cast<CCtrlConnection*>(c);
 	  cc->setPlayer(m_player);
+	  cc->setConnectionMgr(this);
 	  m_connections.insert(c);
 	  c->start();
 }
@@ -43,7 +44,7 @@ void CCtrlConnectionMgr::add(CTcpConnection* c) {
 /// Stop the specified connection.
 void CCtrlConnectionMgr::remove(CTcpConnection* c) {
 	  CCtrlConnection* cc = reinterpret_cast<CCtrlConnection*>(c);
-	  c->stop();
+	  cc->stop();
 	  m_connections.erase(c);
 
 }
