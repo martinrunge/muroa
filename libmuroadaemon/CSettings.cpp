@@ -214,7 +214,7 @@ int CSettings::readConfigFile() throw(muroa::configEx) {
     	else {
     		oss << "Given config file '" << m_configfile << "' could not be read.";
     	}
-		LOG4CPLUS_ERROR( m_app->getLoggerRef() , oss );
+		LOG4CPLUS_ERROR( m_app->getLoggerRef() , oss.str() );
     	throw configEx(oss.str());
     }
 
