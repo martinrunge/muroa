@@ -63,7 +63,7 @@ endif( )
 
 if( msessiond OR muroad )
   add_subdirectory (libmstream)
-  add_subdirectory (libmstream/example)
+  add_subdirectory (libmstream/examples)
   add_subdirectory (libmuroadaemon)  
   add_subdirectory (libsock++)
 endif( )

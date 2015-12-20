@@ -19,9 +19,10 @@ include( MacroGDBIndex )
 add_definitions( ${log4cplus_DEFINITIONS} )
 
 set( SRC           CUtils.cpp
-                                      )                  
+                )                  
 
 set( HEADERS       CUtils.h
+                   CStreamFmt.h
                    MuroaExceptions.h)
                   
 include_directories(${CMAKE_CURRENT_SOURCE_DIR} 

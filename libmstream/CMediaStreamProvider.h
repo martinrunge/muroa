@@ -17,8 +17,8 @@
 
 #include "CStreamCtrlConnection.h"
 #include "CUDPSocket.h"
-
 #include "crtppacket.h"
+#include <CStreamFmt.h>
 
 // to be removed soon
 #include "csync.h"
@@ -34,9 +34,12 @@ public:
 	CMediaStreamProvider(boost::asio::io_service& io_service, int session_id, int transport_buffer_size_in_ms);
 	virtual ~CMediaStreamProvider();
 
-    int open(int audio_bytes_per_second = 2 * 2 * 44100);
+    int open(muroa::CStreamFmt sfmt);
+    int open(int num_channels = 2, int sample_rate = 44100, int sample_size = 2);
     void close();
     void flush();
+    bool isOpen() { return m_is_open; };
+    CStreamFmt getStreamFmt();
 
     int write(char* buffer, int length);
     int sendPacket(char* buffer, int length);
@@ -62,6 +65,9 @@ private:
     int m_audio_bytes_per_frame;
 
     long m_frames_in_sync_period;
+
+    bool m_is_open;
+    CStreamFmt m_streamFmt;
 
     /** system time when the first packet was sent */
     boost::posix_time::ptime m_first_send_time;

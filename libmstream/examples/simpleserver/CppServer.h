@@ -18,8 +18,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 */
 
-#ifndef LIBMSTREAM_EXAMPLE_SERVER_H_
-#define LIBMSTREAM_EXAMPLE_SERVER_H_
+#ifndef LIBMSTREAM_EXAMPLES_SERVER_H_
+#define LIBMSTREAM_EXAMPLES_SERVER_H_
 
 #include <iostream>
 #include <cstdio>
@@ -33,10 +33,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 namespace bip=boost::asio::ip;
 
 
-class cppserver :public CStreamServer {
+class CppServer :public CStreamServer {
 public:
-	cppserver(std::vector<bip::tcp::endpoint> clients, int timeServerPort, int sessionID );
-	~cppserver();
+	CppServer(std::vector<bip::tcp::endpoint> clients, int timeServerPort, int sessionID );
+	~CppServer();
 	void run();
 	void sendData();
 
@@ -50,4 +50,4 @@ private:
 
 
 
-#endif /* LIBMSTREAM_EXAMPLE_SERVER_H_ */
+#endif /* LIBMSTREAM_EXAMPLES_SERVER_H_ */

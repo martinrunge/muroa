@@ -25,6 +25,7 @@ using namespace log4cplus;
 namespace muroa {
 
 CMediaStreamProvider::CMediaStreamProvider(boost::asio::io_service& io_service, int session_id = 1, int transport_buffer_size_in_ms = 1500) :
+		                                   m_is_open(false),
                                            m_first_send_time(not_a_date_time),
                                            m_send_time(not_a_date_time),
                                            m_last_send_time(not_a_date_time),
@@ -86,12 +87,19 @@ int CMediaStreamProvider::removeJoinedConnection(CStreamCtrlConnection* conn) {
     return num_removed;
 }
 
+int CMediaStreamProvider::open(muroa::CStreamFmt sfmt) {
+	this->open(sfmt.numChannels, sfmt.sampleRate, sfmt.sampleSize);
+}
 
-/*!
-    \fn CMediaStreamProvider::open()
- */
-int CMediaStreamProvider::open(int audio_bytes_per_second)
-{
+int CMediaStreamProvider::open(int num_channels, int sample_rate, int sample_size) {
+  assert(m_is_open == false);
+
+  m_audio_bytes_per_second = num_channels * sample_rate * sample_size;
+
+  m_streamFmt.numChannels = num_channels;
+  m_streamFmt.sampleRate = sample_rate;
+  m_streamFmt.sampleSize = sample_size;
+
   m_last_send_time = microsec_clock::universal_time();
   m_last_payload_duration = not_a_date_time;
 
@@ -112,26 +120,10 @@ int CMediaStreamProvider::open(int audio_bytes_per_second)
   }
 
 
-//  m_syncobj.setTimeToNow();
-//  m_syncobj.addDuration(m_transport_buffer_duration);
-//  m_syncobj.frameNr(0);
-//  m_syncobj.streamId(m_stream_id);
-//  m_syncobj.sessionId(m_session_id);
-//  m_syncobj.setMediaClockSrv(boost::asio::ip::address(), m_time_server_port);
-//  m_syncobj.serialize();
-
-//  m_rtp_packet->sessionID(m_session_id);
-//  m_rtp_packet->streamID(m_stream_id);
-//
-//  m_rtp_packet->seqNum(m_rtp_packet->seqNum() + 1);
-//  m_rtp_packet->payloadType(PAYLOAD_SYNC_OBJ);
-//  m_rtp_packet->copyInPayload(m_syncobj.getSerialisationBufferPtr(), m_syncobj.getSerialisationBufferSize());
-
-  m_audio_bytes_per_second = audio_bytes_per_second;
 
   m_frames_in_sync_period = 0;
   m_payload_duration_sum = microseconds(0);
-  cerr << "CStreamServer::open: audiobytes/s = " << audio_bytes_per_second
+  cerr << "CStreamServer::open: audiobytes/s = " << m_audio_bytes_per_second
        << " session/stream id = (" << m_session_id << "/" << m_stream_id << ")"
        << " time = " << now << endl;
 
@@ -151,7 +143,7 @@ int CMediaStreamProvider::open(int audio_bytes_per_second)
 void CMediaStreamProvider::close()
 {
     cerr << "CStreamServer::close()" << endl;
-
+    m_is_open = false;
     /// @todo implement me
     // send end of stream packet
 }
@@ -164,6 +156,10 @@ void CMediaStreamProvider::flush()
 	CmdStreamReset cmd_rst(m_session_id, m_stream_id, 0, 0);
 	CRTPPacket *pkt = cmd_rst.toRTP();
 	sendToAllClients(pkt);
+}
+
+CStreamFmt CMediaStreamProvider::getStreamFmt() {
+	return CStreamFmt();
 }
 
 
@@ -197,6 +193,7 @@ int CMediaStreamProvider::sendPacket(char* buffer, int length) {
     m_rtp_packet->copyInPayload(buffer, length);
 
 
+    m_rtp_packet->ssrc( m_sync_info.m_ssrc );
     m_rtp_packet->seqNum( m_rtp_packet->seqNum() + 1 );
     m_rtp_packet->timestamp( m_frames_in_sync_period );
     m_rtp_packet->payloadType(PAYLOAD_PCM);

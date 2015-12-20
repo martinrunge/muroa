@@ -27,14 +27,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <boost/bind.hpp>
 #include <boost/date_time/posix_time/posix_time.hpp>
 
-#include "server.h"
+#include "CppServer.h"
 
 using namespace muroa;
 using namespace std;
 
 
 
-cppserver::cppserver(vector<bip::tcp::endpoint> clients, int timeServerPort, int sessionID ) : CStreamServer(m_io_service, timeServerPort, sessionID) {
+CppServer::CppServer(vector<bip::tcp::endpoint> clients, int timeServerPort, int sessionID ) : CStreamServer(m_io_service, timeServerPort, sessionID) {
 	try {
 
 		for(int i = 0; i < clients.size(); i++) {
@@ -45,25 +45,25 @@ cppserver::cppserver(vector<bip::tcp::endpoint> clients, int timeServerPort, int
 		if(m_in_fd == NULL) {
 			perror("fopen('infile.raw')");
 		}
-		open(2 * 2 * 48000);
+		open(2, 48000, 2);
 
 		boost::asio::deadline_timer t(m_io_service, boost::posix_time::milliseconds(10) );
-		t.async_wait( boost::bind(&cppserver::sendData, this) );
+		t.async_wait( boost::bind(&CppServer::sendData, this) );
 	} catch (std::exception& e) {
 		cerr << "Uncaught exception from mainloop: " << e.what() << endl;
 	}
 }
-cppserver::~cppserver() {
+CppServer::~CppServer() {
 	fclose(m_in_fd);
     close();
 
 }
 
-void cppserver::run() {
+void CppServer::run() {
 	m_io_service.run();
 }
 
-void cppserver::sendData()
+void CppServer::sendData()
 {
 	  unsigned long num;
 	  int buffersize = 1024;
@@ -74,11 +74,11 @@ void cppserver::sendData()
 
 	  if(num > 0) {
 			boost::asio::deadline_timer t(m_io_service, boost::posix_time::milliseconds(10) );
-			t.async_wait( boost::bind(&cppserver::sendData, this) );
+			t.async_wait( boost::bind(&CppServer::sendData, this) );
 	  }
 }
 
-void cppserver::reportClientState(muroa::CStreamCtrlConnection* conn, const muroa::CmdStreamBase* evt) {
+void CppServer::reportClientState(muroa::CStreamCtrlConnection* conn, const muroa::CmdStreamBase* evt) {
 	if(typeid(*evt) == typeid(evClientState)) {
 		const evClientState* ct = reinterpret_cast<const evClientState*>(evt);
 

@@ -24,9 +24,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <string>
 
 #include "CApp.h"
+#include "CUtils.h"
 
 #include <boost/asio.hpp>
-#include "server.h"
+#include <boost/filesystem.hpp>
+
+#include "CppServer.h"
+#include "CRessourceHandler.h"
+#include "WSSrv.h"
 
 using namespace std;
 
@@ -125,8 +130,23 @@ int main(int argc, char *argv[]) {
         clients.push_back(endp);
     }
 
-    cppserver cpps(clients, timeSrvPort, sessionID);
-    cpps.run();
+	boost::filesystem::path docroot = app->settings().getConfigVal("muroaws.docroot", "/var/www/muroa");
+	docroot = CUtils::expandvars(docroot);
+	if(!docroot.is_absolute()) {
+		docroot = app->getAbsProgDir() / docroot;
+	}
 
+	boost::filesystem::path stations_file = docroot / "stations.json";
+
+
+	boost::asio::io_service io_service;
+
+	CppServer cpps(io_service, clients, timeSrvPort, sessionID);
+	CRessourceHandler resHandler(&cpps, stations_file.string());
+
+    muroa::WSSrv wssrv(&io_service, &resHandler);
+    wssrv.run(docroot.string(), 8888);
+
+    io_service.run();
 	return 0;
 }

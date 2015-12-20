@@ -1,0 +1,27 @@
+[
+  {
+    "Name" : "SWR3",
+    "ID"   : "swr3",
+    "Logo" : "swr3.jpg",
+    "URL"  : "http://swr-mp3-m-swr3.akacast.akamaistream.net/7/720/137136/v1/gnl.akacast.akamaistream.net/swr-mp3-m-swr3"
+  },
+  {
+    "Name" : "Bayern 3",
+    "ID"   : "bayern3",
+    "Logo" : "bayern3.png",
+    "URL" : "http://swr-mp3-m-swr3.akacast.akamaistream.net/7/720/137136/v1/gnl.akacast.akamaistream.net/swr-mp3-m-swr3"
+  },
+  {
+    "Name" : "Antenne Bayern",
+    "ID"   : "antenne-bayern",
+    "Logo" : "antenne-bayern.jpg",
+    "URL"  : "http://swr-mp3-m-swr3.akacast.akamaistream.net/7/720/137136/v1/gnl.akacast.akamaistream.net/swr-mp3-m-swr3"
+  },
+  {
+    "Name" : "Rock Antenne",
+    "ID"   : "rock-antenne",
+    "Logo" : "rock-antenne.jpg",
+    "URL"  : "http://swr-mp3-m-swr3.akacast.akamaistream.net/7/720/137136/v1/gnl.akacast.akamaistream.net/swr-mp3-m-swr3"
+  }
+]
+ 
