@@ -519,8 +519,11 @@ void CStreamCtrlParserSM::parseEvResetStreamArgs(     const char** attrs, evRese
 }
 
 void CStreamCtrlParserSM::parseEvSyncStreamArgs(      const char** attrs, evSyncStream* cmd) {
-	string ssrc_str;;
+	string ssrc_str;
 	string rtp_ts_str;
+	string num_channels_str;
+	string sample_rate_str;
+	string sample_size_str;
 	string pts_str;
 	bool utc_pts_found = false;
 
@@ -537,6 +540,17 @@ void CStreamCtrlParserSM::parseEvSyncStreamArgs(      const char** attrs, evSync
 		if(name.compare("rtp_ts") == 0) {
 			rtp_ts_str = value;
 		}
+
+		if(name.compare("num_channels") == 0) {
+			num_channels_str = value;
+		}
+		if(name.compare("sample_rate") == 0) {
+			sample_rate_str = value;
+		}
+		if(name.compare("sample_size") == 0) {
+			sample_size_str = value;
+		}
+
 		if(name.compare("media_clock_pts") == 0) {
 			pts_str = value;
 		}
@@ -546,7 +560,7 @@ void CStreamCtrlParserSM::parseEvSyncStreamArgs(      const char** attrs, evSync
 		}
 	}
 
-	if( ssrc_str.empty() || rtp_ts_str.empty() || pts_str.empty() ) {
+	if( ssrc_str.empty() || rtp_ts_str.empty() || num_channels_str.empty() || sample_rate_str.empty() || sample_size_str.empty() || pts_str.empty() ) {
 		ostringstream oss;
 		oss << "evResetStream: ";
 		if( ssrc_str.empty() ) {
@@ -554,6 +568,15 @@ void CStreamCtrlParserSM::parseEvSyncStreamArgs(      const char** attrs, evSync
 		}
 		if( rtp_ts_str.empty() ) {
 			oss << " argument 'rtp_ts' missing; ";
+		}
+		if( num_channels_str.empty() ) {
+			oss << " argument 'num_channels' missing; ";
+		}
+		if( sample_rate_str.empty() ) {
+			oss << " argument 'sample_rate' missing; ";
+		}
+		if( sample_size_str.empty() ) {
+			oss << " argument 'sample_size' missing; ";
 		}
 		if( pts_str.empty() ) {
 			oss << " argument 'media_clock_pts' missing; ";
@@ -565,7 +588,11 @@ void CStreamCtrlParserSM::parseEvSyncStreamArgs(      const char** attrs, evSync
 	}
 	cmd->m_ssrc = CUtils::str2uint32(ssrc_str);
 	cmd->m_rtp_ts = CUtils::str2uint32(rtp_ts_str);
+	cmd->m_num_channels = CUtils::str2uint32(num_channels_str);
+	cmd->m_sample_rate = CUtils::str2uint32(sample_rate_str);
+	cmd->m_sample_size = CUtils::str2uint32(sample_size_str);
 	cmd->m_media_clock_pts = CUtils::str2uint64(pts_str);
+	cmd->deserialize();
 }
 
 void CStreamCtrlParserSM::parseEvSetVolumeArgs(       const char** attrs, evSetVolume* cmd) {

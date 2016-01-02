@@ -17,7 +17,8 @@
  *   Free Software Foundation, Inc.,                                       *
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
-#include "cpacketringbuffer.h"
+#include "CPerSSRCRingBuffer.h"
+
 #include "caudioframe.h"
 #include "crtppacket.h"
 
@@ -25,14 +26,24 @@
 
 using namespace std;
 
-CPacketRingBuffer::CPacketRingBuffer(int num_of_frames)
+// compare two struct timespecs
+bool operator <(const timespec& lhs, const timespec& rhs)
 {
-  //m_stream_fd = fopen("debug_file_client.raw", "w");
-  m_seqnum = -1;
+    if (lhs.tv_sec == rhs.tv_sec)
+        return lhs.tv_nsec < rhs.tv_nsec;
+    else
+        return lhs.tv_sec < rhs.tv_sec;
+}
+
+CPerSSRCRingBuffer::CPerSSRCRingBuffer(uint32_t ssrc) : m_ssrc(ssrc)
+{
+	//m_stream_fd = fopen("debug_file_client.raw", "w");
+	m_seqnum = -1;
+	clock_gettime( CLOCK_MONOTONIC, &m_first_use);
 }
 
 
-CPacketRingBuffer::~CPacketRingBuffer()
+CPerSSRCRingBuffer::~CPerSSRCRingBuffer()
 {
   //fclose(m_stream_fd);
   while(!m_packet_list.empty()) {
@@ -42,7 +53,7 @@ CPacketRingBuffer::~CPacketRingBuffer()
 }
 
 
-CRTPPacket* CPacketRingBuffer::readPacket(void) {
+CRTPPacket* CPerSSRCRingBuffer::readPacket(void) {
      
     int ringbuffer_size;
 
@@ -70,21 +81,12 @@ CRTPPacket* CPacketRingBuffer::readPacket(void) {
 
     //cerr << "CRingBuffer::readPacket: one packet read from list beginning " << endl;
     m_mutex.UnLock();
-    
-//    if(first_packet_of_frame) {
-//      CAudioFrame* frame = new CAudioFrame(payload_type, payload_size);
-//      frame->copyData(payload_data, payload_size);
-//      m_framelist.push_back(frame);
-//    }
-//    else {
-//      cerr << "CRingBuffer::commitRtpPacket: got packet which is not first in frame" << endl;  
-//    }
   
     return rtp_packet;    
 }
 
 
-void CPacketRingBuffer::appendRTPPacket(CRTPPacket* packet)
+void CPerSSRCRingBuffer::appendRTPPacket(CRTPPacket* packet)
 {
   int seqnum = packet->seqNum();
 
@@ -151,7 +153,7 @@ void CPacketRingBuffer::appendRTPPacket(CRTPPacket* packet)
   m_mutex.UnLock();
 }
 
-int CPacketRingBuffer::getRingbufferSize() {
+int CPerSSRCRingBuffer::getRingbufferSize() {
   int size;
 
   m_mutex.Lock();  
@@ -162,20 +164,17 @@ int CPacketRingBuffer::getRingbufferSize() {
   return size;
 }
 
-int CPacketRingBuffer::clearContent(uint32_t oldSessionID, uint32_t oldStreamID) {
+int CPerSSRCRingBuffer::clear() {
+	int num_erased = 0;
 	m_mutex.Lock();
 	list<CRTPPacket*>::iterator iter;
 	for(iter = m_packet_list.begin(); iter != m_packet_list.end(); iter++) {
 		CRTPPacket* pkt = *iter;
-		if( pkt->sessionID() == oldSessionID && pkt->streamID() == oldStreamID) {
-			delete *iter;
-			iter = m_packet_list.erase(iter);
-			iter--;
-		}
-		else {
-			cerr << "keeping packet in ringbuffer: sessionID: " << pkt->sessionID()
-					<< " streamID: " << pkt->streamID()  << endl;
-		}
+		delete *iter;
+		iter = m_packet_list.erase(iter);
+		iter--;
+		num_erased++;
 	}
 	m_mutex.UnLock();
+	return num_erased;
 }

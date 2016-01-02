@@ -24,6 +24,10 @@ public:
 		sampleSize = sample_size;
 	};
 
+	bool isValid() {
+		return (numChannels != 0 && sampleRate != 0 && sampleSize != 0);
+	}
+
 	bool operator==(const CStreamFmt& rhs) {
 		return numChannels == rhs.numChannels && sampleRate == rhs.sampleRate && sampleSize == rhs.sampleSize;
 	}

@@ -35,7 +35,7 @@ using namespace std;
 
 
 CppServer::CppServer(boost::asio::io_service& io_service, vector<bip::tcp::endpoint> clients, int timeServerPort, int sessionID )
-                  : CStreamServer(io_service, timeServerPort, sessionID),
+                  : CStreamServer(io_service, timeServerPort, sessionID, 8000),
                     m_io_service(io_service),
 					m_decoder(0)
 {
@@ -56,22 +56,21 @@ void CppServer::playStream(std::string url) {
 		delete m_decoder;
 	}
 	m_decoder = new CStreamDecoder(this);
-	m_decoder->open(url);
+	new_sfmt = m_decoder->open(url);
 
-	if(m_decoder->isOpen()) {
-		new_sfmt = m_decoder->getStreamFmt();
+	if(new_sfmt.isValid()) {
+		if(isOpen() == false) {
+			open(new_sfmt);
+		}
+
+		muroa::CStreamFmt old_sfmt(getStreamFmt());
+		if( new_sfmt != old_sfmt) {
+			close();
+			open(new_sfmt);
+		}
+
+		m_decoder->startDecodingThread();
 	}
-
-	if(isOpen() == false) {
-		open(new_sfmt);
-	}
-
-	muroa::CStreamFmt old_sfmt(getStreamFmt());
-	if( new_sfmt != old_sfmt) {
-		close();
-		open(new_sfmt);
-	}
-
 }
 
 void CppServer::stopStream() {

@@ -31,7 +31,7 @@ public:
 	IRenderCmds();
 	virtual ~IRenderCmds();
 
-	virtual void onResetStream(const CmdStreamReset& cmd_rst) = 0;
+//	virtual void onResetStream(const CmdStreamReset& cmd_rst) = 0;
 	virtual void onJoinMulticastGroup() = 0;
 	virtual void onLeaveMutlicastGroup() = 0;
 };

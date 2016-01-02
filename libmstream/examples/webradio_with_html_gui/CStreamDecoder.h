@@ -25,15 +25,20 @@ extern "C" {
 #include <CStreamFmt.h>
 
 class CppServer;
-class std::thread;
+
+namespace std {
+	class thread;
+}
 
 class CStreamDecoder {
 public:
 	CStreamDecoder(CppServer *streamSrvPtr = 0);
 	virtual ~CStreamDecoder();
 
-	void open(std::string filename);
+	CStreamFmt open(std::string filename);
 	void close();
+	void startDecodingThread();
+
 	inline bool isOpen() const { return m_open;};
 	inline std::string getCurrentFilename() { return m_filename; };
 

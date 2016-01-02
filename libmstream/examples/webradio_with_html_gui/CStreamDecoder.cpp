@@ -51,12 +51,12 @@ CStreamDecoder::~CStreamDecoder() {
 }
 
 
-void CStreamDecoder::open(string filename)
+CStreamFmt CStreamDecoder::open(string filename)
 {
 	if(m_open) {
 		cerr << "Warning: CStreamDecoder::open called while decoder was still open." << endl
 			 << "Decoder can be opened only once. Call CStreamDecoder::close() before." << endl;
-		return;
+		return CStreamFmt();
 	}
 	m_filename = filename;
 
@@ -86,7 +86,7 @@ void CStreamDecoder::open(string filename)
 	}
 	if(m_audioStreamID == -1) {
 		cerr << "Didn't find a audio stream in file " << filename << endl;
-		return;
+		return CStreamFmt();
 	}
 
 	m_pCodecCtx = m_pFormatCtx->streams[m_audioStreamID]->codec;
@@ -131,8 +131,16 @@ void CStreamDecoder::open(string filename)
 	m_open = true;
 	m_terminate = false;
 
+	CStreamFmt sfmt = getStreamFmt();
+
+	return sfmt;
+}
+
+void CStreamDecoder::startDecodingThread() {
+	assert(m_open);
 	m_play_thread = new thread(&CStreamDecoder::decodingLoop, this);
 }
+
 
 void CStreamDecoder::close()
 {

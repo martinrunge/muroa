@@ -39,6 +39,11 @@ CPThread::~CPThread() {
 
 int CPThread::StartThread(bool realtime) {
 	int retval = -1;
+	if(pthread_kill(m_thread_id, 0) == 0 ) {
+		//th read is running
+		return 0;
+	}
+
 	Run(true);
     if(realtime) {
       struct sched_param s_param;

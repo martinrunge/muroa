@@ -28,6 +28,9 @@ Class encapsulates all the playback functioinalty. It inplements an interface to
 
 #include <string>
 #include <list>
+#include <queue>
+#include <mutex>
+
 #include "csync.h"
 #include "cposixcond.h"
 #include "IRenderCmds.h"
@@ -68,15 +71,15 @@ public:
     int getRTPUnicastPort();
     void sendRTPPacket(CRTPPacket* packet);
 
-    void onResetStream(const muroa::CmdStreamReset& cmd_rst);
+	void onSyncInfo(const muroa::evSyncStream& evt);
+    void onResetStream(const muroa::evResetStream& evRst);
 	void onJoinMulticastGroup() {};
 	void onLeaveMutlicastGroup() {};
 
 	void useTimeService(boost::asio::ip::address ip_address, int port, boost::asio::ip::udp protocol = boost::asio::ip::udp::v4());
 
-	muroa::evSyncStream* getSyncInfo() { return m_sync_info; };
-    void syncInfo(const muroa::evSyncStream& evt);
-	void resetStream(const muroa::evResetStream& evt);
+	muroa::evSyncStream getSyncInfo();
+
 
 //    inline CSync* syncObj() {return &m_sync_obj; };
 //    void setSyncObj(CRTPPacket* rtp_packet);
@@ -116,7 +119,9 @@ private:
 
 //    CSync m_sync_obj;
     // the last sync info arrived will be prepended at the beginning of the list
-    muroa::evSyncStream* m_sync_info;
+    int m_max_sync_infos;
+	std::queue<muroa::evSyncStream*> m_sync_info_queue;
+	std::mutex m_sync_info_mutex;
 
     int m_sync_requested_for_stream_id;
     boost::posix_time::ptime m_sync_requested_at;

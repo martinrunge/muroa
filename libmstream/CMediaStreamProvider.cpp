@@ -62,7 +62,11 @@ void CMediaStreamProvider::addJoinedConnection(CStreamCtrlConnection* conn) {
 		m_use_mcast = true;
 	}
 	m_joined_connections.insert(conn);
-	conn->sendEvent(&m_sync_info);
+
+	if(m_sync_info.isValid()) {
+		conn->sendEvent(&m_sync_info);
+	}
+
 	m_connection_list_mutex.UnLock();
 }
 
@@ -109,6 +113,10 @@ int CMediaStreamProvider::open(int num_channels, int sample_rate, int sample_siz
 
   m_sync_info.m_ssrc = lrand48();
   m_sync_info.m_rtp_ts = 0;
+  m_sync_info.m_num_channels = num_channels;
+  m_sync_info.m_sample_rate = sample_rate;
+  m_sync_info.m_sample_size = sample_size;
+
   if(m_builtin_time_service_used) {
 	  /// TODO: activeate builtin time service
 	  m_sync_info.m_media_clock_pts = 0;
@@ -133,7 +141,10 @@ int CMediaStreamProvider::open(int num_channels, int sample_rate, int sample_siz
   // sendToAllClients(m_rtp_packet);
   sendToAllClients(&m_sync_info);
 
-  return 0;	LOG4CPLUS_DEBUG(m_timing_logger, "sync");
+  m_is_open = true;
+  LOG4CPLUS_DEBUG(m_timing_logger, "sync");
+
+  return 0;
 }
 
 
@@ -159,11 +170,13 @@ void CMediaStreamProvider::flush()
 }
 
 CStreamFmt CMediaStreamProvider::getStreamFmt() {
-	return CStreamFmt();
+	return m_streamFmt;
 }
 
 
 int CMediaStreamProvider::write(char* buffer, int length) {
+	assert(m_is_open);
+
     int sum = 0;
     int left = length;
     int offset = 0;
@@ -187,6 +200,8 @@ int CMediaStreamProvider::write(char* buffer, int length) {
     \fn CStreamServer::write(char* buffer, int length)
  */
 int CMediaStreamProvider::sendPacket(char* buffer, int length) {
+
+	assert(m_is_open);
 
     time_duration payload_duration = microseconds((length * 1000000) / m_audio_bytes_per_second);
 

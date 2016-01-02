@@ -18,6 +18,7 @@
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
 #include <CMediaStreamConnection.h>
+#include <CPacketRingBuffer.h>
 #include <iostream>
 
 #include <cstdlib>
@@ -34,8 +35,6 @@
 
 #include "cplayloop.h"
 #include "crecvloop.h"
-#include "cpacketringbuffer.h"
-
 #include "CApp.h"
 #include "CSettings.h"
 #include "CTcpServer.h"
@@ -47,13 +46,13 @@ using namespace boost::posix_time;
 using namespace muroa;
 
 CMediaStreamConnection::CMediaStreamConnection(boost::asio::io_service& io_service, boost::asio::ip::address mcast_addr, int timesrv_port ) :
-                           m_sync_info(0),
+		                   m_max_sync_infos(10),
 		                   m_io_service(io_service),
 						   m_mcast_addr(mcast_addr),
 						   m_timesrv_port(timesrv_port)
 {
   
-  m_packet_ringbuffer = new CPacketRingBuffer(10);
+  m_packet_ringbuffer = new CPacketRingBuffer(3);
 
   m_recvloop = new CRecvloop(this, m_packet_ringbuffer);
   m_playloop = new CPlayloop(this, m_packet_ringbuffer);
@@ -96,7 +95,10 @@ CMediaStreamConnection::~CMediaStreamConnection()
 void CMediaStreamConnection::start()
 {
   m_recvloop_thread->StartThread();
-  m_playloop_thread->StartThread(true);
+
+  if(!m_sync_info_queue.empty()) {
+	  m_playloop_thread->StartThread(true);
+  }
 }
 
 /*!
@@ -128,41 +130,29 @@ void CMediaStreamConnection::sendRTPPacket(CRTPPacket* packet)
 }
 
 
-//muroa::evSyncStream* CMediaStreamConnection::getSyncInfo() {
-//	list<evSyncStream*>::iterator it;
-//	for(it = m_sync_info_list.begin(); it != m_sync_info_list.end(); it++) {
-//		if((*it)->m_ssrc == ssrc) {
-//			return *it;
-//		}
-//	}
-//	return 0;
-//}
+muroa::evSyncStream CMediaStreamConnection::getSyncInfo() {
+	lock_guard<mutex> lg(m_sync_info_mutex);
 
-void CMediaStreamConnection::syncInfo(const evSyncStream& evt) {
-	evSyncStream* tmp = m_sync_info;
+	assert( !m_sync_info_queue.empty() );
 
-	m_sync_info = new evSyncStream(evt);
-	if(tmp != 0) {
-		delete tmp;
+	return *m_sync_info_queue.front();
+}
+
+
+void CMediaStreamConnection::onSyncInfo(const evSyncStream& evt) {
+	// make a copy
+	muroa::evSyncStream* sync_info = new evSyncStream(evt);
+	m_sync_info_queue.push(sync_info);
+
+	if(m_sync_info_queue.size() >= m_max_sync_infos) {
+		muroa::evSyncStream* oldest_sync_info = m_sync_info_queue.front();
+		delete oldest_sync_info;
+		m_sync_info_queue.pop();
 	}
+
+	m_playloop_thread->StartThread(true);
 }
 
-void CMediaStreamConnection::resetStream(const evResetStream& evt) {
-
-}
-
-///*!
-//    \fn CPlayer::sync()
-// */
-//void CPlayer::sync()
-//{
-//  // m_playloop->sync();
-//}
-
-//void CMediaStreamConnection::setSyncObj(CRTPPacket* rtp_packet) {
-//  m_sync_obj.deserialize( rtp_packet);
-//  m_playloop->setSync(&m_sync_obj);
-//}
 
 /*!
     \fn CPlayer::setRequestedSyncObj(CRTPPacket* rtp_packet)
@@ -202,13 +192,22 @@ void CMediaStreamConnection::requestSync(int session_id, int stream_id)
   }
 }
 
-void CMediaStreamConnection::onResetStream(const CmdStreamReset& cmd_rst) {
-    cerr << "CPlayer::onResetStream: sessionID: " << cmd_rst.getOldSessionId()
-         << " streamID: " << cmd_rst.getOldStreamId() << endl
-         << " newSessionID: " << cmd_rst.getNewSessionId()
-         << " newStreamID: " << cmd_rst.getNewStreamId() << endl;
-	m_packet_ringbuffer->clearContent(cmd_rst.getOldSessionId(), cmd_rst.getOldStreamId());
-	m_playloop->resetStream(cmd_rst.getOldSessionId(), cmd_rst.getOldStreamId());
+void CMediaStreamConnection::onResetStream(const evResetStream& evRst) {
+    cerr << "CPlayer::onResetStream: sessionID: " << evRst.m_ssrc << endl;
+
+	lock_guard<mutex> lg(m_sync_info_mutex);
+	if(!m_sync_info_queue.empty()) {
+		muroa::evSyncStream* si = m_sync_info_queue.front();
+		if( si->m_ssrc == evRst.m_ssrc) {
+        	delete m_sync_info_queue.front();
+        	m_sync_info_queue.pop();
+    	}
+    	m_packet_ringbuffer->clear( evRst.m_ssrc );
+    	m_playloop->resetStream( evRst.m_ssrc );
+    }
+    else {
+    	LOG4CPLUS_WARN(CApp::logger(), "got Reset Stream for ssrc that is not currently active. Ignoring it.");
+    }
 }
 
 

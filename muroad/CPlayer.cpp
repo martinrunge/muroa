@@ -168,13 +168,13 @@ int CPlayer::leaveSession(const evLeave& evt, CCtrlConnection* ctrlConn) {
 
 void CPlayer::syncInfo(const evSyncStream& evt, CCtrlConnection* ctrlConn) {
 	if(ctrlConn == m_session_ctrl_conn) {
-		m_media_stream_conn->syncInfo(evt);
+		m_media_stream_conn->onSyncInfo(evt);
 	}
 }
 
 void CPlayer::resetStream(const evResetStream& evt, CCtrlConnection* ctrlConn) {
 	if(ctrlConn == m_session_ctrl_conn) {
-		m_media_stream_conn->resetStream(evt);
+		m_media_stream_conn->onResetStream(evt);
 	}
 }
 

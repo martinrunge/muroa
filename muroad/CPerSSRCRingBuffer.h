@@ -17,8 +17,8 @@
  *   Free Software Foundation, Inc.,                                       *
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
-#ifndef CPACKETRINGBUFFER_H
-#define CPACKETRINGBUFFER_H
+#ifndef CPER_SSRC_RINGBUFFER_H
+#define CPER_SSRC_RINGBUFFER_H
 
 /**
 ringbuffer implementation that takes RTP packets as input and audio frames as output. Therefore, the RTP header has an additional flag inidcation the start of frame packet and how many packet belong to that frame, so it can tell if the frame is complete. Furthermore, it indicates the beginning of a new stream, that is when audio parameters or the decoder may change and must be reinitialized.
@@ -31,31 +31,38 @@ ringbuffer implementation that takes RTP packets as input and audio frames as ou
 #include "cmutex.h"
 #include <stdio.h>
 #include <cstdint>
+#include <unistd.h>
 
 class CAudioFrame;
 class CRTPPacket;
 
-class CPacketRingBuffer{
+// compare two struct timespecs
+bool operator <(const timespec& lhs, const timespec& rhs);
+
+class CPerSSRCRingBuffer{
 public:
-    CPacketRingBuffer(int num_of_frames);
-    ~CPacketRingBuffer();
+    CPerSSRCRingBuffer(uint32_t ssrc);
+    ~CPerSSRCRingBuffer();
     
     void appendRTPPacket(CRTPPacket* packet);
     
     CRTPPacket* readPacket(void);
     int getRingbufferSize();
 
-    int clearContent(uint32_t oldSessionID, uint32_t oldStreamID);
+    struct timespec age() { return m_first_use; };
+    uint32_t ssrc() const { return m_ssrc; };
+    int clear();
 private:
   
     std::list<CRTPPacket*> m_packet_list;
-  
-    CMutex m_mutex;
+    uint32_t m_ssrc;
 
+    CMutex m_mutex;
     FILE* m_stream_fd;
 
+    struct timespec m_first_use;
     /** used to store the seqnum of the last read packet. At stream reset, this is set to -1, so packet nr 0 comes after it. */
     int m_seqnum;
 };
 
-#endif
+#endif /* CPER_SSRC_RINGBUFFER_H */

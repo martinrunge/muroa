@@ -17,6 +17,7 @@
  *   Free Software Foundation, Inc.,                                       *
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
+#include <CPacketRingBuffer.h>
 #include "cplayloop.h"
 #include "caudioframe.h"
 
@@ -24,7 +25,6 @@
 #include "libdsaudio.h"
 #include "libsock++.h"
 #include "cpthread.h"
-#include "cpacketringbuffer.h"
 #include "cringbuffer.h"
 
 #include "CApp.h"
@@ -128,14 +128,14 @@ CPlayloop::~CPlayloop()
 	// fclose(m_debug_fd1);
 }
 
-CAudioFrame* CPlayloop::getAudioPacket(bool block) {
+CAudioFrame* CPlayloop::getAudioPacket(uint32_t ssrc, bool block) {
 	CAudioFrame* frame = 0;
 
 	do {
-		if(m_packet_ringbuffer->getRingbufferSize() == 0) {
+		if(m_packet_ringbuffer->getRingbufferSize(ssrc) == 0) {
 			if(block) {
 				bool dataAvail = false;
-				while((!dataAvail || m_packet_ringbuffer->getRingbufferSize() == 0)) {
+				while((!dataAvail || m_packet_ringbuffer->getRingbufferSize(ssrc) == 0)) {
 					dataAvail = waitForData();
 				};
 			} else {
@@ -143,7 +143,7 @@ CAudioFrame* CPlayloop::getAudioPacket(bool block) {
 			}
 		}
 
-		CRTPPacket* rtp_packet = m_packet_ringbuffer->readPacket();
+		CRTPPacket* rtp_packet = m_packet_ringbuffer->readPacket(ssrc);
 
 		if( isCancelled() ) { return 0; };  // check for cancellation of playloop
 
@@ -158,9 +158,7 @@ CAudioFrame* CPlayloop::getAudioPacket(bool block) {
 		case PAYLOAD_MP3:
 		case PAYLOAD_VORBIS:
 		case PAYLOAD_FLAC:
-			if(checkStream(rtp_packet)) {
-				frame = new CAudioFrame(rtp_packet);
-			}
+			frame = new CAudioFrame(rtp_packet);
 			delete rtp_packet;
 			break;
 
@@ -202,8 +200,8 @@ bool CPlayloop::waitForData() {
 	return (retval==0)?true:false;
 }
 
-int CPlayloop::addPacket2RingBuffer(bool block) {
-	CAudioFrame* frame = getAudioPacket(block);
+int CPlayloop::addPacket2RingBuffer(uint32_t ssrc, bool block) {
+	CAudioFrame* frame = getAudioPacket(ssrc, block);
 	if(frame) {
 		m_num_frames_arrived = frame->firstFrameNr();
 		m_nr_of_last_frame_decoded = frame->firstFrameNr() + frame->sizeInMultiChannelSamples() - 1;
@@ -223,14 +221,23 @@ void CPlayloop::DoLoop() {
 		CAudioFrame* frame;
 		int pb_state = m_audio_sink->state();
 
+		// this is the only place inside playloop where getSyncInfo() is called. A copy is passed around from here on
+		// to make sure playloop does not get confused if the ssrc / sync info changed.
+		// for a change of syncInfo / ssrc, we need to leave DoLoop() and enter it again.
+		muroa::evSyncStream syncInfo = m_media_stream_conn->getSyncInfo();
+
+
 		if(pb_state != IAudioIO::E_RUNNING) {
-			int rc = startStream();
+			int rc = startStream(syncInfo);
 			if(rc) {
 				if( isCancelled() ) { return; };  // check for cancellation of playloop
 
 				// stream could not be started, possibly bestartStreamcause not enough packets were available. Try again
 				LOG4CPLUS_WARN(m_timing_logger, "  could not start stream. Possibly not enough data available ");
 				return;
+			}
+			else {
+
 			}
 		}
 
@@ -241,7 +248,7 @@ void CPlayloop::DoLoop() {
 		while( m_ringbuffer->sizeInFrames() < m_write_granularity) {
 			if( isCancelled() ) { return; };  // check for cancellation of playloop
 
-			num_frames = addPacket2RingBuffer(true);
+			num_frames = addPacket2RingBuffer(syncInfo.m_ssrc, true);
 			// LOG4CPLUS_DEBUG(m_timing_logger, "  ringbuffer was low (" << m_ringbuffer->sizeInFrames() << "), added " << num_frames << " frames.");
 		}
 
@@ -256,7 +263,7 @@ void CPlayloop::DoLoop() {
 		else {
 			// LOG4CPLUS_DEBUG(m_timing_logger, "  wrote chunk of " << retval << " frames. Space for: " <<  m_audio_sink->getSpace() << " frames left. state: " << m_audio_sink->state());
 		}
-		adjustResamplingFactor();
+		adjustResamplingFactor(syncInfo);
 	}
 	catch(muroa::InterruptedEx iex) {
 
@@ -264,12 +271,10 @@ void CPlayloop::DoLoop() {
 }
 
 
-int CPlayloop::startStream() {
-	// stream can only start if sync info is available
-	muroa::evSyncStream* si = m_media_stream_conn->getSyncInfo();
-	if(si == 0) {
-		return -2;
-	}
+int CPlayloop::startStream(const muroa::evSyncStream& syncInfo) {
+
+	m_frames_per_second_pre_resampler = syncInfo.m_sample_rate;
+	m_resample_factor = (double) m_frames_per_second_post_resampler/m_frames_per_second_pre_resampler;
 
 
 	// first: fill soundcard buffer with as many data as possible
@@ -281,10 +286,10 @@ int CPlayloop::startStream() {
 
 	// throw away frames that have a presentation time stamp before a reachable start time (e.g. in the past)
 	// (now + what it takes until m_audio_sink->start() gets called at the end of this method)
-	ptime first_frames_pts = discardPastPTSFrames();
+	ptime first_frames_pts = discardPastPTSFrames(syncInfo);
 
 	while(m_ringbuffer->sizeInFrames() < m_write_granularity * m_periods_to_start) {
-		addPacket2RingBuffer(true);
+		addPacket2RingBuffer(syncInfo.m_ssrc, true);
 
 		if( isCancelled() ) { return -2; };  // check for cancellation of playloop
 	}
@@ -304,13 +309,13 @@ int CPlayloop::startStream() {
 	LOG4CPLUS_DEBUG(m_timing_logger, "   ... done. Frames writable now: " <<  m_audio_sink->getSpace() << " state: " << m_audio_sink->state());
 
 	// second: wait for starting time
-	waitForStartPTS();
+	waitForStartPTS(syncInfo);
 	LOG4CPLUS_INFO(m_timing_logger, "  Frames writable now: " <<  m_audio_sink->getSpace() << " state: " << m_audio_sink->state());
 	LOG4CPLUS_INFO(m_timing_logger, "start stream");
 
 	// third: start playback
 	rc = m_audio_sink->start();
-	m_last_start_stream_error = getCurrentPTSDeviation();
+	m_last_start_stream_error = getCurrentPTSDeviation(syncInfo);
 
 	LOG4CPLUS_INFO(m_timing_logger, "stream started: " << m_last_start_stream_error);
 	return rc;
@@ -320,12 +325,12 @@ int CPlayloop::startStream() {
 /**
  * All audio frames with PTS in the past may not be played any more. Discard them.
  */
-ptime CPlayloop::discardPastPTSFrames() {
+ptime CPlayloop::discardPastPTSFrames(const muroa::evSyncStream& syncInfo) {
 	while(m_nr_of_last_frame_decoded == -1 ) {
-		addPacket2RingBuffer(true);
+		addPacket2RingBuffer(syncInfo.m_ssrc, true);
 	}
 	LOG4CPLUS_DEBUG(m_timing_logger, "step 1: discard frames with PTS in the past.");
-	ptime pre_resampler_pts = getPreResamplerPTS();
+	ptime pre_resampler_pts = getPreResamplerPTS(syncInfo);
 
 	time_duration post_resampler_diff = calcResamplerDelay() + calcRingbufferDelay();
 
@@ -340,7 +345,7 @@ ptime CPlayloop::discardPastPTSFrames() {
 	uint32_t frames_discarded = 0;
 	while(frames_to_discard > 0) {
 		while( m_ringbuffer->sizeInFrames() < m_write_granularity) {
-			int num_frames = addPacket2RingBuffer(false);
+			int num_frames = addPacket2RingBuffer(syncInfo.m_ssrc, false);
 			if(num_frames == 0) {
 				LOG4CPLUS_ERROR(m_timing_logger, "   frames should be discarded to get in sync, but there were none in the packetbuffer.");
 			}
@@ -364,10 +369,10 @@ ptime CPlayloop::discardPastPTSFrames() {
 
 /** called by startStream() whenever the a waitForStartPTS is necessary to start or restart a stream
  *  Add time probably needed for waitForStartPTS to current time and calculate the frame number to start with.  */
-void CPlayloop::waitForStartPTS() {
+void CPlayloop::waitForStartPTS(const muroa::evSyncStream& syncInfo) {
 	LOG4CPLUS_DEBUG(m_timing_logger, "step 3: wait for start pts ..." );
 
-	ptime pre_resampler_pts = getPreResamplerPTS();
+	ptime pre_resampler_pts = getPreResamplerPTS(syncInfo);
 	LOG4CPLUS_DEBUG(m_timing_logger, "   m_ringbuffer->sizeInFrames():" << m_ringbuffer->sizeInFrames() << "  m_periods_to_start: " << m_periods_to_start << " m_write_granularity: " << m_write_granularity );
 
 	ptime start_frame_pts = pre_resampler_pts - calcResamplerDelay() - calcRingbufferDelay() - calcSoundCardDelay();
@@ -389,9 +394,9 @@ void CPlayloop::waitForStartPTS() {
 /*!
     \fn CPlayloop::adjustResamplingFactor()
  */
-void CPlayloop::adjustResamplingFactor()
+void CPlayloop::adjustResamplingFactor(const muroa::evSyncStream& syncInfo)
 {
-	m_average_time_diff += getCurrentPTSDeviation();
+	m_average_time_diff += getCurrentPTSDeviation(syncInfo);
 	m_counter++;
 	if(m_counter >= m_average_size) {
 		m_average_time_diff /= m_counter;
@@ -412,8 +417,8 @@ void CPlayloop::adjustResamplingFactor()
 
 		if(m_correction_factor < low_th || m_correction_factor > up_th ) {
 			LOG4CPLUS_WARN( m_timing_logger, " correction factor '"<< m_correction_factor <<"' is outside desired range of [" << low_th << "," << up_th<< "]");
-			resetStream(m_session_id, m_stream_id);
-			startStream();
+			resetStream(syncInfo.m_ssrc);
+			startStream(syncInfo);
 		}
 	}
 }
@@ -421,11 +426,10 @@ void CPlayloop::adjustResamplingFactor()
 /*** get the presentation time stamp of the audio frame just before the resampler
  * based on the reference time stamp of the current sync object.
  */
-ptime CPlayloop::getPreResamplerPTS() {
-	evSyncStream* si = m_media_stream_conn->getSyncInfo();
+ptime CPlayloop::getPreResamplerPTS(const muroa::evSyncStream& syncInfo) {
 
-	ptime* pts = si->getUTCMediaClock();
-	uint32_t pts_frame_nr = si->m_rtp_ts;
+	ptime const * pts = syncInfo.getUTCMediaClock();
+	uint32_t pts_frame_nr = syncInfo.m_rtp_ts;
 
 	// time and frame diff between last sync and stream state just before the resampler
 	int64_t pre_resampler_frame_diff = m_nr_of_last_frame_decoded - pts_frame_nr;
@@ -476,8 +480,8 @@ time_duration CPlayloop::calcRingbufferDelay()
 	return latency;
 }
 
-time_duration CPlayloop::getCurrentPTSDeviation() {
-	ptime pre_resampler_pts = getPreResamplerPTS();
+time_duration CPlayloop::getCurrentPTSDeviation(const muroa::evSyncStream& syncInfo) {
+	ptime pre_resampler_pts = getPreResamplerPTS(syncInfo);
 
 	time_duration rb_duration = calcRingbufferDelay();
 	time_duration resampler_duration = calcResamplerDelay();
@@ -525,28 +529,6 @@ int CPlayloop::sleepuntil(boost::posix_time::ptime wakeup_time) {
 
 
 
-/**
-    CPlayloop::checkStream(CRTPPacket* packet)
-
-    if the packet belongs to the actual stream, return true. Otherwise request a sync object for that stream and return false.
- */
-bool CPlayloop::checkStream(CRTPPacket* packet)
-{
-	muroa::evSyncStream* si = m_media_stream_conn->getSyncInfo();
-
-	if(si->m_ssrc == packet->ssrc() ) {
-		return true;
-	}
-	else {
-		// this packet does not belong to the actual stream
-		cerr << "Got RTP packet of different stream (" << packet->ssrc()
-				<< "). Self (" << si->m_ssrc << "). " << endl;
-		//m_media_stream_conn->requestSync(tmp_session_id, tmp_stream_id);
-		return false;
-	}
-}
-
-
 /*!
     \fn CPlayloop::initSoundSystem()
  */
@@ -585,7 +567,7 @@ void CPlayloop::setSync(CSync* sync_obj)
 	m_stream_id = sync_obj->streamId();
 }
 
-void CPlayloop::resetStream(uint32_t oldSessionID, uint32_t oldStreamId) {
+void CPlayloop::resetStream(uint32_t ssrc) {
 	m_audio_sink->stop();
 }
 

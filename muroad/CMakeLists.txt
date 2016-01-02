@@ -40,7 +40,8 @@ set( SRCS             main.cpp
                       CMediaStreamConnection.cpp
                       crecvloop.cpp
                       cplayloop.cpp
-                      cpacketringbuffer.cpp
+                      CPerSSRCRingBuffer.cpp
+                      CPacketRingBuffer.cpp
                       cresampler.cpp
 		              cfilterdef.cpp
                       cfixpointresampler.cpp
@@ -55,7 +56,8 @@ set( HEADERS          cmuroad.h
                       CMediaStreamConnection.h
                       crecvloop.h
                       cplayloop.h
-                      cpacketringbuffer.h
+                      CPerSSRCRingBuffer.h
+                      CPacketRingBuffer.h
                       cresampler.h
 		              cfilterdef.h
                       cfixpointresampler.h

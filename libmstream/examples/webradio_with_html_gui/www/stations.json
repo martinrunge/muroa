@@ -9,19 +9,19 @@
     "Name" : "Bayern 3",
     "ID"   : "bayern3",
     "Logo" : "bayern3.png",
-    "URL" : "http://swr-mp3-m-swr3.akacast.akamaistream.net/7/720/137136/v1/gnl.akacast.akamaistream.net/swr-mp3-m-swr3"
+    "URL" : "http://br-mp3-bayern3-m.akacast.akamaistream.net/7/442/142692/v1/gnl.akacast.akamaistream.net/br_mp3_bayern3_m"
   },
   {
     "Name" : "Antenne Bayern",
     "ID"   : "antenne-bayern",
     "Logo" : "antenne-bayern.jpg",
-    "URL"  : "http://swr-mp3-m-swr3.akacast.akamaistream.net/7/720/137136/v1/gnl.akacast.akamaistream.net/swr-mp3-m-swr3"
+    "URL"  : "http://mp3channels.webradio.antenne.de:80/antenne"
   },
   {
     "Name" : "Rock Antenne",
     "ID"   : "rock-antenne",
     "Logo" : "rock-antenne.jpg",
-    "URL"  : "http://swr-mp3-m-swr3.akacast.akamaistream.net/7/720/137136/v1/gnl.akacast.akamaistream.net/swr-mp3-m-swr3"
+    "URL"  : "http://mp3channels.webradio.antenne.de:80/rockantenne"
   }
 ]
  

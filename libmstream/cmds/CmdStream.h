@@ -140,20 +140,19 @@ public:
 
 class evSyncStream: public CmdStreamBase {
 public:
-	evSyncStream() : m_ssrc(0), m_rtp_ts(0), m_media_clock_pts(0), m_ptime(0) {};
+	evSyncStream() : m_ssrc(0), m_rtp_ts(0), m_num_channels(0), m_sample_rate(0), m_sample_size(0), m_media_clock_pts(0), m_ptime(0) {};
 
 	bool operator==(const evSyncStream& rhs) {
 		return  m_ssrc == rhs.m_ssrc &&
 				m_rtp_ts == rhs.m_rtp_ts &&
+				m_num_channels == rhs.m_num_channels &&
+				m_sample_rate == rhs.m_sample_rate &&
+				m_sample_size == rhs.m_sample_size &&
 				m_media_clock_pts == rhs.m_media_clock_pts &&
 				m_utc_media_clock_pts.compare( rhs.m_utc_media_clock_pts ) == 0 ;
 	}
 
-	boost::posix_time::ptime* getUTCMediaClock() {
-		if(m_ptime == 0) {
-			m_ptime = new boost::posix_time::ptime();
-			*m_ptime = boost::posix_time::time_from_string( m_utc_media_clock_pts );
-		}
+	boost::posix_time::ptime* getUTCMediaClock() const {
 		return m_ptime;
 	}
 
@@ -165,8 +164,35 @@ public:
 		m_utc_media_clock_pts = boost::posix_time::to_simple_string(*m_ptime);
 	}
 
+	bool isValid() {
+		bool valid = true;
+		if( m_num_channels == 0 || m_sample_rate == 0 || m_sample_size == 0 ) {
+			valid = false;
+		}
+
+		if( m_media_clock_pts == 0 && m_utc_media_clock_pts.empty()) {
+			valid = false;
+		}
+		return valid;
+	}
+
+	void deserialize() {
+		if(m_ptime != 0) {
+			delete m_ptime;
+		}
+		m_ptime = new boost::posix_time::ptime();
+		if(!m_utc_media_clock_pts.empty()) {
+			*m_ptime = boost::posix_time::time_from_string( m_utc_media_clock_pts );
+		}
+	}
+
 	uint32_t m_ssrc;
 	uint32_t m_rtp_ts;
+
+	uint32_t m_num_channels;
+	uint32_t m_sample_rate;
+	uint32_t m_sample_size;
+
 	uint64_t m_media_clock_pts;  // used if muroa's time service is active else zero
 	std::string m_utc_media_clock_pts;  // used if system time is synced externally, e.g. by NTP, else empty string
 

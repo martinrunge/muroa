@@ -1,7 +1,8 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>HTML Layouts using DIV, SPAN</title>
+<title>Web-Radio</title>
+<link rel="stylesheet" type="text/css" href="stations.css">
 </head>
 <body ng-app="stationsApp">
   <div ng-controller="stationsCtrl">
@@ -10,9 +11,9 @@
 <script type="text/javascript" src="stations.js"></script>
 
 
-<div style="width:100%;height:100%">
-    <div style="background-color:#b5dcb3; width:100%">
-        <h1>Webradio</h1>
+<div style="width:100%;height:100%;top-margin=0.2em;">
+    <div class="titlebar">
+        <h1>Web-Radio</h1>
             <input type="button" value="Click Me!" ng-click="init()" />
             <span ng-bind="Message"></span>
 
@@ -27,7 +28,8 @@
     <div style="background-color:#eee;width:350px;float:left;">
         <p>Technical and Managerial Tutorials</p>
     </div>
-    <div style="background-color:#b5dcb3;clear:both">
+<!--    <div style="background-color:#b5dcb3;clear:both">   -->
+    <div class="statusbar">
       <center>
             <span ng-bind="Status"></span>
       </center>

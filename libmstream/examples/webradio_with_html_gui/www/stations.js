@@ -17,21 +17,6 @@ app.controller('stationsCtrl', ['$scope', '$http', function($scope, $http) {
         $scope.Message = "error loading stations list";
     });
 
-    
-//    $scope.init = function() {
-//        $scope.Message = "in init";
-//        $http.get("stations.json").
-//            success(function(data, status, headers, config) {
-//                    window.alert("success");
-//                    $scope.RadioStations = data;
-//                    $scope.Message = "success";
-//            }).
-//            error(function(data, status, headers, config) {
-//                window.alert("error");
-//                $scope.Message = "error";
-//            });
-//        window.alert("post init");
-//    };
 
     $scope.stationChanged = function($index) {
 //        $scope.Status = "station changed to " + $scope.RadioStations[$index].Name;

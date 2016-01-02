@@ -18,10 +18,10 @@
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
 #include <CMediaStreamConnection.h>
+#include <CPacketRingBuffer.h>
 #include "crecvloop.h"
 #include "caudioframe.h"
 #include "csocket.h"
-#include "cpacketringbuffer.h"
 #include "CApp.h"
 
 #include <log4cplus/loggingmacros.h>
@@ -113,14 +113,6 @@ void CRecvloop::DoLoop()
         //}
         
         break;
-      }
-      case PAYLOAD_RESET_STREAM:
-      {
-    	  CmdStreamReset* cmd_rst = new CmdStreamReset(rtp_packet);
-    	  delete rtp_packet;
-    	  m_media_stream_conn->onResetStream(*cmd_rst);
-    	  delete cmd_rst;
-    	  break;
       }
       case PAYLOAD_PCM:
       case PAYLOAD_MP3:
