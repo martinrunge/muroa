@@ -47,6 +47,10 @@ void CRessourceHandler::handleREST(std::string filename, std::map<string,string>
 		m_StreamSrv->playStream(URL);
 
 	}
+	else if(filename.compare("/REST/stop.json") == 0) {
+		m_StreamSrv->stopStream();
+	}
+
 }
 
 

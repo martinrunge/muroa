@@ -3,7 +3,7 @@ var app = angular.module('stationsApp', []);
 
 app.controller('stationsCtrl', ['$scope', '$http', function($scope, $http) {
     
-    $scope.Message = "leere Message";
+    $scope.Status = "------";
     $scope.RadioStations = [];
   
     
@@ -14,7 +14,7 @@ app.controller('stationsCtrl', ['$scope', '$http', function($scope, $http) {
             $scope.Status = "successfully loaded stations list";
     }).
     error(function(data, status, headers, config) {
-        $scope.Message = "error loading stations list";
+        $scope.Status = "error loading stations list";
     });
 
 
@@ -25,14 +25,18 @@ app.controller('stationsCtrl', ['$scope', '$http', function($scope, $http) {
                 $scope.Status = "switched station to " + $scope.RadioStations[$index].Name;
                     }).
             error(function(data, status, headers, config) {
-                    $scope.Message = "error switching station";
+                    $scope.Status = "error switching station";
             });
-
     };
     
-    $scope.ButtonClick = function() {
-        $scope.Message = "ButtonClicked";
-        init();
+    $scope.Stop = function() {
+        $http.get("REST/stop.json").
+            success(function(data, status, headers, config) {
+                $scope.Status = "stopping playback ...";
+                    }).
+            error(function(data, status, headers, config) {
+                    $scope.Status = "error stopping playback ...";
+            });
     };
             
             

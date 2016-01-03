@@ -195,13 +195,14 @@ void CMediaStreamConnection::requestSync(int session_id, int stream_id)
 }
 
 void CMediaStreamConnection::onResetStream(const evResetStream& evRst) {
-    cerr << "CPlayer::onResetStream: sessionID: " << evRst.m_ssrc << endl;
+    cerr << "CPlayer::onResetStream: ssrc: " << evRst.m_ssrc << endl;
 
+    m_playloop_thread->StopThread();
 	lock_guard<mutex> lg(m_sync_info_mutex);
 	if(!m_sync_info_queue.empty()) {
 		muroa::evSyncStream* si = m_sync_info_queue.front();
 		if( si->m_ssrc == evRst.m_ssrc) {
-        	delete m_sync_info_queue.front();
+        	delete si;
         	m_sync_info_queue.pop();
     	}
     	m_packet_ringbuffer->clear( evRst.m_ssrc );

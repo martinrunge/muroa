@@ -571,6 +571,7 @@ void CPlayloop::setSync(CSync* sync_obj)
 }
 
 void CPlayloop::resetStream(uint32_t ssrc) {
+	getPThreadPtr()->StopThread();
 	m_audio_sink->stop();
 }
 

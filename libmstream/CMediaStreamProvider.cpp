@@ -155,8 +155,7 @@ void CMediaStreamProvider::close()
 {
     cerr << "CStreamServer::close()" << endl;
     m_is_open = false;
-    /// @todo implement me
-    // send end of stream packet
+    m_streamFmt = CStreamFmt();
 }
 
 /*!
@@ -164,9 +163,10 @@ void CMediaStreamProvider::close()
  */
 void CMediaStreamProvider::flush()
 {
-	CmdStreamReset cmd_rst(m_session_id, m_stream_id, 0, 0);
-	CRTPPacket *pkt = cmd_rst.toRTP();
-	sendToAllClients(pkt);
+	muroa::evResetStream evtRst;
+	evtRst.m_ssrc = m_sync_info.m_ssrc;
+
+	sendToAllClients(&evtRst);
 }
 
 CStreamFmt CMediaStreamProvider::getStreamFmt() {

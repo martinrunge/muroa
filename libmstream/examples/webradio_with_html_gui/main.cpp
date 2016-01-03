@@ -115,6 +115,10 @@ int main(int argc, char *argv[]) {
 		return EXIT_FAILURE;
 	}
 
+	if(!app->settings().foreground()) {
+		app->daemonize();
+	}
+
 	vector<string> addrs = app->settings().muroad_addrs();
 	for(int i = 0; i < addrs.size(); i++) {
 		string addr_str = addrs[i];
