@@ -11,3 +11,4 @@ Makefile
 /debug/
 /debug_arm/
 /release_arm/
+/release/
