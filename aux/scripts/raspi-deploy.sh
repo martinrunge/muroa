@@ -3,7 +3,8 @@
 CLIENTS=("$@")
 USER="pi"
 
-LIBS=("libdsaudio/libdsaudio.so" \
+LIBS=("libmstream/libmstream.so" \
+      "libmcommons/libmcommons.so" \
       "libsock++/libsock++.so" \
       "libmuroadaemon/libmuroadaemon.so")
 DAEMON="muroad/muroad"

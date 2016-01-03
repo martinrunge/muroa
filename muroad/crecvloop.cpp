@@ -35,33 +35,33 @@ using namespace boost::asio::ip;
 
 
 CRecvloop::CRecvloop(CMediaStreamConnection* parent, CPacketRingBuffer* packet_ringbuffer):
-		CThreadSlave()
+				CThreadSlave(), m_tmp_rtp_packet(0)
 {
 
-  m_media_stream_conn = parent;
-  m_timing_logger = Logger::getInstance("timing");
-  
-  m_packet_ringbuffer = packet_ringbuffer;
+	m_media_stream_conn = parent;
+	m_timing_logger = Logger::getInstance("timing");
 
-  m_max_idle = CApp::settings().getConfigVal("muroad.MaxIdle", 10);
+	m_packet_ringbuffer = packet_ringbuffer;
 
-  unsigned short port = CApp::settings().getPersisentVal("muroad.RTPport", 0);
-  if(port == 0) {
-	  port = CApp::settings().getConfigVal("muroad.RTPport", 44400);
-  }
+	m_max_idle = CApp::settings().getConfigVal("muroad.MaxIdle", 10);
 
-  m_socket = new CSocket(SOCK_DGRAM, port, true);
-  CApp::settings().setPersistentVal("muroad.RTPport", m_socket->getPort());
+	unsigned short port = CApp::settings().getPersisentVal("muroad.RTPport", 0);
+	if(port == 0) {
+		port = CApp::settings().getConfigVal("muroad.RTPport", 44400);
+	}
 
-  m_socket->recordSenderWithRecv(true);
-  m_socket->setNonBlocking(500);
+	m_socket = new CSocket(SOCK_DGRAM, port, true);
+	CApp::settings().setPersistentVal("muroad.RTPport", m_socket->getPort());
+
+	m_socket->recordSenderWithRecv(true);
+	m_socket->setNonBlocking(500000);
 
 }
 
 
 CRecvloop::~CRecvloop()
 {
-  delete m_socket;
+	delete m_socket;
 }
 
 int CRecvloop::getRTPPort() {
@@ -72,67 +72,70 @@ int CRecvloop::getRTPPort() {
 
 void CRecvloop::DoLoop()
 {
-  CRTPPacket* rtp_packet = new CRTPPacket();
-  int num = m_socket->read(rtp_packet->bufferPtr(), rtp_packet->bufferSize());
-  rtp_packet->commit(num);
+	if(m_tmp_rtp_packet == 0) {
+		m_tmp_rtp_packet = new CRTPPacket();
+	}
+	int num = m_socket->read(m_tmp_rtp_packet->bufferPtr(), m_tmp_rtp_packet->bufferSize());
+	m_tmp_rtp_packet->commit(num);
 
-  if(num <= 0 ) {
-    // rtp_packet->usedPayloadBufferSize(0);
-    usleep(200);
-  }
-  else {
+	if(num <= 0 ) {
+		// rtp_packet->usedPayloadBufferSize(0);
+		usleep(200);
+	}
+	else {
 
-    switch( rtp_packet->payloadType() ) {
-      case PAYLOAD_SYNC_OBJ:
-      {
-          m_tmp_sync_obj.deserialize(rtp_packet);
-          LOG4CPLUS_INFO(m_timing_logger, "Received SyncObj: " << m_tmp_sync_obj);
-        if(m_tmp_sync_obj.streamId() == m_media_stream_conn->syncRequestedForStreamID()) {
-          // this sync object has been requested by the client. Use it immediately
-          m_media_stream_conn->setRequestedSyncObj(rtp_packet);
-          delete rtp_packet;
-        }
-        else {
-          // beginning of next stream. put sync object into the packet ringbuffer
-          m_packet_ringbuffer->appendRTPPacket(rtp_packet);
-        }
-        udp::endpoint ep = m_tmp_sync_obj.getMediaClockSrv();
-        int tmp_port = ep.port();
-        if(tmp_port != m_ts_port) {
-        	m_ts_port = tmp_port;
-        	CIPv4Address *sender = m_socket->latestSender();
-        	address_v4 tmp_addr(sender->sock_addr_in_ptr()->sin_addr.s_addr);
-        	address sender_addr(tmp_addr);
-        	m_media_stream_conn->useTimeService(sender_addr, m_ts_port);
+		switch( m_tmp_rtp_packet->payloadType() ) {
+		case PAYLOAD_SYNC_OBJ:
+		{
+			m_tmp_sync_obj.deserialize(m_tmp_rtp_packet);
+			LOG4CPLUS_INFO(m_timing_logger, "Received SyncObj: " << m_tmp_sync_obj);
+			if(m_tmp_sync_obj.streamId() == m_media_stream_conn->syncRequestedForStreamID()) {
+				// this sync object has been requested by the client. Use it immediately
+				m_media_stream_conn->setRequestedSyncObj(m_tmp_rtp_packet);
+				delete m_tmp_rtp_packet;
+			}
+			else {
+				// beginning of next stream. put sync object into the packet ringbuffer
+				m_packet_ringbuffer->appendRTPPacket(m_tmp_rtp_packet);
+			}
+			udp::endpoint ep = m_tmp_sync_obj.getMediaClockSrv();
+			int tmp_port = ep.port();
+			if(tmp_port != m_ts_port) {
+				m_ts_port = tmp_port;
+				CIPv4Address *sender = m_socket->latestSender();
+				address_v4 tmp_addr(sender->sock_addr_in_ptr()->sin_addr.s_addr);
+				address sender_addr(tmp_addr);
+				m_media_stream_conn->useTimeService(sender_addr, m_ts_port);
 
-        }
+			}
 
-        // wake up playback thread
-        //if(m_player->idleTime() > m_max_idle && m_max_idle != 0) {
-        m_media_stream_conn->m_traffic_cond.Signal();
-        //}
-        
-        break;
-      }
-      case PAYLOAD_PCM:
-      case PAYLOAD_MP3:
-      case PAYLOAD_VORBIS:
-      case PAYLOAD_FLAC:
-        // rtp_packet->BufferSize(num);
-        m_packet_ringbuffer->appendRTPPacket(rtp_packet);
-        // cerr << "Sender was: " << m_socket->latestSender()->ipAddress() << " port " << m_socket->latestSender()->port() << endl;
-        
-        // wake up playback thread
-        //if(m_player->idleTime() > m_max_idle && m_max_idle != 0) {
-        m_media_stream_conn->m_traffic_cond.Signal();
-        //}
+			// wake up playback thread
+			//if(m_player->idleTime() > m_max_idle && m_max_idle != 0) {
+			m_media_stream_conn->m_traffic_cond.Signal();
+			//}
 
-        break;
-      default:
-        cerr << "CRecvloop::DoLoop(): unknown payload type: " << rtp_packet->payloadType() << endl;
-        
-    }
-  }
+			break;
+		}
+		case PAYLOAD_PCM:
+		case PAYLOAD_MP3:
+		case PAYLOAD_VORBIS:
+		case PAYLOAD_FLAC:
+			// rtp_packet->BufferSize(num);
+			m_packet_ringbuffer->appendRTPPacket(m_tmp_rtp_packet);
+			// cerr << "Sender was: " << m_socket->latestSender()->ipAddress() << " port " << m_socket->latestSender()->port() << endl;
+
+			// wake up playback thread
+			//if(m_player->idleTime() > m_max_idle && m_max_idle != 0) {
+			m_media_stream_conn->m_traffic_cond.Signal();
+			//}
+
+			break;
+		default:
+			cerr << "CRecvloop::DoLoop(): unknown payload type: " << m_tmp_rtp_packet->payloadType() << endl;
+
+		}
+		m_tmp_rtp_packet = 0;
+	}
 
 }
 
@@ -142,5 +145,5 @@ void CRecvloop::DoLoop()
  */
 void CRecvloop::sendRTPPacket(CRTPPacket* packet)
 {
-    m_socket->sendTo(m_socket->latestSender(), packet->bufferPtr(), packet->usedBufferSize());
+	m_socket->sendTo(m_socket->latestSender(), packet->bufferPtr(), packet->usedBufferSize());
 }

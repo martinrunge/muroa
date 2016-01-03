@@ -56,6 +56,7 @@ public:
     int getRTPPort();
 private:
     CSocket *m_socket;
+    CRTPPacket* m_tmp_rtp_packet;
 
     log4cplus::Logger m_timing_logger;
     CPacketRingBuffer *m_packet_ringbuffer;

@@ -150,7 +150,9 @@ void CMediaStreamConnection::onSyncInfo(const evSyncStream& evt) {
 		m_sync_info_queue.pop();
 	}
 
-	m_playloop_thread->StartThread(true);
+	if(!m_playloop_thread->IsRunning()) {
+		m_playloop_thread->StartThread(true);
+	}
 }
 
 

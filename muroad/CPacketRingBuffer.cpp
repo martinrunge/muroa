@@ -10,6 +10,8 @@
 #include "CPerSSRCRingBuffer.h"
 #include "crtppacket.h"
 
+#include <iostream>
+
 #include "assert.h"
 
 using namespace std;
@@ -31,6 +33,7 @@ void CPacketRingBuffer::appendRTPPacket(CRTPPacket* packet) {
 	it = m_buffer_map.find(ssrc);
 	if( it == m_buffer_map.end() ) {
 		// new ssrc appeared. Create new perSSRC ringbuffer for it and remove the oldest unused one if there would be more than m_num_ssrc otherwise.
+		cerr << "adding new ringbuffer for ssrc=" << ssrc << endl;
 		if(m_buffer_map.size() >= m_num_ssrc ) {
 			eraseOldestInactiveSSRC();
 		}

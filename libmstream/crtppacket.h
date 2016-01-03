@@ -120,6 +120,8 @@ public:
 
     int copyInPayload(const char* from, const int size);
 
+    static int getCounter() { return m_counter; };
+
 private:
 
     void init(void);

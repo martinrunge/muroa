@@ -145,7 +145,10 @@ CAudioFrame* CPlayloop::getAudioPacket(uint32_t ssrc, bool block) {
 
 		CRTPPacket* rtp_packet = m_packet_ringbuffer->readPacket(ssrc);
 
-		if( isCancelled() ) { return 0; };  // check for cancellation of playloop
+		if( isCancelled() ) {
+			delete rtp_packet;
+			return 0;
+		};  // check for cancellation of playloop
 
 		switch( rtp_packet->payloadType() )
 		{
@@ -406,7 +409,7 @@ void CPlayloop::adjustResamplingFactor(const muroa::evSyncStream& syncInfo)
 
 		m_correction_factor = 1.0 - diff_in_s * 0.1;
 
-		cerr << "Average time diff (clock - samples) = " << m_average_time_diff <<  " factor used = " << m_resample_factor * m_correction_factor << " RB size: " << m_ringbuffer->sizeInFrames() << endl;
+		cerr << "Average time diff (clock - samples) = " << m_average_time_diff <<  " factor used = " << m_resample_factor * m_correction_factor << " RB size: " << m_ringbuffer->sizeInFrames() << " PRB size: " << m_packet_ringbuffer->getRingbufferSize(syncInfo.m_ssrc) << " RTP pkts: " << CRTPPacket::getCounter() << endl;
 
 		m_average_time_diff = seconds(0);
 		m_counter = 0;

@@ -158,7 +158,7 @@ CRTPPacket::~CRTPPacket()
 {
   //if(m_delete_buffer_in_dtor) 
   //{
-  delete[] m_buffer;  
+  delete [] m_buffer;
 
   // std::cerr << "deleting instance nr " << m_counter << std::endl;
   m_counter--;

@@ -61,7 +61,7 @@ CAudioFrame::CAudioFrame(CRTPPacket* rtp_packet, int max_frame_size) {
 
 
 CAudioFrame::~CAudioFrame() {
-  delete m_frame_data;
+  delete [] m_frame_data;
 }
 
 
