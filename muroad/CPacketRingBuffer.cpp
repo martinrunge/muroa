@@ -10,11 +10,12 @@
 #include "CPerSSRCRingBuffer.h"
 #include "crtppacket.h"
 
-#include <iostream>
+#include <CApp.h>
 
 #include "assert.h"
 
 using namespace std;
+using namespace muroa;
 
 CPacketRingBuffer::CPacketRingBuffer(int num_ssrc) : m_num_ssrc(num_ssrc) {
 
@@ -33,7 +34,7 @@ void CPacketRingBuffer::appendRTPPacket(CRTPPacket* packet) {
 	it = m_buffer_map.find(ssrc);
 	if( it == m_buffer_map.end() ) {
 		// new ssrc appeared. Create new perSSRC ringbuffer for it and remove the oldest unused one if there would be more than m_num_ssrc otherwise.
-		cerr << "adding new ringbuffer for ssrc=" << ssrc << endl;
+		LOG4CPLUS_DEBUG( CApp::logger(), "CPacketRingBuffer::appendRTPPacket: Adding new ringbuffer for ssrc=" << ssrc);
 		if(m_buffer_map.size() >= m_num_ssrc ) {
 			eraseOldestInactiveSSRC();
 		}

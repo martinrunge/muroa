@@ -140,6 +140,8 @@ muroa::evSyncStream CMediaStreamConnection::getSyncInfo() {
 
 
 void CMediaStreamConnection::onSyncInfo(const evSyncStream& evt) {
+	LOG4CPLUS_INFO(CApp::logger(), "CMediaStreamConnection::onSyncInfo: ssrc: " << evt.m_ssrc << " PTS " << evt.m_rtp_ts << " @" << evt.m_utc_media_clock_pts );
+
 	// make a copy
 	muroa::evSyncStream* sync_info = new evSyncStream(evt);
 	m_sync_info_queue.push(sync_info);
@@ -195,7 +197,7 @@ void CMediaStreamConnection::requestSync(int session_id, int stream_id)
 }
 
 void CMediaStreamConnection::onResetStream(const evResetStream& evRst) {
-    cerr << "CPlayer::onResetStream: ssrc: " << evRst.m_ssrc << endl;
+	LOG4CPLUS_INFO(CApp::logger(), "CMediaStreamConnection::onResetStream: ssrc: " << evRst.m_ssrc );
 
     m_playloop_thread->StopThread();
 	lock_guard<mutex> lg(m_sync_info_mutex);
