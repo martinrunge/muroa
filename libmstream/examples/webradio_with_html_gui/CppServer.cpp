@@ -29,6 +29,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "CppServer.h"
 
+#include <CApp.h>
+
 using namespace muroa;
 using namespace std;
 
@@ -52,13 +54,20 @@ CppServer::~CppServer() {
 void CppServer::playStream(std::string url) {
 	muroa::CStreamFmt new_sfmt;
 
+	LOG4CPLUS_INFO(CApp::logger(), "Play stream: " << url);
+
+
 	if(m_decoder != 0) {
 		flush();
 		delete m_decoder;
 		close();
 	}
 	m_decoder = new CStreamDecoder(this);
+
+	LOG4CPLUS_DEBUG(CApp::logger(), "CppServer::playStream: about to open url: " << url);
 	new_sfmt = m_decoder->open(url);
+
+	LOG4CPLUS_DEBUG(CApp::logger(), "CppServer::playStream: url opened: channels: " << new_sfmt.numChannels << " samplerate: " << new_sfmt.sampleRate);
 
 	if(new_sfmt.isValid()) {
 		if(isOpen() == false) {

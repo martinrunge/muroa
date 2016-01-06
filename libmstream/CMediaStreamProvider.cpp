@@ -58,6 +58,9 @@ CMediaStreamProvider::~CMediaStreamProvider() {
 
 void CMediaStreamProvider::addJoinedConnection(CStreamCtrlConnection* conn) {
 	m_connection_list_mutex.Lock();
+
+	LOG4CPLUS_INFO(CApp::logger(), "Adding client: " << conn->getServiceName());
+
 	if(conn->m_useMulticastRTP()) {
 		m_use_mcast = true;
 	}
@@ -131,9 +134,6 @@ int CMediaStreamProvider::open(int num_channels, int sample_rate, int sample_siz
 
   m_frames_in_sync_period = 0;
   m_payload_duration_sum = microseconds(0);
-  cerr << "CStreamServer::open: audiobytes/s = " << m_audio_bytes_per_second
-       << " session/stream id = (" << m_session_id << "/" << m_stream_id << ")"
-       << " time = " << now << endl;
 
   LOG4CPLUS_DEBUG(m_timing_logger, "open stream " << m_transport_buffer_duration.total_milliseconds() << " ms." );
 
@@ -153,7 +153,7 @@ int CMediaStreamProvider::open(int num_channels, int sample_rate, int sample_siz
  */
 void CMediaStreamProvider::close()
 {
-    cerr << "CStreamServer::close()" << endl;
+    LOG4CPLUS_INFO(m_timing_logger, "CMediaStreamProvider::close()" );
     m_is_open = false;
     m_streamFmt = CStreamFmt();
 }

@@ -14,6 +14,8 @@
 #include <libavutil/opt.h>
 #include "CStreamDecoder.h"
 
+#include <CApp.h>
+
 #ifndef AVCODEC_MAX_AUDIO_FRAME_SIZE
 #define AVCODEC_MAX_AUDIO_FRAME_SIZE 192000 // 1 second of 48khz 32bit audio
 #endif
@@ -138,6 +140,8 @@ CStreamFmt CStreamDecoder::open(string filename)
 
 void CStreamDecoder::startDecodingThread() {
 	assert(m_open);
+
+	LOG4CPLUS_DEBUG(CApp::logger(), "CStreamDecoder::startDecodingThread ...");
 	m_play_thread = new thread(&CStreamDecoder::decodingLoop, this);
 }
 
