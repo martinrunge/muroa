@@ -85,9 +85,16 @@ tcp::endpoint CTcpConnection::remoteEndpoint() {
 }
 
 std::string CTcpConnection::remoteEndpointStr() {
-	tcp::endpoint remote = m_socket.remote_endpoint();
-	boost::asio::ip::address addr = remote.address();
-	return addr.to_string();
+	string addr_str;
+	try {
+		tcp::endpoint remote = m_socket.remote_endpoint();
+		boost::asio::ip::address addr = remote.address();
+		addr_str = addr.to_string();
+	}
+	catch(boost::system::system_error err) {
+		addr_str = err.what();
+	}
+	return addr_str;
 }
 
 void CTcpConnection::writeData( const char* buffer, int length) {

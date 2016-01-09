@@ -8,6 +8,7 @@
 #include "WSSrv.h"
 
 #include "CRessourceHandler.h"
+#include <CApp.h>
 
 #include <map>
 
@@ -38,9 +39,7 @@ WSSrv::~WSSrv() {
 }
 
 void WSSrv::run(std::string docroot, uint16_t port) {
-    std::stringstream ss;
-    ss << "Running telemetry server on port "<< port <<" using docroot=" << docroot;
-    m_endpoint.get_alog().write(websocketpp::log::alevel::app,ss.str());
+	LOG4CPLUS_INFO( CApp::logger(), "Running embedded webserver server on port "<< port <<" using docroot=" << docroot );
 
     std::size_t found = docroot.find_last_of("/");
     if(found != docroot.size()) {
@@ -100,11 +99,9 @@ void WSSrv::onHttp(connection_hdl hdl) {
     std::string filename = con->get_uri()->get_resource();
     std::string response;
 
-    m_endpoint.get_alog().write(websocketpp::log::alevel::app,
-        "http request1: "+filename);
 
 	if( filename.find("/REST") == 0 ) {
-        m_endpoint.get_alog().write(websocketpp::log::alevel::app,  "http request to REST: " + filename);
+		LOG4CPLUS_INFO( CApp::logger(), "http request in REST API: " << filename );
 
         map<string, string> query_params;
 
@@ -149,9 +146,7 @@ void WSSrv::onHttp(connection_hdl hdl) {
 		} else {
 			filename = m_docroot+filename.substr(1);
 		}
-
-		m_endpoint.get_alog().write(websocketpp::log::alevel::app,
-			"http request2: "+filename);
+		LOG4CPLUS_INFO( CApp::logger(), "http request1 for: " << filename );
 
 		file.open(filename.c_str(), std::ios::in);
 		if (!file) {
