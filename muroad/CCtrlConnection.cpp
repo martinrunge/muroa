@@ -39,14 +39,15 @@ void CCtrlConnection::start() {
 	m_clnt_sm.start();
 }
 
-void CCtrlConnection::stop() {
+
+void CCtrlConnection::shutdown() {
 	shutdown();
 	CTcpConnection::stop();
 }
 
+
 void CCtrlConnection::onClose() {
-	evLeave evt;
-	m_player->leaveSession(evt, this);
+	m_player->onCloseCtrlConn(this);
 }
 
 void CCtrlConnection::onSetup() {

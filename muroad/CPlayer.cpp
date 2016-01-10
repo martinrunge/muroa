@@ -153,10 +153,6 @@ int CPlayer::becomeSessionMember(const evRequestJoin& evt, CCtrlConnection* ctrl
 }
 
 int CPlayer::leaveSession(CCtrlConnection* ctrlConn) {
-	if(m_session_ctrl_conn == ctrlConn) {
-		m_session_ctrl_conn = 0;
-		m_session_name.clear();
-	}
 	m_conn_mgr.remove(ctrlConn);
 	shutdownMediaStreamConn();
 }
@@ -164,6 +160,15 @@ int CPlayer::leaveSession(CCtrlConnection* ctrlConn) {
 int CPlayer::leaveSession(const evLeave& evt, CCtrlConnection* ctrlConn) {
 	// evt.m_triggered_by_session;
 	leaveSession(ctrlConn);
+}
+
+int CPlayer::onCloseCtrlConn(CCtrlConnection* ctrlConn) {
+	if(m_session_ctrl_conn == ctrlConn) {
+		m_session_ctrl_conn = 0;
+		m_session_name.clear();
+	}
+	m_conn_mgr.remove(ctrlConn);
+	shutdownMediaStreamConn();
 }
 
 void CPlayer::syncInfo(const evSyncStream& evt, CCtrlConnection* ctrlConn) {

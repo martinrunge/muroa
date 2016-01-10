@@ -49,6 +49,9 @@ public:
 
 	bool mayJoinSession(const evRequestJoin& rj, CCtrlConnection* ctrlConn);
 	int becomeSessionMember(const evRequestJoin& evt, CCtrlConnection* ctrlConn);
+
+	int onCloseCtrlConn(CCtrlConnection* ctrlConn);
+
 	int leaveSession(CCtrlConnection* ctrlConn);
 	int leaveSession(const evLeave& evt, CCtrlConnection* ctrlConn);
 

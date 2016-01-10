@@ -42,9 +42,9 @@ public:
 	void setConnectionMgr(muroa::IConnectionManager* conn_mgr) { m_conn_mgr = conn_mgr; };
 
 	void start();
-	void stop();
-	void onClose();
+	void shutdown();
 
+	void onClose();
 	void onSetup();
 	void onShutdown();
 

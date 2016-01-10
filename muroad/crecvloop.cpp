@@ -54,7 +54,7 @@ CRecvloop::CRecvloop(CMediaStreamConnection* parent, CPacketRingBuffer* packet_r
 	CApp::settings().setPersistentVal("muroad.RTPport", m_socket->getPort());
 
 	m_socket->recordSenderWithRecv(true);
-	m_socket->setNonBlocking(500000);
+	m_socket->setNonBlocking(500);
 
 }
 
