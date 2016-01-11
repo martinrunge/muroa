@@ -19,6 +19,7 @@ find_package( Boost 1.36.0 COMPONENTS filesystem system date_time program_option
 add_definitions( ${log4cplus_DEFINITIONS} )
 
 set( SRC           CStreamServer.cpp
+                   CStreamClientDiscovery.cpp
                    CStreamCtrlConnection.cpp
                    CMediaStreamProvider.cpp
                    CStreamConnection.cpp
@@ -47,6 +48,7 @@ set( SRC           CStreamServer.cpp
                    )                  
 
 set( HEADERS       CStreamServer.h
+                   CStreamClientDiscovery.h
                    CStreamCtrlConnection.h
                    CMediaStreamProvider.h
                    CStreamConnection.h

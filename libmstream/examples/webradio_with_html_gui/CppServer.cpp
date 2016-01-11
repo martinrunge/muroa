@@ -111,3 +111,15 @@ void CppServer::reportProgress( int posInSecs, int durationInSecs) {
 }
 
 
+void CppServer::onClientAppeared(ServDescPtr srvPtr) {
+
+}
+
+void CppServer::onClientDisappeared(ServDescPtr srvPtr) {
+
+}
+
+void CppServer::onClientChanged() {
+
+}
+

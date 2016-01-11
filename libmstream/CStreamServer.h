@@ -40,6 +40,7 @@ Class provides a server for a stream.
 
 #include "CStreamCtrlConnection.h"
 #include "CMediaStreamProvider.h"
+#include "CStreamClientDiscovery.h"
 
 #include "csync.h"
 #include "cmutex.h"
@@ -54,7 +55,7 @@ namespace bip=boost::asio::ip;
 
 namespace muroa {
 
-class CStreamServer : public CMediaStreamProvider {
+class CStreamServer : public CMediaStreamProvider, public CStreamClientDiscovery {
 public:
     /**
      * @brief CStreamServer constructor.
@@ -82,6 +83,10 @@ public:
 	virtual void clientLeftSession(muroa::CStreamCtrlConnection* conn, const muroa::evLeave* evt);
 
 	virtual void  reportError(muroa::CStreamCtrlConnection* conn, const evJoinRejected* evt);
+
+//	virtual void onClientAppeared(ServDescPtr srvPtr);
+//	virtual void onClientDisappeared(ServDescPtr srvPtr);
+//	virtual void onClientChanged();
 
     void removeClient(muroa::CStreamCtrlConnection* connPtr);
 protected:

@@ -39,6 +39,7 @@ namespace muroa {
 
 CStreamServer::CStreamServer(boost::asio::io_service& io_service, int timeServerPort, int session_id, int transport_buffer_size_in_ms) :
                              CMediaStreamProvider(io_service, session_id, transport_buffer_size_in_ms),
+							 CStreamClientDiscovery(io_service),
                              m_time_server_port(timeServerPort),
                              m_io_service(io_service)
 {
@@ -199,6 +200,7 @@ void CStreamServer::clientLeftSession(muroa::CStreamCtrlConnection* conn, const 
 void  CStreamServer::reportError(muroa::CStreamCtrlConnection* conn, const evJoinRejected* evt) {
 
 }
+
 
 
 } // namespace muroa

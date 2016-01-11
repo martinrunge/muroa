@@ -45,6 +45,10 @@ public:
 	void reportClientState(muroa::CStreamCtrlConnection* conn, const muroa::CmdStreamBase* evt);
 	void reportProgress( int posInSecs, int durationInSecs);
 
+	void onClientAppeared(ServDescPtr srvPtr);
+	void onClientDisappeared(ServDescPtr srvPtr);
+	void onClientChanged();
+
 private:
 	boost::asio::io_service& m_io_service;
 	CStreamDecoder *m_decoder;
