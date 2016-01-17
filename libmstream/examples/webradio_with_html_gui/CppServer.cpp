@@ -36,15 +36,12 @@ using namespace std;
 
 
 
-CppServer::CppServer(boost::asio::io_service& io_service, vector<bip::tcp::endpoint> clients, int timeServerPort, int sessionID )
+CppServer::CppServer(boost::asio::io_service& io_service, vector<string> clients, int timeServerPort, int sessionID )
                   : CStreamServer(io_service, timeServerPort, sessionID, 2000),
                     m_io_service(io_service),
-					m_decoder(0)
+					m_decoder(0),
+					m_selected_clients(clients)
 {
-
-	for(int i = 0; i < clients.size(); i++) {
-		addClient(clients[i], "example session");
-	}
 }
 
 CppServer::~CppServer() {
@@ -112,7 +109,17 @@ void CppServer::reportProgress( int posInSecs, int durationInSecs) {
 
 
 void CppServer::onClientAppeared(ServDescPtr srvPtr) {
+	for(vector<string>::iterator it = m_selected_clients.begin(); it != m_selected_clients.end(); it++) {
 
+		string appeared_service_name = srvPtr->getServiceName();
+		if( (*it).compare(appeared_service_name) == 0 )
+		{
+			m_clients.push_back(srvPtr);
+
+			bip::tcp::endpoint endp(srvPtr->getAddress(), srvPtr->getPortNr() );
+			addClient(endp, srvPtr->getServiceName());
+		}
+	}
 }
 
 void CppServer::onClientDisappeared(ServDescPtr srvPtr) {

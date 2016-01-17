@@ -36,7 +36,7 @@ namespace bip=boost::asio::ip;
 
 class CppServer :public CStreamServer {
 public:
-	CppServer(boost::asio::io_service& io_service, std::vector<bip::tcp::endpoint> clients, int timeServerPort, int sessionID );
+	CppServer(boost::asio::io_service& io_service, std::vector<std::string> clients, int timeServerPort, int sessionID );
 	~CppServer();
 
 	void playStream(std::string url);
@@ -53,6 +53,8 @@ private:
 	boost::asio::io_service& m_io_service;
 	CStreamDecoder *m_decoder;
 
+	vector<std::string>    m_selected_clients;
+	vector<ServDescPtr> m_clients;
 };
 
 

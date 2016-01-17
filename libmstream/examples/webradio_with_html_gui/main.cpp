@@ -101,7 +101,7 @@ int main(int argc, char *argv[]) {
     char c;
     int verbose_flag = 0;
 
-    vector<bip::tcp::endpoint> clients;
+    vector<string> clients;
     int sessionID = -1;
     int timeSrvPort = -1;
 
@@ -119,20 +119,18 @@ int main(int argc, char *argv[]) {
 		app->daemonize();
 	}
 
-	vector<string> addrs = app->settings().muroad_addrs();
-	for(int i = 0; i < addrs.size(); i++) {
-		string addr_str = addrs[i];
-		clients.push_back( string_to_endpoint(addr_str, 5556));
-	}
+	clients = app->settings().muroad_addrs();
 
 	if(app->settings().timeserver_port() != 0) {
 		timeSrvPort = app->settings().timeserver_port();
 	}
 
 	if(clients.size() == 0) {
-        bip::tcp::endpoint endp = string_to_endpoint("127.0.0.1", 5556);
-        clients.push_back(endp);
-    }
+		cerr << "error: no clients listed. Please list at least one stream client by its service name." << endl;
+	}
+		//        // bip::tcp::endpoint endp = string_to_endpoint("127.0.0.1", 5556);
+//        clients.push_back(endp);
+//    }
 
 	boost::filesystem::path docroot = app->settings().getConfigVal("muroaws.docroot", "/var/www/muroa");
 	docroot = CUtils::expandvars(docroot);

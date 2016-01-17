@@ -307,11 +307,11 @@ void CDnsSdAvahi::resolveCallback( AvahiServiceResolver *r,
             break;
 
         case AVAHI_RESOLVER_FOUND: {
-//            char a[AVAHI_ADDRESS_STR_MAX], *t;
-//            avahi_address_snprint(a, sizeof(a), address);
+            char a[AVAHI_ADDRESS_STR_MAX];
+            avahi_address_snprint(a, sizeof(a), address);
 
             cerr << "Service '" << name << "' of type '" << type << "' in domain '" << domain << "':" << endl;
-            cerr << "Host: " << host_name << " Port: " << port << endl;
+            cerr << "Host: " << host_name << " Address: " << a << " Port: " << port << endl;
 
             if(hasService(name) == 0)
             {
@@ -378,7 +378,7 @@ void CDnsSdAvahi::createService(AvahiClient *client)
          * same name should be put in the same entry group. */
 
         /* Add the service for IPP */
-        if ((ret = avahi_entry_group_add_service(m_group, AVAHI_IF_UNSPEC, AVAHI_PROTO_UNSPEC, AvahiPublishFlags(0), m_serviceName.c_str(), m_service_type.c_str(), NULL, NULL, m_servicePort, "role=session server", NULL)) < 0) {
+        if ((ret = avahi_entry_group_add_service(m_group, AVAHI_IF_UNSPEC, AVAHI_PROTO_INET, AvahiPublishFlags(0), m_serviceName.c_str(), m_service_type.c_str(), NULL, NULL, m_servicePort, "role=session server", NULL)) < 0) {
 
             if (ret == AVAHI_ERR_COLLISION)
                 goto collision;

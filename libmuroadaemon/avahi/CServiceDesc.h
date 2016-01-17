@@ -52,6 +52,14 @@ public:
         return m_hostName;
     }
 
+    const bip::address& getAddress() const {
+		return m_address;
+	}
+
+	void setAddress(const bip::address& address) {
+		m_address = address;
+	}
+
     int getPortNr() const
     {
         return m_portNr;
@@ -108,13 +116,6 @@ public:
     		return false;
 	}
 
-	const bip::address& getAddress() const {
-		return m_address;
-	}
-
-	void setAddress(const bip::address& address) {
-		m_address = address;
-	}
 
 private:
     std::string m_serviceName;
@@ -126,7 +127,6 @@ private:
 
 	int m_protocol;
 	int m_interface;
-
 };
 
 typedef std::shared_ptr<CServiceDesc> ServDescPtr ;

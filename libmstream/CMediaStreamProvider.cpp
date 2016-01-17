@@ -156,6 +156,12 @@ void CMediaStreamProvider::close()
     LOG4CPLUS_INFO(m_timing_logger, "CMediaStreamProvider::close()" );
     m_is_open = false;
     m_streamFmt = CStreamFmt();
+
+    // make m_sync_info invalid
+    m_sync_info.m_num_channels = 0;
+    m_sync_info.m_sample_rate = 0;
+    m_sync_info.m_sample_size = 0;
+
 }
 
 /*!
