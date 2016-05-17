@@ -31,6 +31,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "CppServer.h"
 #include "CRessourceHandler.h"
+#include "CWSMsgHandler.h"
 #include "WSSrv.h"
 
 using namespace std;
@@ -96,6 +97,26 @@ bip::tcp::endpoint string_to_endpoint(std::string addr_str, int default_port) {
 	return endp;
 }
 
+class CSigHandler {
+public:
+	CSigHandler( boost::asio::io_service& io_service) : m_io_service(io_service) {
+	    boost::asio::signal_set signals(m_io_service, SIGINT, SIGTERM);
+	    signals.async_wait(bind(&CSigHandler::onSignal,this,::_1,::_2));
+	};
+	~CSigHandler() {};
+
+	void onSignal( const boost::system::error_code& error, int signal_number) {
+		if (!error)
+		{
+			m_io_service.stop();
+		}
+	}
+
+private:
+	boost::asio::io_service& m_io_service;
+};
+
+
 int main(int argc, char *argv[]) {
 //  cserver(argc, argv);
     char c;
@@ -139,14 +160,24 @@ int main(int argc, char *argv[]) {
 	}
 
 	boost::filesystem::path stations_file = docroot / "stations.json";
-
+	Json::Reader reader;
+	Json::Value stations;
+	ifstream ifs;
+	ifs.open(stations_file.string());
+	reader.parse(ifs, stations);
+	ifs.close();
 
 	boost::asio::io_service io_service;
 
 	CppServer cpps(io_service, clients, timeSrvPort, sessionID);
-	CRessourceHandler resHandler(&cpps, stations_file.string());
+	CRessourceHandler resHandler(&cpps, stations);
+	CWSMsgHandler wsMsgHandler(&cpps, stations);
 
-    muroa::WSSrv wssrv(&io_service, &resHandler);
+    CSigHandler sig_handler(io_service);
+
+    muroa::WSSrv wssrv(&io_service, &resHandler, &wsMsgHandler);
+    cpps.setWSSrv(&wssrv);
+
     wssrv.run(docroot.string(), 8888);
 
     io_service.run();

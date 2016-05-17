@@ -23,6 +23,7 @@ set( SRCS             main.cpp
                       CJsonResponder.cpp
                       CStreamDecoder.cpp
                       CRessourceHandler.cpp
+                      CWSMsgHandler.cpp
 )
                     
 set( HEADERS          CppServer.h
@@ -31,6 +32,7 @@ set( HEADERS          CppServer.h
                       CJsonResponder.h
                       CStreamDecoder.h
                       CRessourceHandler.h
+                      CWSMsgHandler.h
 )
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}

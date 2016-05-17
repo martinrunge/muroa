@@ -33,14 +33,25 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 namespace bip=boost::asio::ip;
 
+namespace muroa {
+	class WSSrv;
+}
 
 class CppServer :public CStreamServer {
 public:
 	CppServer(boost::asio::io_service& io_service, std::vector<std::string> clients, int timeServerPort, int sessionID );
 	~CppServer();
 
+	void setWSSrv(muroa::WSSrv *wssrv);
+
 	void playStream(std::string url);
 	void stopStream();
+
+	void clientRejectedSessionMember(muroa::CStreamCtrlConnection* conn, const muroa::evJoinRejected* evt);
+	void clientBecameSessionMember(muroa::CStreamCtrlConnection* conn, const muroa::evSessionState* evt);
+	void clientLeftSession(muroa::CStreamCtrlConnection* conn, const muroa::evLeave* evt);
+
+	void reportError(muroa::CStreamCtrlConnection* conn, const evJoinRejected* evt);
 
 	void reportClientState(muroa::CStreamCtrlConnection* conn, const muroa::CmdStreamBase* evt);
 	void reportProgress( int posInSecs, int durationInSecs);
@@ -50,11 +61,15 @@ public:
 	void onClientChanged();
 
 private:
-	boost::asio::io_service& m_io_service;
-	CStreamDecoder *m_decoder;
+	void reportRenderClients();
 
-	vector<std::string>    m_selected_clients;
-	vector<ServDescPtr> m_clients;
+	boost::asio::io_service& m_io_service;
+	CStreamDecoder          *m_decoder;
+
+	muroa::WSSrv            *m_ws_srv;
+
+	vector<std::string>      m_selected_clients;
+	vector<ServDescPtr>      m_clients;
 };
 
 

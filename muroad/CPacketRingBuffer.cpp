@@ -11,6 +11,7 @@
 #include "crtppacket.h"
 
 #include <CApp.h>
+#include <log4cplus/loggingmacros.h>
 
 #include "assert.h"
 

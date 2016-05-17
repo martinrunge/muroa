@@ -8,16 +8,19 @@
 #include "WSSrv.h"
 
 #include "CRessourceHandler.h"
+#include "CWSMsgHandler.h"
+
 #include <CApp.h>
 
 #include <map>
+#include <log4cplus/loggingmacros.h>
 
 using namespace std;
 
 namespace muroa {
 
-WSSrv::WSSrv(boost::asio::io_service* ptr, CRessourceHandler* resHandler)
-         : m_resHandler(resHandler)
+WSSrv::WSSrv(boost::asio::io_service* ptr, CRessourceHandler* resHandler, CWSMsgHandler* wsMsgHandler)
+         : m_resHandler(resHandler), m_wsMsgHandler(wsMsgHandler)
 {
     // set up access channels to only log interesting things
     m_endpoint.clear_access_channels(websocketpp::log::alevel::all);
@@ -26,13 +29,20 @@ WSSrv::WSSrv(boost::asio::io_service* ptr, CRessourceHandler* resHandler)
 
     // Initialize the Asio transport policy
     m_endpoint.init_asio(ptr);
+    m_endpoint.set_reuse_addr(true);
+
 
     // Bind the handlers we are using
     using websocketpp::lib::placeholders::_1;
+    using websocketpp::lib::placeholders::_2;
+
     using websocketpp::lib::bind;
-    m_endpoint.set_open_handler(bind(&WSSrv::onOpen,this,_1));
-    m_endpoint.set_close_handler(bind(&WSSrv::onClose,this,_1));
-    m_endpoint.set_http_handler(bind(&WSSrv::onHttp,this,_1));
+    m_endpoint.set_open_handler    (bind(&WSSrv::onOpen,	this, _1));
+    m_endpoint.set_close_handler   (bind(&WSSrv::onClose,	this, _1));
+    m_endpoint.set_ping_handler    (bind(&WSSrv::on_ping,   this, _1, _2));
+    m_endpoint.set_pong_handler    (bind(&WSSrv::on_pong,   this, _1, _2));
+    m_endpoint.set_message_handler (bind(&WSSrv::on_message,this, _1, _2));
+    m_endpoint.set_http_handler    (bind(&WSSrv::onHttp,	this, _1));
 }
 
 WSSrv::~WSSrv() {
@@ -55,8 +65,14 @@ void WSSrv::run(std::string docroot, uint16_t port) {
     m_endpoint.start_accept();
 
     // Set the initial timer to start telemetry
-    setTimer();
+    // setTimer();
+}
 
+void WSSrv::sendToAll(string message) {
+    con_list::iterator it;
+    for (it = m_connections.begin(); it != m_connections.end(); ++it) {
+        m_endpoint.send(*it, message, websocketpp::frame::opcode::text);
+    }
 }
 
 void WSSrv::setTimer() {
@@ -89,6 +105,21 @@ void WSSrv::onTimer(websocketpp::lib::error_code const & ec) {
 
     // set timer for next telemetry check
     setTimer();
+}
+
+bool WSSrv::on_ping(connection_hdl hdl, std::string msg) {
+    m_endpoint.get_alog().write(websocketpp::log::alevel::app, "on_ping: "+msg);
+	return true;
+}
+
+void WSSrv::on_pong(connection_hdl hdl, std::string msg) {
+    m_endpoint.get_alog().write(websocketpp::log::alevel::app, "on_pong: "+msg);
+}
+
+
+void WSSrv::on_message(connection_hdl hdl, server::message_ptr msg) {
+    m_endpoint.get_alog().write(websocketpp::log::alevel::app, "on_message: "+msg->get_header() + " - " + msg->get_payload());
+    m_wsMsgHandler->onMessage( msg->get_header(),  msg->get_payload() );
 }
 
 void WSSrv::onHttp(connection_hdl hdl) {

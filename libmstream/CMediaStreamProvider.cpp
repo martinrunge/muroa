@@ -354,4 +354,20 @@ void CMediaStreamProvider::listClients(void)
 }
 
 
+std::vector<CRenderClientDesc> CMediaStreamProvider::getJoinedRenderClients() {
+	std::vector<CRenderClientDesc> rcs;
+
+	set<CStreamCtrlConnection*>::iterator iter;
+	m_connection_list_mutex.Lock();
+	for(iter = m_joined_connections.begin(); iter != m_joined_connections.end(); iter++ ) {
+		CRenderClientDesc rcd;
+		rcd.setServiceName( (*iter)->getServiceName());
+		rcs.push_back( rcd );
+	}
+	m_connection_list_mutex.UnLock();
+
+	return rcs;
+}
+
+
 } /* namespace muroa */

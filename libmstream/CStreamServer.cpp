@@ -139,13 +139,10 @@ void CStreamServer::removeClient(muroa::CStreamCtrlConnection* connPtr) {
 	if(num_removed > 0) {
 		// that client was part of the session
 		m_sessionless_connections.insert(connPtr);
-
 	}
 
 	removeSessionlessConnection(connPtr);
 }
-
-
 
 
 void CStreamServer::removeClient(const string& name)
@@ -201,6 +198,22 @@ void  CStreamServer::reportError(muroa::CStreamCtrlConnection* conn, const evJoi
 
 }
 
+
+std::vector<CRenderClientDesc> CStreamServer::getRenderClients() {
+
+	std::vector<CRenderClientDesc> rcs = getJoinedRenderClients();
+
+	set<CStreamCtrlConnection*>::iterator iter;
+	m_sessionless_connection_list_mutex.Lock();
+	for(iter = m_sessionless_connections.begin(); iter != m_sessionless_connections.end(); iter++ ) {
+		CRenderClientDesc rcd;
+		rcd.setServiceName( (*iter)->getServiceName());
+		rcs.push_back( rcd );
+	}
+	m_sessionless_connection_list_mutex.UnLock();
+
+	return rcs;
+}
 
 
 } // namespace muroa

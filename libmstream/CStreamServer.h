@@ -42,6 +42,8 @@ Class provides a server for a stream.
 #include "CMediaStreamProvider.h"
 #include "CStreamClientDiscovery.h"
 
+#include "CRenderClientDesc.h"
+
 #include "csync.h"
 #include "cmutex.h"
 #include "crtppacket.h"
@@ -82,11 +84,13 @@ public:
 	virtual void clientBecameSessionMember(muroa::CStreamCtrlConnection* conn, const muroa::evSessionState* evt);
 	virtual void clientLeftSession(muroa::CStreamCtrlConnection* conn, const muroa::evLeave* evt);
 
-	virtual void  reportError(muroa::CStreamCtrlConnection* conn, const evJoinRejected* evt);
+	virtual void reportError(muroa::CStreamCtrlConnection* conn, const evJoinRejected* evt);
 
 //	virtual void onClientAppeared(ServDescPtr srvPtr);
 //	virtual void onClientDisappeared(ServDescPtr srvPtr);
 //	virtual void onClientChanged();
+
+	std::vector<CRenderClientDesc> getRenderClients();
 
     void removeClient(muroa::CStreamCtrlConnection* connPtr);
 protected:
@@ -97,6 +101,7 @@ protected:
 private:
     int m_time_server_port;
 
+    CMutex m_sessionless_connection_list_mutex;
     set<CStreamCtrlConnection*> m_sessionless_connections;
 
     boost::asio::io_service& m_io_service;

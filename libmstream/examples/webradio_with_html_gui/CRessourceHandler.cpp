@@ -12,15 +12,7 @@
 
 using namespace std;
 
-CRessourceHandler::CRessourceHandler(CppServer* cpp_server, string stations_file) : m_StreamSrv(cpp_server) {
-	Json::Reader reader;
-
-	ifstream ifs;
-	ifs.open(stations_file);
-
-	reader.parse(ifs, m_stations);
-
-	ifs.close();
+CRessourceHandler::CRessourceHandler(CppServer* cpp_server, const Json::Value& stations) : m_StreamSrv(cpp_server), m_stations(stations) {
 }
 
 CRessourceHandler::~CRessourceHandler() {

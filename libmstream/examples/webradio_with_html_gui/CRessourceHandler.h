@@ -11,20 +11,19 @@
 #include <string>
 #include <map>
 #include <jsoncpp/json/json.h>
-#include <jsoncpp/json/reader.h>
 class CppServer;
 
 
 class CRessourceHandler {
 public:
-	CRessourceHandler(CppServer* cpp_server, std::string stations_file);
+	CRessourceHandler(CppServer* cpp_server, const Json::Value& stations);
 	virtual ~CRessourceHandler();
 
 	void handleREST(std::string filename, std::map<std::string, std::string> query_map);
 
 private:
 	CppServer* m_StreamSrv;
-	Json::Value m_stations;
+	const Json::Value& m_stations;
 };
 
 

@@ -29,7 +29,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "CppServer.h"
 
+#include <log4cplus/loggingmacros.h>
+#include <jsoncpp/json/json.h>
+
 #include <CApp.h>
+#include "WSSrv.h"
 
 using namespace muroa;
 using namespace std;
@@ -47,6 +51,11 @@ CppServer::CppServer(boost::asio::io_service& io_service, vector<string> clients
 CppServer::~CppServer() {
 	stopStream();
 }
+
+void CppServer::setWSSrv(muroa::WSSrv *wssrv) {
+	m_ws_srv = wssrv;
+}
+
 
 void CppServer::playStream(std::string url) {
 	muroa::CStreamFmt new_sfmt;
@@ -90,6 +99,21 @@ void CppServer::stopStream() {
 	close();
 }
 
+void CppServer::clientRejectedSessionMember(muroa::CStreamCtrlConnection* conn, const muroa::evJoinRejected* evt) {
+	reportRenderClients();
+}
+
+void CppServer::clientBecameSessionMember(muroa::CStreamCtrlConnection* conn, const muroa::evSessionState* evt) {
+	reportRenderClients();
+}
+
+void CppServer::clientLeftSession(muroa::CStreamCtrlConnection* conn, const muroa::evLeave* evt) {
+	reportRenderClients();
+}
+
+void CppServer::reportError(muroa::CStreamCtrlConnection* conn, const evJoinRejected* evt) {
+
+}
 
 void CppServer::reportClientState(muroa::CStreamCtrlConnection* conn, const muroa::CmdStreamBase* evt) {
 	if(typeid(*evt) == typeid(evClientState)) {
@@ -120,13 +144,41 @@ void CppServer::onClientAppeared(ServDescPtr srvPtr) {
 			addClient(endp, srvPtr->getServiceName());
 		}
 	}
+	reportRenderClients();
 }
 
 void CppServer::onClientDisappeared(ServDescPtr srvPtr) {
-
+	reportRenderClients();
 }
 
 void CppServer::onClientChanged() {
+
+}
+
+void CppServer::reportRenderClients() {
+	vector<CRenderClientDesc> rcs = getRenderClients();
+
+	Json::Value data(Json::arrayValue);
+
+	std::vector<CRenderClientDesc>::const_iterator it;
+	for(it = rcs.begin(); it != rcs.end(); it++) {
+		Json::Value elem;
+		elem["name"] = it->getServiceName();
+		//elem["hostname"] = it->m_hostname;
+		//elem["ownersession"] = it->m_owner_session;
+		//elem["active"] = it->m_active;
+		data.append(elem);
+	}
+
+	Json::Value root;
+	root["event"] = "muroad";
+	root["data"] = data;
+
+	ostringstream oss;
+	oss << root;
+
+	string json_msg = oss.str();
+	m_ws_srv->sendToAll(json_msg);
 
 }
 

@@ -20,6 +20,8 @@
 #include "crtppacket.h"
 #include <CStreamFmt.h>
 
+#include "CRenderClientDesc.h"
+
 // to be removed soon
 #include "csync.h"
 #include "cmutex.h"
@@ -53,6 +55,8 @@ public:
     void stdClientPort(int port);
     int stdClientPort(void);
     void listClients(void);
+
+    std::vector<CRenderClientDesc> getJoinedRenderClients();
 
 
 private:

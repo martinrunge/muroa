@@ -14,6 +14,8 @@
 #include <libavutil/opt.h>
 #include "CStreamDecoder.h"
 
+#include <log4cplus/loggingmacros.h>
+
 #include <CApp.h>
 
 #ifndef AVCODEC_MAX_AUDIO_FRAME_SIZE

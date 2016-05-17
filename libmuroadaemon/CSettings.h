@@ -33,6 +33,7 @@
 #include "boost/filesystem/path.hpp"
 
 #include <string>
+#include <stack>
 
 #include "Exceptions.h"
 
