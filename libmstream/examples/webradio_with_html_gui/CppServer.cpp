@@ -33,7 +33,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <jsoncpp/json/json.h>
 
 #include <CApp.h>
-#include "WSSrv.h"
+#include "CWSMsgHandler.h"
 
 using namespace muroa;
 using namespace std;
@@ -52,10 +52,21 @@ CppServer::~CppServer() {
 	stopStream();
 }
 
-void CppServer::setWSSrv(muroa::WSSrv *wssrv) {
-	m_ws_srv = wssrv;
-}
+// void CppServer::setWSSrv(muroa::WSSrv *wssrv) {
+// 	m_ws_msg_handler = wssrv;
+// }
 
+void CppServer::addClientByName(std::string serviceName) {
+	bip::tcp::endpoint endp;
+	if( endpointOfService(serviceName, endp) ) {
+		// got endpoint for service name
+		addClient(endp, serviceName);
+	}
+	else {
+		// Address of service unknown
+	}
+
+}
 
 void CppServer::playStream(std::string url) {
 	muroa::CStreamFmt new_sfmt;
@@ -100,15 +111,39 @@ void CppServer::stopStream() {
 }
 
 void CppServer::clientRejectedSessionMember(muroa::CStreamCtrlConnection* conn, const muroa::evJoinRejected* evt) {
-	reportRenderClients();
+	CStreamServer::clientRejectedSessionMember(conn, evt);
+
+	for(vector<CRenderClientDesc>::iterator it = m_rcs.begin(); it != m_rcs.end(); it++) {
+		if( it->srvPtr->getServiceName().compare(conn->getServiceName()) == 0 ) {
+			it->isMember(false);
+		}
+	}
+
+	m_ws_msg_handler->listClients();
 }
 
 void CppServer::clientBecameSessionMember(muroa::CStreamCtrlConnection* conn, const muroa::evSessionState* evt) {
-	reportRenderClients();
+	CStreamServer::clientBecameSessionMember(conn, evt);
+
+	for(vector<CRenderClientDesc>::iterator it = m_rcs.begin(); it != m_rcs.end(); it++) {
+		if( it->srvPtr->getServiceName().compare(conn->getServiceName()) == 0 ) {
+			it->isMember(true);
+		}
+	}
+
+	m_ws_msg_handler->listClients();
 }
 
 void CppServer::clientLeftSession(muroa::CStreamCtrlConnection* conn, const muroa::evLeave* evt) {
-	reportRenderClients();
+	CStreamServer::clientLeftSession(conn, evt);
+
+	for(vector<CRenderClientDesc>::iterator it = m_rcs.begin(); it != m_rcs.end(); it++) {
+		if( it->srvPtr->getServiceName().compare(conn->getServiceName()) == 0 ) {
+			it->isMember(false);
+		}
+	}
+
+	m_ws_msg_handler->listClients();
 }
 
 void CppServer::reportError(muroa::CStreamCtrlConnection* conn, const evJoinRejected* evt) {
@@ -133,6 +168,23 @@ void CppServer::reportProgress( int posInSecs, int durationInSecs) {
 
 
 void CppServer::onClientAppeared(ServDescPtr srvPtr) {
+
+	bool already_in_m_rcs = false;
+	for(vector<CRenderClientDesc>::iterator it = m_rcs.begin(); it != m_rcs.end(); it++) {
+		if( it->srvPtr->getServiceName().compare(srvPtr->getServiceName()) == 0 ) {
+			it->isOnline(true);
+			already_in_m_rcs = true;
+		}
+	}
+
+	if(!already_in_m_rcs) {
+		CRenderClientDesc rcd;
+		rcd.isOnline(true);
+		rcd.srvPtr = srvPtr;
+		m_rcs.push_back(rcd);
+	}
+
+
 	for(vector<string>::iterator it = m_selected_clients.begin(); it != m_selected_clients.end(); it++) {
 
 		string appeared_service_name = srvPtr->getServiceName();
@@ -144,41 +196,45 @@ void CppServer::onClientAppeared(ServDescPtr srvPtr) {
 			addClient(endp, srvPtr->getServiceName());
 		}
 	}
-	reportRenderClients();
+	m_ws_msg_handler->listClients();
 }
 
 void CppServer::onClientDisappeared(ServDescPtr srvPtr) {
-	reportRenderClients();
+	bool already_in_m_rcs = false;
+	for(vector<CRenderClientDesc>::iterator it = m_rcs.begin(); it != m_rcs.end(); it++) {
+		if( it->srvPtr->getServiceName().compare(srvPtr->getServiceName()) == 0 ) {
+			it->isOnline(false);
+			already_in_m_rcs = true;
+		}
+	}
+
+	if(!already_in_m_rcs) {
+		CRenderClientDesc rcd;
+		rcd.isOnline(false);
+		rcd.srvPtr = srvPtr;
+		m_rcs.push_back(rcd);
+	}
+	m_ws_msg_handler->listClients();
 }
 
 void CppServer::onClientChanged() {
 
 }
 
-void CppServer::reportRenderClients() {
-	vector<CRenderClientDesc> rcs = getRenderClients();
-
-	Json::Value data(Json::arrayValue);
-
+bool CppServer::endpointOfService(std::string serviceName, bip::tcp::endpoint& endp) {
 	std::vector<CRenderClientDesc>::const_iterator it;
-	for(it = rcs.begin(); it != rcs.end(); it++) {
-		Json::Value elem;
-		elem["name"] = it->getServiceName();
-		//elem["hostname"] = it->m_hostname;
-		//elem["ownersession"] = it->m_owner_session;
-		//elem["active"] = it->m_active;
-		data.append(elem);
+	for(it = m_rcs.begin(); it != m_rcs.end(); it++) {
+		if(it->isOnline()) {
+			if(serviceName.compare( it->srvPtr->getServiceName() ) == 0 ) {
+				endp = bip::tcp::endpoint( it->srvPtr->getAddress(), it->srvPtr->getPortNr() );
+				if( endp.address().is_v4()) {
+					/// @TODO: hack for now. Do not announce IPv6 address if not listening on it !!!
+					return true;
+				}
+			}
+		}
 	}
-
-	Json::Value root;
-	root["event"] = "muroad";
-	root["data"] = data;
-
-	ostringstream oss;
-	oss << root;
-
-	string json_msg = oss.str();
-	m_ws_srv->sendToAll(json_msg);
-
+	return false;
 }
+
 

@@ -12,8 +12,10 @@
 #include <sstream>
 
 #include "CppServer.h"
+#include "WSSrv.h"
 
 using namespace std;
+using namespace muroa;
 
 CWSMsgHandler::CWSMsgHandler(CppServer* cpp_server, const Json::Value& stations) : m_StreamSrv(cpp_server), m_stations(stations) {
 }
@@ -22,7 +24,7 @@ CWSMsgHandler::~CWSMsgHandler() {
 	// TODO Auto-generated destructor stub
 }
 
-void CWSMsgHandler::onMessage(std::string header, std::string payload) {
+void CWSMsgHandler::onMessage(websocketpp::connection_hdl hdl, std::string header, std::string payload) {
 
 	Json::Value root;   // starts as "null"; will contain the root value after parsing
 	istringstream iss(payload);
@@ -41,6 +43,14 @@ void CWSMsgHandler::onMessage(std::string header, std::string payload) {
 	else if(evtype.compare("changeStation") == 0) {
 		changeStation(root);
 	}
+	else if(evtype.compare("getCurrentClientList") == 0) {
+		onListClients(hdl, root);
+	}
+	else if(evtype.compare("activateClient") == 0) {
+		onActivateClient(hdl, root);
+	}
+
+
 
 }
 
@@ -62,5 +72,68 @@ void CWSMsgHandler::changeStation(const Json::Value& root) {
 		}
 	}
 	m_StreamSrv->playStream(URL);
+}
+
+void CWSMsgHandler::listClients() {
+
+	vector<CRenderClientDesc> rcs = m_StreamSrv->getRenderClients();
+	Json::Value data(Json::arrayValue);
+
+	std::vector<CRenderClientDesc>::const_iterator it;
+	for(it = rcs.begin(); it != rcs.end(); it++) {
+		Json::Value elem;
+		elem["name"] = it->srvPtr->getServiceName();
+		elem["hostname"] = it->srvPtr->getHostName();
+		elem["ownersession"] = it->getMemberOfSession();
+		elem["member"] = it->isMember();
+		elem["online"] = it->isOnline();
+		data.append(elem);
+	}
+
+	Json::Value ret;
+	ret["event"] = "muroad";
+	ret["data"] = data;
+
+	ostringstream oss;
+	oss << ret;
+
+	string json_msg = oss.str();
+	m_ws_srv->sendToAll(json_msg);
+
+}
+
+void CWSMsgHandler::onListClients(connection_hdl hdl, Json::Value root) {
+
+	vector<CRenderClientDesc> rcs = m_StreamSrv->getRenderClients();
+	Json::Value data(Json::arrayValue);
+
+	std::vector<CRenderClientDesc>::const_iterator it;
+	for(it = rcs.begin(); it != rcs.end(); it++) {
+		Json::Value elem;
+		elem["name"] = it->srvPtr->getServiceName();
+		elem["hostname"] = it->srvPtr->getHostName();
+		elem["ownersession"] = it->getMemberOfSession();
+		elem["member"] = it->isMember();
+		elem["online"] = it->isOnline();
+		data.append(elem);
+	}
+
+	Json::Value ret;
+	ret["event"] = "muroad";
+	ret["data"] = data;
+
+	ostringstream oss;
+	oss << ret;
+
+	string json_msg = oss.str();
+	m_ws_srv->sendTo(hdl, json_msg);
+
+}
+
+
+void CWSMsgHandler::onActivateClient(connection_hdl hdl, Json::Value root) {
+	string serviceName = root["data"]["serviceName"].asString();
+	m_StreamSrv->addClientByName( serviceName );
+
 }
 

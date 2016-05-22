@@ -176,7 +176,10 @@ int main(int argc, char *argv[]) {
     CSigHandler sig_handler(io_service);
 
     muroa::WSSrv wssrv(&io_service, &resHandler, &wsMsgHandler);
-    cpps.setWSSrv(&wssrv);
+
+    wsMsgHandler.setWSSrv(&wssrv);
+
+    cpps.setWSMsgHandler(&wsMsgHandler);
 
     wssrv.run(docroot.string(), 8888);
 

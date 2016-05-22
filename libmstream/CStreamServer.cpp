@@ -207,7 +207,7 @@ std::vector<CRenderClientDesc> CStreamServer::getRenderClients() {
 	m_sessionless_connection_list_mutex.Lock();
 	for(iter = m_sessionless_connections.begin(); iter != m_sessionless_connections.end(); iter++ ) {
 		CRenderClientDesc rcd;
-		rcd.setServiceName( (*iter)->getServiceName());
+		// rcd.setServiceName( (*iter)->getServiceName());
 		rcs.push_back( rcd );
 	}
 	m_sessionless_connection_list_mutex.UnLock();

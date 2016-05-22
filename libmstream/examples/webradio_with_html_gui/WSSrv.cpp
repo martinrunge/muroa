@@ -75,6 +75,10 @@ void WSSrv::sendToAll(string message) {
     }
 }
 
+void WSSrv::sendTo(connection_hdl hdl, std::string message) {
+	m_endpoint.send(hdl, message,  websocketpp::frame::opcode::text);
+}
+
 void WSSrv::setTimer() {
     m_timer = m_endpoint.set_timer(
         1000,
@@ -119,7 +123,7 @@ void WSSrv::on_pong(connection_hdl hdl, std::string msg) {
 
 void WSSrv::on_message(connection_hdl hdl, server::message_ptr msg) {
     m_endpoint.get_alog().write(websocketpp::log::alevel::app, "on_message: "+msg->get_header() + " - " + msg->get_payload());
-    m_wsMsgHandler->onMessage( msg->get_header(),  msg->get_payload() );
+    m_wsMsgHandler->onMessage( hdl, msg->get_header(),  msg->get_payload() );
 }
 
 void WSSrv::onHttp(connection_hdl hdl) {

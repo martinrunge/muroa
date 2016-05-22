@@ -46,9 +46,21 @@ wscmd.factory('wscmd', ['$websocket', function($websocket) {
         var chStationData = {};
         chStationData["stationID"] = stationID;
        
-       ws.$emit('changeStation',chStationData);
+        ws.$emit('changeStation',chStationData);
     }
+    
+    var activateClient = function activateClient(serviceName, activate) {
+        var acData = {};
+        acData["serviceName"] = serviceName;
+        acData["activate"] = activate;
+       
+        ws.$emit('activateClient',acData);
+    }    
 
+    var getCurrentClientList = function getCurrentClientList() {
+        var gclData = {};
+        ws.$emit('getCurrentClientList',gclData);
+    }    
     
     return {
         ws: ws,
@@ -59,6 +71,8 @@ wscmd.factory('wscmd', ['$websocket', function($websocket) {
         stop: stop,
         pause: pause,
         changeStation: changeStation,
+        activateClient: activateClient,
+        getCurrentClientList: getCurrentClientList,
     };
 }])
 
@@ -67,24 +81,9 @@ wscmd.run(['wscmd', function (wscmd) {
         var callbacks = wscmd.callbacks;
         
         ws.$on('$open', function () {
-            console.log('Oh my gosh, websocket is really open! Fukken awesome!  clist: ' + wscmd.clist);
-
-            var data = {
-                level: 1,
-                text: 'ngWebsocket rocks!',
-                array: ['one', 'two', 'three'],
-                nested: {
-                    level: 2,
-                    deeper: [{
-                        hell: 'yeah'
-                    }, {
-                        so: 'good'
-                    }]
-                }
-            };
+            wscmd.getCurrentClientList();
 
             ws.$emit('ping', 'hi listening websocket server') // send a message to the websocket server
-              .$emit('pong', data);
           })
           ws.$on('pong', function (data) {
             console.log('Pong: The websocket server has sent the following data:');

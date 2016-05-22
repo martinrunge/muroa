@@ -19,12 +19,4 @@ CRenderClientDesc::~CRenderClientDesc() {
 }
 
 
-const std::string& muroa::CRenderClientDesc::getServiceName() const {
-	return m_service_name;
-}
-
-void muroa::CRenderClientDesc::setServiceName(const std::string& serviceName) {
-	m_service_name = serviceName;
-}
-
 } /* namespace muroa */

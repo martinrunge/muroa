@@ -44,6 +44,7 @@ public:
     void onClose(connection_hdl hdl);
 
     void sendToAll(std::string message);
+    void sendTo(connection_hdl hdl, std::string message);
 
 private:
     typedef std::set<connection_hdl,std::owner_less<connection_hdl>> con_list;

@@ -361,7 +361,7 @@ std::vector<CRenderClientDesc> CMediaStreamProvider::getJoinedRenderClients() {
 	m_connection_list_mutex.Lock();
 	for(iter = m_joined_connections.begin(); iter != m_joined_connections.end(); iter++ ) {
 		CRenderClientDesc rcd;
-		rcd.setServiceName( (*iter)->getServiceName());
+		// rcd.setServiceName( (*iter)->getServiceName());
 		rcs.push_back( rcd );
 	}
 	m_connection_list_mutex.UnLock();

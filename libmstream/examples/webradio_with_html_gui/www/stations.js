@@ -36,10 +36,9 @@ app.controller('stationsCtrl', ['$scope', '$http', 'wscmd', 'mclients', function
 //    };
     
     $scope.Stop = wscmd.stop;
-    
-    
     $scope.mclients = mclients.clist;
-
+    $scope.activateClient = wscmd.activateClient;
+    
     $scope.check = function check() {
         return clients.chkbtn();
     }
@@ -49,6 +48,8 @@ app.controller('stationsCtrl', ['$scope', '$http', 'wscmd', 'mclients', function
         console.log(object);
         $scope.$apply();
     });
+    
+    wscmd.getCurrentClientList();
     
             
 }]);

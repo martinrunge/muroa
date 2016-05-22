@@ -33,16 +33,17 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 namespace bip=boost::asio::ip;
 
-namespace muroa {
-	class WSSrv;
-}
+class CWSMsgHandler;
 
 class CppServer :public CStreamServer {
 public:
 	CppServer(boost::asio::io_service& io_service, std::vector<std::string> clients, int timeServerPort, int sessionID );
 	~CppServer();
 
-	void setWSSrv(muroa::WSSrv *wssrv);
+	// void setWSSrv(muroa::WSSrv *wssrv);
+	void setWSMsgHandler(CWSMsgHandler* msg_handler) { m_ws_msg_handler = msg_handler; };
+
+	void addClientByName(std::string serviceName);
 
 	void playStream(std::string url);
 	void stopStream();
@@ -60,16 +61,23 @@ public:
 	void onClientDisappeared(ServDescPtr srvPtr);
 	void onClientChanged();
 
+	const std::vector<CRenderClientDesc> getRenderClients() const { return m_rcs; };
+
+protected:
+	bool endpointOfService(std::string serviceName, bip::tcp::endpoint& endp);
+
+
 private:
-	void reportRenderClients();
 
 	boost::asio::io_service& m_io_service;
 	CStreamDecoder          *m_decoder;
 
-	muroa::WSSrv            *m_ws_srv;
+	// muroa::WSSrv            *m_ws_srv;
+	CWSMsgHandler            *m_ws_msg_handler;
 
 	vector<std::string>      m_selected_clients;
 	vector<ServDescPtr>      m_clients;
+	vector<CRenderClientDesc> m_rcs;
 };
 
 
