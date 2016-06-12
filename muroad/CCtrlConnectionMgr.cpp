@@ -46,7 +46,6 @@ void CCtrlConnectionMgr::remove(CTcpConnection* c) {
 	  CCtrlConnection* cc = reinterpret_cast<CCtrlConnection*>(c);
 	  cc->stop();
 	  m_connections.erase(c);
-
 }
 
 /// Stop all connections.

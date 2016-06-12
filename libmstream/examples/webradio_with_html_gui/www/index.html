@@ -69,7 +69,7 @@
             <md-list-item ng-repeat="c in mclients">
                 <md-button class="listitem" ng-disabled="!c.online">
                 {{ c.name }}  
-                <md-checkbox ng-model="c.active"  aria-label="active" ng-click="activateClient(c.name, c.active)">session member {{c.active}}</md-checkbox>   
+                <md-checkbox ng-model="c.member"  aria-label="member" ng-click="activateClient(c.name, !c.member)">session member {{c.member}}</md-checkbox>   
                 {{c.hostname}}
                 </md-button>
             </md-list-item>

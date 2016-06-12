@@ -102,6 +102,7 @@ void CppServer::playStream(std::string url) {
 }
 
 void CppServer::stopStream() {
+	LOG4CPLUS_INFO( CApp::logger(), "Stop stream" );
 	flush();
 	if(m_decoder != 0) {
 		delete m_decoder;
@@ -112,6 +113,8 @@ void CppServer::stopStream() {
 
 void CppServer::clientRejectedSessionMember(muroa::CStreamCtrlConnection* conn, const muroa::evJoinRejected* evt) {
 	CStreamServer::clientRejectedSessionMember(conn, evt);
+
+	LOG4CPLUS_INFO( CApp::logger(), "'" << conn->getServiceName() << "' rejected to become session member" );
 
 	for(vector<CRenderClientDesc>::iterator it = m_rcs.begin(); it != m_rcs.end(); it++) {
 		if( it->srvPtr->getServiceName().compare(conn->getServiceName()) == 0 ) {
@@ -125,6 +128,8 @@ void CppServer::clientRejectedSessionMember(muroa::CStreamCtrlConnection* conn, 
 void CppServer::clientBecameSessionMember(muroa::CStreamCtrlConnection* conn, const muroa::evSessionState* evt) {
 	CStreamServer::clientBecameSessionMember(conn, evt);
 
+	LOG4CPLUS_INFO( CApp::logger(), "'" << conn->getServiceName() << "' became session member" );
+
 	for(vector<CRenderClientDesc>::iterator it = m_rcs.begin(); it != m_rcs.end(); it++) {
 		if( it->srvPtr->getServiceName().compare(conn->getServiceName()) == 0 ) {
 			it->isMember(true);
@@ -136,6 +141,8 @@ void CppServer::clientBecameSessionMember(muroa::CStreamCtrlConnection* conn, co
 
 void CppServer::clientLeftSession(muroa::CStreamCtrlConnection* conn, const muroa::evLeave* evt) {
 	CStreamServer::clientLeftSession(conn, evt);
+
+	LOG4CPLUS_INFO( CApp::logger(), "'" << conn->getServiceName() << "' left session" );
 
 	for(vector<CRenderClientDesc>::iterator it = m_rcs.begin(); it != m_rcs.end(); it++) {
 		if( it->srvPtr->getServiceName().compare(conn->getServiceName()) == 0 ) {
@@ -169,9 +176,12 @@ void CppServer::reportProgress( int posInSecs, int durationInSecs) {
 
 void CppServer::onClientAppeared(ServDescPtr srvPtr) {
 
+	LOG4CPLUS_INFO( CApp::logger(), "'" << srvPtr->getServiceName() << "' appeared on network" );
+
 	bool already_in_m_rcs = false;
 	for(vector<CRenderClientDesc>::iterator it = m_rcs.begin(); it != m_rcs.end(); it++) {
 		if( it->srvPtr->getServiceName().compare(srvPtr->getServiceName()) == 0 ) {
+			LOG4CPLUS_INFO( CApp::logger(), "    ...'" << srvPtr->getServiceName() << "' is known as session member -> request to join" );
 			it->isOnline(true);
 			already_in_m_rcs = true;
 		}
@@ -186,7 +196,6 @@ void CppServer::onClientAppeared(ServDescPtr srvPtr) {
 
 
 	for(vector<string>::iterator it = m_selected_clients.begin(); it != m_selected_clients.end(); it++) {
-
 		string appeared_service_name = srvPtr->getServiceName();
 		if( (*it).compare(appeared_service_name) == 0 )
 		{
@@ -200,9 +209,14 @@ void CppServer::onClientAppeared(ServDescPtr srvPtr) {
 }
 
 void CppServer::onClientDisappeared(ServDescPtr srvPtr) {
+
+	LOG4CPLUS_INFO( CApp::logger(), "'" << srvPtr->getServiceName() << "' disappeared from the network" );
+
 	bool already_in_m_rcs = false;
 	for(vector<CRenderClientDesc>::iterator it = m_rcs.begin(); it != m_rcs.end(); it++) {
 		if( it->srvPtr->getServiceName().compare(srvPtr->getServiceName()) == 0 ) {
+			LOG4CPLUS_INFO( CApp::logger(), "   ...'" << srvPtr->getServiceName() << "' is member of session -> removing it" );
+
 			it->isOnline(false);
 			already_in_m_rcs = true;
 		}

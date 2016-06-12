@@ -49,9 +49,6 @@ void CWSMsgHandler::onMessage(websocketpp::connection_hdl hdl, std::string heade
 	else if(evtype.compare("activateClient") == 0) {
 		onActivateClient(hdl, root);
 	}
-
-
-
 }
 
 
@@ -133,7 +130,12 @@ void CWSMsgHandler::onListClients(connection_hdl hdl, Json::Value root) {
 
 void CWSMsgHandler::onActivateClient(connection_hdl hdl, Json::Value root) {
 	string serviceName = root["data"]["serviceName"].asString();
-	m_StreamSrv->addClientByName( serviceName );
-
+	bool activate = root["data"]["activate"].asBool();
+	if(activate == true) {
+		m_StreamSrv->addClientByName( serviceName );
+	}
+	else {
+		m_StreamSrv->removeClient( serviceName );
+	}
 }
 

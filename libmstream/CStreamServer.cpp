@@ -140,7 +140,6 @@ void CStreamServer::removeClient(muroa::CStreamCtrlConnection* connPtr) {
 		// that client was part of the session
 		m_sessionless_connections.insert(connPtr);
 	}
-
 	removeSessionlessConnection(connPtr);
 }
 
