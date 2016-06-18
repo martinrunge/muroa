@@ -84,6 +84,9 @@ public:
     std::string getPersisentVal(const std::string& key, const std::string& defaultVal);
     void setPersistentVal(const std::string& key, const std::string& val);
 
+    std::vector<std::string> getPersisentVal(const std::string& prent_key, const std::vector<std::string>& defaultVal);
+    void setPersistentVal(const std::string& parent_key, const std::vector<std::string>& val);
+
     int getPersisentVal(const std::string& key, const int& defaultVal);
     void setPersistentVal(const std::string& key, const char* val);
 

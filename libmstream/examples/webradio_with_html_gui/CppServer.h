@@ -44,6 +44,7 @@ public:
 	void setWSMsgHandler(CWSMsgHandler* msg_handler) { m_ws_msg_handler = msg_handler; };
 
 	void addClientByName(std::string serviceName);
+	void removeClient(std::string serviceName);
 
 	void playStream(std::string url);
 	void stopStream();
@@ -66,6 +67,9 @@ public:
 protected:
 	bool endpointOfService(std::string serviceName, bip::tcp::endpoint& endp);
 
+	void addClientToSelected(const string& serviceName);
+	void removeClientFromSelected(const string& serviceName);
+	void storeClientList();
 
 private:
 
@@ -75,8 +79,15 @@ private:
 	// muroa::WSSrv            *m_ws_srv;
 	CWSMsgHandler            *m_ws_msg_handler;
 
-	vector<std::string>      m_selected_clients;
+	// the list of render client currently active and part of the session
 	vector<ServDescPtr>      m_clients;
+
+	// the list of render clients that should be part of the session. If any of them
+	// goes online, it will be automatically added to the session. it was never removed
+	// from the session, but disappeared from the network.
+	vector<std::string>      m_selected_clients;
+
+	// list of clients as shown in the GUI. Inlcudes offline clients and clients that are not member of the session.
 	vector<CRenderClientDesc> m_rcs;
 };
 

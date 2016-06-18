@@ -65,6 +65,7 @@ TARGET_LINK_LIBRARIES( wssrv          mstream
 )
                                       
 file(COPY   etc/muroa.conf  DESTINATION etc)
+file(COPY   log.properties  DESTINATION .)
 
 execute_process(COMMAND ${CMAKE_COMMAND} -E create_symlink ${CMAKE_CURRENT_LIST_DIR}/www
                                                            ${CMAKE_CURRENT_BINARY_DIR}/www)

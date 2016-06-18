@@ -22,6 +22,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <getopt.h>
 #include <vector>
 #include <string>
+#include <algorithm>
 
 #include <boost/asio.hpp>
 #include <boost/bind.hpp>
@@ -46,6 +47,7 @@ CppServer::CppServer(boost::asio::io_service& io_service, vector<string> clients
 					m_decoder(0),
 					m_selected_clients(clients)
 {
+	m_selected_clients = CApp::settings().getPersisentVal("msessiond", m_selected_clients);
 }
 
 CppServer::~CppServer() {
@@ -61,12 +63,21 @@ void CppServer::addClientByName(std::string serviceName) {
 	if( endpointOfService(serviceName, endp) ) {
 		// got endpoint for service name
 		addClient(endp, serviceName);
+		addClientToSelected(serviceName);
 	}
 	else {
-		// Address of service unknown
+		LOG4CPLUS_WARN(CApp::logger(), "CppServer::addClientByName: could not determine TCP endpoint of service: '" << serviceName << "'");
 	}
 
 }
+
+void CppServer::removeClient(std::string serviceName) {
+
+	CStreamServer::removeClient(serviceName);
+	LOG4CPLUS_INFO(CApp::logger(), "CppServer::removeClient('" << serviceName << "')");
+	removeClientFromSelected(serviceName);
+}
+
 
 void CppServer::playStream(std::string url) {
 	muroa::CStreamFmt new_sfmt;
@@ -190,6 +201,7 @@ void CppServer::onClientAppeared(ServDescPtr srvPtr) {
 	if(!already_in_m_rcs) {
 		CRenderClientDesc rcd;
 		rcd.isOnline(true);
+		rcd.isMember(false);
 		rcd.srvPtr = srvPtr;
 		m_rcs.push_back(rcd);
 	}
@@ -203,6 +215,7 @@ void CppServer::onClientAppeared(ServDescPtr srvPtr) {
 
 			bip::tcp::endpoint endp(srvPtr->getAddress(), srvPtr->getPortNr() );
 			addClient(endp, srvPtr->getServiceName());
+			storeClientList();
 		}
 	}
 	m_ws_msg_handler->listClients();
@@ -251,4 +264,31 @@ bool CppServer::endpointOfService(std::string serviceName, bip::tcp::endpoint& e
 	return false;
 }
 
+void CppServer::addClientToSelected(const string& serviceName) {
+
+	vector<string>::iterator it = std::find(m_selected_clients.begin(), m_selected_clients.end(), serviceName);
+	if ( it == m_selected_clients.end() ) {
+		// serviceName is not yet m_selected_clients
+		m_selected_clients.push_back(serviceName);
+	}
+	storeClientList();
+}
+
+void CppServer::removeClientFromSelected(const string& serviceName) {
+
+	vector<string>::iterator it;
+	do {
+		it = std::find(m_selected_clients.begin(), m_selected_clients.end(), serviceName);
+		if ( it != m_selected_clients.end() ) {
+			// serviceName is not yet m_selected_clients
+			m_selected_clients.erase(it);
+			storeClientList();
+		}
+	} while(it != m_selected_clients.end());
+}
+
+
+void CppServer::storeClientList() {
+	CApp::settings().setPersistentVal("msessiond", m_selected_clients);
+}
 
