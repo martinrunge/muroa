@@ -146,14 +146,23 @@ void CStreamServer::removeClient(muroa::CStreamCtrlConnection* connPtr) {
 
 void CStreamServer::removeClient(const string& name)
 {
-    set<CStreamCtrlConnection*>::iterator iter;
-    for(iter = m_sessionless_connections.begin(); iter != m_sessionless_connections.end(); iter++ ) {
-        CStreamCtrlConnection* sc = *iter;
-        if( name.compare( sc->getServiceName() ) == 0 ) {
-            removeClient(iter);
-            iter--;
-        }
-    }
+	CStreamCtrlConnection* conn = getCtrlConnection(name);
+
+	if(conn != 0) {
+		//evLeave el;
+		//conn->sendEvent(&el);
+		removeJoinedConnection(conn);
+	}
+	else {
+		set<CStreamCtrlConnection*>::iterator iter;
+		for(iter = m_sessionless_connections.begin(); iter != m_sessionless_connections.end(); iter++ ) {
+			CStreamCtrlConnection* sc = *iter;
+			if( name.compare( sc->getServiceName() ) == 0 ) {
+				removeClient(iter);
+				iter--;
+			}
+		}
+	}
 }
 
 int CStreamServer::removeSessionlessConnection(muroa::CStreamCtrlConnection* connPtr) {

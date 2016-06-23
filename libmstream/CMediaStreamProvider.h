@@ -48,7 +48,7 @@ public:
 
     void addJoinedConnection(CStreamCtrlConnection* conn);
     int removeJoinedConnection(CStreamCtrlConnection* conn);
-
+    CStreamCtrlConnection* getCtrlConnection(std::string serviceName);
 
     CSync* getSyncObj(uint32_t session_id, uint32_t stream_id);
 

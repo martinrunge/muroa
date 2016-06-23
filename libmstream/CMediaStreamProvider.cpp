@@ -79,6 +79,7 @@ int CMediaStreamProvider::removeJoinedConnection(CStreamCtrlConnection* conn) {
     bool still_use_mcast = false;
 
     m_connection_list_mutex.Lock();
+    delete conn;
     num_removed = m_joined_connections.erase(conn);
 
     for(iter = m_joined_connections.begin(); iter != m_joined_connections.end(); iter++ ) {
@@ -92,6 +93,21 @@ int CMediaStreamProvider::removeJoinedConnection(CStreamCtrlConnection* conn) {
 
     m_connection_list_mutex.UnLock();
     return num_removed;
+}
+
+CStreamCtrlConnection* CMediaStreamProvider::getCtrlConnection(std::string serviceName) {
+    set<CStreamCtrlConnection*>::iterator iter;
+
+    m_connection_list_mutex.Lock();
+    for(iter = m_joined_connections.begin(); iter != m_joined_connections.end(); iter++ ) {
+    	if(serviceName.compare((*iter)->getServiceName()) == 0 ) {
+    		CStreamCtrlConnection* conn = *iter;
+    	    m_connection_list_mutex.UnLock();
+    		return conn;
+    	}
+    }
+    m_connection_list_mutex.UnLock();
+    return 0;
 }
 
 int CMediaStreamProvider::open(muroa::CStreamFmt sfmt) {
