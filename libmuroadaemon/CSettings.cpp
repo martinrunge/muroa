@@ -38,7 +38,7 @@ using namespace std;
 using namespace log4cplus;
 
 namespace fs = boost::filesystem;
-
+namespace bpt = boost::property_tree;
 namespace muroa {
 
 namespace bfs = boost::filesystem;
@@ -345,15 +345,19 @@ void CSettings::setPersistentVal(const string& key, const string& val) {
 
 std::vector<std::string> CSettings::getPersisentVal(const std::string& parent_key, const std::vector<std::string>& defaultVal) {
 	std::vector<std::string> vals;
-	// Use get_child to find the node containing the modules, and iterate over
-    // its children. If the path cannot be resolved, get_child throws.
-    // A C++11 for-range loop would also work.
-    BOOST_FOREACH( boost::property_tree::ptree::value_type &v,  m_persist_pt.get_child(parent_key)) {
-        // The data function is used to access the data stored in a node.
-        vals.push_back(v.second.data());
-    }
 
-    return vals;
+	boost::optional<boost::property_tree::ptree &> sel_clients;
+	if( sel_clients = m_persist_pt.get_child_optional(parent_key) ) {
+		// Use get_child to find the node containing the modules, and iterate over
+	    // its children. If the path cannot be resolved, get_child throws.
+	    // A C++11 for-range loop would also work.
+	    BOOST_FOREACH( boost::property_tree::ptree::value_type &v, sel_clients.get()) {
+	        // The data function is used to access the data stored in a node.
+	        vals.push_back(v.second.data());
+	    }
+	}
+
+	return vals;
 }
 
 void CSettings::setPersistentVal(const std::string& parent_key, const std::vector<std::string>& vals) {

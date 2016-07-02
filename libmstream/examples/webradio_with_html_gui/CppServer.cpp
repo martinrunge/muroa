@@ -192,7 +192,13 @@ void CppServer::onClientAppeared(ServDescPtr srvPtr) {
 	bool already_in_m_rcs = false;
 	for(vector<CRenderClientDesc>::iterator it = m_rcs.begin(); it != m_rcs.end(); it++) {
 		if( it->srvPtr->getServiceName().compare(srvPtr->getServiceName()) == 0 ) {
-			LOG4CPLUS_INFO( CApp::logger(), "    ...'" << srvPtr->getServiceName() << "' is known as session member -> request to join" );
+			if(*(it->srvPtr) == *srvPtr) {
+				LOG4CPLUS_INFO( CApp::logger(), "    ...'" << srvPtr->getServiceName() << "' is known as session member -> request to join" );
+			}
+			else {
+				LOG4CPLUS_WARN( CApp::logger(), "    ...'" << srvPtr->getServiceName() << "' is known as session member but with different address -> using new address and request to join" );
+				it->srvPtr = srvPtr;
+			}
 			it->isOnline(true);
 			already_in_m_rcs = true;
 		}
