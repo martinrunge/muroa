@@ -99,27 +99,36 @@ void CStreamCtrlConnection::onDataToSend(const char* data, int len) {
 	boost::asio::write(*this, boost::asio::buffer(data, len));
 }
 
-void CStreamCtrlConnection::reportError(std::string) {
+void CStreamCtrlConnection::ontError(const evError* evt) {
+	m_stream_server->onError(this, evt);
+}
+
+void CStreamCtrlConnection::onError(const evJoinRejected* evt) {
+	m_stream_server->onError(this, evt);
+}
+
+void CStreamCtrlConnection::onTimeout(const evTimeout* evt) {
 
 }
 
-void CStreamCtrlConnection::reportError(const evJoinRejected* evt) {
-	m_stream_server->reportError(this, evt);
+void CStreamCtrlConnection::onClientState(const evClientState* evt) {
+	m_stream_server->onClientState(this, evt);
 }
 
-void CStreamCtrlConnection::reportTimeout(std::string) {
-
+void CStreamCtrlConnection::onClientState(const evLeave* evt) {
+	m_stream_server->onClientLeftSession(this, evt);
 }
 
-void CStreamCtrlConnection::reportClientState(const CmdStreamBase* evt) {
-	m_stream_server->reportClientState(this, evt);
-}
-
-void CStreamCtrlConnection::requestJoin(const evRequestJoin* evt) {
+void CStreamCtrlConnection::sendJoinRequest(const evRequestJoin* evt) {
 	sendEvent(evt);
 }
 
-void CStreamCtrlConnection::gotSessionState(const CmdStreamBase* cmd) {
+void CStreamCtrlConnection::sendLeaveRequest(const muroa::evLeave* evt) {
+	sendEvent(evt);
+}
+
+
+void CStreamCtrlConnection::onSessionState(const CmdStreamBase* cmd) {
 
 	if(typeid(*cmd) == typeid(evSessionState)) {
 		const evSessionState* evt = reinterpret_cast<const evSessionState*>(cmd);
@@ -135,7 +144,7 @@ void CStreamCtrlConnection::gotSessionState(const CmdStreamBase* cmd) {
 			// this lcient is served via multicast RTP
 			m_use_multicast_rtp = true;
 		}
-		m_stream_server->clientBecameSessionMember(this, evt);
+		m_stream_server->onClientBecameSessionMember(this, evt);
 	}
 }
 

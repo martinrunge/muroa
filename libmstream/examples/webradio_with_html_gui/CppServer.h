@@ -37,35 +37,32 @@ class CWSMsgHandler;
 
 class CppServer :public CStreamServer {
 public:
-	CppServer(boost::asio::io_service& io_service, std::vector<std::string> clients, int timeServerPort, int sessionID );
+	CppServer(boost::asio::io_service& io_service, std::vector<std::string> clients, std::string session_name, int timeServerPort, int sessionID );
 	~CppServer();
 
 	// void setWSSrv(muroa::WSSrv *wssrv);
 	void setWSMsgHandler(CWSMsgHandler* msg_handler) { m_ws_msg_handler = msg_handler; };
 
-	void addClientByName(std::string serviceName);
-	void removeClient(std::string serviceName);
+	void requestClientToJoin(std::string serviceName);
+	void requestClientToLeave(std::string serviceName);
 
 	void playStream(std::string url);
 	void stopStream();
 
-	void clientRejectedSessionMember(muroa::CStreamCtrlConnection* conn, const muroa::evJoinRejected* evt);
-	void clientBecameSessionMember(muroa::CStreamCtrlConnection* conn, const muroa::evSessionState* evt);
-	void clientLeftSession(muroa::CStreamCtrlConnection* conn, const muroa::evLeave* evt);
+	void onClientRejectedSessionMember(muroa::CStreamCtrlConnection* conn, const muroa::evJoinRejected* evt);
+	void onClientBecameSessionMember(muroa::CStreamCtrlConnection* conn, const muroa::evSessionState* evt);
+	void onClientLeftSession(muroa::CStreamCtrlConnection* conn, const muroa::evLeave* evt);
 
-	void reportError(muroa::CStreamCtrlConnection* conn, const evJoinRejected* evt);
+	void onError(muroa::CStreamCtrlConnection* conn, const evJoinRejected* evt);
 
-	void reportClientState(muroa::CStreamCtrlConnection* conn, const muroa::CmdStreamBase* evt);
+	void onClientState(muroa::CStreamCtrlConnection* conn, const muroa::evClientState* evt);
 	void reportProgress( int posInSecs, int durationInSecs);
 
-	void onClientAppeared(ServDescPtr srvPtr);
-	void onClientDisappeared(ServDescPtr srvPtr);
-	void onClientChanged();
-
-	const std::vector<CRenderClientDesc> getRenderClients() const { return m_rcs; };
 
 protected:
-	bool endpointOfService(std::string serviceName, bip::tcp::endpoint& endp);
+
+	virtual void onClientAppeared(ServDescPtr srvPtr);
+	virtual void onClientDisappeared(ServDescPtr srvPtr);
 
 	void addClientToSelected(const string& serviceName);
 	void removeClientFromSelected(const string& serviceName);
@@ -87,8 +84,6 @@ private:
 	// from the session, but disappeared from the network.
 	vector<std::string>      m_selected_clients;
 
-	// list of clients as shown in the GUI. Inlcudes offline clients and clients that are not member of the session.
-	vector<CRenderClientDesc> m_rcs;
 };
 
 

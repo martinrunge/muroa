@@ -33,15 +33,19 @@ public:
 	// virtual void sendEvent(CmdStreamBase* cmd) = 0;
 
 	virtual void sendClientState() = 0;
+	virtual void sendEvLeave(const evLeave& evt) = 0;
+	virtual void sendEvError(const evError& evt) = 0;
+	virtual void sendEvTimeout(const evTimeout& evt) = 0;
+
 	virtual void confirmJoinRequest(const evRequestJoin& evt ) = 0;
 	virtual bool mayJoinSession(const evRequestJoin& rj) = 0;
 	virtual void becomeSessionMember(const evRequestJoin& evt) = 0;
-	virtual void syncInfo(const evSyncStream& evt) = 0;
-	virtual void resetStream(const evResetStream& evt) = 0;
+	virtual void onSyncInfo(const evSyncStream& evt) = 0;
+	virtual void onResetStream(const evResetStream& evt) = 0;
 
-	virtual void rejectJoin(const evRequestJoin& evt) = 0;
-	virtual void rejectJoin(const evLeave& evt) = 0;
-	virtual void rejectJoin(const evTimeout& evt) = 0;
+	virtual void sendRejectJoin(const evRequestJoin& evt) = 0;
+	virtual void sendRejectJoin(const evLeave& evt) = 0;
+	virtual void sendRejectJoin(const evTimeout& evt) = 0;
 };
 
 } /* namespace muroa */

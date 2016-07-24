@@ -148,7 +148,7 @@ struct clnt_ : public msm::front::state_machine_def<clnt_, VisitableState>
     	template <class Event,class FSM>
     	void on_entry(Event const& evt, FSM& fsm) {
     		std::cout << "starting: exitState" << std::endl;
-    		fsm._actions->rejectJoin(evt);
+    		fsm._actions->sendRejectJoin(evt);
     	}
     	template <class Event,class FSM>
     	void on_exit(Event const&,FSM& ) {std::cout << "finishing: exitState" << std::endl;}
@@ -169,23 +169,25 @@ struct clnt_ : public msm::front::state_machine_def<clnt_, VisitableState>
      };
 
      void sendEvLeave(const evLeave& lv) {
+    	 _actions->sendEvLeave(lv);
      };
 
      void sendEvLeave(const evTimeout& to) {
      };
 
      void sendEvError(const evError& err) {
+    	 _actions->sendEvError(err);
      };
 
      void sendEvError(const evTimeout& to) {
      };
 
      void resetStream(const evResetStream& rs) {
-    	 _actions->resetStream(rs);
+    	 _actions->onResetStream(rs);
      };
 
      void syncStream(const evSyncStream& ss) {
-    	 _actions->syncInfo(ss);
+    	 _actions->onSyncInfo(ss);
      };
 
      void setVolume(const evSetVolume& sv) {
@@ -230,7 +232,8 @@ struct clnt_ : public msm::front::state_machine_def<clnt_, VisitableState>
         a_irow < sessionMember      , evResetStream                          , &c::resetStream           >,
 		a_irow < sessionMember      , evSyncStream                           , &c::syncStream            >,
 		a_irow < sessionMember      , evSetVolume                            , &c::setVolume             >,
-		a_irow < sessionMember      , evClientState                          , &c::sendClientState       >
+		a_irow < sessionMember      , evClientState                          , &c::sendClientState       >,
+         a_row < sessionMember      , evLeave         , exitState            , &c::sendEvLeave           >
     > {};
     // Replaces the default no-transition response.
     template <class FSM,class Event>

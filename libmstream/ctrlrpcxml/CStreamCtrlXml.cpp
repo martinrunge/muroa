@@ -50,6 +50,7 @@ CStreamCtrlXml::CStreamCtrlXml() throw (ExRpcError) {
 
 	type_serializers[std::type_index(typeid( evClientState     ))] = &CStreamCtrlXml::sendEvClientState;
 	type_serializers[std::type_index(typeid( evRequestJoin     ))] = &CStreamCtrlXml::sendEvRequestJoin;
+	type_serializers[std::type_index(typeid( evRequestLeave    ))] = &CStreamCtrlXml::sendEvRequestLeave;
 	type_serializers[std::type_index(typeid( evJoinAccepted    ))] = &CStreamCtrlXml::sendEvJoinAccepted;
 	type_serializers[std::type_index(typeid( evJoinRejected    ))] = &CStreamCtrlXml::sendEvJoinRejected;
 	type_serializers[std::type_index(typeid( evLeave           ))] = &CStreamCtrlXml::sendEvLeave;
@@ -114,6 +115,16 @@ void CStreamCtrlXml::sendEvRequestJoin(const CmdStreamBase* ev) {
 	sendData(oss.str());
 }
 
+void CStreamCtrlXml::sendEvRequestLeave(const CmdStreamBase* ev) {
+	const evRequestLeave* e = dynamic_cast<const evRequestLeave*>(ev);
+	ostringstream oss;
+	oss << "<" << e->ev_name << " cmdID=\"" << e->getID() << "\""
+                                            << " session_name=\"" << e->m_session_name << "\""
+											<< " triggered_by=\"" << e->m_triggered_by_name << "\"/>" << endl;
+
+	sendData(oss.str());
+}
+
 void CStreamCtrlXml::sendEvJoinAccepted(const CmdStreamBase* ev) {
 	const evJoinAccepted* e = dynamic_cast<const evJoinAccepted*>(ev);
 	ostringstream oss;
@@ -137,7 +148,10 @@ void CStreamCtrlXml::sendEvLeave(const CmdStreamBase* ev) {
 	const evLeave* e = dynamic_cast<const evLeave* >(ev);
 	ostringstream oss;
 	oss << "<" << e->ev_name << " cmdID=\"" << e->getID() << "\""
-                                            << " triggered_by_session=\"" << e->m_triggered_by_session << "\"/>" << endl;
+                                            << " triggered_by_session=\"" << e->m_triggered_by_session << "\""
+											<< " member_of_session=\"" << e->m_member_of_session << "\""
+											<< " session_srv=\"" << e->m_session_srv.to_string() << "\""
+											<< " volume=\"" << e->m_current_volume << "\"/>" << endl;
 	sendData(oss.str());
 }
 

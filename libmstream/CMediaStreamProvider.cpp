@@ -370,19 +370,20 @@ void CMediaStreamProvider::listClients(void)
 }
 
 
-std::vector<CRenderClientDesc> CMediaStreamProvider::getJoinedRenderClients() {
-	std::vector<CRenderClientDesc> rcs;
+/**
+ * return the service names of all joined render clients
+ */
+std::vector<std::string> CMediaStreamProvider::getJoinedRenderClients() {
+	std::vector<std::string> service_names;
 
 	set<CStreamCtrlConnection*>::iterator iter;
 	m_connection_list_mutex.Lock();
 	for(iter = m_joined_connections.begin(); iter != m_joined_connections.end(); iter++ ) {
-		CRenderClientDesc rcd;
-		// rcd.setServiceName( (*iter)->getServiceName());
-		rcs.push_back( rcd );
+		service_names.push_back((*iter)->getServiceName());
 	}
 	m_connection_list_mutex.UnLock();
 
-	return rcs;
+	return service_names;
 }
 
 

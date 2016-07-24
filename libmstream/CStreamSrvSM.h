@@ -100,7 +100,7 @@ struct srv_ : public boost::msm::front::state_machine_def<srv_, VisitableState>
     struct knowingClientState : public boost::msm::front::state<VisitableState>  {
        	template <class Event, class FSM> void on_entry(Event const& evt, FSM& fsm) {
         		std::cout << "entering: knowingClientState" << std::endl;
-        		fsm._actions->reportClientState(&evt);
+        		fsm._actions->onClientState(&evt);
         }
     	void accept(VisitorBase&) const     	{
     	    std::cout << "in " << typeid(this).name() << std::endl;
@@ -111,7 +111,7 @@ struct srv_ : public boost::msm::front::state_machine_def<srv_, VisitableState>
     struct awaitJoinResponse : public boost::msm::front::state<VisitableState>  {
        	template <class Event, class FSM> void on_entry(Event const& evt, FSM& fsm) {
         		std::cout << "entering: awaitJoinResponse" << std::endl;
-        		fsm._actions->requestJoin(&evt);
+        		fsm._actions->sendJoinRequest(&evt);
         }
     	void accept(VisitorBase&) const     	{
     	    std::cout << "in " << typeid(this).name() << std::endl;
@@ -122,7 +122,7 @@ struct srv_ : public boost::msm::front::state_machine_def<srv_, VisitableState>
     struct error : public boost::msm::front::state<VisitableState>  {
        	template <class Event, class FSM> void on_entry(Event const& evt, FSM& fsm) {
         		std::cout << "entering: error" << std::endl;
-        		fsm._actions->reportError(&evt);
+        		fsm._actions->onError(&evt);
         }
    	    void accept(VisitorBase&) const     	{
     	    std::cout << "in " << typeid(this).name() << std::endl;
@@ -178,7 +178,7 @@ struct srv_ : public boost::msm::front::state_machine_def<srv_, VisitableState>
         	{
         		std::cout << "entering: state sessionMember: by event" << typeid(evt).name() << " ." << std::endl;
         		if(typeid(evt) == typeid(evSessionState)) {
-        			fsm._inner_actions->gotSessionState(&evt);
+        			fsm._inner_actions->onSessionState(&evt);
         		}
         	}
         	template <class Event,class FSM>
@@ -190,6 +190,21 @@ struct srv_ : public boost::msm::front::state_machine_def<srv_, VisitableState>
         	    std::cout << "in " << typeid(this).name() << std::endl;
         	};
 
+        };
+
+        // leaveSession
+        struct leaveSession : public boost::msm::front::terminate_state<VisitableState> // leaveSession terminates the state machine
+        {
+        	template <class Event,class FSM> void on_entry(Event const& evt, FSM& fsm) {
+        		std::cout << "starting: leaveSession" << std::endl;
+//        		if(typeid(evt) == typeid(evLeave)) {
+//        			fsm._inner_actions->requestLeave(&evt);
+//        		}
+        	}
+            // template <class Event,class FSM> void on_exit(Event const&, FSM& )  {std::cout << "finishing: leaveSession" << std::endl;}
+            void accept(VisitorBase&) const     	{
+            	std::cout << "in " << typeid(this).name() << std::endl;
+            };
         };
 
         // noError
@@ -215,10 +230,16 @@ struct srv_ : public boost::msm::front::state_machine_def<srv_, VisitableState>
         typedef boost::mpl::vector<awaitSessionState, noError> initial_state;
 
         // transition actions
+        void sendLeaveRequest(const evLeave& evt) {
+        	_inner_actions->sendLeaveRequest(&evt);
+        }
+
         void report_error(const evError& err) {
+        	_inner_actions->ontError(&err);
         };
 
         void report_timeout(const evTimeout& to) {
+        	_inner_actions->onTimeout(&to);
         };
 
         typedef joinedSession_ j; // makes transition table cleaner
@@ -231,10 +252,11 @@ struct srv_ : public boost::msm::front::state_machine_def<srv_, VisitableState>
           _irow < sessionMember      , evResetStream                                                                              >,
           _irow < sessionMember      , evSyncStream                                                                               >,
           _irow < sessionMember      , evSetVolume                                                                                >,
+          a_row < sessionMember      , evLeave          , leaveSession         , &j::sendLeaveRequest                             >,
             //  +------------------- +------------------+----------------------+---------------------------+----------------------+
           _irow < noError            , evCmdSent                                                                                  >,
-			a_row < noError          , evError          , errorExit            , &j::report_error                                 >,
-            a_row < noError          , evTimeout        , errorExit            , &j::report_timeout                               >
+	      a_row < noError            , evError          , errorExit            , &j::report_error                                 >,
+          a_row < noError            , evTimeout        , errorExit            , &j::report_timeout                               >
         > {};
         // Replaces the default no-transition response.
         template <class FSM,class Event>
@@ -260,12 +282,13 @@ struct srv_ : public boost::msm::front::state_machine_def<srv_, VisitableState>
     // Transition table for player
     struct transition_table : boost::mpl::vector<
         //    Start                 Event                Next               Action                     Guard
-        //  +------------------- +------------------+----------------------+---------------------------+----------------------+
-       _row < awaitClientState   , evClientState    , knowingClientState                                                      >,
-       _row < knowingClientState , evRequestJoin    , awaitJoinResponse                                                       >,
-       _row < awaitJoinResponse  , evJoinAccepted   , joinedSession                                                           >,
-       _row < joinedSession      , evLeave          , knowingClientState                                                      >,
-       _row < awaitJoinResponse  , evJoinRejected   , error                                                                   >
+        //  +------------------- +----------------------+----------------------+---------------------------+----------------------+
+       _row < awaitClientState   , evClientState        , knowingClientState                                                      >,
+       _row < knowingClientState , evRequestJoin        , awaitJoinResponse                                                       >,
+       _row < knowingClientState , evRequestClientState , awaitClientState                                                        >,
+       _row < awaitJoinResponse  , evJoinAccepted       , joinedSession                                                           >,
+       _row < joinedSession      , evLeave              , knowingClientState                                                      >,
+       _row < awaitJoinResponse  , evJoinRejected       , error                                                                   >
     > {};
 
     // Replaces the default no-transition response.

@@ -35,12 +35,12 @@ namespace bip=boost::asio::ip;
 
 class CppServer :public CStreamServer {
 public:
-	CppServer(std::vector<bip::tcp::endpoint> clients, int timeServerPort, int sessionID );
+	CppServer(std::vector<bip::tcp::endpoint> clients, string session_name, int timeServerPort, int sessionID );
 	~CppServer();
 	void run();
 	void sendData();
 
-	void reportClientState(muroa::CStreamCtrlConnection* conn, const muroa::CmdStreamBase* evt);
+	void onClientState(muroa::CStreamCtrlConnection* conn, const muroa::CmdStreamBase* evt);
 
 private:
 	boost::asio::io_service m_io_service;

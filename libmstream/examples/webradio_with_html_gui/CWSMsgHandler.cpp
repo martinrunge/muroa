@@ -127,15 +127,22 @@ void CWSMsgHandler::onListClients(connection_hdl hdl, Json::Value root) {
 
 }
 
-
+/**
+ * activate = true:
+ *   if there is already an open control connection to that client, use it to request
+ *   it to join the session, otherwiese open a new control connection to that client first.
+ *
+ * activate = false:
+ *   if client is session member, request leave, otherwise do nothing
+ */
 void CWSMsgHandler::onActivateClient(connection_hdl hdl, Json::Value root) {
 	string serviceName = root["data"]["serviceName"].asString();
 	bool activate = root["data"]["activate"].asBool();
 	if(activate == true) {
-		m_StreamSrv->addClientByName( serviceName );
+		m_StreamSrv->requestClientToJoin( serviceName );
 	}
 	else {
-		m_StreamSrv->removeClient( serviceName );
+		m_StreamSrv->requestClientToLeave( serviceName );
 	}
 }
 

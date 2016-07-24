@@ -41,8 +41,8 @@ using namespace std;
 
 
 
-CppServer::CppServer(boost::asio::io_service& io_service, vector<string> clients, int timeServerPort, int sessionID )
-                  : CStreamServer(io_service, timeServerPort, sessionID, 2000),
+CppServer::CppServer(boost::asio::io_service& io_service, vector<string> clients, std::string session_name, int timeServerPort, int sessionID )
+                  : CStreamServer(io_service, session_name, timeServerPort, sessionID, 2000),
                     m_io_service(io_service),
 					m_decoder(0),
 					m_selected_clients(clients)
@@ -58,7 +58,12 @@ CppServer::~CppServer() {
 // 	m_ws_msg_handler = wssrv;
 // }
 
-void CppServer::addClientByName(std::string serviceName) {
+/**
+ * Add client to this session
+ */
+void CppServer::requestClientToJoin(std::string serviceName) {
+
+
 	bip::tcp::endpoint endp;
 	if( endpointOfService(serviceName, endp) ) {
 		// got endpoint for service name
@@ -71,12 +76,18 @@ void CppServer::addClientByName(std::string serviceName) {
 
 }
 
-void CppServer::removeClient(std::string serviceName) {
+/**
+ * remove client from this session
+ */
+void CppServer::requestClientToLeave(std::string serviceName) {
 
-	CStreamServer::removeClient(serviceName);
-	LOG4CPLUS_INFO(CApp::logger(), "CppServer::removeClient('" << serviceName << "')");
+	CStreamServer::requestLeave(serviceName);
+	LOG4CPLUS_INFO(CApp::logger(), "CppServer::requestClientToLeave('" << serviceName << "')");
+
+	// do not request client to join session automatically as soon as it appears any more
 	removeClientFromSelected(serviceName);
 }
+
 
 
 void CppServer::playStream(std::string url) {
@@ -122,62 +133,44 @@ void CppServer::stopStream() {
 	close();
 }
 
-void CppServer::clientRejectedSessionMember(muroa::CStreamCtrlConnection* conn, const muroa::evJoinRejected* evt) {
-	CStreamServer::clientRejectedSessionMember(conn, evt);
+void CppServer::onClientRejectedSessionMember(muroa::CStreamCtrlConnection* conn, const muroa::evJoinRejected* evt) {
+	// let the base class do the book keeping
+	CStreamServer::onClientRejectedSessionMember(conn, evt);
 
-	LOG4CPLUS_INFO( CApp::logger(), "'" << conn->getServiceName() << "' rejected to become session member" );
-
-	for(vector<CRenderClientDesc>::iterator it = m_rcs.begin(); it != m_rcs.end(); it++) {
-		if( it->srvPtr->getServiceName().compare(conn->getServiceName()) == 0 ) {
-			it->isMember(false);
-		}
-	}
 
 	m_ws_msg_handler->listClients();
 }
 
-void CppServer::clientBecameSessionMember(muroa::CStreamCtrlConnection* conn, const muroa::evSessionState* evt) {
-	CStreamServer::clientBecameSessionMember(conn, evt);
+void CppServer::onClientBecameSessionMember(muroa::CStreamCtrlConnection* conn, const muroa::evSessionState* evt) {
+	// let the base class do the book keeping
+	CStreamServer::onClientBecameSessionMember(conn, evt);
 
-	LOG4CPLUS_INFO( CApp::logger(), "'" << conn->getServiceName() << "' became session member" );
-
-	for(vector<CRenderClientDesc>::iterator it = m_rcs.begin(); it != m_rcs.end(); it++) {
-		if( it->srvPtr->getServiceName().compare(conn->getServiceName()) == 0 ) {
-			it->isMember(true);
-		}
-	}
+	// will try request 'selected clients' to join session as soon as their client state is known
+	addClientToSelected(conn->getServiceName());
 
 	m_ws_msg_handler->listClients();
 }
 
-void CppServer::clientLeftSession(muroa::CStreamCtrlConnection* conn, const muroa::evLeave* evt) {
-	CStreamServer::clientLeftSession(conn, evt);
-
-	LOG4CPLUS_INFO( CApp::logger(), "'" << conn->getServiceName() << "' left session" );
-
-	for(vector<CRenderClientDesc>::iterator it = m_rcs.begin(); it != m_rcs.end(); it++) {
-		if( it->srvPtr->getServiceName().compare(conn->getServiceName()) == 0 ) {
-			it->isMember(false);
-		}
-	}
+void CppServer::onClientLeftSession(muroa::CStreamCtrlConnection* conn, const muroa::evLeave* evt) {
+	// let the base class do the book keeping
+	CStreamServer::onClientLeftSession(conn, evt);
 
 	m_ws_msg_handler->listClients();
 }
 
-void CppServer::reportError(muroa::CStreamCtrlConnection* conn, const evJoinRejected* evt) {
+void CppServer::onError(muroa::CStreamCtrlConnection* conn, const evJoinRejected* evt) {
 
 }
 
-void CppServer::reportClientState(muroa::CStreamCtrlConnection* conn, const muroa::CmdStreamBase* evt) {
-	if(typeid(*evt) == typeid(evClientState)) {
-		const evClientState* ct = reinterpret_cast<const evClientState*>(evt);
+void CppServer::onClientState(muroa::CStreamCtrlConnection* conn, const muroa::evClientState* evt) {
+	// let the base class do the book keeping
+	CStreamServer::onClientState(conn, evt);
 
-		evRequestJoin* evj = new evRequestJoin();
-		evj->m_session_name = "testsession";
-		// evj->m_mcast_addr =
-		evj->m_timesrv_port = 12345;
-		conn->onEvent(evj);
-	}
+	evRequestJoin* evj = new evRequestJoin();
+	evj->m_session_name = "testsession";
+	// evj->m_mcast_addr =
+	evj->m_timesrv_port = 12345;
+	conn->onEvent(evj);
 }
 
 void CppServer::reportProgress( int posInSecs, int durationInSecs) {
@@ -186,32 +179,7 @@ void CppServer::reportProgress( int posInSecs, int durationInSecs) {
 
 
 void CppServer::onClientAppeared(ServDescPtr srvPtr) {
-
-	LOG4CPLUS_INFO( CApp::logger(), "'" << srvPtr->getServiceName() << "' appeared on network" );
-
-	bool already_in_m_rcs = false;
-	for(vector<CRenderClientDesc>::iterator it = m_rcs.begin(); it != m_rcs.end(); it++) {
-		if( it->srvPtr->getServiceName().compare(srvPtr->getServiceName()) == 0 ) {
-			if(*(it->srvPtr) == *srvPtr) {
-				LOG4CPLUS_INFO( CApp::logger(), "    ...'" << srvPtr->getServiceName() << "' is known as session member -> request to join" );
-			}
-			else {
-				LOG4CPLUS_WARN( CApp::logger(), "    ...'" << srvPtr->getServiceName() << "' is known as session member but with different address -> using new address and request to join" );
-				it->srvPtr = srvPtr;
-			}
-			it->isOnline(true);
-			already_in_m_rcs = true;
-		}
-	}
-
-	if(!already_in_m_rcs) {
-		CRenderClientDesc rcd;
-		rcd.isOnline(true);
-		rcd.isMember(false);
-		rcd.srvPtr = srvPtr;
-		m_rcs.push_back(rcd);
-	}
-
+	CStreamServer::onClientAppeared(srvPtr);
 
 	for(vector<string>::iterator it = m_selected_clients.begin(); it != m_selected_clients.end(); it++) {
 		string appeared_service_name = srvPtr->getServiceName();
@@ -228,47 +196,10 @@ void CppServer::onClientAppeared(ServDescPtr srvPtr) {
 }
 
 void CppServer::onClientDisappeared(ServDescPtr srvPtr) {
-
-	LOG4CPLUS_INFO( CApp::logger(), "'" << srvPtr->getServiceName() << "' disappeared from the network" );
-
-	bool already_in_m_rcs = false;
-	for(vector<CRenderClientDesc>::iterator it = m_rcs.begin(); it != m_rcs.end(); it++) {
-		if( it->srvPtr->getServiceName().compare(srvPtr->getServiceName()) == 0 ) {
-			LOG4CPLUS_INFO( CApp::logger(), "   ...'" << srvPtr->getServiceName() << "' is member of session -> removing it" );
-
-			it->isOnline(false);
-			already_in_m_rcs = true;
-		}
-	}
-
-	if(!already_in_m_rcs) {
-		CRenderClientDesc rcd;
-		rcd.isOnline(false);
-		rcd.srvPtr = srvPtr;
-		m_rcs.push_back(rcd);
-	}
+	CStreamServer::onClientDisappeared(srvPtr);
 	m_ws_msg_handler->listClients();
 }
 
-void CppServer::onClientChanged() {
-
-}
-
-bool CppServer::endpointOfService(std::string serviceName, bip::tcp::endpoint& endp) {
-	std::vector<CRenderClientDesc>::const_iterator it;
-	for(it = m_rcs.begin(); it != m_rcs.end(); it++) {
-		if(it->isOnline()) {
-			if(serviceName.compare( it->srvPtr->getServiceName() ) == 0 ) {
-				endp = bip::tcp::endpoint( it->srvPtr->getAddress(), it->srvPtr->getPortNr() );
-				if( endp.address().is_v4()) {
-					/// @TODO: hack for now. Do not announce IPv6 address if not listening on it !!!
-					return true;
-				}
-			}
-		}
-	}
-	return false;
-}
 
 void CppServer::addClientToSelected(const string& serviceName) {
 

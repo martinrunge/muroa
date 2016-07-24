@@ -57,11 +57,17 @@ public:
 	void confirmJoinRequest(const evRequestJoin& evt);
 	bool mayJoinSession(const evRequestJoin& rj);
 	void becomeSessionMember(const evRequestJoin& evt);
-    void syncInfo(const evSyncStream& evt);
-	void resetStream(const evResetStream& evt);
-	void rejectJoin(const evRequestJoin& evt);
-	void rejectJoin(const evLeave& evt);
-	void rejectJoin(const evTimeout& evt);
+    void onSyncInfo(const evSyncStream& evt);
+	void onResetStream(const evResetStream& evt);
+
+	// send events to server, triggered by statemachine
+	void sendRejectJoin(const evRequestJoin& evt);
+	void sendRejectJoin(const evLeave& evt);
+	void sendRejectJoin(const evTimeout& evt);
+
+	void sendEvLeave(const evLeave& evt);
+	void sendEvError(const evError& err);
+	void sendEvTimeout(const evTimeout& to);
 
 private:
 	CCtrlConnection(boost::asio::io_service& io_service);

@@ -169,7 +169,7 @@ int main(int argc, char *argv[]) {
 
 	boost::asio::io_service io_service;
 
-	CppServer cpps(io_service, clients, timeSrvPort, sessionID);
+	CppServer cpps(io_service, clients, "testsession", timeSrvPort, sessionID);
 	CRessourceHandler resHandler(&cpps, stations);
 	CWSMsgHandler wsMsgHandler(&cpps, stations);
 

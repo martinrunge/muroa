@@ -111,15 +111,15 @@ void CCtrlConnection::becomeSessionMember(const evRequestJoin& evt) {
 	sendEvent(sstate);
 }
 
-void CCtrlConnection::syncInfo(const evSyncStream& evt) {
+void CCtrlConnection::onSyncInfo(const evSyncStream& evt) {
 	m_player->syncInfo(evt, this);
 }
 
-void CCtrlConnection::resetStream(const evResetStream& evt) {
+void CCtrlConnection::onResetStream(const evResetStream& evt) {
 	m_player->resetStream(evt, this);
 }
 
-void CCtrlConnection::rejectJoin(const evRequestJoin& evt) {
+void CCtrlConnection::sendRejectJoin(const evRequestJoin& evt) {
 	evJoinRejected rj;
 
 	rj.m_owner_session = m_player->getSessionName();
@@ -129,13 +129,26 @@ void CCtrlConnection::rejectJoin(const evRequestJoin& evt) {
     getIoService().post(boost::bind( &IConnectionManager::remove, m_conn_mgr, this));
 }
 
-void CCtrlConnection::rejectJoin(const evLeave& evt) {
+void CCtrlConnection::sendRejectJoin(const evLeave& evt) {
 	sendEvent(&evt);
     getIoService().post(boost::bind( &IConnectionManager::remove, m_conn_mgr, this));
 }
 
-void CCtrlConnection::rejectJoin(const evTimeout& evt) {
+void CCtrlConnection::sendRejectJoin(const evTimeout& evt) {
 	// sendEvent(&evt);
     getIoService().post(boost::bind( &IConnectionManager::remove, m_conn_mgr, this));
+}
+
+void CCtrlConnection::sendEvLeave(const evLeave& evt) {
+	sendEvent(&evt);
+}
+
+void CCtrlConnection::sendEvError(const evError& err) {
+	sendEvent(&err);
+}
+
+void CCtrlConnection::sendEvTimeout(const evTimeout& to) {
+	// evTimeout not yet implemented
+	// sendEvent(&to);
 }
 

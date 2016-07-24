@@ -56,7 +56,7 @@ public:
     int stdClientPort(void);
     void listClients(void);
 
-    std::vector<CRenderClientDesc> getJoinedRenderClients();
+    std::vector<std::string> getJoinedRenderClients();
 
 
 private:

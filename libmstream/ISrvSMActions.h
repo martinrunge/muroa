@@ -19,14 +19,20 @@ public:
 	ISrvSMActions() {};
 	virtual ~ISrvSMActions() {};
 
-	virtual void reportError(std::string msg) = 0;
-	virtual void reportError(const evJoinRejected* evt) = 0;
-	virtual void reportTimeout(std::string msg) = 0;
-	virtual void reportClientState(const CmdStreamBase* evt) = 0;
-	virtual void requestJoin(const evRequestJoin* evt) = 0;
+	// called by statemachine to inform server (overloaded implementation in derived class is the end receiver)
+	virtual void onError(const evJoinRejected* evt) = 0;
+	virtual void ontError(const evError* evt) = 0;
+	virtual void onTimeout(const evTimeout* evt) = 0;
 
-	virtual void gotSessionState(const CmdStreamBase* cmd) = 0;
+	virtual void onClientState(const evClientState* evt) = 0;
+	virtual void onClientState(const evLeave* evt) = 0;
+
+	// call by statemachine to send message to client
+	virtual void sendJoinRequest(const evRequestJoin* evt) = 0;
+	virtual void sendLeaveRequest(const evLeave* evt) = 0;
 	virtual void sendAck(const evJoinAccepted* evt) = 0;
+
+	virtual void onSessionState(const CmdStreamBase* cmd) = 0;
 };
 
 } /* namespace muroa */

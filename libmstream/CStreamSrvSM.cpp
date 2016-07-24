@@ -32,7 +32,9 @@ CStreamSrvSM::CStreamSrvSM(ISrvSMActions* actions) {
 }
 
 CStreamSrvSM::~CStreamSrvSM() {
-	// TODO Auto-generated destructor stub
+	evError everr;
+	everr.m_error_msg = "connection was closed";
+	process_event(everr);
 }
 
 /// @brief: cast events to their types and process them
@@ -46,7 +48,9 @@ bool CStreamSrvSM::onEvent(muroa::CmdStreamBase* ev) {
 	else if ( typeid(*ev) == typeid(evRequestJoin) )     process_event( *reinterpret_cast<evRequestJoin*>(ev) );
 	else if ( typeid(*ev) == typeid(evJoinAccepted) )    process_event( *reinterpret_cast<evJoinAccepted*>(ev) );
 	else if ( typeid(*ev) == typeid(evJoinRejected) )    process_event( *reinterpret_cast<evJoinRejected*>(ev) );
-	else if ( typeid(*ev) == typeid(evLeave) )           process_event( *reinterpret_cast<evLeave*>(ev) );
+	else if ( typeid(*ev) == typeid(evLeave) ) {
+		process_event( *reinterpret_cast<evLeave*>(ev) );
+	}
 	else if ( typeid(*ev) == typeid(evGetSessionState) ) process_event( *reinterpret_cast<evGetSessionState*>(ev) );
 	else if ( typeid(*ev) == typeid(evSessionState) )    process_event( *reinterpret_cast<evSessionState*>(ev) );
 	else if ( typeid(*ev) == typeid(evResetStream) )     process_event( *reinterpret_cast<evResetStream*>(ev) );

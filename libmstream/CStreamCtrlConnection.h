@@ -82,13 +82,16 @@ public:
 		m_stream_server = streamServer;
 	}
 
-	void reportError(std::string);
-    void reportError(const evJoinRejected* evt);
+    void onError(const evJoinRejected* evt);
+    void ontError(const evError* evt);
+	void onTimeout(const evTimeout* evt);
+	void onClientState(const evClientState* evt);
+	void onClientState(const evLeave* evt);
 
-	void reportTimeout(std::string);
-	void reportClientState(const CmdStreamBase* evt);
-	void requestJoin(const evRequestJoin* evt);
-	void gotSessionState(const CmdStreamBase* cmd);
+	// called by statemachine to send event to client
+	void sendJoinRequest(const muroa::evRequestJoin*);
+	void sendLeaveRequest(const muroa::evLeave*);
+	void onSessionState(const CmdStreamBase* cmd);
 
 	void sendAck(const evJoinAccepted* evt);
 
@@ -102,7 +105,6 @@ private:
 	std::string m_serviceName;
 
 	CStreamConnection* m_stream_connection;
-
 	muroa::CStreamSrvSM m_srv_sm;
 
 	unsigned short m_RTP_port;

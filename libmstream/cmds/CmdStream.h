@@ -29,6 +29,15 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 namespace muroa {
 
+class evRequestClientState: public CmdStreamBase {
+public:
+	bool operator==(const evRequestClientState& rhs) {
+		return true;
+	}
+
+	static const std::string ev_name;
+};
+
 class evClientState: public CmdStreamBase {
 public:
 	bool operator==(const evClientState& rhs) {
@@ -54,6 +63,18 @@ public:
 	std::string m_session_name;
 	boost::asio::ip::address m_mcast_addr;
 	uint32_t m_timesrv_port;
+
+	static const std::string ev_name;
+};
+
+class evRequestLeave: public CmdStreamBase {
+public:
+	bool operator==(const evRequestLeave& rhs) {
+		return  m_session_name.compare( rhs.m_session_name ) == 0 &&
+				m_triggered_by_name == rhs.m_triggered_by_name;
+	}
+	std::string m_session_name;
+	std::string m_triggered_by_name;
 
 	static const std::string ev_name;
 };
@@ -84,9 +105,17 @@ public:
 class evLeave: public CmdStreamBase {
 public:
 	bool operator==(const evLeave& rhs) {
-		return  m_triggered_by_session.compare( rhs.m_triggered_by_session ) == 0;
+		return  m_triggered_by_session.compare( rhs.m_triggered_by_session ) == 0 &&
+				m_member_of_session.compare( rhs.m_member_of_session ) == 0 &&
+				m_session_srv == rhs.m_session_srv &&
+				m_current_volume == rhs.m_current_volume;
 	}
+
 	std::string m_triggered_by_session;
+	// from here same as evClientState
+	std::string m_member_of_session;
+	boost::asio::ip::address m_session_srv;
+	int m_current_volume;
 
 	static const std::string ev_name;
 };

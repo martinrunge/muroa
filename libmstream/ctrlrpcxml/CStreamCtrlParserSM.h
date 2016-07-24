@@ -48,6 +48,7 @@ public:
 	enum open_state_t {XML_OPEN_STATE_ROOT,
 					      XML_EV_CLIENT_STATE,
 						  XML_EV_REQUEST_JOIN,
+						  XML_EV_REQUEST_LEAVE,
 		                  XML_EV_JOIN_ACCEPTED,
 						  XML_EV_JOIN_REJECTED,
 						  XML_EV_LEAVE,
@@ -109,6 +110,7 @@ private:
 
 	void parseEvClientStateArgs(     const char** attrs, evClientState* cmd);
 	void parseEvRequestJoinArgs(     const char** attrs, evRequestJoin* cmd);
+	void parseEvRequestLeaveArgs(    const char** attrs, evRequestLeave* cmd);
 	void parseEvJoinAcceptedArgs(    const char** attrs, evJoinAccepted* cmd);
 	void parseEvJoinRejectedArgs(    const char** attrs, evJoinRejected* cmd);
 	void parseEvLeaveArgs(           const char** attrs, evLeave* cmd);

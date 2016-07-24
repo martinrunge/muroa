@@ -24,6 +24,7 @@ namespace muroa {
 
 const std::string evClientState::ev_name = "evClientState";
 const std::string evRequestJoin::ev_name = "evRequestJoin";
+const std::string evRequestLeave::ev_name = "evRequestLeave";
 const std::string evJoinAccepted::ev_name = "evJoinAccepted";
 const std::string evJoinRejected::ev_name = "evJoinRejected";
 const std::string evLeave::ev_name = "evLeave";

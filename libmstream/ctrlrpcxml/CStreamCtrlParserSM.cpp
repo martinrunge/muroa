@@ -86,6 +86,12 @@ void CStreamCtrlParserSM::onXmlStartElement(const std::string& name, const char*
 		parseCmdID(attributes, cmd);
 		parseEvRequestJoinArgs(attributes, cmd);
 		m_tmp_cmd_ptr = cmd;
+	} else if( name.compare( evRequestLeave::ev_name) == 0) {
+		assert(m_tmp_cmd_ptr == 0);
+		evRequestLeave* cmd = new evRequestLeave();
+		parseCmdID(attributes, cmd);
+		parseEvRequestLeaveArgs(attributes, cmd);
+		m_tmp_cmd_ptr = cmd;
 	} else if( name.compare( evJoinAccepted::ev_name) == 0) {
 		assert(m_tmp_cmd_ptr == 0);
 		evJoinAccepted* cmd = new evJoinAccepted();
@@ -158,6 +164,7 @@ void CStreamCtrlParserSM::onXmlEndElement(const std::string& name)
 
 	if(	name.compare( evClientState::ev_name     ) == 0 ||
 		name.compare( evRequestJoin::ev_name     ) == 0 ||
+		name.compare( evRequestLeave::ev_name     ) == 0 ||
 		name.compare( evJoinAccepted::ev_name    ) == 0 ||
 		name.compare( evJoinRejected::ev_name    ) == 0 ||
 		name.compare( evLeave::ev_name           ) == 0 ||
@@ -315,6 +322,41 @@ void CStreamCtrlParserSM::parseEvRequestJoinArgs(     const char** attrs, evRequ
 	cmd->m_timesrv_port = CUtils::str2uint32(ts_str);
 }
 
+
+void CStreamCtrlParserSM::parseEvRequestLeaveArgs( const char** attrs, evRequestLeave* cmd) {
+	string name_str;
+	string triggered_by_str;
+
+	parseCmdID(attrs, cmd);
+
+	for(int i=0; attrs[i]; i+=2)
+	{
+		string name  = attrs[i];
+		string value = attrs[i + 1];
+
+		if(name.compare("session_name") == 0) {
+			name_str = value;
+		}
+		if(name.compare("triggered_by") == 0) {
+			triggered_by_str = value;
+		}
+	}
+
+	if( name_str.empty() || triggered_by_str.empty() ) {
+		ostringstream oss;
+		oss << "evRequestLeave: ";
+		if( name_str.empty() ) {
+			oss << " argument 'session_name' missing; ";
+		}
+		if( triggered_by_str.empty() ) {
+			oss << " argument 'triggered_by' missing; ";
+		}
+		throw ExRpcError(oss.str());
+	}
+	cmd->m_session_name = name_str;
+	cmd->m_triggered_by_name = triggered_by_str;
+}
+
 void CStreamCtrlParserSM::parseEvJoinAcceptedArgs(    const char** attrs, evJoinAccepted* cmd) {
 	string name_str;
 
@@ -368,6 +410,14 @@ void CStreamCtrlParserSM::parseEvJoinRejectedArgs(    const char** attrs, evJoin
 
 void CStreamCtrlParserSM::parseEvLeaveArgs(           const char** attrs, evLeave* cmd) {
 	string name_str;
+	string triggered_by_str;
+	string addr_str;
+	string vol_str;
+
+	bool name_found = false;
+	bool triggered_by_found = false;
+	bool addr_found = false;
+	bool vol_found = false;
 
 	parseCmdID(attrs, cmd);
 	for(int i=0; attrs[i]; i+=2)
@@ -375,13 +425,48 @@ void CStreamCtrlParserSM::parseEvLeaveArgs(           const char** attrs, evLeav
 		string name  = attrs[i];
 		string value = attrs[i + 1];
 
-		// argument may be empty
-		if(name.compare("triggered_by_session") == 0) {
+		if(name.compare("triggered_by") == 0) {
+			triggered_by_str = value;
+			triggered_by_found = true;
+		}
+		if(name.compare("member_of_session") == 0) {
 			name_str = value;
+			name_found = true;
+		}
+		if(name.compare("session_srv") == 0) {
+			addr_str = value;
+			addr_found = true;
+		}
+		if(name.compare("volume") == 0) {
+			vol_str = value;
+			vol_found = true;
 		}
 	}
 
-	cmd->m_triggered_by_session = name_str;
+	if( !triggered_by_found || !name_found || !addr_found || !vol_found ) {
+		ostringstream oss;
+		oss << "evClientState: ";
+		if( !triggered_by_found ) {
+			oss << " argument 'triggered_by' missing; ";
+		}
+		if( !name_found ) {
+			oss << " argument 'member_of_session' missing; ";
+		}
+		if( !addr_found ) {
+			oss << " argument 'session_srv' missing; ";
+		}
+		if( !vol_found ) {
+			oss << " argument 'volume' missing; ";
+		}
+		throw ExRpcError(oss.str());
+	}
+
+
+	cmd->m_triggered_by_session = triggered_by_str;
+	cmd->m_member_of_session = name_str;
+	cmd->m_session_srv = str2ip_addr(addr_str);
+	cmd->m_current_volume = CUtils::str2uint32(vol_str);
+
 }
 
 void CStreamCtrlParserSM::parseEvGetSessionStateArgs( const char** attrs, evGetSessionState* cmd) {

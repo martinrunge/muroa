@@ -34,7 +34,7 @@ Class provides a server for a stream.
 #include "avahi/CServiceDesc.h"
 
 // #include <boost/date_time/posix_time/posix_time.hpp>
-// #include <boost/asio.hpp>
+#include <boost/asio.hpp>
 // #include "libsock++.h"
 // #include "libdsaudio.h"
 
@@ -70,33 +70,53 @@ public:
      * @param[in] transport_buffer_size_in_ms: the size of the client's playback buffer in ms. Aka difference
      * between send timestamp and presentation timestamp.
      */
-    CStreamServer(boost::asio::io_service& io_service, int timeServerPort, int session_id = 1, int transport_buffer_size_in_ms = 1500);
+    CStreamServer(boost::asio::io_service& io_service, std::string session_name, int timeServerPort, int session_id = 1, int transport_buffer_size_in_ms = 1500);
     ~CStreamServer();
+
+	void connectToClient(std::string serviceName);
+	void requestJoin(std::string serviceName);
+	void requestLeave(std::string serviceName);
+	void disconnectFromClient(std::string serviceName);
 
 
     // void adjustReceiverList(std::vector<muroa::ServDescPtr> receivers);
     virtual int addClient(bip::tcp::endpoint endp, const std::string& name);
     virtual void removeClient(const std::string& name);
 
-	virtual void reportClientState(muroa::CStreamCtrlConnection* conn, const muroa::CmdStreamBase* evt);
+	virtual void onClientState(muroa::CStreamCtrlConnection* conn, const muroa::evClientState* evt);
 
-	virtual void clientRejectedSessionMember(muroa::CStreamCtrlConnection* conn, const muroa::evJoinRejected* evt);
-	virtual void clientBecameSessionMember(muroa::CStreamCtrlConnection* conn, const muroa::evSessionState* evt);
-	virtual void clientLeftSession(muroa::CStreamCtrlConnection* conn, const muroa::evLeave* evt);
+	virtual void onClientRejectedSessionMember(muroa::CStreamCtrlConnection* conn, const muroa::evJoinRejected* evt);
+	virtual void onClientBecameSessionMember(muroa::CStreamCtrlConnection* conn, const muroa::evSessionState* evt);
+	virtual void onClientLeftSession(muroa::CStreamCtrlConnection* conn, const muroa::evLeave* evt);
 
-	virtual void reportError(muroa::CStreamCtrlConnection* conn, const evJoinRejected* evt);
-
-//	virtual void onClientAppeared(ServDescPtr srvPtr);
-//	virtual void onClientDisappeared(ServDescPtr srvPtr);
-//	virtual void onClientChanged();
+	virtual void onError(muroa::CStreamCtrlConnection* conn, const evJoinRejected* evt);
+	virtual void onError(muroa::CStreamCtrlConnection* conn, const evError* evt);
 
 	std::vector<CRenderClientDesc> getRenderClients();
 
     void removeClient(muroa::CStreamCtrlConnection* connPtr);
 protected:
-    void removeClient(set<CStreamCtrlConnection*>::iterator iter);
+	bool endpointOfService(std::string serviceName, bip::tcp::endpoint& endp);
+	bip::tcp::endpoint endpointOfService(const std::string& serviceName);  // throws CUnknownServiceNameException
+	muroa::ServDescPtr srvDescOfService(const std::string& serviceName);  // throws CUnknownServiceNameException
+	CRenderClientDesc getRenderClientDescByName(const std::string& serviceName);   // throws CUnknownServiceNameException
+	CStreamCtrlConnection* getCtrlConnByName(const std::string& serviceName);   // throws CUnknownServiceNameException
+
+	void connectToClient(bip::tcp::endpoint endp, const std::string& serviceName);
+	void requestJoin(CStreamCtrlConnection* conn);
+	void requestLeave(CStreamCtrlConnection* conn);
+	void disconnectFromClient(bip::tcp::endpoint endp, const std::string& serviceName);
+
+	virtual void onClientAppeared(ServDescPtr srvPtr);
+	virtual void onClientDisappeared(ServDescPtr srvPtr);
+
+	const std::vector<CRenderClientDesc> getRenderClients() const { return m_rcs; };
+
+
+	void removeClient(set<CStreamCtrlConnection*>::iterator iter);
     int removeSessionlessConnection(muroa::CStreamCtrlConnection* connPtr);
 
+    const std::string m_session_name;
 
 private:
     int m_time_server_port;
@@ -106,6 +126,8 @@ private:
 
     boost::asio::io_service& m_io_service;
 
+	// list of clients as shown in the GUI. Inlcudes offline clients and clients that are not member of the session.
+	vector<CRenderClientDesc> m_rcs;
 };
 
 } // namespace muroa

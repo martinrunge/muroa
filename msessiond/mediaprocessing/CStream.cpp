@@ -36,7 +36,7 @@ CStream::CStream(CSession* session, boost::asio::io_service& io_service, int tim
 														   m_io_service(io_service)
 {
     m_audioIO = new CAudioIoAlsa();
-    m_streamserver = new CStreamServer(io_service, timeServicePort);
+    m_streamserver = new CStreamServer(io_service, m_session->getName(), timeServicePort);
 }
 
 CStream::~CStream() {

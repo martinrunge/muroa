@@ -126,7 +126,7 @@ int main(int argc, char *argv[]) {
         clients.push_back(endp);
     }
 
-    CppServer cpps(clients, timeSrvPort, sessionID);
+    CppServer cpps(clients, "simplesession", timeSrvPort, sessionID);
     cpps.run();
 
 	return 0;

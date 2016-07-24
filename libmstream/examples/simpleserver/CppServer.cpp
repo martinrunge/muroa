@@ -34,7 +34,7 @@ using namespace std;
 
 
 
-CppServer::CppServer(vector<bip::tcp::endpoint> clients, int timeServerPort, int sessionID ) : CStreamServer(m_io_service, timeServerPort, sessionID) {
+CppServer::CppServer(vector<bip::tcp::endpoint> clients, string session_name, int timeServerPort, int sessionID ) : CStreamServer(m_io_service, session_name, timeServerPort, sessionID) {
 	try {
 
 		for(int i = 0; i < clients.size(); i++) {
@@ -78,7 +78,7 @@ void CppServer::sendData()
 	  }
 }
 
-void CppServer::reportClientState(muroa::CStreamCtrlConnection* conn, const muroa::CmdStreamBase* evt) {
+void CppServer::onClientState(muroa::CStreamCtrlConnection* conn, const muroa::CmdStreamBase* evt) {
 	if(typeid(*evt) == typeid(evClientState)) {
 		const evClientState* ct = reinterpret_cast<const evClientState*>(evt);
 
