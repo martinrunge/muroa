@@ -29,7 +29,7 @@ public:
 
 	// call by statemachine to send message to client
 	virtual void sendJoinRequest(const evRequestJoin* evt) = 0;
-	virtual void sendLeaveRequest(const evLeave* evt) = 0;
+	virtual void sendLeaveRequest(const evRequestLeave* evt) = 0;
 	virtual void sendAck(const evJoinAccepted* evt) = 0;
 
 	virtual void onSessionState(const CmdStreamBase* cmd) = 0;

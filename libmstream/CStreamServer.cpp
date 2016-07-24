@@ -154,8 +154,9 @@ void CStreamServer::requestJoin(CStreamCtrlConnection* conn) {
 }
 
 void CStreamServer::requestLeave(CStreamCtrlConnection* conn) {
-	evLeave* evl = new evLeave();
-	evl->m_triggered_by_session = m_session_name;
+	evRequestLeave* evl = new evRequestLeave();
+	evl->m_triggered_by_name = m_session_name;
+	evl->m_session_name = m_session_name;
 	conn->onEvent(evl);
 }
 

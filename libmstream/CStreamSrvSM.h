@@ -230,7 +230,7 @@ struct srv_ : public boost::msm::front::state_machine_def<srv_, VisitableState>
         typedef boost::mpl::vector<awaitSessionState, noError> initial_state;
 
         // transition actions
-        void sendLeaveRequest(const evLeave& evt) {
+        void sendLeaveRequest(const evRequestLeave& evt) {
         	_inner_actions->sendLeaveRequest(&evt);
         }
 
@@ -252,7 +252,7 @@ struct srv_ : public boost::msm::front::state_machine_def<srv_, VisitableState>
           _irow < sessionMember      , evResetStream                                                                              >,
           _irow < sessionMember      , evSyncStream                                                                               >,
           _irow < sessionMember      , evSetVolume                                                                                >,
-          a_row < sessionMember      , evLeave          , leaveSession         , &j::sendLeaveRequest                             >,
+          a_row < sessionMember      , evRequestLeave   , leaveSession         , &j::sendLeaveRequest                             >,
             //  +------------------- +------------------+----------------------+---------------------------+----------------------+
           _irow < noError            , evCmdSent                                                                                  >,
 	      a_row < noError            , evError          , errorExit            , &j::report_error                                 >,
