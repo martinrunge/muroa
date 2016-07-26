@@ -196,7 +196,7 @@ void CStream::addReceiver(ServDescPtr srv_desc_ptr)
 
 void CStream::rmReceiver(const string& name)
 {
-    m_streamserver->removeClient(name);
+	m_streamserver->removeClientByName(name);
 }
 
 void CStream::adjustReceiverList(vector<ServDescPtr> receivers)

@@ -148,7 +148,7 @@ void CStreamCtrlXml::sendEvLeave(const CmdStreamBase* ev) {
 	const evLeave* e = dynamic_cast<const evLeave* >(ev);
 	ostringstream oss;
 	oss << "<" << e->ev_name << " cmdID=\"" << e->getID() << "\""
-                                            << " triggered_by_session=\"" << e->m_triggered_by_session << "\""
+                                            << " triggered_by=\"" << e->m_triggered_by_session << "\""
 											<< " member_of_session=\"" << e->m_member_of_session << "\""
 											<< " session_srv=\"" << e->m_session_srv.to_string() << "\""
 											<< " volume=\"" << e->m_current_volume << "\"/>" << endl;

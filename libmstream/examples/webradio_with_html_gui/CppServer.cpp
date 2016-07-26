@@ -34,6 +34,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <jsoncpp/json/json.h>
 
 #include <CApp.h>
+#include <Exceptions.h>
 #include "CWSMsgHandler.h"
 
 using namespace muroa;
@@ -63,15 +64,18 @@ CppServer::~CppServer() {
  */
 void CppServer::requestClientToJoin(std::string serviceName) {
 
+    try {
+        CStreamCtrlConnection* conn = getCtrlConnByName(serviceName );
 
-	bip::tcp::endpoint endp;
-	if( endpointOfService(serviceName, endp) ) {
-		// got endpoint for service name
-		addClient(endp, serviceName);
-		addClientToSelected(serviceName);
-	}
-	else {
-		LOG4CPLUS_WARN(CApp::logger(), "CppServer::addClientByName: could not determine TCP endpoint of service: '" << serviceName << "'");
+        evRequestJoin* evj = new evRequestJoin();
+        evj->m_session_name = m_session_name;
+        // evj->m_mcast_addr =
+        evj->m_timesrv_port = 12345;
+
+        conn->onEvent(evj);
+    }
+    catch(CUnknownServiceNameException ex) {
+		LOG4CPLUS_WARN(CApp::logger(), "CppServer::requestClientToJoin: no control connection to '" << serviceName << "' (" << ex.reason() << ")");
 	}
 
 }
@@ -166,11 +170,11 @@ void CppServer::onClientState(muroa::CStreamCtrlConnection* conn, const muroa::e
 	// let the base class do the book keeping
 	CStreamServer::onClientState(conn, evt);
 
-	evRequestJoin* evj = new evRequestJoin();
-	evj->m_session_name = "testsession";
-	// evj->m_mcast_addr =
-	evj->m_timesrv_port = 12345;
-	conn->onEvent(evj);
+	string serviceName = conn->getServiceName();
+
+    if( isClientSelected(serviceName) && evt->m_member_of_session.compare("") == 0) {
+        requestClientToJoin(serviceName);
+	}
 }
 
 void CppServer::reportProgress( int posInSecs, int durationInSecs) {
@@ -181,17 +185,6 @@ void CppServer::reportProgress( int posInSecs, int durationInSecs) {
 void CppServer::onClientAppeared(ServDescPtr srvPtr) {
 	CStreamServer::onClientAppeared(srvPtr);
 
-	for(vector<string>::iterator it = m_selected_clients.begin(); it != m_selected_clients.end(); it++) {
-		string appeared_service_name = srvPtr->getServiceName();
-		if( (*it).compare(appeared_service_name) == 0 )
-		{
-			m_clients.push_back(srvPtr);
-
-			bip::tcp::endpoint endp(srvPtr->getAddress(), srvPtr->getPortNr() );
-			addClient(endp, srvPtr->getServiceName());
-			storeClientList();
-		}
-	}
 	m_ws_msg_handler->listClients();
 }
 
@@ -224,8 +217,12 @@ void CppServer::removeClientFromSelected(const string& serviceName) {
 	} while(it != m_selected_clients.end());
 }
 
+bool CppServer::isClientSelected(const string &serviceName) {
+    return std::find(m_selected_clients.begin(), m_selected_clients.end(), serviceName) != m_selected_clients.end();
+}
 
 void CppServer::storeClientList() {
 	CApp::settings().setPersistentVal("msessiond", m_selected_clients);
 }
+
 

@@ -208,7 +208,8 @@ CStreamFmt CStreamDecoder::getStreamFmt() {
 
 int CStreamDecoder::decode() {
 	// prepare a buffer to store the decoded samples in
-	AVFrame *av_frame = avcodec_alloc_frame();
+	// AVFrame *av_frame = avcodec_alloc_frame();
+	AVFrame *av_frame = av_frame_alloc();
 
 	bool end_of_stream = false;
 

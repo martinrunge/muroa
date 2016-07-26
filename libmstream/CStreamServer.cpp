@@ -101,13 +101,6 @@ void CStreamServer::requestLeave(std::string serviceName) {
 	}
 }
 
-/**
- * throws CUnknownServeNameException if the IP address and port number for that servicename was not found
- */
-void CStreamServer::disconnectFromClient(std::string serviceName) {
-	bip::tcp::endpoint endp = endpointOfService(serviceName);
-	disconnectFromClient(endp, serviceName);
-}
 
 void CStreamServer::connectToClient(bip::tcp::endpoint endp, const std::string& serviceName) {
 
@@ -147,30 +140,43 @@ void CStreamServer::connectToClient(bip::tcp::endpoint endp, const std::string& 
 }
 
 void CStreamServer::requestJoin(CStreamCtrlConnection* conn) {
-	evRequestJoin* evj = new evRequestJoin();
-	evj->m_session_name = m_session_name;
-	evj->m_timesrv_port = m_time_server_port;
-	conn->onEvent(evj);
+	evRequestJoin evj;
+	evj.m_session_name = m_session_name;
+	evj.m_timesrv_port = m_time_server_port;
+	conn->onEvent(&evj);
 }
 
 void CStreamServer::requestLeave(CStreamCtrlConnection* conn) {
-	evRequestLeave* evl = new evRequestLeave();
-	evl->m_triggered_by_name = m_session_name;
-	evl->m_session_name = m_session_name;
-	conn->onEvent(evl);
+	evRequestLeave evl;
+	evl.m_triggered_by_name = m_session_name;
+	evl.m_session_name = m_session_name;
+	conn->onEvent(&evl);
 }
 
-void CStreamServer::disconnectFromClient(bip::tcp::endpoint endp, const std::string& serviceName) {
-	// first check, if it is a session member
-	CStreamCtrlConnection* connPtr = getCtrlConnection(serviceName);
-	if(connPtr != 0) {  // this service still has a control connection in state "session member"
-		int num_removed = removeJoinedConnection(connPtr);
-		if(num_removed > 0) {
-			// that client was part of the session
-			m_sessionless_connections.insert(connPtr);
-		}
-	}
-	int num_removed = removeSessionlessConnection(connPtr);
+void CStreamServer::disconnectFromClient(const std::string& serviceName) {
+
+    // first check, if it is a session member. If 'name' is member of our session,
+    // let onClientLeftSession do the book keeping
+    CStreamCtrlConnection* conn = CMediaStreamProvider::getCtrlConnection(serviceName);
+    if(conn != 0) {
+        evLeave ev;
+        ev.m_triggered_by_session = "";
+        ev.m_member_of_session = "";
+        onClientLeftSession(conn, &ev);
+    }
+
+    try {
+        // if 'name' was not part of the session, it might still be listed in m_sessionlesss_connections
+        conn = getCtrlConnByName(serviceName);
+        m_sessionless_connection_list_mutex.Lock();
+        m_sessionless_connections.erase(conn);
+        m_sessionless_connection_list_mutex.UnLock();
+
+        delete conn;
+    }
+    catch(CUnknownServiceNameException ex) {
+        LOG4CPLUS_ERROR(CApp::logger(), "could not disconnect control connection from render client '" << serviceName << "' (" << ex.reason() << ")" );
+    }
 }
 
 /**
@@ -213,8 +219,7 @@ void CStreamServer::onClientAppeared(ServDescPtr srvPtr) {
 void CStreamServer::onClientDisappeared(ServDescPtr srvPtr) {
 
 	LOG4CPLUS_INFO( CApp::logger(), "'" << srvPtr->getServiceName() << "' disappeared from the network" );
-	bip::tcp::endpoint endp(srvPtr->getAddress(), srvPtr->getPortNr());
-	disconnectFromClient(endp, srvPtr->getServiceName());
+	disconnectFromClient(srvPtr->getServiceName());
 
 	bool already_in_m_rcs = false;
 	for(vector<CRenderClientDesc>::iterator it = m_rcs.begin(); it != m_rcs.end(); it++) {
@@ -348,65 +353,46 @@ int CStreamServer::addClient(bip::tcp::endpoint endp, const std::string& name)
 }
 
 
-/*!
-    \fn CStreamServer::removeClient(CIPv4Address* addr);
- */
-
-
-/** remove client irrespective of it is a session member or not
- *  called when tcp ctrl connection was closed by the other end.
- */
-void CStreamServer::removeClient(muroa::CStreamCtrlConnection* connPtr) {
-	// first check, if it is a session member
-	int num_removed = removeJoinedConnection(connPtr);
-	if(num_removed > 0) {
-		// that client was part of the session
-		m_sessionless_connections.insert(connPtr);
-	}
-	removeSessionlessConnection(connPtr);
-}
-
-
-void CStreamServer::removeClient(const string& name)
-{
-	CStreamCtrlConnection* conn = getCtrlConnection(name);
-
-	if(conn != 0) {
-		//evLeave el;
-		//conn->sendEvent(&el);
-		removeJoinedConnection(conn);
-	}
-	else {
-		set<CStreamCtrlConnection*>::iterator iter;
-		for(iter = m_sessionless_connections.begin(); iter != m_sessionless_connections.end(); iter++ ) {
-			CStreamCtrlConnection* sc = *iter;
-			if( name.compare( sc->getServiceName() ) == 0 ) {
-				removeClient(iter);
-				iter--;
-			}
-		}
-	}
-}
-
-int CStreamServer::removeSessionlessConnection(muroa::CStreamCtrlConnection* connPtr) {
-	int num_removed = 0;
-    set<CStreamCtrlConnection*>::iterator iter;
-    for(iter = m_sessionless_connections.begin(); iter != m_sessionless_connections.end(); iter++ ) {
-        CStreamCtrlConnection* sc = *iter;
-        if( *iter == connPtr ) {
-            removeClient(iter);
-            num_removed++;
-        }
-    }
-    return num_removed;
-}
-
-
-
-void CStreamServer::removeClient(set<CStreamCtrlConnection*>::iterator iter) {
-	m_sessionless_connections.erase(iter);
-}
-
+///** remove client irrespective of it is a session member or not
+// *  called when tcp ctrl connection was closed by the other end.
+// */
+//void CStreamServer::removeClient(muroa::CStreamCtrlConnection* connPtr) {
+//	// first check, if it is a session member
+//	int num_removed = removeJoinedConnection(connPtr);
+//
+//    m_sessionless_connection_list_mutex.Lock();
+//    m_sessionless_connections.erase(connPtr);
+//    m_sessionless_connection_list_mutex.UnLock();
+//
+//    delete connPtr;
+//}
+//
+//
+//void CStreamServer::removeClientByName(const string &name)
+//{
+//    // try to find the control connection in the joined connections. If 'name' is member of our session,
+//    // let onClientLeftSession do the book keeping
+//	CStreamCtrlConnection* conn = CMediaStreamProvider::getCtrlConnection(name);
+//	if(conn != 0) {
+//        evLeave ev;
+//        ev.m_triggered_by_session = "";
+//        ev.m_member_of_session = "";
+//        onClientLeftSession(conn, &ev);
+//    }
+//
+//    try {
+//        // if 'name' was not part of the session, it might still be listed in m_sessionlesss_connections
+//        conn = getCtrlConnByName(name);
+//        m_sessionless_connection_list_mutex.Lock();
+//        m_sessionless_connections.erase(conn);
+//        m_sessionless_connection_list_mutex.UnLock();
+//
+//        delete conn;
+//    }
+//    catch(CUnknownServiceNameException ex) {
+//        LOG4CPLUS_ERROR(CApp::logger(), "removeCLientByName: control connection not available '" << ex.reason( )<< "'");
+//    }
+//}
 
 void CStreamServer::onClientRejectedSessionMember( muroa::CStreamCtrlConnection* conn, const muroa::evJoinRejected* evt) {
 	LOG4CPLUS_INFO( CApp::logger(), "'" << conn->getServiceName() << "' rejected to become session member" );
@@ -429,7 +415,9 @@ void CStreamServer::onClientBecameSessionMember( muroa::CStreamCtrlConnection* c
 	LOG4CPLUS_INFO( CApp::logger(), "'" << conn->getServiceName() << "' became session member" );
 	bool has_changed = false;
     // remove conn from the list of connections not associated with a session
-	int num_ptr = removeSessionlessConnection(conn);
+    m_sessionless_connection_list_mutex.Lock();
+	int num_ptr = m_sessionless_connections.erase(conn);
+    m_sessionless_connection_list_mutex.UnLock();
 	if(num_ptr > 0) {
 		// it was found in the list of connections not associated with a session
 		addJoinedConnection(conn);
@@ -459,7 +447,9 @@ void CStreamServer::onClientLeftSession(muroa::CStreamCtrlConnection* conn, cons
 	}
 
 	removeJoinedConnection(conn);
+    m_sessionless_connection_list_mutex.Lock();
 	m_sessionless_connections.insert(conn);
+    m_sessionless_connection_list_mutex.UnLock();
 
 	if(has_changed) {
 		listClients();
@@ -474,36 +464,37 @@ void  CStreamServer::onError(muroa::CStreamCtrlConnection* conn, const evError* 
 
 }
 
-std::vector<CRenderClientDesc> CStreamServer::getRenderClients() {
-
-	vector<string> service_names_joined = getJoinedRenderClients();
-	vector<CRenderClientDesc> rcs;
-
-	for(vector<string>::const_iterator it = service_names_joined.begin(); it != service_names_joined.end(); it++) {
-		try {
-			CRenderClientDesc rcd( getRenderClientDescByName(*it) );
-			rcs.push_back(rcd);
-		}
-		catch(CUnknownServiceNameException ex) {
-			LOG4CPLUS_ERROR(CApp::logger(), "error: service description not available '" << ex.reason( )<< "'");
-		}
-	}
-
-	set<CStreamCtrlConnection*>::iterator iter;
-	m_sessionless_connection_list_mutex.Lock();
-	for(iter = m_sessionless_connections.begin(); iter != m_sessionless_connections.end(); iter++ ) {
-		try {
-			CRenderClientDesc rcd = getRenderClientDescByName((*iter)->getServiceName());
-			rcs.push_back(rcd);
-		}
-		catch(CUnknownServiceNameException ex) {
-			LOG4CPLUS_ERROR(CApp::logger(), "error: service description not available '" << ex.reason( )<< "'");
-		}
-	}
-	m_sessionless_connection_list_mutex.UnLock();
-
-	return rcs;
-}
+//
+//std::vector<CRenderClientDesc> CStreamServer::getRenderClients() {
+//
+//	vector<string> service_names_joined = getJoinedRenderClients();
+//	vector<CRenderClientDesc> rcs;
+//
+//	for(vector<string>::const_iterator it = service_names_joined.begin(); it != service_names_joined.end(); it++) {
+//		try {
+//			CRenderClientDesc rcd( getRenderClientDescByName(*it) );
+//			rcs.push_back(rcd);
+//		}
+//		catch(CUnknownServiceNameException ex) {
+//			LOG4CPLUS_ERROR(CApp::logger(), "error: service description not available '" << ex.reason( )<< "'");
+//		}
+//	}
+//
+//	set<CStreamCtrlConnection*>::iterator iter;
+//	m_sessionless_connection_list_mutex.Lock();
+//	for(iter = m_sessionless_connections.begin(); iter != m_sessionless_connections.end(); iter++ ) {
+//		try {
+//			CRenderClientDesc rcd = getRenderClientDescByName((*iter)->getServiceName());
+//			rcs.push_back(rcd);
+//		}
+//		catch(CUnknownServiceNameException ex) {
+//			LOG4CPLUS_ERROR(CApp::logger(), "error: service description not available '" << ex.reason( )<< "'");
+//		}
+//	}
+//	m_sessionless_connection_list_mutex.UnLock();
+//
+//	return rcs;
+//}
 
 
 } // namespace muroa

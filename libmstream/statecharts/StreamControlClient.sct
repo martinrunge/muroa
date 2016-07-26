@@ -25,7 +25,7 @@
             <outgoingTransitions xmi:id="_hgiPgBgmEeWygclz1JbYxQ" specification="[Conn.memberOf != &quot;none&quot; &#xA;  &amp;&amp; Conn.memberOf != &quot;self&quot;]&#xA;/Conn.sendEvJoinRejected()" target="_PCK-IBgjEeWygclz1JbYxQ"/>
           </vertices>
           <vertices xsi:type="sgraph:State" xmi:id="_bN_I0BglEeWygclz1JbYxQ" specification="entry/Conn.memberOf = &quot;self&quot;&#xA;evResetStream/resetStream()&#xA;evSyncStream/syncStream()&#xA;evSetVolume/setVolume()&#xA;evGetClientState/Conn.sendClientState()&#xA;" name="sesionMember" incomingTransitions="_oxs3YBgjEeWygclz1JbYxQ">
-            <outgoingTransitions xmi:id="_lr9TcCGwEeW6P_eCTDXUJQ" specification="Conn.evLeave/sendEvLeave()" target="_PCK-IBgjEeWygclz1JbYxQ"/>
+            <outgoingTransitions xmi:id="_lr9TcCGwEeW6P_eCTDXUJQ" specification="Conn.evLeave/leaveSession()" target="_PCK-IBgjEeWygclz1JbYxQ"/>
           </vertices>
         </regions>
       </vertices>

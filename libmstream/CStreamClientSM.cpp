@@ -44,8 +44,8 @@ CStreamClientSM::~CStreamClientSM() {
 bool CStreamClientSM::onEvent(muroa::CmdStreamBase* ev) {
 
     if      ( typeid(*ev) == typeid(evRequestJoin) )     process_event( *reinterpret_cast<evRequestJoin*>(ev) );
+	else if ( typeid(*ev) == typeid(evRequestLeave) )    process_event( *reinterpret_cast<evRequestLeave*>(ev) );
 	else if ( typeid(*ev) == typeid(evJoinRejected) )    process_event( *reinterpret_cast<evJoinRejected*>(ev) );
-	else if ( typeid(*ev) == typeid(evLeave) )           process_event( *reinterpret_cast<evLeave*>(ev) );
 	else if ( typeid(*ev) == typeid(evGetSessionState) ) process_event( *reinterpret_cast<evGetSessionState*>(ev) );
 	else if ( typeid(*ev) == typeid(evSessionState) )    process_event( *reinterpret_cast<evSessionState*>(ev) );
 	else if ( typeid(*ev) == typeid(evResetStream) )     process_event( *reinterpret_cast<evResetStream*>(ev) );
@@ -54,7 +54,7 @@ bool CStreamClientSM::onEvent(muroa::CmdStreamBase* ev) {
 	else if ( typeid(*ev) == typeid(evAck) )             process_event( *reinterpret_cast<evAck*>(ev) );
 	else if ( typeid(*ev) == typeid(evError) )           process_event( *reinterpret_cast<evError*>(ev) );
 	else {
-		throw CException("CStreamSrvSM::onEvent: unknown event type");
+		throw CException("CStreamClientSM::onEvent: unknown event type");
 	}
 }
 

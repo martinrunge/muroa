@@ -76,12 +76,15 @@ public:
 	void connectToClient(std::string serviceName);
 	void requestJoin(std::string serviceName);
 	void requestLeave(std::string serviceName);
-	void disconnectFromClient(std::string serviceName);
+	void disconnectFromClient(const std::string& serviceName);
 
 
     // void adjustReceiverList(std::vector<muroa::ServDescPtr> receivers);
+    __attribute__((deprecated("use connectToClient instead and wait for the onClientState event")))
     virtual int addClient(bip::tcp::endpoint endp, const std::string& name);
-    virtual void removeClient(const std::string& name);
+
+	// virtual void removeClientByName(const std::string &name);
+    // void removeClient(muroa::CStreamCtrlConnection* connPtr);
 
 	virtual void onClientState(muroa::CStreamCtrlConnection* conn, const muroa::evClientState* evt);
 
@@ -92,9 +95,8 @@ public:
 	virtual void onError(muroa::CStreamCtrlConnection* conn, const evJoinRejected* evt);
 	virtual void onError(muroa::CStreamCtrlConnection* conn, const evError* evt);
 
-	std::vector<CRenderClientDesc> getRenderClients();
+	const std::vector<CRenderClientDesc> getRenderClients() const { return m_rcs; };
 
-    void removeClient(muroa::CStreamCtrlConnection* connPtr);
 protected:
 	bool endpointOfService(std::string serviceName, bip::tcp::endpoint& endp);
 	bip::tcp::endpoint endpointOfService(const std::string& serviceName);  // throws CUnknownServiceNameException
@@ -105,16 +107,11 @@ protected:
 	void connectToClient(bip::tcp::endpoint endp, const std::string& serviceName);
 	void requestJoin(CStreamCtrlConnection* conn);
 	void requestLeave(CStreamCtrlConnection* conn);
-	void disconnectFromClient(bip::tcp::endpoint endp, const std::string& serviceName);
 
 	virtual void onClientAppeared(ServDescPtr srvPtr);
 	virtual void onClientDisappeared(ServDescPtr srvPtr);
 
-	const std::vector<CRenderClientDesc> getRenderClients() const { return m_rcs; };
-
-
-	void removeClient(set<CStreamCtrlConnection*>::iterator iter);
-    int removeSessionlessConnection(muroa::CStreamCtrlConnection* connPtr);
+	//void removeClient(set<CStreamCtrlConnection*>::iterator iter);
 
     const std::string m_session_name;
 

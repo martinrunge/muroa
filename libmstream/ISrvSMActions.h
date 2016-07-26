@@ -32,7 +32,8 @@ public:
 	virtual void sendLeaveRequest(const evRequestLeave* evt) = 0;
 	virtual void sendAck(const evJoinAccepted* evt) = 0;
 
-	virtual void onSessionState(const CmdStreamBase* cmd) = 0;
+	virtual void onBecameSessionMember(const CmdStreamBase *cmd) = 0;
+	virtual void onLeftSession(const CmdStreamBase *cmd) = 0;
 };
 
 } /* namespace muroa */

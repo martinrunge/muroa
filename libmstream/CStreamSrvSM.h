@@ -100,7 +100,7 @@ struct srv_ : public boost::msm::front::state_machine_def<srv_, VisitableState>
     struct knowingClientState : public boost::msm::front::state<VisitableState>  {
        	template <class Event, class FSM> void on_entry(Event const& evt, FSM& fsm) {
         		std::cout << "entering: knowingClientState" << std::endl;
-        		fsm._actions->onClientState(&evt);
+        		// fsm._actions->onClientState(&evt);  -> moved to transition action
         }
     	void accept(VisitorBase&) const     	{
     	    std::cout << "in " << typeid(this).name() << std::endl;
@@ -143,9 +143,10 @@ struct srv_ : public boost::msm::front::state_machine_def<srv_, VisitableState>
     		_inner_actions = fsm._actions;
     	}
     	template <class Event,class FSM>
-    	void on_exit(Event const&,FSM& )
+    	void on_exit(Event const& evt,FSM& fsm)
     	{
     	    std::cout << "leaving: joinedSession_" << std::endl;
+            fsm._actions->onLeftSession(&evt);
     	}
     	void accept(VisitorBase&) const     	{
     	    std::cout << "in " << typeid(this).name() << std::endl;
@@ -178,11 +179,11 @@ struct srv_ : public boost::msm::front::state_machine_def<srv_, VisitableState>
         	{
         		std::cout << "entering: state sessionMember: by event" << typeid(evt).name() << " ." << std::endl;
         		if(typeid(evt) == typeid(evSessionState)) {
-        			fsm._inner_actions->onSessionState(&evt);
+        			fsm._inner_actions->onBecameSessionMember(&evt);
         		}
         	}
         	template <class Event,class FSM>
-        	void on_exit(Event const&,FSM& )
+        	void on_exit(Event const& evt, FSM& fsm)
         	{
         	    std::cout << "leaving: state sessionMember" << std::endl;
         	}
@@ -245,7 +246,8 @@ struct srv_ : public boost::msm::front::state_machine_def<srv_, VisitableState>
         typedef joinedSession_ j; // makes transition table cleaner
 
         // Transition table for joinedSession
-        struct transition_table : boost::mpl::vector<
+        //@formatter:off
+		struct transition_table : boost::mpl::vector<
             //    Start                 Event                Next               Action                     Guard
             //  +------------------- +------------------+----------------------+---------------------------+----------------------+
            _row < awaitSessionState  , evSessionState   , sessionMember                                                           >,
@@ -258,6 +260,8 @@ struct srv_ : public boost::msm::front::state_machine_def<srv_, VisitableState>
 	      a_row < noError            , evError          , errorExit            , &j::report_error                                 >,
           a_row < noError            , evTimeout        , errorExit            , &j::report_timeout                               >
         > {};
+		//@formatter:on
+
         // Replaces the default no-transition response.
         template <class FSM,class Event>
         void no_transition(Event const& e, FSM&,int state)
@@ -274,26 +278,31 @@ struct srv_ : public boost::msm::front::state_machine_def<srv_, VisitableState>
     // the initial state of the player SM. Must be defined
     typedef awaitClientState initial_state;
 
+    void onClientState(const evClientState& cs) {
+        _actions->onClientState(&cs);
+    };
+
     // transitions
-
-
     typedef srv_ s; // makes transition table cleaner
 
     // Transition table for player
+	//@formatter:off
     struct transition_table : boost::mpl::vector<
         //    Start                 Event                Next               Action                     Guard
         //  +------------------- +----------------------+----------------------+---------------------------+----------------------+
-       _row < awaitClientState   , evClientState        , knowingClientState                                                      >,
+      a_row < awaitClientState   , evClientState        , knowingClientState   , &s::onClientState                                                   >,
+     a_irow < knowingClientState , evClientState                               , &s::onClientState                                                   >,
        _row < knowingClientState , evRequestJoin        , awaitJoinResponse                                                       >,
        _row < knowingClientState , evRequestClientState , awaitClientState                                                        >,
        _row < awaitJoinResponse  , evJoinAccepted       , joinedSession                                                           >,
        _row < joinedSession      , evLeave              , knowingClientState                                                      >,
        _row < awaitJoinResponse  , evJoinRejected       , error                                                                   >
     > {};
+	//@formatter:on
 
     // Replaces the default no-transition response.
     template <class FSM,class Event>
-    void no_transition(Event const& e, FSM&,int state)
+    void no_transition(Event const& e, FSM&, int state)
     {
         std::cout << "(outer) no transition from state " << state << " on event " << typeid(e).name() << std::endl;
     }
