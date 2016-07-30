@@ -66,6 +66,7 @@ protected:
 
 	void addClientToSelected(const string& serviceName);
 	void removeClientFromSelected(const string& serviceName);
+	bool isClientSelected(const string& serviceName);
 	void storeClientList();
 
 private:

@@ -30,7 +30,6 @@ CCtrlConnection::CCtrlConnection(boost::asio::io_service& io_service) : CTcpConn
 }
 
 CCtrlConnection::~CCtrlConnection() {
-
 }
 
 void CCtrlConnection::start() {
@@ -41,6 +40,8 @@ void CCtrlConnection::start() {
 
 
 void CCtrlConnection::shutdown() {
+    // will call "on_exit" of currently active states
+    m_clnt_sm.stop();
 	shutdown();
 	CTcpConnection::stop();
 }
@@ -111,6 +112,19 @@ void CCtrlConnection::becomeSessionMember(const evRequestJoin& evt) {
 	sendEvent(sstate);
 }
 
+
+void CCtrlConnection::leaveSession(const evRequestLeave& evt) {
+
+    m_player->leaveSession(evt, this);
+
+    evLeave el;
+    el.m_member_of_session = m_player->getSessionName();
+    el.m_triggered_by_session = evt.m_triggered_by_name;
+
+    sendEvent(&el);
+}
+
+
 void CCtrlConnection::onSyncInfo(const evSyncStream& evt) {
 	m_player->syncInfo(evt, this);
 }
@@ -126,22 +140,19 @@ void CCtrlConnection::sendRejectJoin(const evRequestJoin& evt) {
 	rj.m_message = "Client is already member of another seession.";
 
 	sendEvent(&rj);
-    getIoService().post(boost::bind( &IConnectionManager::remove, m_conn_mgr, this));
+    // getIoService().post(boost::bind( &IConnectionManager::remove, m_conn_mgr, this));
 }
 
 void CCtrlConnection::sendRejectJoin(const evLeave& evt) {
 	sendEvent(&evt);
-    getIoService().post(boost::bind( &IConnectionManager::remove, m_conn_mgr, this));
+    // getIoService().post(boost::bind( &IConnectionManager::remove, m_conn_mgr, this));
 }
 
 void CCtrlConnection::sendRejectJoin(const evTimeout& evt) {
 	// sendEvent(&evt);
-    getIoService().post(boost::bind( &IConnectionManager::remove, m_conn_mgr, this));
+    // getIoService().post(boost::bind( &IConnectionManager::remove, m_conn_mgr, this));
 }
 
-void CCtrlConnection::sendEvLeave(const evLeave& evt) {
-	sendEvent(&evt);
-}
 
 void CCtrlConnection::sendEvError(const evError& err) {
 	sendEvent(&err);
@@ -150,5 +161,14 @@ void CCtrlConnection::sendEvError(const evError& err) {
 void CCtrlConnection::sendEvTimeout(const evTimeout& to) {
 	// evTimeout not yet implemented
 	// sendEvent(&to);
+}
+
+void CCtrlConnection::sendSessionState(const evRequestSessionState &rss) {
+    evSessionState ss;
+    ss.m_volume = m_player->getVolume();
+    ss.m_session_name = m_player->getSessionName();
+    //ss.m_mcast_addr = 0;
+    ss.m_rtp_unicast_port = m_player->getRTPUnicastPort();
+    sendEvent(&ss);
 }
 

@@ -45,7 +45,7 @@
                 <outgoingTransitions xmi:id="_M80lsALvEeWaSaiuBoxKzQ" specification="" target="_1e7X4ALuEeWaSaiuBoxKzQ"/>
               </vertices>
               <vertices xsi:type="sgraph:State" xmi:id="_1e7X4ALuEeWaSaiuBoxKzQ" specification="entry/Session.getState()" name="awaitSessionState" incomingTransitions="_M80lsALvEeWaSaiuBoxKzQ _Leu6wAkIEeWi_pG3yE8UxA">
-                <outgoingTransitions xmi:id="_SDSwQALvEeWaSaiuBoxKzQ" specification="Session.onSessionState" target="_PLfcsALvEeWaSaiuBoxKzQ"/>
+                <outgoingTransitions xmi:id="_SDSwQALvEeWaSaiuBoxKzQ" specification="Session.onBecameSessionMember" target="_PLfcsALvEeWaSaiuBoxKzQ"/>
               </vertices>
               <vertices xsi:type="sgraph:State" xmi:id="_PLfcsALvEeWaSaiuBoxKzQ" specification="Session.evResetStream/Session.cmdResetStream()&#xA;Session.evSyncStream/Session.cmdSyncStream()" name="sessionMember" incomingTransitions="_SDSwQALvEeWaSaiuBoxKzQ">
                 <outgoingTransitions xmi:id="_Leu6wAkIEeWi_pG3yE8UxA" specification="Session.getSessionState" target="_1e7X4ALuEeWaSaiuBoxKzQ"/>

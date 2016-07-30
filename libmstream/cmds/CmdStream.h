@@ -38,6 +38,17 @@ public:
 	static const std::string ev_name;
 };
 
+class evRequestSessionState: public CmdStreamBase {
+public:
+	bool operator==(const evRequestSessionState& rhs) {
+		return (m_session_name.compare(rhs.m_session_name) == 0);
+	}
+
+	std::string m_session_name;
+
+	static const std::string ev_name;
+};
+
 class evClientState: public CmdStreamBase {
 public:
 	bool operator==(const evClientState& rhs) {

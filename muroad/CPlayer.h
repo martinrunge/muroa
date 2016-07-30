@@ -52,8 +52,7 @@ public:
 
 	int onCloseCtrlConn(CCtrlConnection* ctrlConn);
 
-	int leaveSession(CCtrlConnection* ctrlConn);
-	int leaveSession(const evLeave& evt, CCtrlConnection* ctrlConn);
+	int leaveSession(const evRequestLeave& evt, CCtrlConnection* ctrlConn);
 
     void syncInfo(const evSyncStream& evt, CCtrlConnection* ctrlConn);
 	void resetStream(const evResetStream& evt, CCtrlConnection* ctrlConn);

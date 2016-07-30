@@ -54,9 +54,12 @@ public:
 
 	// IClientSMActions
 	void sendClientState();
+	void sendSessionState(const evRequestSessionState& rss);
 	void confirmJoinRequest(const evRequestJoin& evt);
 	bool mayJoinSession(const evRequestJoin& rj);
 	void becomeSessionMember(const evRequestJoin& evt);
+    void leaveSession(const evRequestLeave& evt);
+
     void onSyncInfo(const evSyncStream& evt);
 	void onResetStream(const evResetStream& evt);
 
@@ -65,7 +68,6 @@ public:
 	void sendRejectJoin(const evLeave& evt);
 	void sendRejectJoin(const evTimeout& evt);
 
-	void sendEvLeave(const evLeave& evt);
 	void sendEvError(const evError& err);
 	void sendEvTimeout(const evTimeout& to);
 

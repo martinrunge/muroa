@@ -90,8 +90,9 @@ public:
 
 	// called by statemachine to send event to client
 	void sendJoinRequest(const muroa::evRequestJoin*);
-	void sendLeaveRequest(const muroa::evLeave*);
-	void onSessionState(const CmdStreamBase* cmd);
+	void sendLeaveRequest(const muroa::evRequestLeave*);
+	void onBecameSessionMember(const CmdStreamBase *cmd);
+	void onLeftSession(const muroa::CmdStreamBase*);
 
 	void sendAck(const evJoinAccepted* evt);
 

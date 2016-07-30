@@ -79,7 +79,6 @@ int CMediaStreamProvider::removeJoinedConnection(CStreamCtrlConnection* conn) {
     bool still_use_mcast = false;
 
     m_connection_list_mutex.Lock();
-    delete conn;
     num_removed = m_joined_connections.erase(conn);
 
     for(iter = m_joined_connections.begin(); iter != m_joined_connections.end(); iter++ ) {
@@ -92,6 +91,7 @@ int CMediaStreamProvider::removeJoinedConnection(CStreamCtrlConnection* conn) {
     m_use_mcast = still_use_mcast;
 
     m_connection_list_mutex.UnLock();
+    // num_removed should always be 1
     return num_removed;
 }
 

@@ -36,6 +36,7 @@ CStreamCtrlConnection::CStreamCtrlConnection(std::string serviceName, muroa::CSt
 }
 
 CStreamCtrlConnection::~CStreamCtrlConnection() {
+    // m_srv_sm.stop();
 	closeStreamConnection();
 	// close(); ?
 }
@@ -116,6 +117,7 @@ void CStreamCtrlConnection::onClientState(const evClientState* evt) {
 }
 
 void CStreamCtrlConnection::onClientState(const evLeave* evt) {
+	// closeStreamConnection();
 	m_stream_server->onClientLeftSession(this, evt);
 }
 
@@ -123,12 +125,12 @@ void CStreamCtrlConnection::sendJoinRequest(const evRequestJoin* evt) {
 	sendEvent(evt);
 }
 
-void CStreamCtrlConnection::sendLeaveRequest(const muroa::evLeave* evt) {
+void CStreamCtrlConnection::sendLeaveRequest(const muroa::evRequestLeave* evt) {
 	sendEvent(evt);
 }
 
 
-void CStreamCtrlConnection::onSessionState(const CmdStreamBase* cmd) {
+void CStreamCtrlConnection::onBecameSessionMember(const CmdStreamBase *cmd) {
 
 	if(typeid(*cmd) == typeid(evSessionState)) {
 		const evSessionState* evt = reinterpret_cast<const evSessionState*>(cmd);
@@ -146,6 +148,15 @@ void CStreamCtrlConnection::onSessionState(const CmdStreamBase* cmd) {
 		}
 		m_stream_server->onClientBecameSessionMember(this, evt);
 	}
+}
+
+
+void CStreamCtrlConnection::onLeftSession(const muroa::CmdStreamBase* cmd) {
+    if(typeid(*cmd) == typeid(evLeave)) {
+        const evLeave* evt = reinterpret_cast<const evLeave*>(cmd);
+        closeStreamConnection();
+        m_stream_server->onClientLeftSession(this, evt);
+    }
 }
 
 
@@ -174,7 +185,11 @@ void CStreamCtrlConnection::handle_read(const boost::system::error_code& error, 
     	if(error == boost::asio::error::eof ) {
     		// connection was closed
     		assert(m_stream_server != 0);
-    		m_stream_server->removeClient(this);
+
+            // ask io_service to delete this instance of CStreamCtrlConnection later. It might have bee deleted by then triggered
+            // by onClientDisappeared called by avahi. To avoid double deletion pass the connection name instead of the pointer
+            // and search for a ctrl connection with that name later. If it has already been deleted, no pointer will be found.
+            get_io_service().post(boost::bind(&CStreamServer::disconnectFromClient, m_stream_server, m_serviceName ));
     	}
     	// LOG4CPLUS_ERROR(CApp::logger(), "error in handle_read:  " << error.message());
     	// delete this;

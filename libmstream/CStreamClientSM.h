@@ -51,71 +51,70 @@ using namespace std;
 
 namespace muroa {
 
-namespace msm = boost::msm;
-namespace mpl = boost::mpl;
+    namespace msm = boost::msm;
+    namespace mpl = boost::mpl;
 
-struct VisitorBase
-{
-    template <class T>
-    void visit_state(T* astate,int i)
-    {
-        std::cout << "visiting state:" << astate->state_name << "[" << typeid(*astate).name() << "]" << std::endl;
-    }
+    struct VisitorBase {
+        template<class T>
+        void visit_state(T *astate, int i) {
+            std::cout << "visiting state:" << astate->state_name << "[" << typeid(*astate).name() << "]" << std::endl;
+        }
 
-    void addState(const std::string state_name) {
-    	active_states.push_back(state_name);
-    }
+        void addState(const std::string state_name) {
+            active_states.push_back(state_name);
+        }
 
-    void clear() {
-    	active_states.clear();
-    }
+        void clear() {
+            active_states.clear();
+        }
 
-    void printActiveStates() {
-    	for(vector<string>::iterator it = active_states.begin(); it != active_states.end(); it++  ) {
-    		cout << *it << endl;
-    	}
-    }
-    vector<string> active_states;
-};
+        void printActiveStates() {
+            for (vector<string>::iterator it = active_states.begin(); it != active_states.end(); it++) {
+                cout << *it << endl;
+            }
+        }
+
+        vector<string> active_states;
+    };
 
 
 // overwrite of the base state (not default)
-struct VisitableState
-{
-    // signature of the accept function
-    typedef msm::back::args<void, VisitorBase&> accept_sig;
+    struct VisitableState {
+        // signature of the accept function
+        typedef msm::back::args<void, VisitorBase &> accept_sig;
 
-    // we also want polymorphic states
-    virtual ~VisitableState() {}
-    // default implementation for states who do not need to be visited
-    void accept(VisitorBase& vis) const {
-    	vis.addState("<state without accept method>");
+        // we also want polymorphic states
+        virtual ~VisitableState() {}
+
+        // default implementation for states who do not need to be visited
+        void accept(VisitorBase &vis) const {
+            vis.addState("<state without accept method>");
+        };
     };
-};
 
-struct clnt_ : public msm::front::state_machine_def<clnt_, VisitableState>
-{
+    struct clnt_ : public msm::front::state_machine_def<clnt_, VisitableState> {
 
-	// evRequestJoin openJoinReq;
+        // evRequestJoin openJoinReq;
 
-	IClientSMActions* _actions;
-    // The list of FSM states
+        IClientSMActions *_actions;
+        // The list of FSM states
 
-    struct awaitReaction : public msm::front::state<VisitableState>
-    {
-    	template <class Event,class FSM>
-    	void on_entry(Event const& evt, FSM& fsm) {
-    		std::cout << "entering: awaitReaction" << std::endl;
-    		fsm._actions->sendClientState();
-    	}
-    	template <class Event,class FSM>
-    	void on_exit(Event const&,FSM& ) {
-    	    std::cout << "leaving: awaitReaction" << std::endl;
-    	}
-    	void accept(VisitorBase& vis) const     	{
-        	vis.addState("awaitReaction");
-    	};
-    };
+        struct awaitReaction : public msm::front::state<VisitableState> {
+            template<class Event, class FSM>
+            void on_entry(Event const &evt, FSM &fsm) {
+                std::cout << "entering: awaitReaction" << std::endl;
+                fsm._actions->sendClientState();
+            }
+
+            template<class Event, class FSM>
+            void on_exit(Event const &, FSM &) {
+                std::cout << "leaving: awaitReaction" << std::endl;
+            }
+
+            void accept(VisitorBase &vis) const {
+                vis.addState("awaitReaction");
+            };
+        };
 
 
 //    // awaitAck
@@ -130,141 +129,152 @@ struct clnt_ : public msm::front::state_machine_def<clnt_, VisitableState>
 //    	};
 //    };
 
-    // sessionMember
-    struct sessionMember : public msm::front::state<VisitableState>  {
-    	template <class Event,class FSM>
-    	void on_entry(Event const& evt, FSM& fsm) {
-    		std::cout << "entering: sessionMember" << std::endl;
-        	fsm._actions->becomeSessionMember(evt);
-    	}
-    	void accept(VisitorBase& vis) const {
-    	    vis.addState("sessionMember");
-    	};
+        // sessionMember
+        struct sessionMember : public msm::front::state<VisitableState> {
+            template<class Event, class FSM>
+            void on_entry(Event const &evt, FSM &fsm) {
+                std::cout << "entering: sessionMember" << std::endl;
+                fsm._actions->becomeSessionMember(evt);
+            }
+
+            void accept(VisitorBase &vis) const {
+                vis.addState("sessionMember");
+            };
+        };
+
+        // exitState
+        struct exitState : public msm::front::terminate_state<VisitableState> // errorExit terminates the state machine
+        {
+            template<class Event, class FSM>
+            void on_entry(Event const &evt, FSM &fsm) {
+                std::cout << "starting: exitState" << std::endl;
+            }
+
+            template<class Event, class FSM>
+            void on_exit(Event const &, FSM &) { std::cout << "finishing: exitState" << std::endl; }
+
+            void accept(VisitorBase &vis) const {
+                vis.addState("exitState");
+            };
+        };
+
+        // transition actions
+        void sendEvJoinRejected(const evRequestJoin &rj) {
+        };
+
+        void sendEvJoinAccepted(const evRequestJoin &rj) {
+            _actions->confirmJoinRequest(rj);
+        };
+
+        void becomeSessionMember(const evAck &ack) {
+        };
+
+        void leaveSession(const evRequestLeave &lv) {
+            _actions->leaveSession(lv);
+        };
+
+        void sendEvLeave(const evTimeout &to) {
+        };
+
+        void sendEvError(const evError &err) {
+            _actions->sendEvError(err);
+        };
+
+        void sendEvError(const evTimeout &to) {
+        };
+
+        void resetStream(const evResetStream &rs) {
+            _actions->onResetStream(rs);
+        };
+
+        void syncStream(const evSyncStream &ss) {
+            _actions->onSyncInfo(ss);
+        };
+
+        void setVolume(const evSetVolume &sv) {
+
+        };
+
+        void sendClientState(const evClientState &cs) {
+            _actions->sendClientState();
+        };
+
+        void sendClientState(const evRequestClientState &rcs) {
+            _actions->sendClientState();
+        };
+
+        void sendSessionState(const evRequestSessionState &rss) {
+            _actions->sendSessionState(rss);
+        };
+
+        // guards
+        bool mayJoin(const evRequestJoin &rj) {
+            bool retval = _actions->mayJoinSession(rj);
+            return retval;
+        }
+
+        bool mayNotJoin(const evRequestJoin &rj) {
+            return !mayJoin(rj);
+        }
+
+
+        // the initial state of the player SM. Must be defined
+        typedef awaitReaction initial_state;
+
+
+        // transitions
+        typedef clnt_ c; // makes transition table cleaner
+
+        // Transition table for player
+        //@formatter:off
+        struct transition_table : mpl::vector<
+                //    Start                 Event                Next               Action                     Guard
+                //    +--------------------+------------------+----------------------+---------------------------+----------------------+
+                a_row < awaitReaction      , evError          , exitState            , &c::sendEvError                                  >,
+                  row < awaitReaction      , evRequestJoin    , awaitReaction        , &c::sendEvJoinRejected    , &c::mayNotJoin       >,
+                  row < awaitReaction      , evRequestJoin    , sessionMember        , &c::sendEvJoinAccepted    , &c::mayJoin          >,
+               a_irow < awaitReaction      , evRequestClientState                    , &c::sendClientState                              >,
+                //    +--------------------+------------------+----------------------+---------------------------+----------------------+
+               a_irow < sessionMember      , evResetStream                           , &c::resetStream                                  >,
+               a_irow < sessionMember      , evSyncStream                            , &c::syncStream                                   >,
+               a_irow < sessionMember      , evSetVolume                             , &c::setVolume                                    >,
+               a_irow < sessionMember      , evRequestSessionState                   , &c::sendSessionState                             >,
+                a_row < sessionMember      , evRequestLeave   , awaitReaction        , &c::leaveSession                                  >,
+                a_row < sessionMember      , evError          , exitState            , &c::sendEvError                                  >
+        > {};
+        //@formatter:on
+
+        // Replaces the default no-transition response.
+        template<class FSM, class Event>
+        void no_transition(Event const &e, FSM &, int state) {
+            std::cout << "no transition from state " << state
+                      << " on event " << typeid(e).name() << std::endl;
+        }
+
     };
 
-    // exitState
-    struct exitState : public msm::front::terminate_state<VisitableState> // errorExit terminates the state machine
-    {
-    	template <class Event,class FSM>
-    	void on_entry(Event const& evt, FSM& fsm) {
-    		std::cout << "starting: exitState" << std::endl;
-    		fsm._actions->sendRejectJoin(evt);
-    	}
-    	template <class Event,class FSM>
-    	void on_exit(Event const&,FSM& ) {std::cout << "finishing: exitState" << std::endl;}
-    	void accept(VisitorBase& vis) const     	{
-    		vis.addState("exitState");
-    	};
+    class CStreamClientSM : public msm::back::state_machine<clnt_, VisitableState> {
+    public:
+        CStreamClientSM(IClientSMActions *actions);
+
+        virtual ~CStreamClientSM();
+
+        bool onEvent(muroa::CmdStreamBase *ev);
+
+        void activeStates(VisitorBase &vis);
+
+        void pstate();
+
+    protected:
+        // states: awaitClientState, knowingClientState, awaitJoinResponse, joinedSession, error
+        // front-end: define the FSM structure
+
+        //
+        // Testing utilities.
+        //
+        static char const *const outer_state_names[];
+        static char const *const inner_state_names[];
     };
-
-    // transition actions
-     void sendEvJoinRejected(const evRequestJoin& rj) {
-     };
-
-     void sendEvJoinAccepted(const evRequestJoin& rj) {
-    	 _actions->confirmJoinRequest(rj);
-     };
-
-     void becomeSessionMember(const evAck& ack) {
-     };
-
-     void sendEvLeave(const evLeave& lv) {
-    	 _actions->sendEvLeave(lv);
-     };
-
-     void sendEvLeave(const evTimeout& to) {
-     };
-
-     void sendEvError(const evError& err) {
-    	 _actions->sendEvError(err);
-     };
-
-     void sendEvError(const evTimeout& to) {
-     };
-
-     void resetStream(const evResetStream& rs) {
-    	 _actions->onResetStream(rs);
-     };
-
-     void syncStream(const evSyncStream& ss) {
-    	 _actions->onSyncInfo(ss);
-     };
-
-     void setVolume(const evSetVolume& sv) {
-
-     };
-
-     void sendClientState(const evClientState& cc) {
-
-     };
-
-     // guards
-     bool mayJoin(const evRequestJoin& rj) {
-    	 bool retval = _actions->mayJoinSession( rj );
-    	 return retval;
-     }
-
-     bool mayNotJoin(const evRequestJoin& rj) {
-    	 return !mayJoin(rj);
-     }
-
-
-    // the initial state of the player SM. Must be defined
-    typedef awaitReaction initial_state;
-
-
-    // transitions
-    typedef clnt_ c; // makes transition table cleaner
-
-    // Transition table for player
-    struct transition_table : mpl::vector<
-        //    Start                 Event                Next               Action                     Guard
-        //    +--------------------+------------------+----------------------+---------------------------+----------------------+
-        a_row < awaitReaction      , evLeave          , exitState            , &c::sendEvLeave           >,
-          row < awaitReaction      , evRequestJoin    , exitState            , &c::sendEvJoinRejected    , &c::mayNotJoin       >,
-          row < awaitReaction      , evRequestJoin    , sessionMember        , &c::sendEvJoinAccepted    , &c::mayJoin          >,
-        a_row < awaitReaction      , evTimeout        , exitState            , &c::sendEvLeave                                  >,
-        //    +--------------------+------------------+----------------------+---------------------------+----------------------+
-//        a_row < awaitAck           , evError          , exitState            , &c::sendEvError           >,
-//        a_row < awaitAck           , evTimeout        , exitState            , &c::sendEvError           >,
-//        a_row < awaitAck           , evAck            , sessionMember        , &c::becomeSessionMember   >,
-        //    +--------------------+------------------+----------------------+---------------------------+----------------------+
-        a_irow < sessionMember      , evResetStream                          , &c::resetStream           >,
-		a_irow < sessionMember      , evSyncStream                           , &c::syncStream            >,
-		a_irow < sessionMember      , evSetVolume                            , &c::setVolume             >,
-		a_irow < sessionMember      , evClientState                          , &c::sendClientState       >,
-         a_row < sessionMember      , evLeave         , exitState            , &c::sendEvLeave           >
-    > {};
-    // Replaces the default no-transition response.
-    template <class FSM,class Event>
-    void no_transition(Event const& e, FSM&,int state)
-    {
-        std::cout << "no transition from state " << state
-            << " on event " << typeid(e).name() << std::endl;
-    }
-
-};
-
-class CStreamClientSM :public msm::back::state_machine<clnt_, VisitableState> {
-public:
-	CStreamClientSM(IClientSMActions* actions);
-	virtual ~CStreamClientSM();
-
-	bool onEvent(muroa::CmdStreamBase* ev);
-
-	void activeStates(VisitorBase& vis);
-    void pstate();
-
-protected:
-	// states: awaitClientState, knowingClientState, awaitJoinResponse, joinedSession, error
-    // front-end: define the FSM structure
-
-    //
-    // Testing utilities.
-    //
-    static char const* const outer_state_names[];
-    static char const* const inner_state_names[];
-};
 
 } /* namespace muroa */
 

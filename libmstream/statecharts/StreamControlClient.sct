@@ -23,9 +23,14 @@
             <outgoingTransitions xmi:id="_oxs3YBgjEeWygclz1JbYxQ" specification="[Conn.memberOf == &quot;none&quot;]&#xA;/Conn.sendEvJoinAccepted" target="_bN_I0BglEeWygclz1JbYxQ"/>
             <outgoingTransitions xmi:id="_hgiPgBgmEeWygclz1JbYxQ" specification="[Conn.memberOf != &quot;none&quot; &#xA;  &amp;&amp; Conn.memberOf != &quot;self&quot;]&#xA;/Conn.sendEvJoinRejected()" target="_TRTGcBgiEeWygclz1JbYxQ"/>
           </vertices>
+<<<<<<< HEAD
           <vertices xsi:type="sgraph:State" xmi:id="_bN_I0BglEeWygclz1JbYxQ" specification="entry/Conn.memberOf = &quot;self&quot;&#xA;evResetStream/resetStream()&#xA;evSyncStream/syncStream()&#xA;evSetVolume/setVolume()&#xA;evGetSessionState/Conn.sendSessionState()&#xA;" name="sesionMember" incomingTransitions="_oxs3YBgjEeWygclz1JbYxQ">
             <outgoingTransitions xmi:id="_lr9TcCGwEeW6P_eCTDXUJQ" specification="Conn.evRequestLeave/Conn.sendEvLeave()" target="_TRTGcBgiEeWygclz1JbYxQ"/>
             <outgoingTransitions xmi:id="_OYfgUFJWEeaU-v-cbaBr1g" specification="Socket.evDisconnect" target="_PCK-IBgjEeWygclz1JbYxQ"/>
+=======
+          <vertices xsi:type="sgraph:State" xmi:id="_bN_I0BglEeWygclz1JbYxQ" specification="entry/Conn.memberOf = &quot;self&quot;&#xA;evResetStream/resetStream()&#xA;evSyncStream/syncStream()&#xA;evSetVolume/setVolume()&#xA;evGetClientState/Conn.sendClientState()&#xA;" name="sesionMember" incomingTransitions="_oxs3YBgjEeWygclz1JbYxQ">
+            <outgoingTransitions xmi:id="_lr9TcCGwEeW6P_eCTDXUJQ" specification="Conn.evLeave/leaveSession()" target="_PCK-IBgjEeWygclz1JbYxQ"/>
+>>>>>>> b80d96cb7a229eae4c2d6ba20e20b84eb164e427
           </vertices>
         </regions>
       </vertices>

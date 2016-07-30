@@ -46,11 +46,10 @@ bool CStreamSrvSM::onEvent(muroa::CmdStreamBase* ev) {
 
 	if      ( typeid(*ev) == typeid(evClientState) )     process_event( *reinterpret_cast<evClientState*>(ev) );
 	else if ( typeid(*ev) == typeid(evRequestJoin) )     process_event( *reinterpret_cast<evRequestJoin*>(ev) );
+	else if ( typeid(*ev) == typeid(evRequestLeave) )    process_event( *reinterpret_cast<evRequestLeave*>(ev) );
 	else if ( typeid(*ev) == typeid(evJoinAccepted) )    process_event( *reinterpret_cast<evJoinAccepted*>(ev) );
 	else if ( typeid(*ev) == typeid(evJoinRejected) )    process_event( *reinterpret_cast<evJoinRejected*>(ev) );
-	else if ( typeid(*ev) == typeid(evLeave) ) {
-		process_event( *reinterpret_cast<evLeave*>(ev) );
-	}
+	else if ( typeid(*ev) == typeid(evLeave) ) 		     process_event( *reinterpret_cast<evLeave*>(ev) );
 	else if ( typeid(*ev) == typeid(evGetSessionState) ) process_event( *reinterpret_cast<evGetSessionState*>(ev) );
 	else if ( typeid(*ev) == typeid(evSessionState) )    process_event( *reinterpret_cast<evSessionState*>(ev) );
 	else if ( typeid(*ev) == typeid(evResetStream) )     process_event( *reinterpret_cast<evResetStream*>(ev) );
