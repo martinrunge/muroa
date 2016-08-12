@@ -23,9 +23,9 @@ WSSrv::WSSrv(boost::asio::io_service* ptr, CRessourceHandler* resHandler, CWSMsg
          : m_resHandler(resHandler), m_wsMsgHandler(wsMsgHandler)
 {
     // set up access channels to only log interesting things
-    m_endpoint.clear_access_channels(websocketpp::log::alevel::all);
-    m_endpoint.set_access_channels(websocketpp::log::alevel::access_core);
-    m_endpoint.set_access_channels(websocketpp::log::alevel::app);
+    // m_endpoint.clear_access_channels(websocketpp::log::alevel::all);
+    // m_endpoint.set_access_channels(websocketpp::log::alevel::access_core);
+    // m_endpoint.set_access_channels(websocketpp::log::alevel::app);
 
     // Initialize the Asio transport policy
     m_endpoint.init_asio(ptr);
@@ -136,7 +136,7 @@ void WSSrv::onHttp(connection_hdl hdl) {
 
 
 	if( filename.find("/REST") == 0 ) {
-		LOG4CPLUS_INFO( CApp::logger(), "http request in REST API: " << filename );
+		LOG4CPLUS_DEBUG( CApp::logger(), "http request in REST API: " << filename );
 
         map<string, string> query_params;
 

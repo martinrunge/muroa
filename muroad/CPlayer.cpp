@@ -162,11 +162,11 @@ int CPlayer::leaveSession(const evRequestLeave& evt, CCtrlConnection* ctrlConn) 
 
 int CPlayer::onCloseCtrlConn(CCtrlConnection* ctrlConn) {
 	if(m_session_ctrl_conn == ctrlConn) {
+		shutdownMediaStreamConn();
 		m_session_ctrl_conn = 0;
 		m_session_name.clear();
 	}
 	m_conn_mgr.remove(ctrlConn);
-	shutdownMediaStreamConn();
 }
 
 void CPlayer::syncInfo(const evSyncStream& evt, CCtrlConnection* ctrlConn) {
