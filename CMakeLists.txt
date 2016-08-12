@@ -6,6 +6,7 @@ project ( muroa )
 # the project's entire directory structure. 
 
 option( msessiond "build the muroa session daemon"            "yes")
+option( wssrv     "build stream searver with web interfave"   "yes")
 option( muroad    "build the muroa audio streaming daemon"    "yes")
 option( mqtclient "build the Qt based GUI client"             "yes")
 option( unittests "build unittests"                           "no" )
@@ -41,6 +42,10 @@ if( msessiond )
   endif( )
 endif( )
 
+if( wssrv )
+  add_subdirectory( wssrv )
+endif()
+
 if( muroad )
   add_subdirectory (muroad)
   if( unittests )
@@ -61,7 +66,7 @@ if( msessiond OR mqtclient )
 endif( )
 
 
-if( msessiond OR muroad )
+if( msessiond OR muroad OR wssrv )
   add_subdirectory (libmstream)
   add_subdirectory (libmstream/examples)
   add_subdirectory (libmuroadaemon)  

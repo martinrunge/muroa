@@ -1,7 +1,7 @@
-cmake_minimum_required (VERSION 2.6)
+cmake_minimum_required (VERSION 2.8)
 
 if(NOT MUROA_AUX_DIR)
-set(MUROA_AUX_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../../aux")
+set(MUROA_AUX_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../aux")
 endif()
 
 set(CMAKE_MODULE_PATH "${MUROA_AUX_DIR}/cmake/Modules" ${CMAKE_MODULE_PATH})
@@ -36,10 +36,10 @@ set( HEADERS          CppServer.h
 )
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}
-                    ${CMAKE_CURRENT_SOURCE_DIR}/../..
-                    ${CMAKE_CURRENT_SOURCE_DIR}/../../../libmcommons
-                    ${CMAKE_CURRENT_SOURCE_DIR}/../../../libsock++
-                    ${CMAKE_CURRENT_SOURCE_DIR}/../../../libmuroadaemon
+                    ${CMAKE_CURRENT_SOURCE_DIR}/../libmstream
+                    ${CMAKE_CURRENT_SOURCE_DIR}/../libmcommons
+                    ${CMAKE_CURRENT_SOURCE_DIR}/../libsock++
+                    ${CMAKE_CURRENT_SOURCE_DIR}/../libmuroadaemon
                     ${CMAKE_CURRENT_BINARY_DIR}/..
                     ${Boost_INCLUDE_DIRS} 
                     ${Threads_INCLUDE_DIRS} 
@@ -49,7 +49,7 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR}
                     ${libavutil_INCLUDE_DIR}
 ) 
 
-link_directories(${BINARY_DIR}       "${CMAKE_SOURCE_DIR}/../../build" )
+link_directories(${BINARY_DIR}       "${CMAKE_SOURCE_DIR}/../build" )
 
 ADD_EXECUTABLE(wssrv                  ${SRCS} ${HEADERS} )
 
