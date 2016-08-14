@@ -3,4 +3,4 @@
 	url = https://github.com/vokimon/python-wavefile.git
 [submodule "wssrv/www/ng-websocket"]
 	path = wssrv/www/ng-websocket
-	url = git@github.com:wilk/ng-websocket.git
+	url = https://github.com/wilk/ng-websocket.git
