@@ -5,10 +5,10 @@ project ( muroa )
 # cause another cmake executable to run. The same process will walk through 
 # the project's entire directory structure. 
 
-option( msessiond "build the muroa session daemon"            "yes")
+option( msessiond "build the muroa session daemon"            "no")
 option( wssrv     "build stream searver with web interfave"   "yes")
 option( muroad    "build the muroa audio streaming daemon"    "yes")
-option( mqtclient "build the Qt based GUI client"             "yes")
+option( mqtclient "build the Qt based GUI client"             "no")
 option( unittests "build unittests"                           "no" )
 
 

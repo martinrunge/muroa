@@ -125,6 +125,10 @@ file(COPY   muroa.conf      DESTINATION .)
 file(COPY   log.properties  DESTINATION .)                              
       
                                    
-ADD_GDB_INDEX( muroad )                                   
+ADD_GDB_INDEX( muroad )            
+
+install(TARGETS muroad DESTINATION bin)
+install(FILES muroa.conf DESTINATION /etc)
+install(FILES muroad.service DESTINATION /lib/systemd/system)
 
                                    

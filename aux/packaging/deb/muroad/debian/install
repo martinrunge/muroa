@@ -1,0 +1,6 @@
+usr/bin/*              usr/bin
+usr/lib/*              usr/lib
+lib/systemd/system/*   lib/systemd/system
+etc/*                  etc
+
+

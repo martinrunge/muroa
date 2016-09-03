@@ -1,0 +1,15 @@
+Source: muroad
+Section: sound
+Priority: optional
+Maintainer: Martin Runge <martin.runge@web.de>
+Build-Depends: debhelper (>= 9), dh-systemd
+Standards-Version: 3.9.5
+Homepage: http://muroa.org
+Vcs-Git: git@github.com:martinrunge/muroa.git
+Vcs-Browser: https://github.com/martinrunge/muroa
+
+Package: muroad
+Architecture: armhf
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: muroad network playback client
+ Network playback client of the muroa multi room audio system

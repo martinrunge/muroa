@@ -12,3 +12,5 @@ Makefile
 /debug_arm/
 /release_arm/
 /release/
+/release_native
+/debug_native

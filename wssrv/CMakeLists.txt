@@ -70,3 +70,6 @@ file(COPY   log.properties  DESTINATION .)
 execute_process(COMMAND ${CMAKE_COMMAND} -E create_symlink ${CMAKE_CURRENT_LIST_DIR}/www
                                                            ${CMAKE_CURRENT_BINARY_DIR}/www)
                                       
+ADD_GDB_INDEX( wssrv )            
+                                      
+install(TARGETS wssrv DESTINATION bin)

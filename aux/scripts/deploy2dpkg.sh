@@ -7,37 +7,43 @@ echo "call from top level build directory"
 
 
 PROJDIR=$(dirname $0)/../../
-DEBDIR=$PROJDIR/aux/deb-pkg/muroa
+DEBDIR=$PROJDIR/aux/packaging/deb/muroad
 
 REPODIR=$HOME/raspirepo/
 
 echo "DEBDIR=$(realpath $DEBDIR)"
 
-mkdir -p $DEBDIR/usr/bin
-mkdir -p $DEBDIR/usr/lib
-mkdir -p $DEBDIR/etc
+pushd $DEBDIR/..
 
-install -m 755 muroad/muroad  $DEBDIR/usr/bin
-install -m 755 libmcommons/libmcommons.so  $DEBDIR/usr/lib
-install -m 755 libmstream/libmstream.so  $DEBDIR/usr/lib
-install -m 755 libmuroadaemon/libmuroadaemon.so  $DEBDIR/usr/lib
-install -m 755 libsock++/libsock++.so  $DEBDIR/usr/lib
-
-
-CONTROLFILE=$DEBDIR/DEBIAN/control
-
-VERSIONSTR="0.6-$(date +%Y%m%dT%H%M%S)"
-
-sed -i "s/Version:.*/Version: $VERSIONSTR/g"  $CONTROLFILE
+while read debfile
+do
+    echo "Found old package file '$debfile'. Removing it .."
+    if [ -f $debfile ]; then
+      rm -f $debfile
+    fi
+done < <(find \( -name "*.deb" -or -name "*.changes" \) -type f)
 
 
-cd $DEBDIR/..
+popd
+make install DESTDIR=$DEBDIR
 
-dpkg-deb -b muroa muroad_$VERSIONSTR.deb
+
+# do the actual package building on a raspberry pi
+ssh pi@raspi-deb-packer "pwd && git/muroa/aux/scripts/build-deb-pkg.sh"
+
 
 #
 # call thos on targets to add signing key:
 # sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 5FBF5DA1
 #
 
-reprepro -b $REPODIR includedeb jessie muroad_$VERSIONSTR.deb
+
+FN=$(find $DEBDIR/.. -name "muroad*.deb" -type f)
+if [ $? -ne 0 ]; then
+    echo "Error: no debian package was found inside $DEBDIR/.."
+    echo "Maybe the build on the RaspberryPi was no successful or the directory is not mounted the expected way"
+else
+    echo "package was built: '$FN' -> adding it to repository in '$REPODIR'"
+    reprepro -b $REPODIR includedeb jessie $FN
+fi
+
