@@ -7,7 +7,7 @@
 
 #include "CUtilsTest.h"
 
-#include "CUtils.h"
+#include <CUtils.h>
 #include <boost/filesystem.hpp>
 
 CPPUNIT_TEST_SUITE_REGISTRATION( CUtilsTest );

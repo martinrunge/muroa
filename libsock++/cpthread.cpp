@@ -21,6 +21,7 @@
 
 #include <iostream>
 #include <string.h>
+#include <signal.h>
 
 using namespace std;
 
@@ -28,6 +29,7 @@ CPThread::CPThread(CThreadSlave* thread_slave) {
     m_run_thread = false;
     m_is_running = false;
     m_thread_slave = thread_slave;
+    m_thread_slave->setPThreadPtr(this);
 }
 
 CPThread::~CPThread() {
@@ -37,6 +39,7 @@ CPThread::~CPThread() {
 
 int CPThread::StartThread(bool realtime) {
 	int retval = -1;
+
 	Run(true);
     if(realtime) {
       struct sched_param s_param;
@@ -88,6 +91,7 @@ int CPThread::StopThread() {
     int retval;
 
     Run(false);
+
     retval = pthread_join(m_thread_id, NULL);
     perror("CPThread::StopThread (pthread_join)");
     return retval;

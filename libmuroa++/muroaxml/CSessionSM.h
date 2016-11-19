@@ -10,7 +10,7 @@
 
 #include "CMuroaXml.h"
 
-class CSessionSM: public CMuroaXml {
+class CSessionSM: public CStreamCtrlXml {
 public:
 	CSessionSM();
 	~CSessionSM();

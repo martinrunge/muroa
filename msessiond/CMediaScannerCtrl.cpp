@@ -51,7 +51,7 @@ void CMediaScannerCtrl::start() {
 
 	vector<string> args;
 
-	string mmscannerbin = CApp::settings().getProperty("msessiond.mmscanner_binary", "mmscanner/mmscanner");
+	string mmscannerbin = CApp::settings().getConfigVal("msessiond.mmscanner_binary", "mmscanner/mmscanner");
 
 	pid_t pid = CSubProcess::start(mmscannerbin , args ,0 ,0);
 

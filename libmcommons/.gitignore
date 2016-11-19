@@ -1,0 +1,4 @@
+# ignore all generated files in build directory
+debug_*
+release_*
+

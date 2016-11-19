@@ -8,8 +8,9 @@
 #ifndef CSTREAM_H_
 #define CSTREAM_H_
 
-#include "CDecoder.h"
 #include "avahi/CServiceDesc.h"
+#include "boost/asio.hpp"
+#include "CDecoder.h"
 
 namespace std {
   class thread;
@@ -19,10 +20,10 @@ class IAudioIO;
 
 namespace muroa {
   class CSession;
-  // class CMediaItem;
+  class CMediaItem;
+  class CStreamServer;
 }
 
-class CStreamServer;
 
 enum sessionState {
 	e_stopped = 0,
@@ -34,7 +35,7 @@ enum sessionState {
 
 class CStream  {
 public:
-	CStream(muroa::CSession* session, int timeServicePort = 0);
+	CStream(muroa::CSession* session, boost::asio::io_service& io_service, int timeServicePort = 0);
 	virtual ~CStream();
 
 	void next() const;
@@ -58,8 +59,8 @@ public:
 	void adjustReceiverList(std::vector<muroa::ServDescPtr> receivers);
 
 private:
-	void startThread();
-	void stopThread();
+ 	void startThread();
+ 	void stopThread();
 
 	enum sessionState m_state;
 	std::string m_fileName;
@@ -67,16 +68,16 @@ private:
 	int m_done;
 	int m_total;
 
-	CDecoder m_decoder;
-	IAudioIO* m_audioIO;
+ 	CDecoder m_decoder;
+ 	IAudioIO* m_audioIO;
 
 	muroa::CSession* m_session;
 
-	std::thread* m_thread;
+ 	std::thread* m_thread;
 	bool m_run;
 
-    CStreamServer *m_streamserver;
-
+    muroa::CStreamServer *m_streamserver;
+    boost::asio::io_service& m_io_service;
 };
 
 #endif /* CSTREAM_H_ */

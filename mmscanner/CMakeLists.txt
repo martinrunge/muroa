@@ -1,6 +1,12 @@
 cmake_minimum_required (VERSION 2.6)
 
-set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../aux/cmake/Modules" ${CMAKE_MODULE_PATH})
+if(NOT MUROA_AUX_DIR)
+set(MUROA_AUX_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../aux")
+endif()
+
+set(CMAKE_MODULE_PATH "${MUROA_AUX_DIR}/cmake/Modules" ${CMAKE_MODULE_PATH})
+
+include( MacroGDBIndex )
 
 set(Boost_USE_MULTITHREADED ON )
 
@@ -56,8 +62,12 @@ set( HEADER  CMediaScanner.h
              )
 
 
-include_directories(${SOURCE_DIR} ${Boost_INCLUDE_DIRS} ${TagLib_INCLUDE_DIRS} ${SQLITE_INCLUDE_DIR} 
-                    "${CMAKE_CURRENT_SOURCE_DIR}/../msessiond" "${CMAKE_CURRENT_SOURCE_DIR}/../libmuroa++") 
+include_directories(${SOURCE_DIR} 
+                    ${Boost_INCLUDE_DIRS} 
+                    ${TagLib_INCLUDE_DIRS} ${SQLITE_INCLUDE_DIR} 
+                    "${CMAKE_CURRENT_SOURCE_DIR}/../msessiond" 
+                    "${CMAKE_CURRENT_SOURCE_DIR}/../libmuroa++" 
+                    "${CMAKE_CURRENT_SOURCE_DIR}/../libmcommons") 
 
 link_directories(${BINARY_DIR} ${SQLITE_LIBRARY_DIRS} "${CMAKE_SOURCE_DIR}/../libmuroa++/build")
 
@@ -70,27 +80,16 @@ TARGET_LINK_LIBRARIES(mmscanner ${CMAKE_THREAD_LIBS_INIT}
                                 ${TagLib_LIBRARIES}  
                                 ${SQLITE_LIBRARIES} 
                                 muroa++
+                                mcommons
                                 ${libxdiff_LIBRARIES}
                                 ${liblog4cplus_LIBRARIES}
                                 )
 
                               
-###################################################################################
-# This step merges a gdb_index section into the binary to speed up debugging.
-# Doing this by add_custom_command will become obsolete as soon as the linker does it. 
-###################################################################################
-add_custom_command(TARGET mmscanner
-                   POST_BUILD  
-                   COMMAND  ${CMAKE_CURRENT_SOURCE_DIR}/../aux/scripts/mkgdbindex.sh mmscanner 
-                   WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-                   COMMENT "building gdb index")
-                                   
-###################################################################################      
+ADD_GDB_INDEX( mmscanner )
 
 
-
-
-if(${unittests})
+if(unittests)
     find_package( CppUnit REQUIRED )
     find_package ( Qt4 REQUIRED COMPONENTS QtCore QtGui QtNetwork QtXml QtDbus )
     
@@ -106,7 +105,8 @@ if(${unittests})
     
     set_target_properties( mmscannertest PROPERTIES  COMPILE_FLAGS "-std=gnu++0x" ) 
     
-    TARGET_LINK_LIBRARIES(mmscannertest  ${CPPUNIT_LIBRARIES} 
+    TARGET_LINK_LIBRARIES(mmscannertest  ${CPPUNIT_LIBRARIES}
+                                         mcommons
                                          muroa++
                                          ${CMAKE_THREAD_LIBS_INIT}
                                          ${Boost_LIBRARIES} 
@@ -124,18 +124,7 @@ if(${unittests})
                                          qxrunnerd
                                          )
                                          
-    ################################################################################
-    # This step merges a gdb_index section into the binary to speed up debugging.
-    # Doing this by add_custom_command will become obsolete as soon as the linker does it. 
-    ################################################################################
+    ADD_GDB_INDEX( mmscannertest )
     
-    add_custom_command(TARGET mmscannertest
-                       POST_BUILD  
-                       COMMAND  ${CMAKE_CURRENT_SOURCE_DIR}/../aux/scripts/mkgdbindex.sh mmscannertest 
-                       WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-                       COMMENT "building gdb index")
-    
-    ################################################################################                                     
-                                                                    
-endif(${unittests})                    
+endif()                    
             

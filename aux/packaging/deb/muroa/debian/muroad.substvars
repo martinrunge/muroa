@@ -1,0 +1,2 @@
+misc:Depends=init-system-helpers (>= 1.18~)
+shlibs:Depends=libasound2 (>= 1.0.16), libavahi-client3 (>= 0.6.16), libavahi-common3 (>= 0.6.16), libboost-date-time1.55.0, libboost-filesystem1.55.0, libboost-program-options1.55.0, libboost-system1.55.0, libc6 (>= 2.8), libexpat1 (>= 2.0.1), libgcc1 (>= 1:4.4.0), liblog4cplus-1.0-4, libsamplerate0 (>= 0.1.7), libstdc++6 (>= 4.9)

@@ -31,6 +31,9 @@
 #include "cmutex.h"
 
 #include "CSettings.h"
+#include "MuroaExceptions.h"
+
+#include "cmds/CmdStream.h"
 
 #include <boost/date_time/posix_time/posix_time.hpp>
 #include <boost/date_time/time_duration.hpp>
@@ -51,7 +54,7 @@ class CSync;
 class CPacketRingBuffer;
 class CRingBuffer;
 class CResampler;
-class CPlayer;
+class CMediaStreamConnection;
 class Cmuroad;
 class CRTPPacket;
 
@@ -60,15 +63,16 @@ using namespace boost::posix_time;
 class CPlayloop : public CThreadSlave
 {
 public:
-	CPlayloop(CPlayer* parent, muroa::CApp *app, CPacketRingBuffer* packet_ringbuffer );
+	CPlayloop(CMediaStreamConnection* parent, CPacketRingBuffer* packet_ringbuffer );
     ~CPlayloop();
 
     void DoLoop();
     void setSync(CSync* sync_obj);
-    void resetStream(uint32_t oldSessionID, uint32_t oldStreamId);
+    void resetStream(uint32_t ssrc);
 
 private:
 
+    uint32_t m_current_ssrc;
     double m_resample_factor;
     double m_correction_factor;
 
@@ -85,22 +89,23 @@ private:
     boost::posix_time::time_duration m_average_time_diff;
     int m_average_size;
 
-    CAudioFrame* getAudioPacket(bool block);
+    CAudioFrame* getAudioPacket(uint32_t ssrc, bool block);
     bool waitForData();
-    int addPacket2RingBuffer(bool block);
-    int startStream();
-    boost::posix_time::ptime discardPastPTSFrames();
-    void waitForStartPTS();
+    int addPacket2RingBuffer(uint32_t ssrc, bool block);
+    int startStream(const muroa::evSyncStream& syncInfo);
+
+    boost::posix_time::ptime discardPastPTSFrames(const muroa::evSyncStream& syncInfo	);
+    void waitForStartPTS(const muroa::evSyncStream& syncInfo);
     int sleepuntil(boost::posix_time::ptime wakeup_time);
 
-    void adjustResamplingFactor();
+    void adjustResamplingFactor(const muroa::evSyncStream& syncInfo);
 
-    boost::posix_time::ptime getPreResamplerPTS();
+    boost::posix_time::ptime getPreResamplerPTS(const muroa::evSyncStream& syncInfo);
 
     boost::posix_time::time_duration calcSoundCardDelay();
     boost::posix_time::time_duration calcResamplerDelay();
     boost::posix_time::time_duration calcRingbufferDelay();
-    boost::posix_time::time_duration getCurrentPTSDeviation();
+    boost::posix_time::time_duration getCurrentPTSDeviation(const muroa::evSyncStream& syncInfo);
     
     boost::posix_time::time_duration m_last_start_stream_error;
     boost::posix_time::time_duration m_max_stream_reset_duration;
@@ -121,9 +126,7 @@ private:
 
     FILE* m_debug_fd1;
     
-    CPlayer* m_player;
-    muroa::CApp *m_app;
-    muroa::CSettings& m_settings;
+    CMediaStreamConnection* m_media_stream_conn;
     
     CPacketRingBuffer *m_packet_ringbuffer;
     CRingBuffer *m_ringbuffer;
@@ -139,7 +142,6 @@ private:
     log4cplus::Logger m_timing_logger;
 
   private:
-    bool checkStream(CRTPPacket* packet);
     bool m_after_sync;
 };
 

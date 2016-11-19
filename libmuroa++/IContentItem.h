@@ -10,7 +10,7 @@
 
 #include "CItemBase.h"
 #include <stdexcept>
-#include "MuroaExceptions.h"
+#include <MuroaExceptions.h>
 
 namespace muroa {
 

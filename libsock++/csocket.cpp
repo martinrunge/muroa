@@ -308,8 +308,14 @@ int CSocket::setNonBlocking(int timeout){
   m_timeout_timeval.tv_sec = timeout / 1000;
   m_timeout_timeval.tv_usec = timeout - (m_timeout_timeval.tv_sec * 1000);
 
-  retval = fcntl(m_socket_descr, O_NONBLOCK);
-  return 0;
+  // retval = fcntl(m_socket_descr, O_NONBLOCK);
+
+  int flags = fcntl(m_socket_descr, F_GETFL, 0);
+  if (flags < 0) return -1;
+  flags = (flags|O_NONBLOCK);
+  retval = fcntl(m_socket_descr, F_SETFL, flags);
+
+  return retval;
 }
 
 

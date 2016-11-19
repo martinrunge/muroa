@@ -49,7 +49,7 @@ public:
   }
 
   tcp::socket& socket() {
-    return m_socket;
+    return this->m_socket;
   }
 
   virtual void start();
@@ -58,6 +58,9 @@ public:
   virtual void setNonBlocking(bool mode = true);
 
   virtual void onClose();
+
+  tcp::endpoint localEndpoint();
+  std::string localEndpointStr();
 
   tcp::endpoint remoteEndpoint();
   std::string remoteEndpointStr();

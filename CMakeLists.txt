@@ -5,12 +5,15 @@ project ( muroa )
 # cause another cmake executable to run. The same process will walk through 
 # the project's entire directory structure. 
 
-option( msessiond "build the muroa session daemon"            "yes")
+option( msessiond "build the muroa session daemon"            "no")
+option( wssrv     "build stream searver with web interfave"   "yes")
 option( muroad    "build the muroa audio streaming daemon"    "yes")
-option( mqtclient "build the Qt based GUI client"             "yes")
+option( mqtclient "build the Qt based GUI client"             "no")
 option( unittests "build unittests"                           "no" )
 
-set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/aux/cmake/Modules" ${CMAKE_MODULE_PATH})
+
+set(MUROA_AUX_DIR "${CMAKE_CURRENT_LIST_DIR}/aux")
+set(CMAKE_MODULE_PATH "${MUROA_AUX_DIR}/cmake/Modules" ${CMAKE_MODULE_PATH})
 
 find_package(libxdiff)
 
@@ -21,7 +24,6 @@ else( libxdiff_FOUND )
   add_subdirectory (3rdparty/libxdiff-0.23)
   
   FIND_PATH(libxdiff_INCLUDE_DIRS xdiff.h ${CMAKE_SOURCE_DIR}/3rdparty/libxdiff-0.23/xdiff )
-
   set( libxdiff_LIBRARIES ${CMAKE_BINARY_DIR}/3rdparty/libxdiff-0.23/libxdiff.so )   
   
   MARK_AS_ADVANCED(libxdiff_LIBRARIES)				
@@ -30,29 +32,43 @@ else( libxdiff_FOUND )
   set( libxdiff_FOUND "yes")
 endif( libxdiff_FOUND )
 
+add_subdirectory (libmcommons)
 
-if( ${msessiond} )
-  add_subdirectory (libstreamsrv)
+if( msessiond )
   add_subdirectory (mmscanner)
   add_subdirectory (msessiond)
-endif( ${msessiond} )
+  if( unittests )
+    add_subdirectory(msessiond/unittest)
+  endif( )
+endif( )
 
-if( ${muroad} )
-  add_subdirectory (libdsaudio)  
+if( wssrv )
+  add_subdirectory( wssrv )
+endif()
+
+if( muroad )
   add_subdirectory (muroad)
-endif( ${muroad} )
+  if( unittests )
+    add_subdirectory(libmstream/unittest)
+  endif( )
+endif( )
 	  
-if( ${mqtclient} )
+if( mqtclient )
   add_subdirectory (mqtclient)
-endif( ${mqtclient} )
+endif( )
 
 
-if( ${msessiond} OR ${mqtclient} )
+if( msessiond OR mqtclient )
   add_subdirectory (libmuroa++)
-endif( ${msessiond} OR ${mqtclient} )
+  if( unittests )
+    add_subdirectory(libmuroa++/unittest)
+  endif( )
+endif( )
 
 
-if( ${msessiond} OR  ${muroad} )
+if( msessiond OR muroad OR wssrv )
+  add_subdirectory (libmstream)
+  add_subdirectory (libmstream/examples)
   add_subdirectory (libmuroadaemon)  
   add_subdirectory (libsock++)
-endif( ${msessiond} OR ${muroad} )
+endif( )

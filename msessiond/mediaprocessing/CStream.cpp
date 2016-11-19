@@ -14,8 +14,6 @@
 #include "CAudioIOAlsa.h"
 #include "CSession.h"
 
-#include "CStreamServer.h"
-
 #include <cmds/CmdProgress.h>
 #include <cmds/CmdFinished.h>
 
@@ -23,19 +21,22 @@
 #include <log4cplus/loggingmacros.h>
 #include "CApp.h"
 
+#include "CStreamServer.h"
+
 using namespace log4cplus;
 using namespace muroa;
 using namespace std;
 
-CStream::CStream(CSession* session, int timeServicePort) : m_done(0),
+CStream::CStream(CSession* session, boost::asio::io_service& io_service, int timeServicePort) : m_done(0),
 		                                                   m_state(e_stopped),
 		                                                   m_decoder(this),
 		                                                   m_session(session),
 		                                                   m_thread(0),
-		                                                   m_run(false)
+		                                                   m_run(false),
+														   m_io_service(io_service)
 {
     m_audioIO = new CAudioIoAlsa();
-    m_streamserver = new CStreamServer(timeServicePort);
+    m_streamserver = new CStreamServer(io_service, m_session->getName(), timeServicePort);
 }
 
 CStream::~CStream() {
@@ -188,13 +189,14 @@ void CStream::next() const
 
 void CStream::addReceiver(ServDescPtr srv_desc_ptr)
 {
-    CIPv4Address addr(srv_desc_ptr->getHostName(), srv_desc_ptr->getPortNr());
-    m_streamserver->addClient(&addr, srv_desc_ptr->getServiceName());
+    // CIPv4Address addr(srv_desc_ptr->getHostName(), srv_desc_ptr->getPortNr());
+    bip::tcp::endpoint endp(srv_desc_ptr->getAddress(), srv_desc_ptr->getPortNr());
+    m_streamserver->addClient(endp, srv_desc_ptr->getServiceName());
 }
 
 void CStream::rmReceiver(const string& name)
 {
-    m_streamserver->removeClient(name);
+	m_streamserver->removeClientByName(name);
 }
 
 void CStream::adjustReceiverList(vector<ServDescPtr> receivers)

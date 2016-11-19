@@ -1,7 +1,10 @@
 cmake_minimum_required (VERSION 2.6)
 
-set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../cmake" ${CMAKE_MODULE_PATH})
-set(VERBOSE 1)
+if(NOT MUROA_AUX_DIR)
+set(MUROA_AUX_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../../../aux")
+endif()
+
+set(CMAKE_MODULE_PATH "${MUROA_AUX_DIR}/cmake/Modules" ${CMAKE_MODULE_PATH})
 
 find_package( Boost 1.36.0 COMPONENTS filesystem REQUIRED )
 
@@ -16,7 +19,9 @@ set( HEADERS         )
 #include ( ${QT_USE_FILE} )
 #qt4_wrap_cpp( MOC_SOURCES ${MOC_H} ${MOC_MEDPROC_H} )
 
-include_directories(${CMAKE_CURRENT_SOURCE_DIR} ${Boost_INCLUDE_DIRS}) 
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}
+                    ${CMAKE_CURRENT_SOURCE_DIR}/../../../libmcommons 
+                    ${Boost_INCLUDE_DIRS}) 
 
 link_directories(${BINARY_DIR} "${CMAKE_SOURCE_DIR}/../../build" )
 

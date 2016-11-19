@@ -1,0 +1,39 @@
+/* style here */
+
+/* .mclientListCtrl md-list {
+  padding-top: 0; } */
+.mclientListCtrl md-list-item > p,
+.mclientListCtrl md-list-item > ._md-list-item-inner > p,
+.mclientListCtrl md-list-item ._md-list-item-inner > p,
+.mclientListCtrl md-list-item ._md-list-item-inner > ._md-list-item-inner > p {
+  -webkit-user-select: none;
+  /* Chrome all / Safari all */
+  -moz-user-select: none;
+  /* Firefox all */
+  -ms-user-select: none;
+  /* IE 10+ */
+  user-select: none;
+  /* Likely future */ 
+}
+
+
+/*  prevent md from transforming clients list to uppercase, because it is encapsulated inside md-button */
+.mclientListCtrl .listitem {
+   text-transform: none; 
+}
+
+/*.mclientListCtrl md-checkbox.md-checked.green .md-icon {
+ background-color: rgba(0, 255, 0, 0.87),
+ foreground-color: rgba(0,0,0,255),
+ border-width: 2px,
+ border-style: solid;
+}
+.mclientListCtrl md-checkbox.md-unchecked.green .md-icon {
+ background-color: rgba(0, 255, 0, 0.87),
+ foreground-color: rgba(0,0,0,255),
+ border-width: 2px,
+ border-style: solid;
+}
+.mclientListCtrl md-checkbox.md-checked[disabled].red .md-icon {
+  background-color: rgba(255, 0, 0, 0.26);
+}*/

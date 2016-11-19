@@ -71,6 +71,23 @@ void CDnsSdAvahi::staticResolveCallback( AvahiServiceResolver *r,
 }
 
 
+bip::address CDnsSdAvahi::AvahiToAsioAddress(const AvahiAddress& avahiAddr) {
+	if( avahiAddr.proto == AVAHI_PROTO_INET ) {
+		// IPv4
+		return bip::address( bip::address_v4( ntohl(avahiAddr.data.ipv4.address) ) );
+	}
+	else if(avahiAddr.proto == AVAHI_PROTO_INET6 ) {
+		// IPv6
+		bip::address_v6::bytes_type bytes;
+		std::memcpy(&bytes[0], &avahiAddr.data.ipv6.address, sizeof(avahiAddr.data.ipv6.address));
+		return bip::address( bip::address_v6(bytes) );
+
+	} else {
+		return bip::address();
+	}
+}
+
+
 
 CDnsSdAvahi::CDnsSdAvahi(boost::asio::io_service& io_service,
 		                 string service_name,
@@ -254,7 +271,7 @@ void CDnsSdAvahi::browseCallback(AvahiServiceBrowser *b,
         case AVAHI_BROWSER_REMOVE:
         {
             cerr << "(Browser) REMOVE: service '" << name << "' of type '" << type << "' in domain '" << domain << "'" << endl;
-            CServiceDesc tmpSd(name, "", domain, type, 0, interface, protocol);
+            CServiceDesc tmpSd(name, "", domain, type, bip::address(), 0, interface, protocol);
             removeService( tmpSd );
             break;
         }
@@ -290,16 +307,17 @@ void CDnsSdAvahi::resolveCallback( AvahiServiceResolver *r,
             break;
 
         case AVAHI_RESOLVER_FOUND: {
-//            char a[AVAHI_ADDRESS_STR_MAX], *t;
-//            avahi_address_snprint(a, sizeof(a), address);
+            char a[AVAHI_ADDRESS_STR_MAX];
+            avahi_address_snprint(a, sizeof(a), address);
 
             cerr << "Service '" << name << "' of type '" << type << "' in domain '" << domain << "':" << endl;
-            cerr << "Host: " << host_name << " Port: " << port << endl;
+            cerr << "Host: " << host_name << " Address: " << a << " Port: " << port << endl;
 
             if(hasService(name) == 0)
             {
             	// no service with that name known yet
-            	addService(ServDescPtr( new CServiceDesc(name, host_name, domain, type, port, interface, protocol)));
+            	bip::address addr = AvahiToAsioAddress(*address);
+            	addService(ServDescPtr( new CServiceDesc(name, host_name, domain, type, addr, port, interface, protocol)));
             }
 
 
@@ -360,7 +378,7 @@ void CDnsSdAvahi::createService(AvahiClient *client)
          * same name should be put in the same entry group. */
 
         /* Add the service for IPP */
-        if ((ret = avahi_entry_group_add_service(m_group, AVAHI_IF_UNSPEC, AVAHI_PROTO_UNSPEC, AvahiPublishFlags(0), m_serviceName.c_str(), m_service_type.c_str(), NULL, NULL, m_servicePort, "role=session server", NULL)) < 0) {
+        if ((ret = avahi_entry_group_add_service(m_group, AVAHI_IF_UNSPEC, AVAHI_PROTO_INET, AvahiPublishFlags(0), m_serviceName.c_str(), m_service_type.c_str(), NULL, NULL, m_servicePort, "role=session server", NULL)) < 0) {
 
             if (ret == AVAHI_ERR_COLLISION)
                 goto collision;

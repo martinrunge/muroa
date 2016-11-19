@@ -34,8 +34,6 @@
 #include "CTcpConnection.h"
 #include "IConnectionManager.h"
 
-using boost::asio::ip::tcp;
-
 #ifndef CTCPSERVER_H_
 #define CTCPSERVER_H_
 
@@ -49,12 +47,14 @@ typedef CTcpConnection*(*factory_ptr_t)(boost::asio::io_service& io_service);
 class CTcpServer : private boost::noncopyable
 {
 public:
-	CTcpServer(boost::asio::io_service& io_service, IConnectionManager* cm, CApp* app, factory_ptr_t connection_factory);
+	CTcpServer(boost::asio::io_service& io_service, IConnectionManager* cm, boost::asio::ip::tcp::endpoint& endp, factory_ptr_t connection_factory);
 	virtual ~CTcpServer();
 	IConnectionManager* getConnctionManager();
 
 	void setConnectionFactory( factory_ptr_t connection_factory );
 	factory_ptr_t getConnectionFactory(void);
+
+    boost::asio::ip::tcp::endpoint getEndpoint() { return m_acceptor.local_endpoint(); };
 
 private:
   void start_accept();
@@ -64,7 +64,6 @@ private:
   IConnectionManager* m_connectionManager;
   factory_ptr_t m_connection_factory;
 
-  CApp* m_app;
 };
 
 }

@@ -10,7 +10,7 @@
 
 #include <string>
 #include <vector>
-#include "MuroaExceptions.h"
+#include <MuroaExceptions.h>
 
 class IRPC {
 public:
@@ -93,7 +93,7 @@ public:
 	virtual void onDataToSend(const char* data, int len) = 0;
 
 	// newData:
-	// when data is received from pther end, feed it in here. The on... Methonds
+	// when data is received from other end, feed it in here. The on... methods
 	// will be called if a complete command was contained in the data.
 	virtual void newData(const char* data, int len) = 0;
 

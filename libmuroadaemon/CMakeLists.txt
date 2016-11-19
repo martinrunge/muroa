@@ -2,8 +2,13 @@ cmake_minimum_required (VERSION 2.6)
 
 project (muroadaemon)
 
-set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../aux/cmake/Modules" ${CMAKE_MODULE_PATH})
+if(NOT MUROA_AUX_DIR)
+set(MUROA_AUX_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../aux")
+endif()
 
+set(CMAKE_MODULE_PATH "${MUROA_AUX_DIR}/cmake/Modules" ${CMAKE_MODULE_PATH})
+
+include( MacroGDBIndex )
 
 set(Boost_USE_MULTITHREADED ON)
 find_package( Threads )
@@ -20,7 +25,7 @@ add_definitions( ${log4cplus_DEFINITIONS} )
 
 set( SRC           CTcpConnection.cpp
                    CTcpServer.cpp
-                   # CConnectionManager.cpp
+                   CConnectionManager.cpp
                    CSignalHandler.cpp
                    CSettings.cpp
                    Exceptions.cpp
@@ -37,6 +42,7 @@ set( SRC           CTcpConnection.cpp
 set( HEADERS       CTcpConnection.h
                    CTcpServer.h
                    IConnectionManager.h
+                   CConnectionManager.cpp
                    CSignalHandler.h
                    CSettings.h
                    Exceptions.h
@@ -68,18 +74,6 @@ target_link_libraries( muroadaemon  ${CMAKE_THREAD_LIBS_INIT}
 
 set_target_properties( muroadaemon  PROPERTIES  COMPILE_FLAGS "-std=c++0x -pthread" ) 
 
-# SET_TARGET_PROPERTIES( muroad PROPERTIES  LINK_FLAGS -Wl,-shared-libgcc)
-###################################################################################
-# This step merges a gdb_index section into the binary to speed up debugging.
-# Doing this by add_custom_command will become obsolete as soon as the linker does it. 
-###################################################################################
-add_custom_command(TARGET muroadaemon
-                   POST_BUILD  
-                   COMMAND  ${CMAKE_CURRENT_SOURCE_DIR}/../aux/scripts/mkgdbindex.sh libmuroadaemon.so 
-                   WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-                   COMMENT "building gdb index")
-                                   
-###################################################################################                                   
-
+ADD_GDB_INDEX( muroadaemon )
 
 install(TARGETS   muroadaemon DESTINATION  lib)

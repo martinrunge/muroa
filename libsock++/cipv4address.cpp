@@ -45,10 +45,15 @@ CIPv4Address::CIPv4Address(std::string host, unsigned short port)
   }
 
   fillSockaddrIn(tmp_host, tmp_port);
-  
-    
-
 }
+
+CIPv4Address::CIPv4Address(boost::asio::ip::address_v4 v4addr, unsigned short port)
+{
+	m_sockaddr_in.sin_family = AF_INET;
+	m_sockaddr_in.sin_port = htons (port);
+	memcpy(&m_sockaddr_in.sin_addr.s_addr, &v4addr.to_bytes()[0], sizeof(m_sockaddr_in.sin_addr.s_addr));
+}
+
 
 
 

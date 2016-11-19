@@ -27,47 +27,34 @@
 using namespace std;
 using namespace log4cplus;
 
+using boost::asio::ip::tcp;
+
 namespace muroa {
 
-CTcpServer::CTcpServer(boost::asio::io_service& io_service, IConnectionManager* cm, CApp* app, factory_ptr_t connection_factory)
+CTcpServer::CTcpServer(boost::asio::io_service& io_service, IConnectionManager* cm, tcp::endpoint& endp, factory_ptr_t connection_factory)
 
                      : m_acceptor(io_service),
                        m_connectionManager(cm),
-	                   m_app(app),
  	                   m_connection_factory(connection_factory)
 
 
 {
-	CSettings& settings = m_app->settings();
-
-	boost::asio::ip::tcp protocol = tcp::v4();
-	if( settings.ipversion() == 6 ) {
-		protocol = tcp::v6();
-	}
-
-	m_acceptor.open(protocol);
+	m_acceptor.open(endp.protocol());
 	m_acceptor.set_option(boost::asio::ip::tcp::acceptor::reuse_address(true));
 
-	tcp::endpoint endpoint;
-
-	unsigned short portNr = settings.port();
 	bool found = false;
 	while( !found ) {
-		endpoint = tcp::endpoint(protocol, portNr);
 		boost::system::error_code ec;
-		m_acceptor.bind(endpoint, ec);
+		m_acceptor.bind(endp, ec);
 		int val = ec.value();
 		if( val == EADDRINUSE ) {
-			portNr++;
+			endp.port(endp.port() + 1);
 		}
 		else {
 			found = true;
-			tcp::endpoint local_endpoint = m_acceptor.local_endpoint();
-			portNr = local_endpoint.port();
+			endp = m_acceptor.local_endpoint();
 		}
-
 	}
-	settings.setPort(portNr);
 
 	m_acceptor.listen();
 	start_accept();
@@ -99,10 +86,12 @@ void CTcpServer::start_accept() {
 void CTcpServer::handle_accept(CTcpConnection* new_connection, const boost::system::error_code& error) {
   if (!error) {
 	  new_connection->setNonBlocking();
-	  new_connection->start();
 	  m_connectionManager->add(new_connection);
+	  start_accept();
   }
-  start_accept();
+  else {
+	  cerr << "error duric accept: " << error.category().message(error.value()) << endl;
+  }
 }
 
 }

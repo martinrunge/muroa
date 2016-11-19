@@ -33,6 +33,7 @@
 #include "boost/filesystem/path.hpp"
 
 #include <string>
+#include <stack>
 
 #include "Exceptions.h"
 
@@ -44,6 +45,9 @@ class CSettings {
 public:
 	CSettings(CApp* app) throw();
 	virtual ~CSettings() throw();
+
+	void pushConfigFilePath(boost::filesystem::path cf);
+	void pushPersistFilePath(boost::filesystem::path cf);
 
 	int parse(int argc, char** argv) throw(muroa::configEx);
 	int readConfigFile() throw(muroa::configEx);
@@ -58,6 +62,9 @@ public:
     inline bool searchFreePort() { return m_search_free_port; };
     unsigned short ipversion() {return m_ip_version; };
 
+    unsigned short timeserver_port() { return m_ts_port; };
+    std::vector<std::string> muroad_addrs() { return m_muroad; };
+
     inline std::string logfile() { return m_logfile; };
 
     inline std::string serviceName() {return m_service_name; };
@@ -66,23 +73,33 @@ public:
     inline std::string serviceType() {return m_service_type; };
     inline void setServiceType(std::string service_type) { m_service_type = service_type; };
 
-    std::string getProperty(const std::string& key, const char* defaultVal);
-    void setProperty(const std::string& key, const char* val);
+    std::string getConfigVal(const std::string& key, const char* defaultVal);
+    std::string getConfigVal(const std::string& key, const std::string& defaultVal);
+    int getConfigVal(const std::string& key, const int& defaultVal);
+    bool getConfigVal(const std::string& key, const bool& defaultVal);
 
-    std::string getProperty(const std::string& key, const std::string& defaultVal);
-    void setProperty(const std::string& key, const std::string& val);
+    std::string getPersisentVal(const std::string& key, const char* defaultVal);
+    void setPersistentVal(const std::string& key, const int& val);
 
-    int getProperty(const std::string& key, const int& defaultVal);
-    void setProptery(const std::string& key, const int& val);
+    std::string getPersisentVal(const std::string& key, const std::string& defaultVal);
+    void setPersistentVal(const std::string& key, const std::string& val);
 
-    bool getProperty(const std::string& key, const bool& defaultVal);
-    void setProptery(const std::string& key, const bool& val);
+    std::vector<std::string> getPersisentVal(const std::string& prent_key, const std::vector<std::string>& defaultVal);
+    void setPersistentVal(const std::string& parent_key, const std::vector<std::string>& val);
+
+    int getPersisentVal(const std::string& key, const int& defaultVal);
+    void setPersistentVal(const std::string& key, const char* val);
+
+    bool getPersisentVal(const std::string& key, const bool& defaultVal);
+    void setPersistentVal(const std::string& key, const bool& val);
 
     static bool accessible(std::string filename);
 
 private:
 	void usage(std::string appname);
 	void applyDefaults();
+
+	void createMinimalJsonFile(std::string filename);
 
     std::string m_configfile;
     std::string m_logfile;
@@ -96,16 +113,21 @@ private:
     bool m_search_free_port;
     bool m_reset_cache;
 
+    // address of muroad for manual setting for testing
+    std::vector<std::string> m_muroad;
+    unsigned short m_ts_port;
+
+
     std::string m_service_name;
     std::string m_service_type;
 
 
     unsigned short m_ip_version;
-    boost::property_tree::ptree m_pt;
-    boost::property_tree::ptree m_cache_pt;
+    boost::property_tree::ptree m_config_pt;
+    boost::property_tree::ptree m_persist_pt;
 
     std::stack<std::string> m_search_config_file;
-    std::stack<std::string> m_search_cache_file;
+    std::stack<std::string> m_search_persist_file;
 
     CApp* m_app;
 };

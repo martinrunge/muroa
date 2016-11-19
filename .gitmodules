@@ -1,3 +1,6 @@
 [submodule "resamplertest/tools/pywavefile"]
 	path = resamplertest/tools/pywavefile
 	url = https://github.com/vokimon/python-wavefile.git
+[submodule "wssrv/www/ng-websocket"]
+	path = wssrv/www/ng-websocket
+	url = https://github.com/wilk/ng-websocket.git

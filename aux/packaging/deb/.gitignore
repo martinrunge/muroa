@@ -1,0 +1,10 @@
+*/*
+
+!.gitignore
+!*/debian
+*/debian/*.ex
+*/debian/*.EX
+
+*.deb
+*.changes
+

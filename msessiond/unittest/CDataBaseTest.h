@@ -13,6 +13,7 @@
 
 namespace muroa {
 class CStateDB;
+class CSessionContaier;
 class CSession;
 class CMediaItemCategorizer;
 }
@@ -70,6 +71,7 @@ private:
 	void prepareNextlist();
 
 	boost::asio::io_service m_io_service;
+	muroa::CSessionContainer* m_sessionContainer;
 
 	static muroa::CSession* m_session;
 	static unsigned m_testHash;

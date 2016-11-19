@@ -1,0 +1,9 @@
+Package: muroad
+Architecture: armhf
+Maintainer: Martin Runge
+Depends: debconf (>= 0.5.00), liblog4cplus-1.0-4, libboost-filesystem1.55.0, libboost-system1.55.0, libboost-date-time1.55.0, libboost-program-options1.55.0, libsamplerate0, libasound2, libavahi-client3, libexpat1
+Priority: optional
+Section: Multimedia 
+Version: 0.6-20160830T214812
+Description: muroad streaming client
+ Render client for th muroa multi room audio system

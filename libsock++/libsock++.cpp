@@ -18,7 +18,32 @@
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
 
-
+#include <cstdlib>
+#include <signal.h>
 
 
 bool global_termination_flag;
+struct sigaction old_action;
+
+void emptySigHandler(int /* signr */) {
+	return;
+}
+
+__attribute__((constructor))
+void installSigHandler()
+{
+	  struct sigaction new_action;
+
+	  /* Set up the structure to specify the new action. */
+	  new_action.sa_handler = emptySigHandler;
+	  sigemptyset (&new_action.sa_mask);
+	  new_action.sa_flags = 0;
+
+	  sigaction (SIGUSR1, &new_action, &old_action);
+}
+
+__attribute__((destructor))
+void removeSigHandler()
+{
+	  sigaction (SIGUSR1, &old_action, NULL);
+}

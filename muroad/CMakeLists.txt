@@ -1,19 +1,20 @@
 cmake_minimum_required (VERSION 2.6)
 
+if(NOT MUROA_AUX_DIR)
+set(MUROA_AUX_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../aux")
+endif()
 
-set(VERBOSE 1)
+set(CMAKE_MODULE_PATH "${MUROA_AUX_DIR}/cmake/Modules" ${CMAKE_MODULE_PATH})
 
 if( "${ARCH}" STREQUAL "")
 MESSAGE("Setting ARCH to x86")
 SET(ARCH x86)
 endif( "${ARCH}" STREQUAL "")
 
-set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../aux/cmake/Modules" ${CMAKE_MODULE_PATH})
+include( MacroGDBIndex )
 
 find_package(PkgConfig)
-
 find_package( Threads REQUIRED )
-
 set(Boost_USE_MULTITHREADED ON )
 find_package( Boost 1.36.0 COMPONENTS filesystem system date_time program_options REQUIRED )
 #find_package( EXPAT REQUIRED )
@@ -31,28 +32,36 @@ find_package ( log4cplus REQUIRED )
 
 add_definitions(-D__STDC_CONSTANT_MACROS)
 
-set( SRCS             cpacketringbuffer.cpp
+set( SRCS             main.cpp
+                      cmuroad.cpp
+                      CPlayer.cpp
+                      CCtrlConnectionMgr.cpp
+                      CCtrlConnection.cpp
+                      CMediaStreamConnection.cpp
+                      crecvloop.cpp
                       cplayloop.cpp
+                      CPerSSRCRingBuffer.cpp
+                      CPacketRingBuffer.cpp
                       cresampler.cpp
 		              cfilterdef.cpp
                       cfixpointresampler.cpp
                       cfloatresampler.cpp
-                      cmuroad.cpp
-                      main.cpp
-                      cplayer.cpp
-                      crecvloop.cpp
                       cringbuffer.cpp 
                       )
 
-set( HEADERS          cpacketringbuffer.h
+set( HEADERS          cmuroad.h
+                      CPlayer.h
+                      CCtrlConnectionMgr.h
+                      CCtrlConnection.h
+                      CMediaStreamConnection.h
+                      crecvloop.h
                       cplayloop.h
+                      CPerSSRCRingBuffer.h
+                      CPacketRingBuffer.h
                       cresampler.h
 		              cfilterdef.h
                       cfixpointresampler.h
                       cfloatresampler.h
-                      cmuroad.h
-                      cplayer.h
-                      crecvloop.h
                       cringbuffer.h
                       )                    
 
@@ -63,10 +72,11 @@ include_directories(${SOURCE_DIR}
                     ${libavformat_INCLUDE_DIRS} 
                     ${log4cplus_INCLUDE_DIRS}
                     ${CMAKE_CURRENT_SOURCE_DIR} 
+                    ${CMAKE_CURRENT_SOURCE_DIR}/../libmcommons 
                     ${CMAKE_CURRENT_SOURCE_DIR}/../libmuroadaemon 
                     ${CMAKE_CURRENT_SOURCE_DIR}/../libmuroa++
                     ${CMAKE_CURRENT_SOURCE_DIR}/../libsock++
-                    ${CMAKE_CURRENT_SOURCE_DIR}/../libdsaudio
+                    ${CMAKE_CURRENT_SOURCE_DIR}/../libmstream
                     ${ALSA_INCLUDE_DIR}
                     ) 
 
@@ -85,7 +95,7 @@ link_directories(/home/martin/x-tools/arm-unknown-linux-gnueabi/arm-unknown-linu
                  "${CMAKE_SOURCE_DIR}/../libmuroadaemon/build_${ARCH}" 
 #                 "${CMAKE_SOURCE_DIR}/../libmuroa++/build_${ARCH}"
                  "${CMAKE_SOURCE_DIR}/../libsock++/build_${ARCH}"
-                 "${CMAKE_SOURCE_DIR}/../libdsaudio/build_${ARCH}")
+                 "${CMAKE_SOURCE_DIR}/../libmstream/build_${ARCH}")
 
 ADD_EXECUTABLE(muroad ${SRCS} ${HEADERS} )
 
@@ -105,28 +115,20 @@ TARGET_LINK_LIBRARIES(muroad       ${CMAKE_THREAD_LIBS_INIT}
                                    ${libavahiclient_LIBRARY} 
                                    ${libavahicommon_LIBRARY}
                                    sock++
-                                   dsaudio
+                                   mstream
                                    muroadaemon
                                    rt
                                    )
                                    
 
-file(COPY   muroa.conf      DESTINATION .)                              
+file(COPY   etc/muroad.conf      DESTINATION .)                              
 file(COPY   log.properties  DESTINATION .)                              
       
                                    
-################################################################################
-# This step merges a gdb_index section into the binary to speed up debugging.
-# Doing this by add_custom_command will become obsolete as soon as the linker does it. 
-################################################################################
+ADD_GDB_INDEX( muroad )            
 
-add_custom_command(TARGET muroad
-                   POST_BUILD  
-                   COMMAND  ${CMAKE_CURRENT_SOURCE_DIR}/../aux/scripts/mkgdbindex.sh muroad 
-                   WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-                   COMMENT "building gdb index")
-
-###############################################################################                                   
-                                   
+install(TARGETS muroad               DESTINATION bin)
+install(FILES   etc/muroad.conf      DESTINATION /etc)
+install(FILES   files/muroad.service DESTINATION /lib/systemd/system)
 
                                    

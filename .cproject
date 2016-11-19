@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<?fileVersion 4.0.0?><cproject storage_type_id="org.eclipse.cdt.core.XmlProjectDescriptionStorage">
+	<storageModule moduleId="org.eclipse.cdt.core.settings">
+		<cconfiguration id="org.eclipse.cdt.cmake.toolChain.debug.2112925676">
+			<storageModule buildSystemId="org.eclipse.cdt.managedbuilder.core.configurationDataProvider" id="org.eclipse.cdt.cmake.toolChain.debug.2112925676" moduleId="org.eclipse.cdt.core.settings" name="debug">
+				<externalSettings/>
+				<extensions>
+					<extension id="org.eclipse.cdt.core.MachO64" point="org.eclipse.cdt.core.BinaryParser"/>
+					<extension id="org.eclipse.cdt.core.Cygwin_PE" point="org.eclipse.cdt.core.BinaryParser"/>
+					<extension id="org.eclipse.cdt.core.PE" point="org.eclipse.cdt.core.BinaryParser"/>
+					<extension id="org.eclipse.cdt.core.ELF" point="org.eclipse.cdt.core.BinaryParser"/>
+					<extension id="org.eclipse.cdt.core.GNU_ELF" point="org.eclipse.cdt.core.BinaryParser"/>
+					<extension id="org.eclipse.cdt.core.GASErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+					<extension id="org.eclipse.cdt.core.GmakeErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+					<extension id="org.eclipse.cdt.core.GLDErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+					<extension id="org.eclipse.core.GCCErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+					<extension id="org.eclipse.cdt.cmake.errorParserStdout" point="org.eclipse.cdt.core.ErrorParser"/>
+					<extension id="org.eclipse.cdt.core.GCCErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+					<extension id="org.eclipse.cdt.cmake.errorParserStderr" point="org.eclipse.cdt.core.ErrorParser"/>
+				</extensions>
+			</storageModule>
+			<storageModule moduleId="cdtBuildSystem" version="4.0.0">
+				<configuration buildProperties="" description="" id="org.eclipse.cdt.cmake.toolChain.debug.2112925676" name="debug" parent="org.eclipse.cdt.build.core.emptycfg">
+					<folderInfo id="org.eclipse.cdt.cmake.toolChain.debug.2112925676.597722392" name="/" resourcePath="">
+						<toolChain id="org.eclipse.cdt.cmake.toolChain.debug.1169831027" name="CMake provided toolchain" superClass="org.eclipse.cdt.cmake.toolChain.debug">
+							<targetPlatform id="org.eclipse.cdt.cmake.targetPlatform1.712353137" isAbstract="false" name="CMake target platform" superClass="org.eclipse.cdt.cmake.targetPlatform1"/>
+							<builder arguments="-j 4" buildPath="/home/martin/git/muroa/debug" command="make" id="org.eclipse.cdt.cmake.builder.600244269" keepEnvironmentInBuildfile="false" managedBuildOn="false" name="CMake Builder" superClass="org.eclipse.cdt.cmake.builder"/>
+							<tool id="org.eclipse.cdt.cmake.cmake.2027006461" name="CMake" superClass="org.eclipse.cdt.cmake.cmake">
+								<option id="org.eclipse.cdt.cmake.option.toolchainFile.1009439177" name="toolchain to use (-DCMAKE_TOOLCHAIN_FILE)" superClass="org.eclipse.cdt.cmake.option.toolchainFile" value="" valueType="string"/>
+								<option id="org.eclipse.cdt.cmake.option.buildType.2117742325" name="build type (-DCMAKE_BUILD_TYPE)" superClass="org.eclipse.cdt.cmake.option.buildType" value="Debug" valueType="string"/>
+								<option id="org.eclipse.cdt.cmake.option.debug.1609532436" name="debug" superClass="org.eclipse.cdt.cmake.option.debug" value="false" valueType="boolean"/>
+								<option id="org.eclipse.cdt.cmake.option.trace.1858254353" name="trace" superClass="org.eclipse.cdt.cmake.option.trace" value="false" valueType="boolean"/>
+							</tool>
+							<tool id="org.eclipse.cdt.cmake.compiler.c++.850542385" name="Cross G++ Compiler" superClass="org.eclipse.cdt.cmake.compiler.c++">
+								<inputType id="cdt.managedbuild.tool.gnu.cpp.compiler.input.1040589708" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.input"/>
+								<inputType id="org.eclipse.cdt.cmake.inputType.cpp.558721173" name="cpp-input" superClass="org.eclipse.cdt.cmake.inputType.cpp"/>
+							</tool>
+							<tool id="org.eclipse.cdt.cmake.compiler.c.514336457" name="Cross GCC Compiler" superClass="org.eclipse.cdt.cmake.compiler.c">
+								<inputType id="cdt.managedbuild.tool.gnu.c.compiler.input.1653596343" superClass="cdt.managedbuild.tool.gnu.c.compiler.input"/>
+								<inputType id="org.eclipse.cdt.cmake.inputType.c.1193859529" name="c-input" superClass="org.eclipse.cdt.cmake.inputType.c"/>
+							</tool>
+						</toolChain>
+					</folderInfo>
+				</configuration>
+			</storageModule>
+			<storageModule moduleId="org.eclipse.cdt.core.externalSettings"/>
+		</cconfiguration>
+		<cconfiguration id="org.eclipse.cdt.cmake.toolChain.debug.2112925676.655561298">
+			<storageModule buildSystemId="org.eclipse.cdt.managedbuilder.core.configurationDataProvider" id="org.eclipse.cdt.cmake.toolChain.debug.2112925676.655561298" moduleId="org.eclipse.cdt.core.settings" name="debug_arm">
+				<externalSettings/>
+				<extensions>
+					<extension id="org.eclipse.cdt.core.MachO64" point="org.eclipse.cdt.core.BinaryParser"/>
+					<extension id="org.eclipse.cdt.core.Cygwin_PE" point="org.eclipse.cdt.core.BinaryParser"/>
+					<extension id="org.eclipse.cdt.core.PE" point="org.eclipse.cdt.core.BinaryParser"/>
+					<extension id="org.eclipse.cdt.core.ELF" point="org.eclipse.cdt.core.BinaryParser"/>
+					<extension id="org.eclipse.cdt.core.GNU_ELF" point="org.eclipse.cdt.core.BinaryParser"/>
+					<extension id="org.eclipse.cdt.core.GASErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+					<extension id="org.eclipse.cdt.core.GmakeErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+					<extension id="org.eclipse.cdt.core.GLDErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+					<extension id="org.eclipse.core.GCCErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+					<extension id="org.eclipse.cdt.cmake.errorParserStdout" point="org.eclipse.cdt.core.ErrorParser"/>
+					<extension id="org.eclipse.cdt.core.GCCErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+					<extension id="org.eclipse.cdt.cmake.errorParserStderr" point="org.eclipse.cdt.core.ErrorParser"/>
+				</extensions>
+			</storageModule>
+			<storageModule moduleId="cdtBuildSystem" version="4.0.0">
+				<configuration buildProperties="" description="" id="org.eclipse.cdt.cmake.toolChain.debug.2112925676.655561298" name="debug_arm" parent="org.eclipse.cdt.build.core.emptycfg">
+					<folderInfo id="org.eclipse.cdt.cmake.toolChain.debug.2112925676.655561298." name="/" resourcePath="">
+						<toolChain id="org.eclipse.cdt.cmake.toolChain.debug.694840086" name="CMake provided toolchain" superClass="org.eclipse.cdt.cmake.toolChain.debug">
+							<targetPlatform id="org.eclipse.cdt.cmake.targetPlatform1.1840173402" isAbstract="false" name="CMake target platform" superClass="org.eclipse.cdt.cmake.targetPlatform1"/>
+							<builder buildPath="/home/martin/git/muroa/debug_arm" id="org.eclipse.cdt.cmake.builder.1830544691" keepEnvironmentInBuildfile="false" managedBuildOn="false" name="CMake Builder" superClass="org.eclipse.cdt.cmake.builder"/>
+							<tool id="org.eclipse.cdt.cmake.cmake.814182785" name="CMake" superClass="org.eclipse.cdt.cmake.cmake">
+								<option id="org.eclipse.cdt.cmake.option.toolchainFile.380915964" superClass="org.eclipse.cdt.cmake.option.toolchainFile" value="/home/martin/git/muroa/aux/cmake/arm-raspi-jessy.cmake" valueType="string"/>
+								<option id="org.eclipse.cdt.cmake.option.buildType.735799911" superClass="org.eclipse.cdt.cmake.option.buildType" value="Debug" valueType="string"/>
+								<option id="org.eclipse.cdt.cmake.option.debug.1545208791" superClass="org.eclipse.cdt.cmake.option.debug" value="false" valueType="boolean"/>
+								<option id="org.eclipse.cdt.cmake.option.trace.229063701" superClass="org.eclipse.cdt.cmake.option.trace" value="false" valueType="boolean"/>
+							</tool>
+							<tool id="org.eclipse.cdt.cmake.compiler.c++.1226796491" name="Cross G++ Compiler" superClass="org.eclipse.cdt.cmake.compiler.c++">
+								<inputType id="cdt.managedbuild.tool.gnu.cpp.compiler.input.1578672046" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.input"/>
+								<inputType id="org.eclipse.cdt.cmake.inputType.cpp.626428277" name="cpp-input" superClass="org.eclipse.cdt.cmake.inputType.cpp"/>
+							</tool>
+							<tool id="org.eclipse.cdt.cmake.compiler.c.1792830907" name="Cross GCC Compiler" superClass="org.eclipse.cdt.cmake.compiler.c">
+								<inputType id="cdt.managedbuild.tool.gnu.c.compiler.input.1842420799" superClass="cdt.managedbuild.tool.gnu.c.compiler.input"/>
+								<inputType id="org.eclipse.cdt.cmake.inputType.c.1220112329" name="c-input" superClass="org.eclipse.cdt.cmake.inputType.c"/>
+							</tool>
+						</toolChain>
+					</folderInfo>
+				</configuration>
+			</storageModule>
+			<storageModule moduleId="org.eclipse.cdt.core.externalSettings"/>
+		</cconfiguration>
+	</storageModule>
+	<storageModule moduleId="cdtBuildSystem" version="4.0.0">
+		<project id="muroa.null.307127087" name="muroa"/>
+	</storageModule>
+	<storageModule moduleId="scannerConfiguration">
+		<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
+	</storageModule>
+	<storageModule moduleId="org.eclipse.cdt.core.LanguageSettingsProviders"/>
+	<storageModule moduleId="org.eclipse.cdt.make.core.buildtargets"/>
+	<storageModule moduleId="refreshScope" versionNumber="2">
+		<configuration configurationName="debug">
+			<resource resourceType="PROJECT" workspacePath="/muroa"/>
+		</configuration>
+		<configuration configurationName="debug_arm">
+			<resource resourceType="PROJECT" workspacePath="/muroa"/>
+		</configuration>
+	</storageModule>
+</cproject>

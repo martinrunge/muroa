@@ -1,0 +1,6 @@
+usr/bin/wssrv                     usr/bin
+usr/lib/wssrv/*                   usr/lib/wssrv
+lib/systemd/system/wssrv.service  lib/systemd/system
+etc/wssrv.conf                    etc
+
+

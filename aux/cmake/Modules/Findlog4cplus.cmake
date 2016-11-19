@@ -35,7 +35,7 @@ find_package_handle_standard_args(log4cplus  DEFAULT_MSG
                                   
 MESSAGE( log4cplus: "${log4cplus_LIBRARY}")
 
-set(CMAKE_REQUIRED_FLAGS "-std=c++0x")
+set(CMAKE_REQUIRED_FLAGS "-std=c++0x -pthread")
 set(CMAKE_REQUIRED_DEFINITIONS "")
 INCLUDE (CheckLog4cplusCXX11) 
 CHECK_LOG4CPLUS_CXX11(${log4cplus_LIBRARY}  "" LOG4CPLUS_HAS_RVAL_CTOR)

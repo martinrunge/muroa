@@ -3,10 +3,11 @@
 CLIENTS=("$@")
 USER="pi"
 
-LIBS=("libdsaudio/build_arm/libdsaudio.so" \
-      "libsock++/build_arm/libsock++.so" \
-      "libmuroadaemon/build_arm/libmuroadaemon.so")
-DAEMON="muroad/build_arm/muroad"
+LIBS=("libmstream/libmstream.so" \
+      "libmcommons/libmcommons.so" \
+      "libsock++/libsock++.so" \
+      "libmuroadaemon/libmuroadaemon.so")
+DAEMON="muroad/muroad"
 CFG="muroad/muroa.conf"
 
 for RENDERCLIENT in "${CLIENTS[@]}"; do

@@ -8,15 +8,19 @@
 #ifndef CSERVICEDESC_H_
 #define CSERVICEDESC_H_
 
+#include <boost/asio.hpp>
 #include <string>
-#include <boost/shared_ptr.hpp>
+#include <memory>
+// include <boost/shared_ptr.hpp>
+
+namespace bip=boost::asio::ip;
 
 namespace muroa {
 
 class CServiceDesc {
 public:
 	CServiceDesc();
-	CServiceDesc(std::string serviceName, std::string hostName,	std::string domainName, std::string serviceType = std::string(), int portNr = 0, int interface = 0, int protocol = 0);
+	CServiceDesc(std::string serviceName, std::string hostName,	std::string domainName, std::string serviceType = std::string(), bip::address addr = bip::address(), int portNr = 0, int interface = 0, int protocol = 0);
 	virtual ~CServiceDesc();
     int getInterface() const
     {
@@ -47,6 +51,14 @@ public:
     {
         return m_hostName;
     }
+
+    const bip::address& getAddress() const {
+		return m_address;
+	}
+
+	void setAddress(const bip::address& address) {
+		m_address = address;
+	}
 
     int getPortNr() const
     {
@@ -104,19 +116,20 @@ public:
     		return false;
 	}
 
+
 private:
     std::string m_serviceName;
     std::string m_serviceType;
     std::string m_hostName;
     std::string m_domainName;
+    bip::address m_address;
 	int m_portNr;
 
 	int m_protocol;
 	int m_interface;
-
 };
 
-typedef boost::shared_ptr<CServiceDesc> ServDescPtr ;
+typedef std::shared_ptr<CServiceDesc> ServDescPtr ;
 
 }
 
