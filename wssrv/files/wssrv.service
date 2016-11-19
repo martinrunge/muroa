@@ -1,0 +1,13 @@
+[Unit]
+Description=multi room audio streaming server with web radio
+After=network.target auditd.service
+
+[Service]
+ExecStart=/usr/bin/wssrv -f -c /etc/wssrv.conf
+ExecReload=/bin/kill -HUP $MAINPID
+KillMode=process
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
+Alias=wssrv.service

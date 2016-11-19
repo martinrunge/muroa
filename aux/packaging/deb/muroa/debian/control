@@ -1,0 +1,28 @@
+Source: muroad
+Section: sound
+Priority: optional
+Maintainer: Martin Runge <martin.runge@web.de>
+Build-Depends: debhelper (>= 9), dh-systemd
+Standards-Version: 3.9.5
+Homepage: http://muroa.org
+Vcs-Git: git@github.com:martinrunge/muroa.git
+Vcs-Browser: https://github.com/martinrunge/muroa
+
+Package: muroad
+Architecture: armhf
+Depends: ${shlibs:Depends}, ${misc:Depends}, muroa-common
+Description: muroad network playback client
+ Network playback client of the muroa multi room audio system
+
+Package: wssrv
+Architecture: armhf
+Depends: ${shlibs:Depends}, ${misc:Depends}, muroa-common
+Description: muroa session server with web gui
+ Session server for the muroa multi room audio system.
+
+Package: muroa-common
+Architecture: armhf
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: muroa libraries used by wssrv and muroad
+ common components of the muroa multi room audio player.
+

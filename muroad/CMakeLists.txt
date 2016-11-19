@@ -121,14 +121,14 @@ TARGET_LINK_LIBRARIES(muroad       ${CMAKE_THREAD_LIBS_INIT}
                                    )
                                    
 
-file(COPY   muroa.conf      DESTINATION .)                              
+file(COPY   etc/muroad.conf      DESTINATION .)                              
 file(COPY   log.properties  DESTINATION .)                              
       
                                    
 ADD_GDB_INDEX( muroad )            
 
-install(TARGETS muroad DESTINATION bin)
-install(FILES muroa.conf DESTINATION /etc)
-install(FILES muroad.service DESTINATION /lib/systemd/system)
+install(TARGETS muroad               DESTINATION bin)
+install(FILES   etc/muroad.conf      DESTINATION /etc)
+install(FILES   files/muroad.service DESTINATION /lib/systemd/system)
 
                                    

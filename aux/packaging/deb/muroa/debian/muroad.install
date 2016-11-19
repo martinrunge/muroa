@@ -1,0 +1,5 @@
+usr/bin/muroad                      usr/bin
+lib/systemd/system/muroad.service   lib/systemd/system
+etc/muroad.conf                     etc
+
+

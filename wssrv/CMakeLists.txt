@@ -64,7 +64,7 @@ TARGET_LINK_LIBRARIES( wssrv          mstream
                                       ${libavutil_LIBRARY}
 )
                                       
-file(COPY   etc/muroa.conf  DESTINATION etc)
+file(COPY   etc/wssrv.conf  DESTINATION etc)
 file(COPY   log.properties  DESTINATION .)
 
 execute_process(COMMAND ${CMAKE_COMMAND} -E create_symlink ${CMAKE_CURRENT_LIST_DIR}/www
@@ -72,4 +72,9 @@ execute_process(COMMAND ${CMAKE_COMMAND} -E create_symlink ${CMAKE_CURRENT_LIST_
                                       
 ADD_GDB_INDEX( wssrv )            
                                       
-install(TARGETS wssrv DESTINATION bin)
+install(TARGETS    wssrv                DESTINATION bin)
+install(FILES      etc/wssrv.conf       DESTINATION /etc)
+install(FILES      files/wssrv.service  DESTINATION /lib/systemd/system)
+install(DIRECTORY  www                  DESTINATION lib/wssrv)
+
+
