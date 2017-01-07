@@ -70,7 +70,7 @@ struct VisitableState
     // we also want polymorphic states
     virtual ~VisitableState() {}
     // default implementation for states who do not need to be visited
-    void accept(VisitorBase&) const {};
+    virtual void accept(VisitorBase&) const {};
     const std::string state_name;
 };
 
@@ -282,6 +282,10 @@ struct srv_ : public boost::msm::front::state_machine_def<srv_, VisitableState>
         _actions->onClientState(&cs);
     };
 
+    void onJoinRejected(const evJoinRejected& rj) {
+        _actions->onJoinRejected(&rj);
+    }
+
     // transitions
     typedef srv_ s; // makes transition table cleaner
 
@@ -290,13 +294,13 @@ struct srv_ : public boost::msm::front::state_machine_def<srv_, VisitableState>
     struct transition_table : boost::mpl::vector<
         //    Start                 Event                Next               Action                     Guard
         //  +------------------- +----------------------+----------------------+---------------------------+----------------------+
-      a_row < awaitClientState   , evClientState        , knowingClientState   , &s::onClientState                                                   >,
-     a_irow < knowingClientState , evClientState                               , &s::onClientState                                                   >,
+      a_row < awaitClientState   , evClientState        , knowingClientState   , &s::onClientState                                >,
+     a_irow < knowingClientState , evClientState                               , &s::onClientState                                >,
        _row < knowingClientState , evRequestJoin        , awaitJoinResponse                                                       >,
        _row < knowingClientState , evRequestClientState , awaitClientState                                                        >,
        _row < awaitJoinResponse  , evJoinAccepted       , joinedSession                                                           >,
        _row < joinedSession      , evLeave              , knowingClientState                                                      >,
-       _row < awaitJoinResponse  , evJoinRejected       , error                                                                   >
+      a_row < awaitJoinResponse  , evJoinRejected       , knowingClientState   , &s::onJoinRejected                               >
     > {};
 	//@formatter:on
 

@@ -160,7 +160,14 @@ void CStreamCtrlConnection::onLeftSession(const muroa::CmdStreamBase* cmd) {
 }
 
 
-void CStreamCtrlConnection::sendAck(const evJoinAccepted* evt) {
+void CStreamCtrlConnection::onJoinRejected(const muroa::CmdStreamBase *cmd) {
+    if(typeid(*cmd) == typeid(evJoinRejected)) {
+        const evJoinRejected* evt = reinterpret_cast<const evJoinRejected*>(cmd);
+        m_stream_server->onClientRejectedSessionMember(this, evt);
+    }
+}
+
+	void CStreamCtrlConnection::sendAck(const evJoinAccepted* evt) {
 	evAck* ack = new evAck();
 	ack->m_cmd_id = evt->getID();
 

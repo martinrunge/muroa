@@ -34,6 +34,7 @@ public:
 
 	virtual void onBecameSessionMember(const CmdStreamBase *cmd) = 0;
 	virtual void onLeftSession(const CmdStreamBase *cmd) = 0;
+	virtual void onJoinRejected(const CmdStreamBase *cmd) = 0;
 };
 
 } /* namespace muroa */

@@ -92,7 +92,8 @@ public:
 	void sendJoinRequest(const muroa::evRequestJoin*);
 	void sendLeaveRequest(const muroa::evRequestLeave*);
 	void onBecameSessionMember(const CmdStreamBase *cmd);
-	void onLeftSession(const muroa::CmdStreamBase*);
+	void onLeftSession(const muroa::CmdStreamBase* cmd);
+	void onJoinRejected(const muroa::CmdStreamBase* cmd);
 
 	void sendAck(const evJoinAccepted* evt);
 

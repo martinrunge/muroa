@@ -160,6 +160,7 @@ namespace muroa {
 
         // transition actions
         void sendEvJoinRejected(const evRequestJoin &rj) {
+            _actions->sendRejectJoin(rj);
         };
 
         void sendEvJoinAccepted(const evRequestJoin &rj) {
