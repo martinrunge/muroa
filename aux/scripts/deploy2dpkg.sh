@@ -63,6 +63,6 @@ popd
 
 
 # mirror the repo to deb.muroa.org
-cd $DEBDIR
+cd $REPODIR
 rsync -avze ssh .  u71829316@home449687942.1and1-data.host:~/deb/raspbian/
 
