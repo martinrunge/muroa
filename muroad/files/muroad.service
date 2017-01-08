@@ -3,8 +3,7 @@ Description=multi room audio render client
 After=network.target auditd.service
 
 [Service]
-Environment=LD_LIBRARY_PATH=/home/pi
-ExecStart=/usr/bin/muroad -f -c /etc/muroa.conf
+ExecStart=/usr/bin/muroad -f -c /etc/muroad.conf
 ExecReload=/bin/kill -HUP $MAINPID
 KillMode=process
 Restart=on-failure

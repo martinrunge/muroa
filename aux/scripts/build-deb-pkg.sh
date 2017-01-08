@@ -3,7 +3,7 @@
 # set -x
 
 PROJDIR=$(dirname $0)/../../
-DEBDIR=$PROJDIR/aux/packaging/deb/muroad
+DEBDIR=$PROJDIR/aux/packaging/deb/muroa
 
 REPODIR=$HOME/raspirepo/
 DEBDIR=$(realpath $DEBDIR)

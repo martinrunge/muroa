@@ -7,7 +7,7 @@ echo "call from top level build directory"
 
 
 PROJDIR=$(dirname $0)/../../
-DEBDIR=$PROJDIR/aux/packaging/deb/muroad
+DEBDIR=$PROJDIR/aux/packaging/deb/muroa
 
 REPODIR=$HOME/raspirepo/
 
@@ -64,5 +64,5 @@ popd
 
 # mirror the repo to deb.muroa.org
 cd $DEBDIR
-rsync -avze ssh .  u71829316@muroa.org:~/deb/raspbian/
+rsync -avze ssh .  u71829316@home449687942.1and1-data.host:~/deb/raspbian/
 
