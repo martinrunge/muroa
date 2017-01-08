@@ -141,8 +141,8 @@ void CppServer::onClientRejectedSessionMember(muroa::CStreamCtrlConnection* conn
 	// let the base class do the book keeping
 	CStreamServer::onClientRejectedSessionMember(conn, evt);
 
-
 	m_ws_msg_handler->listClients();
+    m_ws_msg_handler->informUser("Could not join session", evt->m_message + " \n'" + evt->m_owner_session + "'");
 }
 
 void CppServer::onClientBecameSessionMember(muroa::CStreamCtrlConnection* conn, const muroa::evSessionState* evt) {

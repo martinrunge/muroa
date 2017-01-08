@@ -408,6 +408,7 @@ void CStreamServer::onClientRejectedSessionMember( muroa::CStreamCtrlConnection*
 	if(has_changed) {
 		listClients();
 	}
+
 }
 
 void CStreamServer::onClientBecameSessionMember( muroa::CStreamCtrlConnection* conn, const muroa::evSessionState* evt) {

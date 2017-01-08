@@ -1,7 +1,7 @@
 var app = angular.module('stationsApp', ['ngMaterial', 'ngMessages', 'wscmd', 'mclients']);
 
 
-app.controller('stationsCtrl', ['$scope', '$http', 'wscmd', 'mclients', function($scope, $http, wscmd, mclients) {
+app.controller('stationsCtrl', ['$scope', '$http', '$mdDialog', 'wscmd', 'mclients', function($scope, $http, $mdDialog, wscmd, mclients) {
     
     $scope.Status = "------";
     $scope.RadioStations = [];
@@ -42,11 +42,30 @@ app.controller('stationsCtrl', ['$scope', '$http', 'wscmd', 'mclients', function
     $scope.check = function check() {
         return clients.chkbtn();
     }
+    
   
     wscmd.reg_cb('muroad',  function (object) {
         $scope.mclients = object;
         console.log(object);
         $scope.$apply();
+    });
+        
+    wscmd.reg_cb('inform',  function (object) {
+      // Appending dialog to document.body to cover sidenav in docs app
+      // Modal dialogs should fully cover application
+      // to prevent interaction outside of dialog
+      $mdDialog.show(
+        $mdDialog.alert()
+          .parent(angular.element(document.querySelector('#popupContainer')))
+          .clickOutsideToClose(true)
+          .title(object.caption)
+          .textContent(object.message)
+          .ariaLabel('Alert Dialog Demo')
+          .ok('Got it!')
+          .targetEvent(object)
+      );
+      console.log(object);
+      $scope.$apply();
     });
     
     wscmd.getCurrentClientList();

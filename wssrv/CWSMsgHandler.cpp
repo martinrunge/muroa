@@ -127,6 +127,24 @@ void CWSMsgHandler::onListClients(connection_hdl hdl, Json::Value root) {
 
 }
 
+void CWSMsgHandler::informUser(std::string caption, std::string message) {
+    Json::Value data(Json::objectValue);
+
+    data["caption"] = caption;
+    data["message"] = message;
+
+    Json::Value ret;
+    ret["event"] = "inform";
+    ret["data"] = data;
+
+    ostringstream oss;
+    oss << ret;
+
+    string json_msg = oss.str();
+    m_ws_srv->sendToAll(json_msg);
+}
+
+
 /**
  * activate = true:
  *   if there is already an open control connection to that client, use it to request

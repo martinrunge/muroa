@@ -28,9 +28,9 @@ public:
 
 	void setWSSrv(muroa::WSSrv *ws_srv) { m_ws_srv= ws_srv; };
 
-
 	void onMessage(connection_hdl hdl, std::string header, std::string payload);
 	void listClients();
+	void informUser(std::string caption, std::string message);
 
 protected:
 	void onListClients(connection_hdl hdl, Json::Value root);
