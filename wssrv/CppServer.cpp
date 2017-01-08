@@ -169,7 +169,7 @@ void CppServer::onError(muroa::CStreamCtrlConnection* conn, const evJoinRejected
 void CppServer::onClientState(muroa::CStreamCtrlConnection* conn, const muroa::evClientState* evt) {
 	// let the base class do the book keeping
 	CStreamServer::onClientState(conn, evt);
-
+    m_ws_msg_handler->listClients();
 	string serviceName = conn->getServiceName();
 
     if( isClientSelected(serviceName) && evt->m_member_of_session.compare("") == 0) {
