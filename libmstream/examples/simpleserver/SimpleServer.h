@@ -33,10 +33,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 namespace bip=boost::asio::ip;
 
 
-class CppServer :public CStreamServer {
+class SimpleServer :public CStreamServer {
 public:
-	CppServer(std::vector<bip::tcp::endpoint> clients, string session_name, int timeServerPort, int sessionID );
-	~CppServer();
+	SimpleServer(std::vector<bip::tcp::endpoint> clients, string session_name, int timeServerPort, int sessionID );
+	~SimpleServer();
 	void run();
 	void sendData();
 

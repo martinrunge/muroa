@@ -10,10 +10,10 @@ set(CMAKE_MODULE_PATH "${MUROA_AUX_DIR}/cmake/Modules" ${CMAKE_MODULE_PATH})
 add_definitions( -D__STDC_CONSTANT_MACROS )
 
 set( SRCS             main.cpp
-                      CppServer.cpp
+                      SimpleServer.cpp
                       )
                     
-set( HEADERS          CppServer.h )                    
+set( HEADERS SimpleServer.h)
   
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}

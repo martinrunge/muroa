@@ -27,7 +27,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <boost/asio.hpp>
 
-#include "CppServer.h"
+#include "SimpleServer.h"
 
 using namespace std;
 
@@ -126,7 +126,7 @@ int main(int argc, char *argv[]) {
         clients.push_back(endp);
     }
 
-    CppServer cpps(clients, "simplesession", timeSrvPort, sessionID);
+    SimpleServer cpps(clients, "simplesession", timeSrvPort, sessionID);
     cpps.run();
 
 	return 0;

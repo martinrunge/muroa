@@ -27,14 +27,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <boost/bind.hpp>
 #include <boost/date_time/posix_time/posix_time.hpp>
 
-#include "CppServer.h"
+#include "SimpleServer.h"
 
 using namespace muroa;
 using namespace std;
 
 
 
-CppServer::CppServer(vector<bip::tcp::endpoint> clients, string session_name, int timeServerPort, int sessionID ) : CStreamServer(m_io_service, session_name, timeServerPort, sessionID) {
+SimpleServer::SimpleServer(vector<bip::tcp::endpoint> clients, string session_name, int timeServerPort, int sessionID ) : CStreamServer(m_io_service, session_name, timeServerPort, sessionID) {
 	try {
 
 		for(int i = 0; i < clients.size(); i++) {
@@ -48,22 +48,22 @@ CppServer::CppServer(vector<bip::tcp::endpoint> clients, string session_name, in
 		open(2, 48000, 2);
 
 		boost::asio::deadline_timer t(m_io_service, boost::posix_time::milliseconds(10) );
-		t.async_wait( boost::bind(&CppServer::sendData, this) );
+		t.async_wait( boost::bind(&SimpleServer::sendData, this) );
 	} catch (std::exception& e) {
 		cerr << "Uncaught exception from mainloop: " << e.what() << endl;
 	}
 }
-CppServer::~CppServer() {
+SimpleServer::~SimpleServer() {
 	fclose(m_in_fd);
     close();
 
 }
 
-void CppServer::run() {
+void SimpleServer::run() {
 	m_io_service.run();
 }
 
-void CppServer::sendData()
+void SimpleServer::sendData()
 {
 	  unsigned long num;
 	  int buffersize = 1024;
@@ -74,11 +74,11 @@ void CppServer::sendData()
 
 	  if(num > 0) {
 			boost::asio::deadline_timer t(m_io_service, boost::posix_time::milliseconds(10) );
-			t.async_wait( boost::bind(&CppServer::sendData, this) );
+			t.async_wait( boost::bind(&SimpleServer::sendData, this) );
 	  }
 }
 
-void CppServer::onClientState(muroa::CStreamCtrlConnection* conn, const muroa::CmdStreamBase* evt) {
+void SimpleServer::onClientState(muroa::CStreamCtrlConnection* conn, const muroa::CmdStreamBase* evt) {
 	if(typeid(*evt) == typeid(evClientState)) {
 		const evClientState* ct = reinterpret_cast<const evClientState*>(evt);
 
