@@ -11,6 +11,7 @@
 extern "C" {
 #include <libavformat/avformat.h>
 #include <libavcodec/avcodec.h>
+#include <libavdevice/avdevice.h>
 #include <libavresample/avresample.h>
 }
 
@@ -35,7 +36,20 @@ public:
 	CStreamDecoder(CppServer *streamSrvPtr = 0);
 	virtual ~CStreamDecoder();
 
-	CStreamFmt open(std::string filename);
+	CStreamFmt openAlsa(std::string alsaDevice,
+						int sample_rate = -1,       // -1 defaults to 48000
+						int channels = -1 );        // -1 defaults to 2
+	CStreamFmt openPulse(std::string server,
+						 std::string name,
+						 std::string stream_name,
+						 int sample_rate = -1,      // -1 defaults to 448000
+						 int channels = -1,         // -1 defaults to 2
+						 int frame_size = -1,       // -1 defaults to 1024
+	                     int fragment_size = -1 );  // defaults to unset
+    CStreamFmt openFile(std::string filename);      // open a local file
+    CStreamFmt openUrl(std::string url,             // open a URL, e.g. http stream. works for files, too
+                       int timeout_in_ms = -1);
+
 	void close();
 	void startDecodingThread();
 
@@ -57,6 +71,8 @@ private:
     AVCodecContext *m_pCodecCtx;
     AVCodec *m_pCodec;
 //    AVAudioResampleContext *m_pResamplerCtx;
+    bool prepareOpen();
+    CStreamFmt open(std::string filename, AVInputFormat *inputFmtPtr = NULL, AVDictionary *optionsPtr = NULL);
 
     // struct AVPacket: defined in avformat.h:
 	// most important attributes in the strcture:

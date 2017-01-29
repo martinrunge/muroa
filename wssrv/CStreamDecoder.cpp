@@ -39,7 +39,9 @@ CStreamDecoder::CStreamDecoder(CppServer *streamSrvPtr) : m_streamSrvPtr(streamS
     // possible to register only certain individual file formats and codecs, but
     // there's usually no reason why you would have to do that.
 	av_register_all();
-	av_init_packet(&m_packet);
+    avdevice_register_all();
+
+    av_init_packet(&m_packet);
 
 	m_frame_buffer_size = AVCODEC_MAX_AUDIO_FRAME_SIZE + FF_INPUT_BUFFER_PADDING_SIZE;
 	m_frame_buffer = new uint8_t[m_frame_buffer_size];
@@ -55,22 +57,87 @@ CStreamDecoder::~CStreamDecoder() {
 }
 
 
-CStreamFmt CStreamDecoder::open(string filename)
+bool CStreamDecoder::prepareOpen() {
+    if(m_open) {
+        cerr << "Warning: CStreamDecoder::open called while decoder was still open." << endl
+             << "Decoder can be opened only once. Call CStreamDecoder::close() before." << endl;
+        return false;
+    }
+    av_init_packet(&m_packet);
+    return true;
+}
+
+
+CStreamFmt CStreamDecoder::openAlsa(std::string alsaDevice, int sample_rate, int channels) {
+    if(!prepareOpen()) {
+        return CStreamFmt();
+    }
+
+    AVDictionary *optionsPtr = NULL;
+
+    AVInputFormat *inputFmtPtr = av_find_input_format("alsa");
+    if(inputFmtPtr == NULL)
+    {
+        std::cerr << "cannot find input for 'alsa'! maybe ffmpeg was built without support for alsa." << std::endl;
+    }
+
+    if(sample_rate != -1) {
+        av_dict_set_int(&optionsPtr, "sample_rate", sample_rate, 0);
+    }
+    if(channels != -1) {
+        av_dict_set_int(&optionsPtr,"channels", channels, 0);
+    }
+
+    return open(alsaDevice, inputFmtPtr, optionsPtr);
+}
+
+
+CStreamFmt CStreamDecoder::openPulse(std::string server,
+                                     std::string name,
+                                     std::string stream_name,
+                                     int sample_rate,
+                                     int channels,
+                                     int frame_size,
+                                     int fragment_size)
 {
-	if(m_open) {
-		cerr << "Warning: CStreamDecoder::open called while decoder was still open." << endl
-			 << "Decoder can be opened only once. Call CStreamDecoder::close() before." << endl;
-		return CStreamFmt();
-	}
+    if(!prepareOpen()) {
+        return CStreamFmt();
+    }
+    return CStreamFmt();
+}
+
+
+
+CStreamFmt CStreamDecoder::openFile(std::string filename) {
+    if(!prepareOpen()) {
+        return CStreamFmt();
+    }
+    return open(filename, NULL, NULL);
+}
+
+CStreamFmt CStreamDecoder::openUrl(std::string url, int timeout_in_ms) {
+    if(!prepareOpen()) {
+        return CStreamFmt();
+    }
+    avformat_network_init();
+
+    AVDictionary *optionsPtr = NULL;
+    if(timeout_in_ms != -1) {
+        av_dict_set_int(&optionsPtr, "timeout", timeout_in_ms, 0);
+    }
+
+    return open(url, NULL, optionsPtr );
+}
+
+
+CStreamFmt CStreamDecoder::open(string filename, AVInputFormat *inputFmtPtr, AVDictionary *optionsPtr)
+{
 	m_filename = filename;
 
-	av_init_packet(&m_packet);
-
-	avformat_network_init();
-	// The last three parameters specify the file format, buffer size and format parameters;
+    // The last three parameters specify the file format, buffer size and format parameters;
 	// by simply specifying NULL or 0 we ask libavformat to auto-detect the format and
 	// use a default buffer size.
-	if(avformat_open_input(&m_pFormatCtx, filename.c_str(), NULL, NULL) != 0 )
+	if(avformat_open_input(&m_pFormatCtx, filename.c_str(), inputFmtPtr, &optionsPtr) != 0 )
 		cout << " Couldn't open file " << filename << endl;
 
 	// Next, we need to retrieve information about the streams contained in the file:
@@ -304,3 +371,5 @@ void CStreamDecoder::decodingLoop() {
 		decode();
 	}
 }
+
+

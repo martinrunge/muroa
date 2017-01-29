@@ -60,15 +60,15 @@ void CWSMsgHandler::playctrl(const Json::Value& root) {
 void CWSMsgHandler::changeStation(const Json::Value& root) {
 
 	string stationID = root["data"]["stationID"].asString();
-	string URL;
+	string type;
 
 	// Iterate over the sequence elements.
 	for ( int index = 0; index < m_stations.size(); ++index ) {
 		if( stationID.compare( m_stations[index]["ID"].asString() ) == 0 ) {
-			URL = m_stations[index]["URL"].asString();
+            const Json::Value& audio_src = m_stations[index];
+            m_StreamSrv->playStream(audio_src);
 		}
 	}
-	m_StreamSrv->playStream(URL);
 }
 
 void CWSMsgHandler::listClients() {

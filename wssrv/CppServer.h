@@ -28,6 +28,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <string>
 
 #include <boost/asio.hpp>
+#include <jsoncpp/json/json.h>
 #include <CStreamServer.h>
 #include "CStreamDecoder.h"
 
@@ -46,7 +47,7 @@ public:
 	void requestClientToJoin(std::string serviceName);
 	void requestClientToLeave(std::string serviceName);
 
-	void playStream(std::string url);
+	void playStream(const Json::Value& audio_src);
 	void stopStream();
 
 	void onClientRejectedSessionMember(muroa::CStreamCtrlConnection* conn, const muroa::evJoinRejected* evt);

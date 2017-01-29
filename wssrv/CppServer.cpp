@@ -94,21 +94,50 @@ void CppServer::requestClientToLeave(std::string serviceName) {
 
 
 
-void CppServer::playStream(std::string url) {
+void CppServer::playStream(const Json::Value& audio_src) {
 	muroa::CStreamFmt new_sfmt;
 
-	LOG4CPLUS_INFO(CApp::logger(), "Play stream: " << url);
+    const string audio_src_name = audio_src["Name"].asString();
+    LOG4CPLUS_INFO(CApp::logger(), "About to play audio source: '" << audio_src_name << "'");
 
+    if(m_decoder != 0) {
+        flush();
+        delete m_decoder;
+        close();
+    }
+    m_decoder = new CStreamDecoder(this);
 
-	if(m_decoder != 0) {
-		flush();
-		delete m_decoder;
-		close();
-	}
-	m_decoder = new CStreamDecoder(this);
+    const string type = audio_src["type"].asString();
 
-	LOG4CPLUS_DEBUG(CApp::logger(), "CppServer::playStream: about to open url: " << url);
-	new_sfmt = m_decoder->open(url);
+    if(type.compare("url") == 0) {
+        const string url = audio_src["URL"].asString();
+        LOG4CPLUS_DEBUG(CApp::logger(), "CppServer::playStream: about to open url: " << url);
+        new_sfmt = m_decoder->openUrl(url);
+
+    } else if(type.compare("file") == 0) {
+        const string filename = audio_src["filename"].asString();
+        LOG4CPLUS_DEBUG(CApp::logger(), "CppServer::playStream: about to open file: " << filename);
+        new_sfmt = m_decoder->openFile(filename);
+
+    } else if(type.compare("alsa") == 0) {
+        const string device = audio_src["device"].asString();
+        int channels = -1;
+        int sample_rate = -1;
+
+        if(audio_src.isMember("channels")) {
+            channels = audio_src["channels"].asInt();
+        }
+        if(audio_src.isMember("sample_rate")) {
+            sample_rate = audio_src["sample_rate"].asInt();
+        }
+
+        LOG4CPLUS_DEBUG(CApp::logger(), "CppServer::playStream: about to open alsa src: " << device << ", sr: " << sample_rate << ", ch: " << channels);
+        new_sfmt = m_decoder->openAlsa(device, sample_rate, channels );
+
+    } else if(type.compare("pulse") == 0) {
+        // LOG4CPLUS_DEBUG(CApp::logger(), "CppServer::playStream: about to open url: " << url);
+        // new_sfmt = m_decoder->openPulse(url);
+    }
 
 	LOG4CPLUS_DEBUG(CApp::logger(), "CppServer::playStream: url opened: channels: " << new_sfmt.numChannels << " samplerate: " << new_sfmt.sampleRate);
 

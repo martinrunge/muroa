@@ -11,10 +11,12 @@ find_package( Boost 1.45.0 COMPONENTS thread random  system  REQUIRED )
 find_package( JsonCpp REQUIRED )
 find_package( libavcodec REQUIRED )
 find_package( libavformat REQUIRED )
+find_package( libavdevice REQUIRED )
 find_package( libavutil REQUIRED )
+find_package( OpenSSL REQUIRED)
 
 
-add_definitions( -D__STDC_CONSTANT_MACROS )
+add_definitions( -D__STDC_CONSTANT_MACROS -DURDL_HEADER_ONLY=1)
 
 set( SRCS             main.cpp
                       CppServer.cpp
@@ -24,7 +26,10 @@ set( SRCS             main.cpp
                       CStreamDecoder.cpp
                       CRessourceHandler.cpp
                       CWSMsgHandler.cpp
-)
+                      CHttpRequest.cpp
+                      CHttpRequest.h
+                      CHttpResponse.cpp
+                      CHttpResponse.h)
                     
 set( HEADERS          CppServer.h
                       WSSrv.h                    
@@ -33,20 +38,26 @@ set( HEADERS          CppServer.h
                       CStreamDecoder.h
                       CRessourceHandler.h
                       CWSMsgHandler.h
-)
+                      CHttpRequest.cpp
+                      CHttpRequest.h
+                      CHttpResponse.cpp
+                      CHttpResponse.h)
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}
                     ${CMAKE_CURRENT_SOURCE_DIR}/../libmstream
                     ${CMAKE_CURRENT_SOURCE_DIR}/../libmcommons
                     ${CMAKE_CURRENT_SOURCE_DIR}/../libsock++
                     ${CMAKE_CURRENT_SOURCE_DIR}/../libmuroadaemon
+                    ${CMAKE_CURRENT_SOURCE_DIR}/../3rdparty/urdl-0.1/include
                     ${CMAKE_CURRENT_BINARY_DIR}/..
                     ${Boost_INCLUDE_DIRS} 
                     ${Threads_INCLUDE_DIRS} 
                     ${JSONCPP_INCLUDE_DIRS}
                     ${libavcodec_INCLUDE_DIR}
                     ${libavformat_INCLUDE_DIR}
+                    ${libavdevice_INCLUDE_DIR}
                     ${libavutil_INCLUDE_DIR}
+                    ${OPENSSL_INCLUDE_DIR}
 ) 
 
 link_directories(${BINARY_DIR}       "${CMAKE_SOURCE_DIR}/../build" )
@@ -61,7 +72,9 @@ TARGET_LINK_LIBRARIES( wssrv          mstream
                                       ${JSONCPP_LIBRARIES}
                                       ${libavformat_LIBRARY}
                                       ${libavcodec_LIBRARY}
+                                      ${libavdevice_LIBRARY}
                                       ${libavutil_LIBRARY}
+                                      ${OPENSSL_LIBRARIES}
 )
                                       
 file(COPY   etc/wssrv.conf  DESTINATION etc)
