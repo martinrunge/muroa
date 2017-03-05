@@ -37,7 +37,7 @@
 #include "CSettings.h"
 #include "CSignalHandler.h"
 
-#include "Exceptions.h"
+#include "ConfixEx.h"
 
 
 using namespace std;

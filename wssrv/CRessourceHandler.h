@@ -11,19 +11,21 @@
 #include <string>
 #include <map>
 #include <jsoncpp/json/json.h>
+#include "CWSSrvApp.h"
+
 class CppServer;
 
 
 class CRessourceHandler {
 public:
-	CRessourceHandler(CppServer* cpp_server, const Json::Value& stations);
+	CRessourceHandler(CppServer* cpp_server, CWSSrvApp* ws_srv_app);
 	virtual ~CRessourceHandler();
 
 	void handleREST(std::string filename, std::map<std::string, std::string> query_map);
 
 private:
 	CppServer* m_StreamSrv;
-	const Json::Value& m_stations;
+	CWSSrvApp* m_ws_srv_app;
 };
 
 

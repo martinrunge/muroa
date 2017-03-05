@@ -37,7 +37,7 @@ public:
 	virtual ~CMediaStreamProvider();
 
     int open(muroa::CStreamFmt sfmt);
-    int open(int num_channels = 2, int sample_rate = 44100, int sample_size = 2);
+    int open(int num_channels = 2, int sample_rate = 44100, enum AVSampleFormat sample_format = AV_SAMPLE_FMT_S16);
     void close();
     void flush();
     bool isOpen() { return m_is_open; };

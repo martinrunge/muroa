@@ -109,7 +109,7 @@ void CppServer::playStream(const Json::Value& audio_src) {
 
     const string type = audio_src["type"].asString();
 
-    if(type.compare("url") == 0) {
+    if(type.compare("netstream") == 0) {
         const string url = audio_src["URL"].asString();
         LOG4CPLUS_DEBUG(CApp::logger(), "CppServer::playStream: about to open url: " << url);
         new_sfmt = m_decoder->openUrl(url);
@@ -139,7 +139,7 @@ void CppServer::playStream(const Json::Value& audio_src) {
         // new_sfmt = m_decoder->openPulse(url);
     }
 
-	LOG4CPLUS_DEBUG(CApp::logger(), "CppServer::playStream: url opened: channels: " << new_sfmt.numChannels << " samplerate: " << new_sfmt.sampleRate);
+	LOG4CPLUS_DEBUG(CApp::logger(), "CppServer::playStream: url opened: channels: " << new_sfmt.getNumChannels() << " samplerate: " << new_sfmt.getSampleRate());
 
 	if(new_sfmt.isValid()) {
 		if(isOpen() == false) {

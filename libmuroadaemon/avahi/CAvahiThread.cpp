@@ -23,7 +23,7 @@
 #include <iostream>
 #include <sstream>
 
-#include "../Exceptions.h"
+#include "ConfixEx.h"
 
 using namespace std;
 

@@ -244,30 +244,11 @@ void CStreamDecoder::close()
 CStreamFmt CStreamDecoder::getStreamFmt() {
 	CStreamFmt sfmt;
 	if(m_pCodecCtx != 0) {
-		sfmt.numChannels = m_pCodecCtx->channels;
-		sfmt.sampleRate = m_pCodecCtx->sample_rate;
+		sfmt.setNumChannels(m_pCodecCtx->channels);
+		sfmt.setSampleRate(m_pCodecCtx->sample_rate);
 
 		enum AVSampleFormat sf = m_pCodecCtx->sample_fmt;
-
-		switch(sf) {
-			case AV_SAMPLE_FMT_U8:
-				sfmt.sampleSize = 1;
-				break;
-			case AV_SAMPLE_FMT_S16:
-				sfmt.sampleSize = 2;
-				break;
-			case AV_SAMPLE_FMT_S32:
-				sfmt.sampleSize = 4;
-				break;
-			case AV_SAMPLE_FMT_FLT:
-				sfmt.sampleSize = sizeof(float);
-				break;
-			case AV_SAMPLE_FMT_DBL:
-				sfmt.sampleSize = sizeof(double);
-				break;
-			default:
-				sfmt.sampleSize = 2;
-		}
+		sfmt.setSampleFormat(sf);
 	}
 	return sfmt;
 }

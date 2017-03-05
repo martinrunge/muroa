@@ -12,7 +12,7 @@
 
 using namespace std;
 
-CRessourceHandler::CRessourceHandler(CppServer* cpp_server, const Json::Value& stations) : m_StreamSrv(cpp_server), m_stations(stations) {
+CRessourceHandler::CRessourceHandler(CppServer* cpp_server, CWSSrvApp* ws_srv_app) : m_StreamSrv(cpp_server), m_ws_srv_app(ws_srv_app) {
 }
 
 CRessourceHandler::~CRessourceHandler() {
@@ -29,10 +29,11 @@ void CRessourceHandler::handleREST(std::string filename, std::map<string,string>
 		string stationID = it->second;
 		string URL;
 
+		const Json::Value net_streams = m_ws_srv_app->getNetStreams();
 		// Iterate over the sequence elements.
-		for ( int index = 0; index < m_stations.size(); ++index ) {
-			if( stationID.compare( m_stations[index]["ID"].asString() ) == 0 ) {
-				URL = m_stations[index]["URL"].asString();
+		for ( int index = 0; index < net_streams.size(); ++index ) {
+			if( stationID.compare( net_streams[index]["ID"].asString() ) == 0 ) {
+				URL = net_streams[index]["URL"].asString();
 			}
 		}
 

@@ -34,12 +34,14 @@
 
 #include <string>
 #include <stack>
+#include <map>
 
-#include "Exceptions.h"
+#include "ConfixEx.h"
 
 namespace muroa {
 
 class CApp;
+class IMediaSrcDesc;
 
 class CSettings {
 public:
@@ -73,10 +75,14 @@ public:
     inline std::string serviceType() {return m_service_type; };
     inline void setServiceType(std::string service_type) { m_service_type = service_type; };
 
+	const std::map<std::string, IMediaSrcDesc*> getMediaSources();
+
     std::string getConfigVal(const std::string& key, const char* defaultVal);
     std::string getConfigVal(const std::string& key, const std::string& defaultVal);
     int getConfigVal(const std::string& key, const int& defaultVal);
     bool getConfigVal(const std::string& key, const bool& defaultVal);
+
+	const boost::property_tree::ptree& getChildTree(const std::string& path);
 
     std::string getPersisentVal(const std::string& key, const char* defaultVal);
     void setPersistentVal(const std::string& key, const int& val);

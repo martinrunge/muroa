@@ -20,6 +20,7 @@ add_definitions( -D__STDC_CONSTANT_MACROS -DURDL_HEADER_ONLY=1)
 
 set( SRCS             main.cpp
                       CppServer.cpp
+                      CWSSrvApp.cpp
                       WSSrv.cpp
                       CHttpClient.cpp
                       CJsonResponder.cpp
@@ -32,6 +33,7 @@ set( SRCS             main.cpp
                       CHttpResponse.h)
                     
 set( HEADERS          CppServer.h
+                      CWSSrvApp.h
                       WSSrv.h                    
                       CHttpClient.h
                       CJsonResponder.h
@@ -41,7 +43,8 @@ set( HEADERS          CppServer.h
                       CHttpRequest.cpp
                       CHttpRequest.h
                       CHttpResponse.cpp
-                      CHttpResponse.h)
+                      CHttpResponse.h
+         )
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}
                     ${CMAKE_CURRENT_SOURCE_DIR}/../libmstream
@@ -77,8 +80,8 @@ TARGET_LINK_LIBRARIES( wssrv          mstream
                                       ${OPENSSL_LIBRARIES}
 )
                                       
-file(COPY   etc/wssrv.conf  DESTINATION etc)
-file(COPY   log.properties  DESTINATION .)
+configure_file(etc/wssrv.conf  etc  COPYONLY)
+configure_file(log.properties  .  COPYONLY)
 
 execute_process(COMMAND ${CMAKE_COMMAND} -E create_symlink ${CMAKE_CURRENT_LIST_DIR}/www
                                                            ${CMAKE_CURRENT_BINARY_DIR}/www)

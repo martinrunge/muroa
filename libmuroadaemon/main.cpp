@@ -31,7 +31,7 @@
 
 
 #include "avahi/CDnsSdAvahi.h"
-#include "Exceptions.h"
+#include "ConfixEx.h"
 
 #include <sys/stat.h>
 #include <string.h>

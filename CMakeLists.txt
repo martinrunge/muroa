@@ -17,6 +17,10 @@ set(CMAKE_MODULE_PATH "${MUROA_AUX_DIR}/cmake/Modules" ${CMAKE_MODULE_PATH})
 
 find_package(libxdiff)
 
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=c++11")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
+
+
 if( libxdiff_FOUND )
   message(STATUS "libxdiff was found on this system, using it.")
 else( libxdiff_FOUND )

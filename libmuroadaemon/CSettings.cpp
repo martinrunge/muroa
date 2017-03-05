@@ -24,14 +24,18 @@
 
 #include "CSettings.h"
 #include "CApp.h"
+#include "IMediaSrcDesc.h"
+#include "CAlsaSrcDesc.h"
 
 #include <getopt.h>
 #include <log4cplus/loggingmacros.h>
 
 #include "boost/filesystem/operations.hpp"
+#include "../libmcommons/CStreamFmt.h"
 #include <boost/system/error_code.hpp>
 #include <boost/foreach.hpp>
 #include <utility>
+#include <map>
 
 
 using namespace std;
@@ -42,6 +46,8 @@ namespace bpt = boost::property_tree;
 namespace muroa {
 
 namespace bfs = boost::filesystem;
+
+
 
 CSettings::CSettings(CApp* app) throw() : m_foreground(false),
 		                                  m_search_free_port(false),
@@ -479,6 +485,42 @@ void CSettings::createMinimalJsonFile(string filename) {
 	bfs::path pf(filename);
 }
 
+const boost::property_tree::ptree &CSettings::getChildTree(const std::string &path) {
+	return m_config_pt.get_child(path);
+}
+
+const std::map<string, IMediaSrcDesc*> CSettings::getMediaSources() {
+    std::map<string, IMediaSrcDesc*> media_sources;
+    boost::property_tree::ptree media_sources_root = m_config_pt.get_child("muroad.MediaSources");
+
+    for(boost::property_tree::ptree::iterator pos =  media_sources_root.begin(); pos !=  media_sources_root.end(); pos++) {
+        boost::property_tree::ptree elem = pos->second;
+
+        // type and name are mandatory !!!
+        string type = elem.get<string>("type");
+        string name = elem.get<string>("name");
+
+        if(type.compare("alsa") == 0) {
+            // alsa input
+            string device = elem.get("device", "default");
+            int samplerate = elem.get("sample_rate", 44100);
+            int num_channels = elem.get("num_channels", 2);
+            string sample_fmt = elem.get("sample_format", "S16");
+
+            muroa::CStreamFmt sfmt(samplerate, num_channels, CStreamFmt::str2sampleFormat(sample_fmt) );
+
+            CAlsaSrcDesc* alsadesc = new CAlsaSrcDesc( name, device, sfmt);
+            media_sources.insert(pair<string, IMediaSrcDesc*>(name, alsadesc));
+        }
+        if(type.compare("fifo") == 0) {
+
+        }
+        if(type.compare("pulse") == 0) {
+
+        }
+    }
+    return media_sources;
+}
 
 
 } /* namespace muroa */

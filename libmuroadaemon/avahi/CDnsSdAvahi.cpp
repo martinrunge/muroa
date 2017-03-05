@@ -6,7 +6,7 @@
  */
 
 #include "CDnsSdAvahi.h"
-#include "../Exceptions.h"
+#include "ConfixEx.h"
 
 #include <iostream>
 #include <avahi-common/watch.h>

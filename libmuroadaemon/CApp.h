@@ -11,7 +11,7 @@
 #include <mutex>
 #include <log4cplus/logger.h>
 
-#include "Exceptions.h"
+#include "ConfixEx.h"
 #include "CSettings.h"
 #include "CAppenderErrorHandler.h"
 

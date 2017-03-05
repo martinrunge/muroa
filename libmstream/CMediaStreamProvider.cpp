@@ -110,18 +110,18 @@ CStreamCtrlConnection* CMediaStreamProvider::getCtrlConnection(std::string servi
     return 0;
 }
 
-int CMediaStreamProvider::open(muroa::CStreamFmt sfmt) {
-	this->open(sfmt.numChannels, sfmt.sampleRate, sfmt.sampleSize);
+int CMediaStreamProvider::open(int num_channels, int sample_rate, enum AVSampleFormat sample_format) {
+
+    muroa::CStreamFmt sfmt(num_channels, sample_rate, sample_format);
+	this->open(sfmt);
 }
 
-int CMediaStreamProvider::open(int num_channels, int sample_rate, int sample_size) {
+int CMediaStreamProvider::open(muroa::CStreamFmt sfmt) {
+    m_streamFmt = sfmt;
   assert(m_is_open == false);
 
-  m_audio_bytes_per_second = num_channels * sample_rate * sample_size;
+  m_audio_bytes_per_second = sfmt.getNumChannels() * sfmt.getSampleRate() * sfmt.getSampleSize();
 
-  m_streamFmt.numChannels = num_channels;
-  m_streamFmt.sampleRate = sample_rate;
-  m_streamFmt.sampleSize = sample_size;
 
   m_last_send_time = microsec_clock::universal_time();
   m_last_payload_duration = not_a_date_time;
@@ -132,9 +132,9 @@ int CMediaStreamProvider::open(int num_channels, int sample_rate, int sample_siz
 
   m_sync_info.m_ssrc = lrand48();
   m_sync_info.m_rtp_ts = 0;
-  m_sync_info.m_num_channels = num_channels;
-  m_sync_info.m_sample_rate = sample_rate;
-  m_sync_info.m_sample_size = sample_size;
+  m_sync_info.m_num_channels = sfmt.getNumChannels();
+  m_sync_info.m_sample_rate = sfmt.getSampleRate();
+  m_sync_info.m_sample_size = sfmt.getSampleSize();
 
   if(m_builtin_time_service_used) {
 	  /// TODO: activeate builtin time service

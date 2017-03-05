@@ -17,7 +17,7 @@
 using namespace std;
 using namespace muroa;
 
-CWSMsgHandler::CWSMsgHandler(CppServer* cpp_server, const Json::Value& stations) : m_StreamSrv(cpp_server), m_stations(stations) {
+CWSMsgHandler::CWSMsgHandler(CppServer* cpp_server, CWSSrvApp* ws_srv_app) : m_StreamSrv(cpp_server), m_ws_srv_app(ws_srv_app) {
 }
 
 CWSMsgHandler::~CWSMsgHandler() {
@@ -62,10 +62,11 @@ void CWSMsgHandler::changeStation(const Json::Value& root) {
 	string stationID = root["data"]["stationID"].asString();
 	string type;
 
+    const Json::Value net_streams = m_ws_srv_app->getNetStreams();
 	// Iterate over the sequence elements.
-	for ( int index = 0; index < m_stations.size(); ++index ) {
-		if( stationID.compare( m_stations[index]["ID"].asString() ) == 0 ) {
-            const Json::Value& audio_src = m_stations[index];
+	for ( int index = 0; index < net_streams.size(); ++index ) {
+		if( stationID.compare( net_streams[index]["ID"].asString() ) == 0 ) {
+            const Json::Value& audio_src = net_streams[index];
             m_StreamSrv->playStream(audio_src);
 		}
 	}

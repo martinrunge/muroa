@@ -28,9 +28,11 @@ set( SRC           CTcpConnection.cpp
                    CConnectionManager.cpp
                    CSignalHandler.cpp
                    CSettings.cpp
-                   Exceptions.cpp
+                   ConfixEx.cpp
                    CApp.cpp
                    CAppenderErrorHandler.cpp
+                   IMediaSrcDesc.cpp
+                   CAlsaSrcDesc.cpp
                    # main.cpp
                    # avahi/asio-watch.cpp
                    avahi/CDnsSdBase.cpp
@@ -45,9 +47,11 @@ set( HEADERS       CTcpConnection.h
                    CConnectionManager.cpp
                    CSignalHandler.h
                    CSettings.h
-                   Exceptions.h
+                   ConfixEx.h
                    CApp.h
                    CAppenderErrorHandler.h
+                   IMediaSrcDesc.h
+                   CAlsaSrcDesc.h
                    # avahi/asio-watch.h
                    avahi/CDnsSdBase.h
                    avahi/CDnsSdAvahi.h

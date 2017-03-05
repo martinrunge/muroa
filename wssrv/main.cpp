@@ -33,6 +33,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "CRessourceHandler.h"
 #include "CWSMsgHandler.h"
 #include "WSSrv.h"
+#include "CWSSrvApp.h"
 
 using namespace std;
 
@@ -159,19 +160,16 @@ int main(int argc, char *argv[]) {
 		docroot = app->getAbsProgDir() / docroot;
 	}
 
-	boost::filesystem::path stations_file = docroot / "stations.json";
-	Json::Reader reader;
-	Json::Value stations;
-	ifstream ifs;
-	ifs.open(stations_file.string());
-	reader.parse(ifs, stations);
-	ifs.close();
+	CWSSrvApp ws_srv_app(app);
+
+    boost::filesystem::path stations_file = docroot / "stations.json";
+    ws_srv_app.setNetStreamConfig(stations_file);
 
 	boost::asio::io_service io_service;
 
 	CppServer cpps(io_service, clients, "testsession", timeSrvPort, sessionID);
-	CRessourceHandler resHandler(&cpps, stations);
-	CWSMsgHandler wsMsgHandler(&cpps, stations);
+	CRessourceHandler resHandler(&cpps, &ws_srv_app);
+	CWSMsgHandler wsMsgHandler(&cpps, &ws_srv_app);
 
     CSigHandler sig_handler(io_service);
 

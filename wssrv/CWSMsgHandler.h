@@ -10,7 +10,7 @@
 
 #include <jsoncpp/json/json.h>
 #include <websocketpp/server.hpp>
-
+#include "CWSSrvApp.h"
 
 
 class CppServer;
@@ -23,7 +23,7 @@ class CWSMsgHandler {
 	typedef websocketpp::connection_hdl connection_hdl;
 
 public:
-	CWSMsgHandler(CppServer* cpp_server, const Json::Value& stations);
+	CWSMsgHandler(CppServer* cpp_server, CWSSrvApp* ws_srv_app);
 	virtual ~CWSMsgHandler();
 
 	void setWSSrv(muroa::WSSrv *ws_srv) { m_ws_srv= ws_srv; };
@@ -43,7 +43,7 @@ private:
 	CppServer* m_StreamSrv;
 	muroa::WSSrv* m_ws_srv;
 
-	const Json::Value& m_stations;
+	CWSSrvApp* m_ws_srv_app;
 
 };
 
