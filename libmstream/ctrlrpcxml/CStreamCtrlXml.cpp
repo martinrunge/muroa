@@ -29,6 +29,7 @@
 #include <sstream>
 #include <iostream>
 #include <typeinfo>
+#include <stdexcept>
 
 using namespace std;
 using namespace muroa;
@@ -84,11 +85,14 @@ void CStreamCtrlXml::shutdown() {
 
 void CStreamCtrlXml::sendEvent(const CmdStreamBase* ev) {
 	try {
-		((*this).*type_serializers[type_index( typeid(*ev) ) ])(ev);
-	}
-	catch(std::bad_cast bc) {
-		// cerr << "bad cast: " << bc << endl;;
-	}
+        ((*this).*type_serializers.at(type_index(typeid(*ev))))(ev);
+    }
+        catch (const std::out_of_range& ore) {
+            cerr << "CStreamCtrlXml::sendEvent: unknown event type: " << typeid(ev).name() << "  got out of range exception: " << ore.what() << endl;
+        }
+        catch (const std::bad_cast &bce) {
+            cerr << "CStreamCtrlXml::sendEvent bad cast: " << bce.what() << endl;
+        }
 }
 
 //void CStreamCtrlXml::onRecvEvent(CmdStreamBase* ev) {

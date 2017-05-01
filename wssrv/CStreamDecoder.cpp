@@ -82,10 +82,10 @@ CStreamFmt CStreamDecoder::openAlsa(std::string alsaDevice, int sample_rate, int
     }
 
     if(sample_rate != -1) {
-        av_dict_set_int(&optionsPtr, "sample_rate", sample_rate, 0);
+        av_dict_set(&optionsPtr, "sample_rate", AV_STRINGIFY(sample_rate), 0);
     }
     if(channels != -1) {
-        av_dict_set_int(&optionsPtr,"channels", channels, 0);
+        av_dict_set(&optionsPtr,"channels", AV_STRINGIFY(channels), 0);
     }
 
     return open(alsaDevice, inputFmtPtr, optionsPtr);
