@@ -49,6 +49,8 @@ public:
     virtual int stop() = 0;
     
     virtual int state() = 0;
+	virtual int setVolume(int volume) = 0;
+
 
     virtual int getOutOverflows(void) = 0;
     virtual int getBytesPlayed(void) = 0;
@@ -59,8 +61,7 @@ public:
     virtual int getActualSampleRate(void) = 0;
 
     bool checkSoundSystem(enum sound_system system);
-    
-protected: 
+protected:
 	 bool m_is_open;
 };
 

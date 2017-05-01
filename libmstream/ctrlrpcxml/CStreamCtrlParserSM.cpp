@@ -140,6 +140,12 @@ void CStreamCtrlParserSM::onXmlStartElement(const std::string& name, const char*
 		parseCmdID(attributes, cmd);
 		parseEvSetVolumeArgs(attributes, cmd);
 		m_tmp_cmd_ptr = cmd;
+    } else if( name.compare( evVolume::ev_name) == 0) {
+        assert(m_tmp_cmd_ptr == 0);
+        evVolume* cmd = new evVolume();
+        parseCmdID(attributes, cmd);
+        parseEvVolumeArgs(attributes, cmd);
+        m_tmp_cmd_ptr = cmd;
 	} else if( name.compare( evAck::ev_name) == 0) {
 		assert(m_tmp_cmd_ptr == 0);
 		evAck* cmd = new evAck();
@@ -164,7 +170,7 @@ void CStreamCtrlParserSM::onXmlEndElement(const std::string& name)
 
 	if(	name.compare( evClientState::ev_name     ) == 0 ||
 		name.compare( evRequestJoin::ev_name     ) == 0 ||
-		name.compare( evRequestLeave::ev_name     ) == 0 ||
+		name.compare( evRequestLeave::ev_name    ) == 0 ||
 		name.compare( evJoinAccepted::ev_name    ) == 0 ||
 		name.compare( evJoinRejected::ev_name    ) == 0 ||
 		name.compare( evLeave::ev_name           ) == 0 ||
@@ -173,6 +179,7 @@ void CStreamCtrlParserSM::onXmlEndElement(const std::string& name)
 		name.compare( evResetStream::ev_name     ) == 0 ||
 		name.compare( evSyncStream::ev_name      ) == 0 ||
 		name.compare( evSetVolume::ev_name       ) == 0 ||
+        name.compare( evVolume::ev_name          ) == 0 ||
 		name.compare( evAck::ev_name             ) == 0 ||
 		name.compare( evError::ev_name           ) == 0)
 	{
@@ -702,6 +709,40 @@ void CStreamCtrlParserSM::parseEvSetVolumeArgs(       const char** attrs, evSetV
 	if( ssrc_str.empty() || vol_str.empty() ) {
 		ostringstream oss;
 		oss << "evSetVolume: ";
+		if( ssrc_str.empty() ) {
+			oss << " argument 'ssrc' missing; ";
+		}
+		if( vol_str.empty() ) {
+			oss << " argument 'volume' missing; ";
+		}
+		throw ExRpcError(oss.str());
+	}
+	cmd->m_ssrc = CUtils::str2uint32(ssrc_str);
+	cmd->m_volume = CUtils::str2uint32(vol_str);
+}
+
+void CStreamCtrlParserSM::parseEvVolumeArgs(       const char** attrs, evVolume* cmd) {
+	string ssrc_str;;
+	string vol_str;
+
+	parseCmdID(attrs, cmd);
+
+	for(int i=0; attrs[i]; i+=2)
+	{
+		string name  = attrs[i];
+		string value = attrs[i + 1];
+
+		if(name.compare("ssrc") == 0) {
+			ssrc_str = value;
+		}
+		if(name.compare("volume") == 0) {
+			vol_str = value;
+		}
+	}
+
+	if( ssrc_str.empty() || vol_str.empty() ) {
+		ostringstream oss;
+		oss << "evVolume: ";
 		if( ssrc_str.empty() ) {
 			oss << " argument 'ssrc' missing; ";
 		}

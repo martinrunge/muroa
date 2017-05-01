@@ -24,6 +24,9 @@ public:
 	const bool& isMember() const { return m_is_member; }
 	void isMember(const bool& is_member) { m_is_member = is_member; }
 
+	const int& getVolume() const { return m_volume; }
+	void setVolume(const int& volume) { m_volume = volume; }
+
 	const std::string& getMemberOfSession() const {	return m_member_of_session; }
 	void setMemberOfSession(const std::string& memberOfSession) { m_member_of_session = memberOfSession; }
 
@@ -32,6 +35,7 @@ public:
 private:
 	bool m_is_online;
 	bool m_is_member;
+	int m_volume;
 	std::string m_member_of_session;
 
 };

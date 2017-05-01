@@ -167,7 +167,8 @@ int main(int argc, char *argv[]) {
 
 	boost::asio::io_service io_service;
 
-	CppServer cpps(io_service, clients, "testsession", timeSrvPort, sessionID);
+	string sessionname = app->settings().getConfigVal("muroaws.sessionname", "testsession");
+	CppServer cpps(io_service, clients, sessionname, timeSrvPort, sessionID);
 	CRessourceHandler resHandler(&cpps, &ws_srv_app);
 	CWSMsgHandler wsMsgHandler(&cpps, &ws_srv_app);
 

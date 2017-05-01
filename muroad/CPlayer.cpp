@@ -43,6 +43,7 @@ CPlayer::CPlayer(boost::asio::io_service& io_service) :
 		m_io_service(io_service),
 		m_media_stream_conn(0),
 		m_session_name(),
+        m_report_volume_timer(io_service),
 		m_session_ctrl_conn(0) {
 
 	boost::asio::ip::tcp protocol = tcp::v4();
@@ -81,6 +82,14 @@ CPlayer::~CPlayer() {
 void CPlayer::setupMediaStreamConn( boost::asio::ip::address mcast_addr, int timesrv_port) {
 	assert(m_media_stream_conn == 0);
 	m_media_stream_conn = new CMediaStreamConnection(m_io_service, mcast_addr, timesrv_port);
+
+    m_current_volume = getVolume();
+
+    evSetVolume evsv;
+    evsv.m_ssrc = 0;
+    evsv.m_volume = m_current_volume;
+
+    m_media_stream_conn->onSetVolume(evsv);
 }
 
 void CPlayer::shutdownMediaStreamConn() {
@@ -175,15 +184,36 @@ void CPlayer::syncInfo(const evSyncStream& evt, CCtrlConnection* ctrlConn) {
 	}
 }
 
+int CPlayer::getVolume() {
+    return CApp::settings().getPersistentVal("muroad.Volume", 50 );
+}
+
+void CPlayer::setVolume(const evSetVolume &evt, CCtrlConnection *ctrlConn) {
+	if(ctrlConn == m_session_ctrl_conn) {
+		m_media_stream_conn->onSetVolume(evt);
+        m_current_volume = evt.m_volume;
+
+        // asio cancelles any unexpired deadlines automatically
+        m_report_volume_timer.expires_from_now( boost::posix_time::seconds(3) );
+        m_report_volume_timer.async_wait(boost::bind( &CPlayer::reportVolume, this, boost::asio::placeholders::error ));
+	}
+}
+
+void CPlayer::reportVolume(const boost::system::error_code& ec) {
+    if( ec != boost::asio::error::operation_aborted) {
+        CApp::settings().setPersistentVal("muroad.Volume", (const int &) m_current_volume);
+        evVolume evvol;
+        evvol.m_ssrc = 0;
+        evvol.m_volume = m_current_volume;
+        m_session_ctrl_conn->onEvent(&evvol);
+    }
+}
+
+
 void CPlayer::resetStream(const evResetStream& evt, CCtrlConnection* ctrlConn) {
 	if(ctrlConn == m_session_ctrl_conn) {
 		m_media_stream_conn->onResetStream(evt);
 	}
-}
-
-
-int CPlayer::getVolume() {
-	return 50;
 }
 
 boost::asio::ip::address CPlayer::getSessionServer() {

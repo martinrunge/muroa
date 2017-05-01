@@ -79,8 +79,8 @@ CPlayloop::CPlayloop(CMediaStreamConnection* parent, CPacketRingBuffer* packet_r
 
 	// m_audio_sink = new CAudioIoAlsa();
 	m_audio_sink = initSoundSystem();
-	string audio_device = CApp::settings().getConfigVal(string("muroad.AudioDevice"), string("hw:0,0"));
-	m_audio_sink->open(audio_device, m_desired_sample_rate, m_num_channels);
+    m_audio_device = CApp::settings().getConfigVal(string("muroad.AudioDevice"), string("default"));
+	m_audio_sink->open(m_audio_device, m_desired_sample_rate, m_num_channels);
 
 	int actual_sample_rate = m_audio_sink->getActualSampleRate();
 	cerr << "CPlayloop::CPlayloop: open audio sink: try " << m_desired_sample_rate << " ... succeeded with " << actual_sample_rate << endl;
@@ -185,9 +185,7 @@ bool CPlayloop::waitForData() {
 		throw InterruptedEx();
 	}
 	if(retval == 0) {
-		string audio_device = CApp::settings().getConfigVal(string("muroad.AudioDevice"), string("hw:0,0"));
-
-		m_audio_sink->open(audio_device, m_desired_sample_rate, m_num_channels);
+		m_audio_sink->open(m_audio_device, m_desired_sample_rate, m_num_channels);
 		m_write_granularity = m_audio_sink->getWriteGranularity();
 		m_media_stream_conn->idleTime(0);
 	}
@@ -568,6 +566,14 @@ void CPlayloop::setSync(CSync* sync_obj)
 	}
 	m_session_id = sync_obj->sessionId();
 	m_stream_id = sync_obj->streamId();
+}
+
+void CPlayloop::setVolume(const evSetVolume &evt)
+{
+	int rc = m_audio_sink->setVolume(evt.m_volume);
+	if(rc != 0) {
+        LOG4CPLUS_WARN(CApp::logger(), "CPlayloop::setVolume failed!");
+	}
 }
 
 void CPlayloop::resetStream(uint32_t ssrc) {

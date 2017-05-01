@@ -129,6 +129,10 @@ void CCtrlConnection::onSyncInfo(const evSyncStream& evt) {
 	m_player->syncInfo(evt, this);
 }
 
+void CCtrlConnection::onSetVolume(const evSetVolume& evt) {
+	m_player->setVolume(evt, this);
+}
+
 void CCtrlConnection::onResetStream(const evResetStream& evt) {
 	m_player->resetStream(evt, this);
 }
@@ -146,6 +150,10 @@ void CCtrlConnection::sendRejectJoin(const evRequestJoin& evt) {
 void CCtrlConnection::sendRejectJoin(const evLeave& evt) {
 	sendEvent(&evt);
     // getIoService().post(boost::bind( &IConnectionManager::remove, m_conn_mgr, this));
+}
+
+void CCtrlConnection::sendEvVolume(const evVolume& evt) {
+	sendEvent(&evt);
 }
 
 void CCtrlConnection::sendRejectJoin(const evTimeout& evt) {

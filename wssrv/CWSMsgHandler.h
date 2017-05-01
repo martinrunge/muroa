@@ -45,6 +45,7 @@ private:
 
 	CWSSrvApp* m_ws_srv_app;
 
+	void onAdjVol(connection_hdl hdl, Json::Value root);
 };
 
 #endif /* LIBMSTREAM_EXAMPLES_WEBRADIO_WITH_HTML_GUI_CWSMSGHANDLER_H_ */

@@ -382,7 +382,7 @@ void CSettings::setPersistentVal(const std::string& parent_key, const std::vecto
 }
 
 
-int CSettings::getPersisentVal(const std::string& key, const int& defaultVal) {
+int CSettings::getPersistentVal(const std::string &key, const int &defaultVal) {
 	return m_persist_pt.get(key, defaultVal);
 }
 
@@ -391,7 +391,7 @@ void CSettings::setPersistentVal(const string& key, const int& val) {
 	write_json(m_cachefile, m_persist_pt);
 }
 
-bool CSettings::getPersisentVal(const std::string& key, const bool& defaultVal) {
+bool CSettings::getPersistentVal(const std::string &key, const bool &defaultVal) {
 	return m_persist_pt.get(key, defaultVal);
 }
 

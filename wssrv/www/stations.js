@@ -1,4 +1,4 @@
-var app = angular.module('stationsApp', ['ngMaterial', 'ngMessages', 'wscmd', 'mclients']);
+var app = angular.module('stationsApp', ['ngMaterial', 'ngAnimate', 'ngAria', 'ngMessages', 'wscmd', 'mclients']);
 
 
 app.controller('stationsCtrl', ['$scope', '$http', '$mdDialog', 'wscmd', 'mclients', function($scope, $http, $mdDialog, wscmd, mclients) {
@@ -8,14 +8,16 @@ app.controller('stationsCtrl', ['$scope', '$http', '$mdDialog', 'wscmd', 'mclien
   
     
     
-    $http.get("stations.json").
-    success(function(data, status, headers, config) {
-            $scope.RadioStations = data;
+    $http.get("stations.json").then( successCB, errorCB);
+    
+    function successCB(response, status, headers, config) {
+            $scope.RadioStations = response.data;
             $scope.Status = "successfully loaded stations list";
-    }).
-    error(function(data, status, headers, config) {
+    };
+    
+    function errorCB(response, status, headers, config) {
         $scope.Status = "error loading stations list";
-    });
+    };
 
 
 //    $scope.stationChanged = wscmd.changeStation;
@@ -39,14 +41,98 @@ app.controller('stationsCtrl', ['$scope', '$http', '$mdDialog', 'wscmd', 'mclien
     $scope.mclients = mclients.clist;
     $scope.activateClient = wscmd.activateClient;
     
+    $scope.adjVol = function(event, mclient, delta) { 
+        mclient.volume += delta;
+    };
+    
+    $scope.openPropDlg = function(mclient, event) {
+        $mdDialog.show({
+            controller: DialogController,
+            scope: $scope,
+            preserveScope: true,
+            templateUrl: 'ClientPropertyDialog.html',
+            parent: angular.element(document.body),
+            targetEvent: event,
+            locals: {
+               mclient: mclient,
+            },
+            clickOutsideToClose:true,
+            fullscreen: $scope.customFullscreen // Only for -xs, -sm breakpoints.
+        })
+        .then(function(answer) {
+            $scope.status = 'You said the information was "' + answer + '".';
+        }, function() {
+            $scope.status = 'You cancelled the dialog.';
+        });
+        
+        function DialogController($scope, $mdDialog, mclient) {
+            $scope.mclient = mclient;
+            $scope.hide = function() {
+                $mdDialog.hide();
+            };
+
+            $scope.cancel = function() {
+                $mdDialog.cancel();
+            };
+
+            $scope.answer = function(answer) {
+                $mdDialog.hide(answer);
+            };
+        };
+
+    };
+        
+//    $scope.openPropDlg = function(mclient, event) {
+//      $mdDialog.show(
+//        $mdDialog.alert()
+//          .title('mclient.name')
+//          .textContent(mclient.session)
+//          .ariaLabel('Person inspect demo')
+//          .ok('Neat!')
+//          //.targetEvent(event)
+//      );
+//    };
+
+    
+    
     $scope.check = function check() {
         return clients.chkbtn();
     }
     
   
     wscmd.reg_cb('muroad',  function (object) {
-        $scope.mclients = object;
+        
+        $scope.mclients.forEach (function(element, index, array) {
+            if(element.hasOwnProperty("unregwatch")) {
+                element.unregwatch();
+            }
+        });
+
         console.log(object);
+        $scope.mclients = object;
+
+        $scope.mclients.forEach(function(element, index, array) {
+            console.log("Index " + index + " : " + element.name);
+ 
+            // place different icons for session members and non session members
+            if(element.member == true) {
+                element.icon = "icons/ic_speaker_black_24px.svg";
+            } else {
+                element.icon = "icons/ic_close_24px.svg";
+            }
+            element.unregwatch = $scope.$watch(
+                // This function returns the value being watched. It is called for each turn of the $digest loop
+                function() { return element.volume; },
+                // This is the change listener, called when the value returned from the above function changes
+                function(newValue, oldValue) {
+                    if ( newValue !== oldValue ) {
+                    // Only if volume changed
+                    wscmd.adjVol(element.name, newValue);
+                }
+            });
+            
+        });
+        
         $scope.$apply();
     });
         

@@ -2,12 +2,34 @@ body {
     font-family:Verdana,sans-serif;
     font-size:15px;
     line-height:1.5;
-    margin:0.2em;
 }
 
 .titlebar {
     width: 100%;
     background-color:#eee;
+}
+
+.left {
+    background-color:#aaa;
+    width:auto;
+    float:left;
+}
+
+.disabled {
+    color:#ccc;
+}
+
+.png-icon{
+    margin: 5px auto auto;
+    padding: 0;
+    display: inline-block;
+    background-repeat: no-repeat no-repeat;
+    pointer-events: none;
+}
+.right {
+    background-color:#eee;
+    width:auto;
+    overflow:hidden;
 }
 
 h1 {
@@ -20,7 +42,11 @@ h1 {
 
 
 .statusbar {
+    position: fixed;
+    z-index: 100; 
+    bottom: 0; 
+    left: 0;
     width: 100%;
     background-color:#eee;
-    clear:both;
+
 }

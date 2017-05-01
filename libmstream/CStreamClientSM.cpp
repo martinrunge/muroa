@@ -51,6 +51,7 @@ bool CStreamClientSM::onEvent(muroa::CmdStreamBase* ev) {
 	else if ( typeid(*ev) == typeid(evResetStream) )     process_event( *reinterpret_cast<evResetStream*>(ev) );
 	else if ( typeid(*ev) == typeid(evSyncStream) )      process_event( *reinterpret_cast<evSyncStream*>(ev) );
 	else if ( typeid(*ev) == typeid(evSetVolume) )       process_event( *reinterpret_cast<evSetVolume*>(ev) );
+	else if ( typeid(*ev) == typeid(evVolume) )          process_event( *reinterpret_cast<evVolume*>(ev) );
 	else if ( typeid(*ev) == typeid(evAck) )             process_event( *reinterpret_cast<evAck*>(ev) );
 	else if ( typeid(*ev) == typeid(evError) )           process_event( *reinterpret_cast<evError*>(ev) );
 	else {

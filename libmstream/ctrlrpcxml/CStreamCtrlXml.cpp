@@ -59,6 +59,7 @@ CStreamCtrlXml::CStreamCtrlXml() throw (ExRpcError) {
 	type_serializers[std::type_index(typeid( evResetStream     ))] = &CStreamCtrlXml::sendEvResetStream;
 	type_serializers[std::type_index(typeid( evSyncStream      ))] = &CStreamCtrlXml::sendEvSyncStream;
 	type_serializers[std::type_index(typeid( evSetVolume       ))] = &CStreamCtrlXml::sendEvSetVolume;
+    type_serializers[std::type_index(typeid( evVolume          ))] = &CStreamCtrlXml::sendEvVolume;
 	type_serializers[std::type_index(typeid( evAck             ))] = &CStreamCtrlXml::sendEvAck;
 	type_serializers[std::type_index(typeid( evError           ))] = &CStreamCtrlXml::sendEvError;
 
@@ -208,7 +209,16 @@ void CStreamCtrlXml::sendEvSetVolume(const CmdStreamBase* ev) {
 	sendData(oss.str());
 }
 
-void CStreamCtrlXml::sendEvAck(const CmdStreamBase* ev) {
+void CStreamCtrlXml::sendEvVolume(const CmdStreamBase* ev) {
+    const evVolume* e = dynamic_cast<const evVolume*>(ev);
+    ostringstream oss;
+    oss << "<" << e->ev_name << " cmdID=\"" << e->getID() << "\""
+        << " ssrc=\"" << e->m_ssrc << "\""
+        << " volume=\"" << e->m_volume << "\"/>" << endl;
+    sendData(oss.str());
+}
+
+ void CStreamCtrlXml::sendEvAck(const CmdStreamBase* ev) {
 	const evAck* e = dynamic_cast<const evAck*>(ev);
 	ostringstream oss;
 	oss << "<" << e->ev_name << " cmdID=\"" << e->getID() << "\"/>" << endl;

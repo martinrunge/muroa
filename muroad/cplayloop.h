@@ -70,6 +70,7 @@ public:
     void setSync(CSync* sync_obj);
     void resetStream(uint32_t ssrc);
 
+    void setVolume(const muroa::evSetVolume &evt);
 private:
 
     uint32_t m_current_ssrc;
@@ -135,6 +136,7 @@ private:
     //CAudioIoAlsa *m_audio_sink;
     IAudioIO *m_audio_sink;
     IAudioIO* initSoundSystem();
+    std::string m_audio_device;
 
     int m_secs_idle;
     int m_max_idle;

@@ -46,6 +46,9 @@ void CWSMsgHandler::onMessage(websocketpp::connection_hdl hdl, std::string heade
 	else if(evtype.compare("getCurrentClientList") == 0) {
 		onListClients(hdl, root);
 	}
+    else if(evtype.compare("adjVol") == 0) {
+        onAdjVol(hdl, root);
+    }
 	else if(evtype.compare("activateClient") == 0) {
 		onActivateClient(hdl, root);
 	}
@@ -84,6 +87,7 @@ void CWSMsgHandler::listClients() {
 		elem["hostname"] = it->srvPtr->getHostName();
 		elem["ownersession"] = it->getMemberOfSession();
 		elem["member"] = it->isMember();
+        elem["volume"] = it->getVolume();
 		elem["online"] = it->isOnline();
 		data.append(elem);
 	}
@@ -112,6 +116,7 @@ void CWSMsgHandler::onListClients(connection_hdl hdl, Json::Value root) {
 		elem["hostname"] = it->srvPtr->getHostName();
 		elem["ownersession"] = it->getMemberOfSession();
 		elem["member"] = it->isMember();
+        elem["volume"] = it->getVolume();
 		elem["online"] = it->isOnline();
 		data.append(elem);
 	}
@@ -163,5 +168,12 @@ void CWSMsgHandler::onActivateClient(connection_hdl hdl, Json::Value root) {
 	else {
 		m_StreamSrv->requestClientToLeave( serviceName );
 	}
+}
+
+void CWSMsgHandler::onAdjVol(CWSMsgHandler::connection_hdl hdl, Json::Value root) {
+    string serviceName = root["data"]["serviceName"].asString();
+    int volume = root["data"]["volume"].asInt();
+    m_StreamSrv->setVolume(serviceName, volume);
+
 }
 

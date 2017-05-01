@@ -72,6 +72,7 @@ public:
     void sendRTPPacket(CRTPPacket* packet);
 
 	void onSyncInfo(const muroa::evSyncStream& evt);
+    void onSetVolume(const muroa::evSetVolume &evt);
     void onResetStream(const muroa::evResetStream& evRst);
 	void onJoinMulticastGroup() {};
 	void onLeaveMutlicastGroup() {};

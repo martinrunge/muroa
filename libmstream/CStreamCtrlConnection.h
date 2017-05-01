@@ -87,9 +87,11 @@ public:
 	void onTimeout(const evTimeout* evt);
 	void onClientState(const evClientState* evt);
 	void onClientState(const evLeave* evt);
+    void onVolume(const evVolume* evt);
 
 	// called by statemachine to send event to client
 	void sendJoinRequest(const muroa::evRequestJoin*);
+	void setVolume(const evSetVolume* evt);
 	void sendLeaveRequest(const muroa::evRequestLeave*);
 	void onBecameSessionMember(const CmdStreamBase *cmd);
 	void onLeftSession(const muroa::CmdStreamBase* cmd);

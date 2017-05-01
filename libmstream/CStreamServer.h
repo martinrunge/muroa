@@ -77,7 +77,7 @@ public:
 	void requestJoin(std::string serviceName);
 	void requestLeave(std::string serviceName);
 	void disconnectFromClient(const std::string& serviceName);
-
+    void setVolume(std::string serviceName, int volume);
 
     // void adjustReceiverList(std::vector<muroa::ServDescPtr> receivers);
     __attribute__((deprecated("use connectToClient instead and wait for the onClientState event")))
@@ -94,6 +94,8 @@ public:
 
 	virtual void onError(muroa::CStreamCtrlConnection* conn, const evJoinRejected* evt);
 	virtual void onError(muroa::CStreamCtrlConnection* conn, const evError* evt);
+
+	virtual void onVolume(muroa::CStreamCtrlConnection* conn, const evVolume* evt);
 
 	const std::vector<CRenderClientDesc> getRenderClients() const { return m_rcs; };
 

@@ -33,6 +33,7 @@ const std::string evSessionState::ev_name = "evSessionState";
 const std::string evResetStream::ev_name = "evResetStream";
 const std::string evSyncStream::ev_name = "evSyncStream";
 const std::string evSetVolume::ev_name = "evSetVolume";
+const std::string evVolume::ev_name = "evVolume";
 const std::string evAck::ev_name = "evAck";
 const std::string evError::ev_name = "evError";
 

@@ -98,6 +98,12 @@ int CAudioOSS::open(std::string device, int samplerate, int channels) {
 
 }
 
+int CAudioOSS::setVolume(int volume) {
+    // TBD
+    return 0;
+}
+
+
 int CAudioOSS::read(char* data, int buffersize) {
    if(m_is_open == false) return -1;
    

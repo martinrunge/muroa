@@ -191,6 +191,14 @@ void CppServer::onClientLeftSession(muroa::CStreamCtrlConnection* conn, const mu
 	m_ws_msg_handler->listClients();
 }
 
+void CppServer::onVolume(muroa::CStreamCtrlConnection* conn, const muroa::evVolume* evt) {
+    // let the base class do the book keeping
+    CStreamServer::onVolume(conn, evt);
+
+    m_ws_msg_handler->listClients();
+}
+
+
 void CppServer::onError(muroa::CStreamCtrlConnection* conn, const evJoinRejected* evt) {
 
 }

@@ -58,7 +58,9 @@ void CStreamServer::onClientState(muroa::CStreamCtrlConnection* conn, const muro
 	for(it = m_rcs.begin(); it != m_rcs.end(); it++) {
 		if(serviceName.compare( it->srvPtr->getServiceName() ) == 0 ) {
 			it->isOnline(true);
-			has_changed = true;
+            it->setVolume(evt->m_current_volume);
+            it->setMemberOfSession(evt->m_member_of_session);
+            has_changed = true;
 		}
 	}
 	if(has_changed) {
@@ -99,6 +101,22 @@ void CStreamServer::requestLeave(std::string serviceName) {
 	catch(CUnknownServiceNameException ex) {
 		LOG4CPLUS_ERROR( CApp::logger(), "request to leave for unknown service name: '" << ex.reason() << "'");
 	}
+}
+
+
+void CStreamServer::setVolume(std::string serviceName, int volume) {
+    try {
+        CStreamCtrlConnection* conn = getCtrlConnByName(serviceName );
+
+        evSetVolume* evsv = new evSetVolume();
+        evsv->m_volume = volume;
+
+        conn->onEvent(evsv);
+    }
+    catch(CUnknownServiceNameException ex) {
+        LOG4CPLUS_WARN(CApp::logger(), "CppServer::setVolume: no control connection to '" << serviceName << "' (" << ex.reason() << ")");
+    }
+
 }
 
 
@@ -427,6 +445,7 @@ void CStreamServer::onClientBecameSessionMember( muroa::CStreamCtrlConnection* c
 	for(vector<CRenderClientDesc>::iterator it = m_rcs.begin(); it != m_rcs.end(); it++) {
 		if( it->srvPtr->getServiceName().compare(conn->getServiceName()) == 0 ) {
 			it->isMember(true);
+            it->setMemberOfSession(m_session_name);
 			has_changed = true;
 		}
 	}
@@ -443,6 +462,7 @@ void CStreamServer::onClientLeftSession(muroa::CStreamCtrlConnection* conn, cons
 	for(vector<CRenderClientDesc>::iterator it = m_rcs.begin(); it != m_rcs.end(); it++) {
 		if( it->srvPtr->getServiceName().compare(conn->getServiceName()) == 0 ) {
 			it->isMember(false);
+            it->setMemberOfSession("");
 			has_changed = true;
 		}
 	}
@@ -464,6 +484,21 @@ void  CStreamServer::onError(muroa::CStreamCtrlConnection* conn, const evJoinRej
 void  CStreamServer::onError(muroa::CStreamCtrlConnection* conn, const evError* evt) {
 
 }
+
+void  CStreamServer::onVolume(muroa::CStreamCtrlConnection* conn, const evVolume* evt) {
+	bool rcd_found = false;
+	for(vector<CRenderClientDesc>::iterator it = m_rcs.begin(); it != m_rcs.end(); it++) {
+		if( it->srvPtr->getServiceName().compare(conn->getServiceName()) == 0 ) {
+			it->setVolume( evt->m_volume );
+			rcd_found = true;
+		}
+	}
+
+	if(rcd_found) {
+		listClients();
+	}
+}
+
 
 //
 //std::vector<CRenderClientDesc> CStreamServer::getRenderClients() {

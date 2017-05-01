@@ -46,18 +46,19 @@ public:
 
 
 	enum open_state_t {XML_OPEN_STATE_ROOT,
-					      XML_EV_CLIENT_STATE,
-						  XML_EV_REQUEST_JOIN,
-						  XML_EV_REQUEST_LEAVE,
-		                  XML_EV_JOIN_ACCEPTED,
-						  XML_EV_JOIN_REJECTED,
-						  XML_EV_LEAVE,
-						  XML_EV_GET_SESSION_STATE,
-						  XML_EV_SESSION_STATE,
-						  XML_EV_RESET_STREAM,
-						  XML_EV_SYNC_STREAM,
-						  XML_EV_SET_VOLUME,
-						  XML_EV_ERROR
+                       XML_EV_CLIENT_STATE,
+                       XML_EV_REQUEST_JOIN,
+                       XML_EV_REQUEST_LEAVE,
+                       XML_EV_JOIN_ACCEPTED,
+                       XML_EV_JOIN_REJECTED,
+                       XML_EV_LEAVE,
+                       XML_EV_GET_SESSION_STATE,
+                       XML_EV_SESSION_STATE,
+                       XML_EV_RESET_STREAM,
+                       XML_EV_SYNC_STREAM,
+                       XML_EV_SET_VOLUME,
+                       XML_EV_VOLUME,
+                       XML_EV_ERROR
 	};
 
 	typedef struct {
@@ -119,6 +120,7 @@ private:
 	void parseEvResetStreamArgs(     const char** attrs, evResetStream* cmd);
 	void parseEvSyncStreamArgs(      const char** attrs, evSyncStream* cmd);
 	void parseEvSetVolumeArgs(       const char** attrs, evSetVolume* cmd);
+    void parseEvVolumeArgs(          const char** attrs, evVolume* cmd);
 	void parseEvErrorArgs(           const char** attrs, evError* cmd);
 
 };

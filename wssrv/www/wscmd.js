@@ -56,6 +56,14 @@ wscmd.factory('wscmd', ['$websocket', function($websocket) {
        
         ws.$emit('activateClient',acData);
     }    
+    
+    var adjVol = function adjVol(serviceName, volume) {
+        var avData = {};
+        avData["serviceName"] = serviceName;
+        avData["volume"] = volume;
+       
+        ws.$emit('adjVol',avData);
+    }    
 
     var getCurrentClientList = function getCurrentClientList() {
         var gclData = {};
@@ -72,6 +80,7 @@ wscmd.factory('wscmd', ['$websocket', function($websocket) {
         pause: pause,
         changeStation: changeStation,
         activateClient: activateClient,
+        adjVol: adjVol,
         getCurrentClientList: getCurrentClientList,
     };
 }])
@@ -107,7 +116,7 @@ wscmd.run(['wscmd', function (wscmd) {
                 callbacks[event](data);
               }
               else {
-                  console.log("no callback registered for type '" + type + "'");
+                  console.log("no callback registered for type '" + event + "'");
               }
           })
     

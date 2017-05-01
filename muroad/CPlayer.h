@@ -55,6 +55,9 @@ public:
 	int leaveSession(const evRequestLeave& evt, CCtrlConnection* ctrlConn);
 
     void syncInfo(const evSyncStream& evt, CCtrlConnection* ctrlConn);
+	void setVolume(const evSetVolume &evt, CCtrlConnection *ctrlConn);
+    void reportVolume(const boost::system::error_code& ec);
+
 	void resetStream(const evResetStream& evt, CCtrlConnection* ctrlConn);
 
 
@@ -75,7 +78,6 @@ public:
 		return m_session_name;
 	}
 
-
 private:
 	bool m_active;
 
@@ -91,8 +93,11 @@ private:
     std::string m_session_name;
     boost::asio::ip::address m_mcast_addr;
     int m_timesrv_port;
+    int m_current_volume;
 
-    CCtrlConnection* m_session_ctrl_conn;
+	boost::asio::deadline_timer m_report_volume_timer;
+
+	CCtrlConnection* m_session_ctrl_conn;
 };
 
 } /* namespace muroa */

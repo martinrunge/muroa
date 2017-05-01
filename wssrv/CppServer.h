@@ -55,6 +55,7 @@ public:
 	void onClientLeftSession(muroa::CStreamCtrlConnection* conn, const muroa::evLeave* evt);
 
 	void onError(muroa::CStreamCtrlConnection* conn, const evJoinRejected* evt);
+    void onVolume(muroa::CStreamCtrlConnection* conn, const muroa::evVolume* evt);
 
 	void onClientState(muroa::CStreamCtrlConnection* conn, const muroa::evClientState* evt);
 	void reportProgress( int posInSecs, int durationInSecs);

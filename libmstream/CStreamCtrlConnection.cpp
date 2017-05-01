@@ -122,7 +122,15 @@ void CStreamCtrlConnection::onClientState(const evLeave* evt) {
 }
 
 void CStreamCtrlConnection::sendJoinRequest(const evRequestJoin* evt) {
+    sendEvent(evt);
+}
+
+void CStreamCtrlConnection::setVolume(const evSetVolume* evt) {
 	sendEvent(evt);
+}
+
+void CStreamCtrlConnection::onVolume(const evVolume* evt) {
+    m_stream_server->onVolume(this, evt);
 }
 
 void CStreamCtrlConnection::sendLeaveRequest(const muroa::evRequestLeave* evt) {

@@ -44,6 +44,7 @@ public:
     int stop();
 
     int state();
+    int setVolume(int volume);
 
     int close();
     int open(std::string device, int samplerate, int channels);
@@ -65,7 +66,12 @@ private:
     snd_pcm_t *m_playback_handle;
     snd_pcm_hw_params_t *m_hw_params;
     snd_pcm_sw_params_t *m_sw_params;
-    snd_pcm_status_t *m_status_ptr; 
+    snd_pcm_status_t *m_status_ptr;
+
+    long  m_vol_min, m_vol_max;
+    snd_mixer_t *m_mixer_handle;
+    snd_mixer_selem_id_t *m_mixer_sid;
+    snd_mixer_elem_t* m_mixer_elem;
 
     int m_write_granularity;     
     int m_sample_rate;

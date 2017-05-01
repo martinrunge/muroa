@@ -42,6 +42,7 @@ const std::string StreamCtrlXMLCmds::close = string("</muroad>\n");
 
 const std::string StreamCtrlXMLCmds::ack = string("ack");
 const std::string StreamCtrlXMLCmds::error = string("error");
+const std::string StreamCtrlXMLCmds::volume = string("volume");
 
 const std::string StreamCtrlXMLCmds::requestInfo = string("requestInfo");
 const std::string StreamCtrlXMLCmds::getState = string("getState");

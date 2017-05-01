@@ -93,10 +93,10 @@ public:
     std::vector<std::string> getPersisentVal(const std::string& prent_key, const std::vector<std::string>& defaultVal);
     void setPersistentVal(const std::string& parent_key, const std::vector<std::string>& val);
 
-    int getPersisentVal(const std::string& key, const int& defaultVal);
+    int getPersistentVal(const std::string &key, const int &defaultVal);
     void setPersistentVal(const std::string& key, const char* val);
 
-    bool getPersisentVal(const std::string& key, const bool& defaultVal);
+    bool getPersistentVal(const std::string &key, const bool &defaultVal);
     void setPersistentVal(const std::string& key, const bool& val);
 
     static bool accessible(std::string filename);

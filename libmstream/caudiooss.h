@@ -34,6 +34,7 @@ public:
 
     int close();
     int open(std::string device, int samplerate, int channels);
+    int setVolume(int volume);
     int read(char* data, int buffersize);
     int write(char* data, int length);
 

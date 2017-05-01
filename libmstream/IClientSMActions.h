@@ -36,12 +36,14 @@ public:
 	virtual void sendSessionState(const evRequestSessionState& rss) = 0;
 	virtual void sendEvError(const evError& evt) = 0;
 	virtual void sendEvTimeout(const evTimeout& evt) = 0;
+    virtual void sendEvVolume(const evVolume&evt) = 0;
 
 	virtual void confirmJoinRequest(const evRequestJoin& evt ) = 0;
 	virtual bool mayJoinSession(const evRequestJoin& rj) = 0;
 	virtual void becomeSessionMember(const evRequestJoin& evt) = 0;
 	virtual void leaveSession(const evRequestLeave& evt) = 0;
 	virtual void onSyncInfo(const evSyncStream& evt) = 0;
+	virtual void onSetVolume(const evSetVolume& evt) = 0;
 	virtual void onResetStream(const evResetStream& evt) = 0;
 
 	virtual void sendRejectJoin(const evRequestJoin& evt) = 0;

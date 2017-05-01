@@ -45,7 +45,7 @@ CRecvloop::CRecvloop(CMediaStreamConnection* parent, CPacketRingBuffer* packet_r
 
 	m_max_idle = CApp::settings().getConfigVal("muroad.MaxIdle", 10);
 
-	unsigned short port = CApp::settings().getPersisentVal("muroad.RTPport", 0);
+	unsigned short port = CApp::settings().getPersistentVal("muroad.RTPport", 0);
 	if(port == 0) {
 		port = CApp::settings().getConfigVal("muroad.RTPport", 44400);
 	}

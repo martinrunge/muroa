@@ -61,6 +61,7 @@ public:
     void leaveSession(const evRequestLeave& evt);
 
     void onSyncInfo(const evSyncStream& evt);
+	void onSetVolume(const evSetVolume& evt);
 	void onResetStream(const evResetStream& evt);
 
 	// send events to server, triggered by statemachine
@@ -70,6 +71,7 @@ public:
 
 	void sendEvError(const evError& err);
 	void sendEvTimeout(const evTimeout& to);
+	void sendEvVolume(const evVolume& evv);
 
 private:
 	CCtrlConnection(boost::asio::io_service& io_service);

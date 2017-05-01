@@ -38,6 +38,7 @@ public:
     static const std::string close;
     static const std::string ack;
     static const std::string error;
+	static const std::string volume;
     static const std::string requestInfo;
     static const std::string getState;
     static const std::string joinSession;

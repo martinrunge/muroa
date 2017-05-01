@@ -235,6 +235,14 @@ struct srv_ : public boost::msm::front::state_machine_def<srv_, VisitableState>
         	_inner_actions->sendLeaveRequest(&evt);
         }
 
+        void setVolume(const evSetVolume& evt) {
+            _inner_actions->setVolume(&evt);
+        }
+
+		void onVolume(const evVolume& evt) {
+			_inner_actions->onVolume(&evt);
+		}
+
         void report_error(const evError& err) {
         	_inner_actions->ontError(&err);
         };
@@ -253,7 +261,8 @@ struct srv_ : public boost::msm::front::state_machine_def<srv_, VisitableState>
            _row < awaitSessionState  , evSessionState   , sessionMember                                                           >,
           _irow < sessionMember      , evResetStream                                                                              >,
           _irow < sessionMember      , evSyncStream                                                                               >,
-          _irow < sessionMember      , evSetVolume                                                                                >,
+         a_irow < sessionMember      , evSetVolume                             , &j::setVolume                                    >,
+         a_irow < sessionMember      , evVolume                                , &j::onVolume                                     >,
           a_row < sessionMember      , evRequestLeave   , leaveSession         , &j::sendLeaveRequest                             >,
             //  +------------------- +------------------+----------------------+---------------------------+----------------------+
           _irow < noError            , evCmdSent                                                                                  >,

@@ -254,6 +254,18 @@ public:
 	static const std::string ev_name;
 };
 
+class evVolume: public CmdStreamBase {
+public:
+	bool operator==(const evVolume& rhs) {
+		return  m_ssrc == rhs.m_ssrc &&
+			m_volume == rhs.m_volume;
+	}
+
+	uint32_t m_ssrc;
+	uint32_t m_volume;
+
+	static const std::string ev_name;
+};
 
 class evAck: public CmdStreamBase {
 public:

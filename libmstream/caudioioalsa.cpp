@@ -71,15 +71,20 @@ int CAudioIoAlsa::state() {
 	}
 }
 
+int CAudioIoAlsa::setVolume(int volume) {
+    snd_mixer_selem_set_playback_volume_all(m_mixer_elem, volume * m_vol_max / 100);
+}
+
 int CAudioIoAlsa::close() {
   if(m_open == true)
   {
-    m_open = false;  
-    cerr << "closing audio device" << endl;
-    snd_pcm_status_free(m_status_ptr);
-    snd_pcm_close(m_playback_handle);
+      m_open = false;
+      cerr << "closing audio device" << endl;
+      snd_pcm_status_free(m_status_ptr);
+      snd_pcm_close(m_playback_handle);
+      snd_mixer_close(m_mixer_handle);
 
-    m_playback_handle = 0;
+      m_playback_handle = 0;
   }
   return 0;
 }
@@ -206,6 +211,20 @@ int CAudioIoAlsa::open(std::string device, int samplerate, int channels) {
     fprintf(stderr, "cannot prepare audio interface for use (%s)\n", snd_strerror(err));
     return -9;
   }
+
+    const char *selem_name = "Master";
+
+    snd_mixer_open(&m_mixer_handle, 0);
+    snd_mixer_attach(m_mixer_handle, device.c_str());
+    snd_mixer_selem_register(m_mixer_handle, NULL, NULL);
+    snd_mixer_load(m_mixer_handle);
+
+    snd_mixer_selem_id_alloca(&m_mixer_sid);
+    snd_mixer_selem_id_set_index(m_mixer_sid, 0);
+    snd_mixer_selem_id_set_name(m_mixer_sid, selem_name);
+    m_mixer_elem = snd_mixer_find_selem(m_mixer_handle, m_mixer_sid);
+
+    snd_mixer_selem_get_playback_volume_range(m_mixer_elem, &m_vol_min, &m_vol_max);
 
 
   m_open = true; 

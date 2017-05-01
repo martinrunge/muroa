@@ -6,20 +6,20 @@
     <script>document.write('<base href="' + document.location + '" />');</script>
     
     <!-- Angular Material style sheet -->
-    <link rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/angular_material/1.0.7/angular-material.min.css">
+    <link rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/angular_material/1.1.0/angular-material.min.css">
 
     <link rel="stylesheet" href="style.css" />
 
     <!-- Angular Material requires Angular.js Libraries -->
-    <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular.js"></script>
-    <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular-animate.min.js"></script>
-    <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular-aria.min.js"></script>
+    <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.6.4/angular.js"></script>
+    <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.6.4/angular-animate.min.js"></script>
+    <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.6.4/angular-aria.min.js"></script>
     <!-- <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular-route.min.js"></script> -->
-    <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular-messages.min.js"></script>
+    <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.6.4/angular-messages.min.js"></script>
     <!-- <script src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/t-114/svg-assets-cache.js"></script> -->
 
     <!-- Angular Material Library -->
-    <script src="http://ajax.googleapis.com/ajax/libs/angular_material/1.0.7/angular-material.min.js"></script>
+    <script src="http://ajax.googleapis.com/ajax/libs/angular_material/1.1.0/angular-material.min.js"></script>
 
     <!-- Your application bootstrap  -->
     <script type="text/javascript">    
@@ -30,7 +30,6 @@
     </script>
  
 
-    <script type="text/javascript" src="app.js"></script>
     <script type="text/javascript" src="stations.js"></script>
     <script type="text/javascript" src="wscmd.js"></script>
     <script type="text/javascript" src="mclients.js"></script>
@@ -43,35 +42,38 @@
 
 
 
-<div style="width:100%;height:100%;top-margin=0.2em;">
+<div style="width:100%;height:100%">
     <div class="titlebar">
         <div style="float:left;"> 
             <h1>Web-Radio</h1>
         </div>
-        <div> 
-            <img ng-src="icons/media-playback-stop.png" ng-click="Stop()" alt="Stop" style="width:8em;height:8em;">
-        </div>
+        <md-button class="md-raised" aria-label="Stop" ng-click="Stop()"> 
+            <img ng-src="icons/media-playback-stop.png"  alt="Stop" style="width:8em;height:8em;">
+        </md-button>
     </div>
   
-    <div style="background-color:#aaa;width:200px;float:left;">
-    <div ng-repeat="x in RadioStations">
+    <div class="left">
+    <div ng-repeat="station in RadioStations">
         <!-- <img ng-src=radiostations/{{x.ID}}/{{x.Logo}} ng-click="stationChanged($index)" alt={{x.Name}} style="width:200px;height:100px;"> -->
-        <md-button aria-label={{x.Name}} ng-click="stationChanged($index)">
-          <img src="radiostations/{{x.ID}}/{{x.Logo}}" style="width:200px;height:100px;"/>
+        <md-button class="md-raised" aria-label="{{station.Name}}" ng-click="stationChanged($index)">
+            <img class=".png-icon" ng-src="{{station.Logo}}" alt="{{station.Name}}" style="width:200px;height:100px;" />
         </md-button>
     </div>
     </div>
 
-    <div style="background-color:#eee;float:right;">
+    <div class="right">
         <!-- <p>main content area</p>  -->
         <md-list  ng-cloak>
             <md-subheader>Muroa render clients</md-subheader>
-            <md-list-item ng-repeat="c in mclients">
-                <md-button class="listitem" ng-disabled="!c.online">
-                {{ c.name }}  
-                <md-checkbox ng-model="c.member"  aria-label="member" ng-click="activateClient(c.name, !c.member)">session member {{c.member}}</md-checkbox>   
-                {{c.hostname}}
-                </md-button>
+            <md-list-item ng-repeat="c in mclients"  class="noright">
+                <md-button aria-label="acivate client" class="md-primary" ng-disabled="!c.online" ng-click="activateClient(c.name, !c.member)">
+                   <md-icon md-svg-icon="{{c.icon}}"></md-icon>
+                   {{ c.name }}
+                </md-button> 
+                <md-icon md-svg-icon="icons/ic_remove_24px.svg" ng-click="adjVol($event, c, -1)" ng-disabled="!c.member" class="md-secondary" />
+                <md-slider min="0" max="100" aria-label="volume" id="volume-slider" ng-model="c.volume" ng-disabled="!c.member" class="md-secondary md-hue-3" />
+                <md-icon md-svg-icon="icons/ic_add_24px.svg" ng-click="adjVol($event, c, 1)" ng-disabled="!c.member" aria-label="increase volume" class="md-secondary" />
+                <md-icon md-svg-icon="icons/ic_more_horiz_24px.svg"  ng-click="openPropDlg(c, $event)" ng-disabled="!c.online" aria-label="Open Settings" class="md-secondary md-hue-3" />
             </md-list-item>
         </md-list>
 

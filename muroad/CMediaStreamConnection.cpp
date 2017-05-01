@@ -158,6 +158,11 @@ void CMediaStreamConnection::onSyncInfo(const evSyncStream& evt) {
 }
 
 
+void CMediaStreamConnection::onSetVolume(const evSetVolume &evt) {
+    m_playloop->setVolume(evt);
+}
+
+
 /*!
     \fn CPlayer::setRequestedSyncObj(CRTPPacket* rtp_packet)
  */

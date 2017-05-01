@@ -14,7 +14,9 @@
 
 #include <map>
 #include <log4cplus/loggingmacros.h>
+#include <boost/filesystem.hpp>
 
+using namespace boost::filesystem;
 using namespace std;
 
 namespace muroa {
@@ -131,7 +133,8 @@ void WSSrv::onHttp(connection_hdl hdl) {
     server::connection_ptr con = m_endpoint.get_con_from_hdl(hdl);
 
     std::ifstream file;
-    std::string filename = con->get_uri()->get_resource();
+    string filename = con->get_uri()->get_resource();
+    path p(filename);
     std::string response;
 
 
@@ -176,15 +179,24 @@ void WSSrv::onHttp(connection_hdl hdl) {
 
 	}
 	else {
-		if (filename == "/") {
-			filename = m_docroot+"index.html";
-		} else {
-			filename = m_docroot+filename.substr(1);
+        if(p.compare("/") == 0 ) {
+			p /= "index.html";
 		}
-		LOG4CPLUS_INFO( CApp::logger(), "http request1 for: " << filename );
+        p= path(m_docroot)/p;
+		LOG4CPLUS_INFO( CApp::logger(), "http request1 for: " << p.string() );
 
-		file.open(filename.c_str(), std::ios::in);
-		if (!file) {
+        bool regular_file = true;
+        if(is_directory(p)) {
+            regular_file = false;
+        }
+        else {
+            file.open(p.c_str(), std::ios::in);   // std::ifstream::open will not complain if asked to open a directory
+            if(!file.is_open()) {
+                regular_file = false;
+            }
+        }
+
+		if (regular_file == false) {
 			// 404 error
 			std::stringstream ss;
 

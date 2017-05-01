@@ -193,7 +193,11 @@ namespace muroa {
         };
 
         void setVolume(const evSetVolume &sv) {
+            _actions->onSetVolume(sv);
+        };
 
+        void sendEvVolume(const evVolume &evv) {
+            _actions->sendEvVolume(evv);
         };
 
         void sendClientState(const evClientState &cs) {
@@ -239,8 +243,9 @@ namespace muroa {
                a_irow < sessionMember      , evResetStream                           , &c::resetStream                                  >,
                a_irow < sessionMember      , evSyncStream                            , &c::syncStream                                   >,
                a_irow < sessionMember      , evSetVolume                             , &c::setVolume                                    >,
+               a_irow < sessionMember      , evVolume                                , &c::sendEvVolume                                 >,
                a_irow < sessionMember      , evRequestSessionState                   , &c::sendSessionState                             >,
-                a_row < sessionMember      , evRequestLeave   , awaitReaction        , &c::leaveSession                                  >,
+                a_row < sessionMember      , evRequestLeave   , awaitReaction        , &c::leaveSession                                 >,
                 a_row < sessionMember      , evError          , exitState            , &c::sendEvError                                  >
         > {};
         //@formatter:on
