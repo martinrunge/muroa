@@ -123,7 +123,7 @@ CStreamFmt CStreamDecoder::openUrl(std::string url, int timeout_in_ms) {
 
     AVDictionary *optionsPtr = NULL;
     if(timeout_in_ms != -1) {
-        av_dict_set_int(&optionsPtr, "timeout", timeout_in_ms, 0);
+        av_dict_set(&optionsPtr, "timeout", AV_STRINGIFY(timeout_in_ms), 0);
     }
 
     return open(url, NULL, optionsPtr );
