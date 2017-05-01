@@ -45,7 +45,7 @@ SimpleServer::SimpleServer(vector<bip::tcp::endpoint> clients, string session_na
 		if(m_in_fd == NULL) {
 			perror("fopen('infile.raw')");
 		}
-		open(2, 48000, 2);
+		open(2, 48000, AV_SAMPLE_FMT_S16);
 
 		boost::asio::deadline_timer t(m_io_service, boost::posix_time::milliseconds(10) );
 		t.async_wait( boost::bind(&SimpleServer::sendData, this) );
