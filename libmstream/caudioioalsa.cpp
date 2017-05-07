@@ -25,7 +25,7 @@
 using namespace std;
 
 CAudioIoAlsa::CAudioIoAlsa()
- : IAudioIO()
+ : IAudioIO(), m_mixer_elem(NULL)
 {
   m_sample_rate = 0;
   m_open = false;
@@ -72,7 +72,9 @@ int CAudioIoAlsa::state() {
 }
 
 int CAudioIoAlsa::setVolume(int volume) {
-    snd_mixer_selem_set_playback_volume_all(m_mixer_elem, volume * m_vol_max / 100);
+    if(m_mixer_elem) {
+        snd_mixer_selem_set_playback_volume_all(m_mixer_elem, volume * m_vol_max / 100);
+    }
 }
 
 int CAudioIoAlsa::close() {
@@ -89,9 +91,8 @@ int CAudioIoAlsa::close() {
   return 0;
 }
 
-int CAudioIoAlsa::closeMixer()
-{
-
+int CAudioIoAlsa::closeMixer() {
+    m_mixer_elem = NULL;
 }
 
 int CAudioIoAlsa::open(std::string device, int samplerate, int channels) {
