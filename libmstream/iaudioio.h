@@ -42,7 +42,9 @@ public:
 
 
     virtual int close() = 0;
+	virtual int closeMixer() = 0;
     virtual int open(std::string device, int samplerate, int channels) = 0;
+	virtual int openMixer(std::string device, std::string channel) = 0;
     virtual int read(char* data, int buffersize) = 0;
     virtual int write(char* data, int length) = 0;
     virtual int start() = 0;

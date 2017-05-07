@@ -89,6 +89,11 @@ int CAudioIoAlsa::close() {
   return 0;
 }
 
+int CAudioIoAlsa::closeMixer()
+{
+
+}
+
 int CAudioIoAlsa::open(std::string device, int samplerate, int channels) {
 
   int err;
@@ -212,23 +217,46 @@ int CAudioIoAlsa::open(std::string device, int samplerate, int channels) {
     return -9;
   }
 
-    const char *selem_name = "Master";
+  m_open = true;
+  return 0;
+}
 
-    snd_mixer_open(&m_mixer_handle, 0);
-    snd_mixer_attach(m_mixer_handle, device.c_str());
-    snd_mixer_selem_register(m_mixer_handle, NULL, NULL);
-    snd_mixer_load(m_mixer_handle);
+int CAudioIoAlsa::openMixer(std::string device, std::string channel) {
+    int err = 0;
+
+    if (err = snd_mixer_open(&m_mixer_handle, 0) ) {
+        fprintf(stderr, "cannot open mixer (%s)\n", snd_strerror(err));
+        return err;
+    }
+
+    if (err = snd_mixer_attach(m_mixer_handle, device.c_str())  ) {
+        fprintf(stderr, "cannot attach to mixer on card %s (%s)\n", device.c_str(), snd_strerror(err));
+        return err;
+    }
+
+    if (err = snd_mixer_selem_register(m_mixer_handle, NULL, NULL) ) {
+        fprintf(stderr, "cannot regiser selem (%s)\n", snd_strerror(err));
+        return err;
+    }
+
+    if (err = snd_mixer_load(m_mixer_handle) ) {
+        fprintf(stderr, "cannot load mixer (%s)\n", snd_strerror(err));
+        return err;
+    }
 
     snd_mixer_selem_id_alloca(&m_mixer_sid);
     snd_mixer_selem_id_set_index(m_mixer_sid, 0);
-    snd_mixer_selem_id_set_name(m_mixer_sid, selem_name);
+    snd_mixer_selem_id_set_name(m_mixer_sid, channel.c_str());
     m_mixer_elem = snd_mixer_find_selem(m_mixer_handle, m_mixer_sid);
+    if ( m_mixer_elem == 0 ) {
+        fprintf(stderr, "cannot find mixer channel %s (%s)\n", channel.c_str(), snd_strerror(err));
+        return err;
+    }
 
-    snd_mixer_selem_get_playback_volume_range(m_mixer_elem, &m_vol_min, &m_vol_max);
-
-
-  m_open = true; 
-  return 0;
+    if (err = snd_mixer_selem_get_playback_volume_range(m_mixer_elem, &m_vol_min, &m_vol_max)) {
+        fprintf(stderr, "cannot get playback volume range (%s)\n", snd_strerror(err));
+        return err;
+    }
 }
 
 int CAudioIoAlsa::read(char* data, int buffersize){

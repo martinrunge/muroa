@@ -137,6 +137,8 @@ private:
     IAudioIO *m_audio_sink;
     IAudioIO* initSoundSystem();
     std::string m_audio_device;
+    std::string m_mixer_device;
+    std::string m_mixer_channel;
 
     int m_secs_idle;
     int m_max_idle;

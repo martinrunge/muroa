@@ -33,7 +33,10 @@ public:
 
 
     int close();
+    int closeMixer();
     int open(std::string device, int samplerate, int channels);
+    int openMixer(std::string device, std::string channel);
+
     int setVolume(int volume);
     int read(char* data, int buffersize);
     int write(char* data, int length);

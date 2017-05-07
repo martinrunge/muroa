@@ -50,7 +50,10 @@ int CAudioOSS::close() {
     m_is_open = false;
     return retval; 
 }
-    
+
+int CAudioOSS::closeMixer() {
+}
+
 int CAudioOSS::open(std::string device, int samplerate, int channels) {
   m_snd_dev = ::open(device.c_str(), O_WRONLY);
   if(m_snd_dev == -1) {
@@ -97,6 +100,11 @@ int CAudioOSS::open(std::string device, int samplerate, int channels) {
   return 0;
 
 }
+
+int CAudioOSS::openMixer(std::string device, std::string channel) {
+    return 0;
+}
+
 
 int CAudioOSS::setVolume(int volume) {
     // TBD

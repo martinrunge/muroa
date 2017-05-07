@@ -220,9 +220,13 @@ void CppServer::reportProgress( int posInSecs, int durationInSecs) {
 
 
 void CppServer::onClientAppeared(ServDescPtr srvPtr) {
-	CStreamServer::onClientAppeared(srvPtr);
-
-	m_ws_msg_handler->listClients();
+	try {
+        CStreamServer::onClientAppeared(srvPtr);
+        m_ws_msg_handler->listClients();
+    }
+    catch(const CConnectionFailedException& cfe) {
+        ;
+    }
 }
 
 void CppServer::onClientDisappeared(ServDescPtr srvPtr) {

@@ -80,7 +80,10 @@ CPlayloop::CPlayloop(CMediaStreamConnection* parent, CPacketRingBuffer* packet_r
 	// m_audio_sink = new CAudioIoAlsa();
 	m_audio_sink = initSoundSystem();
     m_audio_device = CApp::settings().getConfigVal(string("muroad.AudioDevice"), string("default"));
+	m_mixer_device = CApp::settings().getConfigVal(string("muroad.MixerDevice"), string("default"));
+	m_mixer_channel = CApp::settings().getConfigVal(string("muroad.MixerChannel"), string("Master"));
 	m_audio_sink->open(m_audio_device, m_desired_sample_rate, m_num_channels);
+    m_audio_sink->openMixer(m_mixer_device, m_mixer_device);
 
 	int actual_sample_rate = m_audio_sink->getActualSampleRate();
 	cerr << "CPlayloop::CPlayloop: open audio sink: try " << m_desired_sample_rate << " ... succeeded with " << actual_sample_rate << endl;
@@ -124,6 +127,8 @@ CPlayloop::~CPlayloop()
 {
 	delete m_resampler;
 	delete m_ringbuffer;
+
+    m_audio_sink->closeMixer();
 	m_audio_sink->close();
 	// fclose(m_debug_fd1);
 }
