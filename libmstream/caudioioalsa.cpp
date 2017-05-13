@@ -73,8 +73,9 @@ int CAudioIoAlsa::state() {
 
 int CAudioIoAlsa::setVolume(int volume) {
     if(m_mixer_elem) {
-        snd_mixer_selem_set_playback_volume_all(m_mixer_elem, volume * m_vol_max / 100);
+        return snd_mixer_selem_set_playback_volume_all(m_mixer_elem, volume * m_vol_max / 100);
     }
+    return 1;
 }
 
 int CAudioIoAlsa::close() {
