@@ -47,7 +47,7 @@ public:
 
 	bool isNull() { return (m_time_in_ns == 0); };
 
-	CDuration sleep() throw(std::exception) {
+	CDuration sleep() {  // might throw std::exception
 		struct timespec ts = i64_to_timespec(m_time_in_ns);
 		struct timespec remain;
 		errno = 0;
@@ -171,7 +171,7 @@ public:
 	}
 
 	virtual ~CTime() {};
-	static CTime now() throw(CException) {
+	static CTime now() {   // might throw CException
 		struct timespec ts;
 		int retval = clock_gettime( CLOCK_MONOTONIC, &ts );
 		if(retval != 0) {

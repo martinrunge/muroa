@@ -44,7 +44,7 @@ Logger& CApp::logger() { return CApp::getInstPtr()->m_logger; };
 CSettings& CApp::getSettingsRef() { return m_settings; }
 log4cplus::Logger& CApp::getLoggerRef() { return m_logger; }
 
-CApp::CApp(int argc, char** argv) throw(configEx) : m_settings(this)
+CApp::CApp(int argc, char** argv) : m_settings(this)    // might throw configEx
 {
     m_called_from_path = bfs::current_path();
 
@@ -83,7 +83,7 @@ CApp::CApp(int argc, char** argv) throw(configEx) : m_settings(this)
 
 CApp::~CApp() {}
 
-CApp* CApp::getInstPtr(int argc, char** argv) throw(configEx) {
+CApp* CApp::getInstPtr(int argc, char** argv) {   // might throw configEx
 	lock_guard<mutex> lk(m_mutex);
 	if( m_inst_ptr == 0) {
 		m_inst_ptr = new CApp(argc, argv);

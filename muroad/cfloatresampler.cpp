@@ -159,12 +159,14 @@ int CFloatResampler::reset() {
 
 void CFloatResampler::appendFrameToImputBuffer(CAudioFrame* in_frame) {
 
-  float* begin_of_free_inbuffer_space = m_src_data->data_in + m_src_data->input_frames;
+  const float* begin_of_free_inbuffer_space = m_src_data->data_in + m_src_data->input_frames;
   int num_of_singlechannel_samples = in_frame->dataSize() / m_size_of_input_singlechannel_sample;
 
 //  src_short_to_float_array((const short*)(in_frame->dataPtr()), begin_of_free_inbuffer_space, num_of_singlechannel_samples);
-  src_short_to_float_array((const short*)(in_frame->dataPtr()), m_src_data->data_in, num_of_singlechannel_samples);
+  src_short_to_float_array((const short*)(in_frame->dataPtr()), m_in_buffer, num_of_singlechannel_samples);
 
+  // shold already be the same
+  m_src_data->data_in = m_in_buffer;
 
   //m_src_data->input_frames += num_of_singlechannel_samples / m_num_channels;
   m_src_data->input_frames = num_of_singlechannel_samples / m_num_channels;
@@ -181,7 +183,7 @@ int CFloatResampler::copyResampledFramesToRingbuffer()
     
     // copy remaining input (already tranformed float values) to the beginning of the input buffer and set m_in_offset.   
     int frames_to_copy = m_src_data->input_frames - m_src_data->input_frames_used;
-    void* start_addr = m_src_data->data_in + m_src_data->input_frames_used * m_num_channels;
+    const void* start_addr = m_src_data->data_in + m_src_data->input_frames_used * m_num_channels;
     
     // assert that mem areas do not overlap!
     if(frames_to_copy < m_src_data->input_frames_used) {
@@ -189,7 +191,7 @@ int CFloatResampler::copyResampledFramesToRingbuffer()
     	cerr << "m_src_data->input_frames_used = " << m_src_data->input_frames_used << endl;
     }
     assert(frames_to_copy < m_src_data->input_frames_used);
-    memcpy(m_src_data->data_in, start_addr, frames_to_copy * m_size_of_float_multichannel_sample); 
+    memcpy((void*)m_src_data->data_in, start_addr, frames_to_copy * m_size_of_float_multichannel_sample); 
 
     m_src_data->input_frames = frames_to_copy;
     

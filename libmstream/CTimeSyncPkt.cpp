@@ -56,7 +56,7 @@ buffer_t CTimeSyncPkt::serialize() {
 	return buffer_t{p.buffer, sizeof(p.buffer)};
 }
 
-void CTimeSyncPkt::deserialize(buffer_t buf) throw(CDeserialisationException) {
+void CTimeSyncPkt::deserialize(buffer_t buf) {    // might throw CDeserialisationException
 	if( buf.size != sizeof(packaging) ) {
 		throw CDeserialisationException("CTimeSyncPkt::deserialize");
 	}
@@ -66,7 +66,7 @@ void CTimeSyncPkt::deserialize(buffer_t buf) throw(CDeserialisationException) {
 	deserialize(p);
 }
 
-void CTimeSyncPkt::deserialize(const char* buf, size_t size) throw(CDeserialisationException) {
+void CTimeSyncPkt::deserialize(const char* buf, size_t size) {   // might throw CDeserialisationException
 	if( size != sizeof(packaging) ) {
 		throw CDeserialisationException("CTimeSyncPkt::deserialize");
 	}
@@ -76,7 +76,7 @@ void CTimeSyncPkt::deserialize(const char* buf, size_t size) throw(CDeserialisat
 	deserialize(p);
 }
 
-void CTimeSyncPkt::deserialize(packaging p) throw(CDeserialisationException) {
+void CTimeSyncPkt::deserialize(packaging p) {     // might throw CDeserialisationException
 	m_t1.deserialize(p.times.t1);
 	m_t1_tick.deserialize(p.times.t1_tick);
 	m_t2.deserialize(p.times.t2);

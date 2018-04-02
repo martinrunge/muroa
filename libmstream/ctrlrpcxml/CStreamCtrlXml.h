@@ -47,7 +47,7 @@ class CStreamCtrlXml: public muroa::IStreamCtrlRPC, public muroa::CStreamCtrlPar
 	};
 
 public:
-	CStreamCtrlXml() throw(ExRpcError);
+	CStreamCtrlXml();     // might throw ExRpcError
 	~CStreamCtrlXml();
 
 	void setup();

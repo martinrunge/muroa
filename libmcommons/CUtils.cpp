@@ -40,10 +40,10 @@ CUtils::~CUtils() {
 
 string CUtils::file2string(const string &fileName)
 {
-    ifstream ifs(fileName.c_str(), ios::in | ios::binary | ios::ate);
+    std::ifstream ifs(fileName.c_str(), ios::in | ios::binary | ios::ate);
 
     if(ifs.is_open()) {
-    	ifstream::pos_type fileSize = ifs.tellg();
+    	std::ifstream::pos_type fileSize = ifs.tellg();
     	ifs.seekg(0, ios::beg);
 
     	vector<char> bytes(fileSize);
@@ -58,7 +58,7 @@ string CUtils::file2string(const string &fileName)
 }
 
 
-long CUtils::str2long(std::string str) throw(std::invalid_argument) {
+long CUtils::str2long(std::string str)  {    // might throw   std::invalid_argument
 	errno = 0;
 	char* endptr;
 	long iVal = strtol( str.c_str(), &endptr, 10);
@@ -80,7 +80,7 @@ long CUtils::str2long(std::string str) throw(std::invalid_argument) {
 	return iVal;
 }
 
-int32_t CUtils::str2int32(std::string str) throw(std::invalid_argument) {
+int32_t CUtils::str2int32(std::string str)  {  // might throw   std::invalid_argument
 	errno = 0;
 	char* endptr;
 	long iVal = strtol( str.c_str(), &endptr, 10);
@@ -108,7 +108,7 @@ int32_t CUtils::str2int32(std::string str) throw(std::invalid_argument) {
 }
 
 
-uint32_t CUtils::str2uint32(std::string str) throw(std::invalid_argument) {
+uint32_t CUtils::str2uint32(std::string str) { // might throw   std::invalid_argument
 	errno = 0;
 	char* endptr;
 	unsigned long iVal = strtoul( str.c_str(), &endptr, 10);
@@ -135,7 +135,7 @@ uint32_t CUtils::str2uint32(std::string str) throw(std::invalid_argument) {
 	return iVal;
 }
 
-int64_t CUtils::str2int64(std::string str) throw(std::invalid_argument) {
+int64_t CUtils::str2int64(std::string str) {  // might throw   std::invalid_argument
 	errno = 0;
 	char* endptr;
 	long long iVal = strtoll( str.c_str(), &endptr, 10);
@@ -162,7 +162,7 @@ int64_t CUtils::str2int64(std::string str) throw(std::invalid_argument) {
 	return iVal;
 }
 
-uint64_t CUtils::str2uint64(std::string str) throw(std::invalid_argument) {
+uint64_t CUtils::str2uint64(std::string str) {   // might throw   std::invalid_argument
 	errno = 0;
 	char* endptr;
 	unsigned long long iVal = strtoull( str.c_str(), &endptr, 10);

@@ -51,9 +51,9 @@ public:
 	void pushConfigFilePath(boost::filesystem::path cf);
 	void pushPersistFilePath(boost::filesystem::path cf);
 
-	int parse(int argc, char** argv) throw(muroa::configEx);
-	int readConfigFile() throw(muroa::configEx);
-	int readCacheFile() throw(muroa::configEx);
+	int parse(int argc, char** argv);    // might throw  muroa::configEx
+	int readConfigFile();                // might throw  muroa::configEx 
+	int readCacheFile();                 // might throw  muroa::configEx
 	int resetCache();
 
 

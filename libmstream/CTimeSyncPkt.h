@@ -43,8 +43,8 @@ public:
 	CDuration getTransitionTime();
 
 	buffer_t serialize();
-	void deserialize(buffer_t buf) throw(CDeserialisationException);
-	void deserialize(const char* buf, size_t size) throw(CDeserialisationException);
+	void deserialize(buffer_t buf);                    // might throw CDeserialisationException
+	void deserialize(const char* buf, size_t size);    // might throw CDeserialisationException
 
 	const CTime& getT1() const {
 		return m_t1;
@@ -95,7 +95,7 @@ private:
 		char buffer[4 * sizeof(int64_t)];
 	};
 
-	void deserialize(packaging p) throw(CDeserialisationException);
+	void deserialize(packaging p);         // might throw CDeserialisationException
 
 };
 

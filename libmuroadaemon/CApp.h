@@ -19,10 +19,10 @@ namespace muroa {
 
 class CApp {
 private:
-	CApp(int argc, char** argv) throw(configEx);
+	CApp(int argc, char** argv);   // might throw  muroa::configEx
 
 public:
-	static CApp* getInstPtr(int argc = 0, char** argv = NULL) throw(configEx);
+	static CApp* getInstPtr(int argc = 0, char** argv = NULL);   // might throw  muroa::configEx
 	virtual ~CApp();
 
 	static CSettings& settings();

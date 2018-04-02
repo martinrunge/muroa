@@ -37,11 +37,11 @@ public:
 
 	static std::string file2string(const std::string &fileName);
 
-	static long str2long(std::string str) throw(std::invalid_argument);
-	static  int32_t str2int32 (std::string str) throw(std::invalid_argument);
-	static uint32_t str2uint32(std::string str) throw(std::invalid_argument);
-	static  int64_t str2int64 (std::string str) throw(std::invalid_argument);
-	static uint64_t str2uint64(std::string str) throw(std::invalid_argument);
+	static long str2long(std::string str);        // might throw   std::invalid_argument
+	static  int32_t str2int32 (std::string str);  // might throw   std::invalid_argument
+	static uint32_t str2uint32(std::string str);  // might throw   std::invalid_argument
+	static  int64_t str2int64 (std::string str);  // might throw   std::invalid_argument
+	static uint64_t str2uint64(std::string str);  // might throw   std::invalid_argument
 
 	static void xmlesc(std::string& input);
 

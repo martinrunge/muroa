@@ -28,6 +28,11 @@
 #include "CAlsaSrcDesc.h"
 
 #include <getopt.h>
+
+#include <fcntl.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+
 #include <log4cplus/loggingmacros.h>
 
 #include "boost/filesystem/operations.hpp"
@@ -36,7 +41,7 @@
 #include <boost/foreach.hpp>
 #include <utility>
 #include <map>
-
+#include <iostream>
 
 using namespace std;
 using namespace log4cplus;
@@ -61,7 +66,7 @@ CSettings::CSettings(CApp* app) throw() : m_foreground(false),
 }
 
 
-int CSettings::parse(int argc, char** argv) throw(configEx) {
+int CSettings::parse(int argc, char** argv) {     // might throw  muroa::configEx
     int c;
     int digit_optind = 0;
 
@@ -179,7 +184,7 @@ int CSettings::parse(int argc, char** argv) throw(configEx) {
     return 0;
 }
 
-int CSettings::readConfigFile() throw(muroa::configEx) {
+int CSettings::readConfigFile() {    // might throw  muroa::configEx
     using boost::property_tree::ptree;
     bool config_success = false;
 
@@ -262,7 +267,7 @@ int CSettings::resetCache() {
 	}
 }
 
-int CSettings::readCacheFile() throw(muroa::configEx) {
+int CSettings::readCacheFile() {    // might throw  muroa::configEx
     using boost::property_tree::ptree;
     bool cache_success = false;
 

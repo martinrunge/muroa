@@ -37,7 +37,7 @@ using namespace boost::asio;
 
 namespace muroa {
 
-CStreamCtrlXml::CStreamCtrlXml() throw (ExRpcError) {
+CStreamCtrlXml::CStreamCtrlXml() {    // might throw ExRpcError
 	m_parser = XML_ParserCreate(NULL);
 	if (!m_parser) {
 		// fprintf(stderr, "Couldn't allocate memory for parser\n");
