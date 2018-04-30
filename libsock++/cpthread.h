@@ -20,6 +20,7 @@
 
 #include <pthread.h>
 #include <errno.h>
+#include <string>
 
 
 // #include "cthreadslave.h"
@@ -31,29 +32,24 @@ typedef void* (*start_routine_ptr)(void*);
 class CPThread  {
 
 public:
-    CPThread(CThreadSlave* thread_slave);
+    CPThread(CThreadSlave* thread_slave, std::string name = std::string());
     ~CPThread(void);
 
     int StartThread(bool realtime = false);
-
     int StopThread(void);
     
     inline bool IsRunning(void) { return m_run_thread; };
 
-    
+
 protected:
     inline bool Run(void) { return m_run_thread; };
 
 
 private:
-
     static int ThreadMainLoop(CPThread* pthread_object);
 
-
     inline void Run(bool run) { m_run_thread = run; };
-
     inline void IsRunning(bool run) { m_is_running = run; };
-
 
     inline void ThreadSlave(CThreadSlave* thread_slave) { m_thread_slave = thread_slave; };
 
@@ -61,9 +57,9 @@ private:
 
     pthread_t m_thread_id;
     pthread_attr_t m_thread_attr;
+    std::string m_thread_name;
 
     bool m_run_thread;
-
     bool m_is_running;
 
     CThreadSlave* m_thread_slave;

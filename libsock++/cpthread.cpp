@@ -25,7 +25,7 @@
 
 using namespace std;
 
-CPThread::CPThread(CThreadSlave* thread_slave) {
+CPThread::CPThread(CThreadSlave* thread_slave, string name ) : m_thread_name(name){
     m_run_thread = false;
     m_is_running = false;
     m_thread_slave = thread_slave;
@@ -35,6 +35,7 @@ CPThread::CPThread(CThreadSlave* thread_slave) {
 CPThread::~CPThread() {
     StopThread();
 }
+
 
 
 int CPThread::StartThread(bool realtime) {
@@ -84,6 +85,7 @@ int CPThread::StartThread(bool realtime) {
     if(retval != 0) {  // either thread should start without realtime prio or setting realtime prio failed
     	retval = pthread_create(&m_thread_id, NULL, (start_routine_ptr)CPThread::ThreadMainLoop, (void*) this);
     }
+    pthread_setname_np( m_thread_id, m_thread_name.c_str());
     return retval;
 }
 

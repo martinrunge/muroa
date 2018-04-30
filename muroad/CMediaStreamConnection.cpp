@@ -57,8 +57,8 @@ CMediaStreamConnection::CMediaStreamConnection(boost::asio::io_service& io_servi
   m_recvloop = new CRecvloop(this, m_packet_ringbuffer);
   m_playloop = new CPlayloop(this, m_packet_ringbuffer);
 
-  m_recvloop_thread = new CPThread(m_recvloop);
-  m_playloop_thread = new CPThread(m_playloop);
+  m_recvloop_thread = new CPThread(m_recvloop, "recvloop");
+  m_playloop_thread = new CPThread(m_playloop, "playloop");
 
   m_sync_requested_for_stream_id = -1;
   m_sync_requested_at = microsec_clock::universal_time();
