@@ -26,4 +26,5 @@ set_target_properties( muroatestd PROPERTIES  COMPILE_FLAGS "-std=gnu++0x" )
 TARGET_LINK_LIBRARIES(muroatestd   muroad
                                    ${Boost_LIBRARIES} 
                                    log4cplus
+                                   Threads::Threads
                                    )

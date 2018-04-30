@@ -45,9 +45,10 @@ link_directories(  )
 add_library(  sock++ SHARED  ${SRC} ${HEADERS} )
 
 target_link_libraries( sock++ ${CMAKE_THREAD_LIBS_INIT} 
-                              ${ALSA_LIBRARY} )
+                              ${ALSA_LIBRARY} 
+                              Threads::Threads)
                               
-set_target_properties( sock++  PROPERTIES  COMPILE_FLAGS "-std=gnu++0x -pthread" ) 
+set_target_properties( sock++  PROPERTIES  COMPILE_FLAGS "-std=gnu++0x" ) 
 
 ADD_GDB_INDEX( sock++ )
 

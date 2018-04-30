@@ -26,11 +26,11 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR}
 
 link_directories(${BINARY_DIR}       "${CMAKE_SOURCE_DIR}/../../build" )
 
-ADD_EXECUTABLE(server                 ${SRCS} ${HEADERS} )
+ADD_EXECUTABLE(simpleserver                 ${SRCS} ${HEADERS} )
 
-set_target_properties( server         PROPERTIES  COMPILE_FLAGS "-std=gnu++0x" ) 
+set_target_properties( simpleserver         PROPERTIES  COMPILE_FLAGS "-std=gnu++0x" ) 
 
-TARGET_LINK_LIBRARIES( server         mstream
+TARGET_LINK_LIBRARIES( simpleserver         mstream
                                       )
                                       
 file(COPY   etc/muroa.conf  DESTINATION etc)

@@ -20,21 +20,22 @@ find_package(libxdiff)
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=c++11")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 
-
-if( libxdiff_FOUND )
-  message(STATUS "libxdiff was found on this system, using it.")
-else( libxdiff_FOUND )
-  message(STATUS "libxdiff seems not to be present on this system. Using the copy packaged with muroa (3rdparty).")
-  add_subdirectory (3rdparty/libxdiff-0.23)
+if( msessiond OR mqtclient )
+  if( libxdiff_FOUND )
+    message(STATUS "libxdiff was found on this system, using it.")
+  else( libxdiff_FOUND )
+    message(STATUS "libxdiff seems not to be present on this system. Using the copy packaged with muroa (3rdparty).")
+    add_subdirectory (3rdparty/libxdiff-0.23)
   
-  FIND_PATH(libxdiff_INCLUDE_DIRS xdiff.h ${CMAKE_SOURCE_DIR}/3rdparty/libxdiff-0.23/xdiff )
-  set( libxdiff_LIBRARIES ${CMAKE_BINARY_DIR}/3rdparty/libxdiff-0.23/libxdiff.so )   
+    FIND_PATH(libxdiff_INCLUDE_DIRS xdiff.h ${CMAKE_SOURCE_DIR}/3rdparty/libxdiff-0.23/xdiff )
+    set( libxdiff_LIBRARIES ${CMAKE_BINARY_DIR}/3rdparty/libxdiff-0.23/libxdiff.so )   
   
-  MARK_AS_ADVANCED(libxdiff_LIBRARIES)				
-  MARK_AS_ADVANCED(libxdiff_INCLUDE_DIRS)
+    MARK_AS_ADVANCED(libxdiff_LIBRARIES)				
+    MARK_AS_ADVANCED(libxdiff_INCLUDE_DIRS)
 
-  set( libxdiff_FOUND "yes")
-endif( libxdiff_FOUND )
+    set( libxdiff_FOUND "yes")
+  endif( libxdiff_FOUND )
+endif( )
 
 add_subdirectory (libmcommons)
 

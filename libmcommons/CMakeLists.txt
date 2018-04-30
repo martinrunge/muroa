@@ -37,9 +37,10 @@ add_library( mcommons SHARED  ${SRC} ${HEADERS} )
 target_link_libraries( mcommons  ${CMAKE_THREAD_LIBS_INIT} 
                                  ${Boost_LIBRARIES} 
                                  ${log4cplus_LIBRARY}
+                                 Threads::Threads
                                  )
                                  
-set_target_properties( mcommons  PROPERTIES  COMPILE_FLAGS "-std=gnu++0x -pthread" ) 
+set_target_properties( mcommons  PROPERTIES  COMPILE_FLAGS "-std=gnu++0x" ) 
 
 ADD_GDB_INDEX( mcommons )
 

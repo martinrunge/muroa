@@ -1,0 +1,39 @@
+[Buildset]
+BuildItems=@Variant(\x00\x00\x00\t\x00\x00\x00\x00\x01\x00\x00\x00\x0b\x00\x00\x00\x00\x01\x00\x00\x00\n\x00m\x00u\x00r\x00o\x00a)
+
+[CMake]
+Build Directory Count=1
+Current Build Directory Index=0
+
+[CMake][CMake Build Directory 0]
+Build Directory Path=/home/martin/muroa/build
+Build Type=Debug
+CMake Binary=/usr/bin/cmake
+Environment Profile=
+Extra Arguments=-Dmuroad=yes -Dmsessiond=no -Dmqtclient=no
+Install Directory=
+Runtime=Host System
+
+[Launch]
+Launch Configurations=Launch Configuration 0
+
+[Launch][Launch Configuration 0]
+Configured Launch Modes=execute
+Configured Launchers=nativeAppLauncher
+Name=muroad
+Type=Native Application
+
+[Launch][Launch Configuration 0][Data]
+Arguments=
+Dependencies=@Variant(\x00\x00\x00\t\x00\x00\x00\x00\x01\x00\x00\x00\x0b\x00\x00\x00\x00\x03\x00\x00\x00\n\x00m\x00u\x00r\x00o\x00a\x00\x00\x00\x0c\x00m\x00u\x00r\x00o\x00a\x00d\x00\x00\x00\x0c\x00m\x00u\x00r\x00o\x00a\x00d)
+Dependency Action=Build
+EnvironmentGroup=
+Executable=file:///home/martin/muroa
+External Terminal=konsole --noclose --workdir %workdir -e %exe
+Project Target=muroa,muroad,muroad
+Use External Terminal=false
+Working Directory=
+isExecutable=false
+
+[Project]
+VersionControlSupport=kdevgit
