@@ -80,8 +80,8 @@ TARGET_LINK_LIBRARIES( wssrv          mstream
                                       ${OPENSSL_LIBRARIES}
 )
                                       
-configure_file(etc/wssrv.conf  etc  COPYONLY)
-configure_file(log.properties  .    COPYONLY)
+file(COPY   etc/wssrv.conf  DESTINATION  .  )
+file(COPY   log.properties  DESTINATION  .  )
 
 execute_process(COMMAND ${CMAKE_COMMAND} -E create_symlink ${CMAKE_CURRENT_LIST_DIR}/www
                                                            ${CMAKE_CURRENT_BINARY_DIR}/www)

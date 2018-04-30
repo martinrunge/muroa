@@ -122,7 +122,7 @@ TARGET_LINK_LIBRARIES(muroad       ${CMAKE_THREAD_LIBS_INIT}
                                    
 
 file(COPY   etc/muroad.conf      DESTINATION .)                              
-file(COPY   log.properties  DESTINATION .)                              
+file(COPY   log.properties       DESTINATION .)                              
       
                                    
 ADD_GDB_INDEX( muroad )            

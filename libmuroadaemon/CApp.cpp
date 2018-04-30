@@ -44,7 +44,7 @@ Logger& CApp::logger() { return CApp::getInstPtr()->m_logger; };
 CSettings& CApp::getSettingsRef() { return m_settings; }
 log4cplus::Logger& CApp::getLoggerRef() { return m_logger; }
 
-CApp::CApp(int argc, char** argv) : m_settings(this)    // might throw configEx
+CApp::CApp(int argc, char** argv, std::string config_file_basename) : m_settings(this)    // might throw configEx
 {
     m_called_from_path = bfs::current_path();
 
@@ -69,13 +69,19 @@ CApp::CApp(int argc, char** argv) : m_settings(this)    // might throw configEx
 
     initLog();
 
-	m_settings.pushConfigFilePath(m_abs_prog_dir/"muroa.conf");
-	m_settings.pushConfigFilePath(m_abs_prog_dir/"etc/muroa.conf");
-	m_settings.pushConfigFilePath("/etc/muroa.conf");
+    string config_fn = config_file_basename;
+    config_fn.append(".conf");
+    string cache_fn = config_file_basename;
+    cache_fn.append(".cache");
+    
+    
+	m_settings.pushConfigFilePath(m_abs_prog_dir/config_fn);
+	m_settings.pushConfigFilePath(m_abs_prog_dir/"etc"/config_fn);
+	m_settings.pushConfigFilePath(bfs::path("/etc")/config_fn);
 
-	m_settings.pushPersistFilePath(m_abs_prog_dir/"muroa.cache");
-	m_settings.pushPersistFilePath(m_abs_prog_dir/"var/cache/muroa.cache");
-	m_settings.pushPersistFilePath("/var/cache/muroa.cache");
+	m_settings.pushPersistFilePath(m_abs_prog_dir/cache_fn);
+	m_settings.pushPersistFilePath(m_abs_prog_dir/"var/cache"/cache_fn);
+	m_settings.pushPersistFilePath(bfs::path("/var/cache")/cache_fn);
 
     m_settings.readConfigFile();
     m_settings.readCacheFile();
@@ -83,10 +89,10 @@ CApp::CApp(int argc, char** argv) : m_settings(this)    // might throw configEx
 
 CApp::~CApp() {}
 
-CApp* CApp::getInstPtr(int argc, char** argv) {   // might throw configEx
+CApp* CApp::getInstPtr(int argc, char** argv, std::string config_file_basename) {   // might throw configEx
 	lock_guard<mutex> lk(m_mutex);
 	if( m_inst_ptr == 0) {
-		m_inst_ptr = new CApp(argc, argv);
+		m_inst_ptr = new CApp(argc, argv, config_file_basename);
 	}
 	return m_inst_ptr;
 }

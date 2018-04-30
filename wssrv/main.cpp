@@ -130,7 +130,7 @@ int main(int argc, char *argv[]) {
     muroa::CApp* app;
 
 	try {
-		app = muroa::CApp::getInstPtr(argc, argv);
+		app = muroa::CApp::getInstPtr(argc, argv, "wssrv");
 	}
 	catch (muroa::configEx& ex) {
 		cerr << "got exception configEx: " << ex.what() << endl;

@@ -51,7 +51,7 @@ int main(int argc, char *argv[])
 
 	try {
 		try {
-			app = muroa::CApp::getInstPtr(argc, argv);
+			app = muroa::CApp::getInstPtr(argc, argv, "muroad");
 		}
 		catch (muroa::configEx& ex) {
 			cerr << "got exception configEx: " << ex.what() << endl;
