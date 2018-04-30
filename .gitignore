@@ -17,5 +17,5 @@ Makefile
 /debug_native
 build
 .idea
-
+cmake-build-*
 
