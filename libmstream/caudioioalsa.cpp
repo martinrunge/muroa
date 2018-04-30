@@ -25,7 +25,7 @@
 using namespace std;
 
 CAudioIoAlsa::CAudioIoAlsa()
- : IAudioIO(), m_mixer_elem(NULL)
+ : IAudioIO(), m_mixer_handle(0), m_mixer_elem(NULL)
 {
   m_sample_rate = 0;
   m_open = false;
@@ -41,7 +41,10 @@ int CAudioIoAlsa::start() {
 }
 
 int CAudioIoAlsa::stop() {
-	return snd_pcm_drop(m_playback_handle);
+    if(m_playback_handle != NULL) {
+        return snd_pcm_drop(m_playback_handle);
+    }
+    else return -1;
 }
 
 int CAudioIoAlsa::state() {
@@ -84,9 +87,8 @@ int CAudioIoAlsa::close() {
       m_open = false;
       cerr << "closing audio device" << endl;
       snd_pcm_status_free(m_status_ptr);
+      // snd_mixer_close(m_mixer_handle);
       snd_pcm_close(m_playback_handle);
-      snd_mixer_close(m_mixer_handle);
-
       m_playback_handle = 0;
   }
   return 0;

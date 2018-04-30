@@ -40,7 +40,7 @@
 #include "cmuroad.h"
 #include "crtppacket.h"
 
-#include <time.h> 
+#include <time.h>
 #include <math.h>
 #include <sys/stat.h>
 
@@ -140,7 +140,7 @@ CAudioFrame* CPlayloop::getAudioPacket(uint32_t ssrc, bool block) {
 		if(m_packet_ringbuffer->getRingbufferSize(ssrc) == 0) {
 			if(block) {
 				bool dataAvail = false;
-				while((!dataAvail || m_packet_ringbuffer->getRingbufferSize(ssrc) == 0)) {
+				while((!dataAvail || m_packet_ringbuffer->getRingbufferSize(ssrc) == 0)) {  //  && !isCancelled()
 					dataAvail = waitForData();
 				};
 			} else {
@@ -199,9 +199,9 @@ bool CPlayloop::waitForData() {
 			m_media_stream_conn->idleTime( m_media_stream_conn->idleTime() + 1);
 		}
 	}
-	if(m_media_stream_conn->idleTime() > m_max_idle) {
-		m_audio_sink->close();
-	}
+	// if(m_media_stream_conn->idleTime() > m_max_idle) {
+	//  	m_audio_sink->close();
+	// }
 
 	return (retval==0)?true:false;
 }
@@ -272,7 +272,7 @@ void CPlayloop::DoLoop() {
 		adjustResamplingFactor(syncInfo);
 	}
 	catch(muroa::InterruptedEx iex) {
-
+        cerr << "CPlayloop::DoLoop: got InterruptedEx: " << iex.what() << endl;
 	}
 }
 
@@ -583,7 +583,7 @@ void CPlayloop::setVolume(const evSetVolume &evt)
 
 void CPlayloop::resetStream(uint32_t ssrc) {
 	getPThreadPtr()->StopThread();
-	m_audio_sink->stop();
+    m_audio_sink->stop();
 }
 
 

@@ -28,29 +28,41 @@ void CWSMsgHandler::onMessage(websocketpp::connection_hdl hdl, std::string heade
 
 	Json::Value root;   // starts as "null"; will contain the root value after parsing
 	istringstream iss(payload);
-	iss >> root;
+	try {
+		iss >> root;
 
-	// Get the value of the member of root named 'event', return '<none>' if there is no such member.
-	string evtype = root.get("event", "<none>" ).asString();
+		// Get the value of the member of root named 'event', return '<none>' if there is no such member.
+		string evtype = root.get("event", "<none>").asString();
 
-	if(evtype.compare("<none>") == 0) {
-		// error
-		return;
+		if (evtype.compare("<none>") == 0) {
+            string jsonrpcver = root.get("jsonrpc", "<none>").asString();
+            if( jsonrpcver.compare("2.0") == 0) {
+                // JSON RPC 2.0
+                int jsonrpcid = root.get("id", "0").asInt();
+                string method = root.get("method", "<none>").asString();
+
+            }
+			// error
+			return;
+		}
+		else if (evtype.compare("playctrl") == 0) {
+			playctrl(root);
+		}
+		else if (evtype.compare("changeStation") == 0) {
+			changeStation(root);
+		}
+		else if (evtype.compare("getCurrentClientList") == 0) {
+			onListClients(hdl, root);
+		}
+		else if (evtype.compare("adjVol") == 0) {
+			onAdjVol(hdl, root);
+		}
+		else if (evtype.compare("activateClient") == 0) {
+			onActivateClient(hdl, root);
+		}
 	}
-	else if(evtype.compare("playctrl") == 0) {
-		playctrl(root);
-	}
-	else if(evtype.compare("changeStation") == 0) {
-		changeStation(root);
-	}
-	else if(evtype.compare("getCurrentClientList") == 0) {
-		onListClients(hdl, root);
-	}
-    else if(evtype.compare("adjVol") == 0) {
-        onAdjVol(hdl, root);
-    }
-	else if(evtype.compare("activateClient") == 0) {
-		onActivateClient(hdl, root);
+	catch(std::exception ex) {
+		cerr << ex.what();
 	}
 }
 

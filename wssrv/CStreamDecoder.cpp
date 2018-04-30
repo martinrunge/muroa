@@ -349,7 +349,12 @@ int CStreamDecoder::decode() {
 
 void CStreamDecoder::decodingLoop() {
 	while( m_terminate == false ) {
-		decode();
+		int bytes_used = decode();
+        if(bytes_used == -1) {
+            // end_of_stream
+            m_streamSrvPtr->reportEndOfStream();
+            break;
+        }
 	}
 }
 

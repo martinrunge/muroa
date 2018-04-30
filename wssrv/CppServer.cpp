@@ -156,6 +156,66 @@ void CppServer::playStream(const Json::Value& audio_src) {
 	}
 }
 
+
+void CppServer::playFile(const std::string filename)
+{
+    LOG4CPLUS_INFO(CApp::logger(), "About to play: '" << filename << "'");
+    muroa::CStreamFmt new_sfmt;
+
+    if(m_decoder != 0) {
+        flush();
+        delete m_decoder;
+        close();
+    }
+    m_decoder = new CStreamDecoder(this);
+
+    new_sfmt = m_decoder->openFile(filename);
+
+    if(new_sfmt.isValid()) {
+        if(isOpen() == false) {
+            open(new_sfmt);
+        }
+
+        muroa::CStreamFmt old_sfmt(getStreamFmt());
+        if( new_sfmt != old_sfmt) {
+            close();
+            open(new_sfmt);
+        }
+
+        m_decoder->startDecodingThread();
+    }
+}
+
+void CppServer::playUrl(const std::string  url, int timeout_in_ms) {
+    LOG4CPLUS_INFO(CApp::logger(), "About to play: '" << url << "'");
+    muroa::CStreamFmt new_sfmt;
+
+    if(m_decoder != 0) {
+        flush();
+        delete m_decoder;
+        close();
+    }
+    m_decoder = new CStreamDecoder(this);
+
+    new_sfmt = m_decoder->openUrl(url, timeout_in_ms);
+
+    if(new_sfmt.isValid()) {
+        if(isOpen() == false) {
+            open(new_sfmt);
+        }
+
+        muroa::CStreamFmt old_sfmt(getStreamFmt());
+        if( new_sfmt != old_sfmt) {
+            close();
+            open(new_sfmt);
+        }
+
+        m_decoder->startDecodingThread();
+    }
+}
+
+
+
 void CppServer::stopStream() {
 	LOG4CPLUS_INFO( CApp::logger(), "Stop stream" );
 	flush();
@@ -214,8 +274,28 @@ void CppServer::onClientState(muroa::CStreamCtrlConnection* conn, const muroa::e
 	}
 }
 
+/** @brief called by decoding thread to report progress
+ *
+ * Event is then fed into the asio event
+ * loop to hand it over to the thread context that started the decoding thread.
+ *
+ * @param posInSecs
+ * @param durationInSecs
+ */
 void CppServer::reportProgress( int posInSecs, int durationInSecs) {
-	return ;
+    m_io_service.post(std::bind( &CppServer::onProgress, this, posInSecs, durationInSecs ));
+}
+
+/** @brief called by decoding thread to indicate end of stream
+ *
+ * Event is then fed into the asio event
+ * loop to hand it over to the thread context that started the decoding thread.
+ *
+ * @param posInSecs
+ * @param durationInSecs
+ */
+void CppServer::reportEndOfStream()  {
+    m_io_service.post(std::bind( &CppServer::onEndOfStream, this ));
 }
 
 
@@ -232,6 +312,15 @@ void CppServer::onClientAppeared(ServDescPtr srvPtr) {
 void CppServer::onClientDisappeared(ServDescPtr srvPtr) {
 	CStreamServer::onClientDisappeared(srvPtr);
 	m_ws_msg_handler->listClients();
+}
+
+
+void CppServer::onProgress(int posInSecs, int durationInSecs) {
+
+}
+
+void CppServer::onEndOfStream() {
+    m_decoder->close();
 }
 
 

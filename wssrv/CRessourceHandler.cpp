@@ -40,10 +40,23 @@ void CRessourceHandler::handleREST(std::string filename, std::map<string,string>
 		m_StreamSrv->playStream(URL);
 
 	}
+	else if(filename.compare("/REST/play.json") == 0) {
+		map<string, string>::iterator it;
+		it = query_map.find("file");
+		if(it == query_map.end()) {
+			// station not found -> repost error
+		}
+		string filename = it->second;
+
+
+		m_StreamSrv->playFile(filename);
+	}
 	else if(filename.compare("/REST/stop.json") == 0) {
 		m_StreamSrv->stopStream();
 	}
-
+    else if(filename.compare("/REST/status.json") == 0) {
+        // m_StreamSrv->getStatus();
+    }
 }
 
 

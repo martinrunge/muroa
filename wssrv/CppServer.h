@@ -48,6 +48,8 @@ public:
 	void requestClientToLeave(std::string serviceName);
 
 	void playStream(const Json::Value& audio_src);
+    void playFile(const std::string filename);
+    void playUrl(const std::string  url, int timeout_in_ms = 1000);
 	void stopStream();
 
 	void onClientRejectedSessionMember(muroa::CStreamCtrlConnection* conn, const muroa::evJoinRejected* evt);
@@ -56,9 +58,13 @@ public:
 
 	void onError(muroa::CStreamCtrlConnection* conn, const evJoinRejected* evt);
     void onVolume(muroa::CStreamCtrlConnection* conn, const muroa::evVolume* evt);
-
 	void onClientState(muroa::CStreamCtrlConnection* conn, const muroa::evClientState* evt);
+
+    void onProgress(int posInSecs, int durationInSecs);
+    void onEndOfStream();
+
 	void reportProgress( int posInSecs, int durationInSecs);
+    void reportEndOfStream();
 
 
 protected:
@@ -86,7 +92,6 @@ private:
 	// goes online, it will be automatically added to the session. it was never removed
 	// from the session, but disappeared from the network.
 	vector<std::string>      m_selected_clients;
-
 };
 
 

@@ -24,20 +24,21 @@
   */
 
 #include "cpthread.h"
+#include <string>
 
 class CThreadSlave {
 public: 
 	CThreadSlave();
 	virtual ~CThreadSlave();
-  /** To be overloaded by all classes that implement threaded operations. */
-  virtual void DoLoop() = 0;
+    /** To be overloaded by all classes that implement threaded operations. */
+    virtual void DoLoop() = 0;
 
-  bool isCancelled() {	return ! m_pthread->IsRunning(); };
+    bool isCancelled() {	return ! m_pthread->IsRunning(); };
 
-  CPThread* getPThreadPtr() { return m_pthread; };
-  void setPThreadPtr(CPThread* ptr) { m_pthread = ptr; };
+    CPThread* getPThreadPtr() { return m_pthread; };
+    void setPThreadPtr(CPThread* ptr) { m_pthread = ptr; };
 private:
-  CPThread* m_pthread;
+    CPThread* m_pthread;
 };
 
 #endif
