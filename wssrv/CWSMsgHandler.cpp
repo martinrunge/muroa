@@ -40,13 +40,18 @@ void CWSMsgHandler::onMessage(websocketpp::connection_hdl hdl, std::string heade
                 // JSON RPC 2.0
                 int jsonrpcid = root.get("id", "0").asInt();
                 string method = root.get("method", "<none>").asString();
+                Json::Value params = root.get("params", Json::Value());
+
+                if(method.compare("playctrl") == 0) {
+                    playctrl(hdl, params, jsonrpcid);
+                }
 
             }
 			// error
 			return;
 		}
 		else if (evtype.compare("playctrl") == 0) {
-			playctrl(root);
+			playctrl(hdl, root, 0);
 		}
 		else if (evtype.compare("changeStation") == 0) {
 			changeStation(root);
@@ -67,8 +72,21 @@ void CWSMsgHandler::onMessage(websocketpp::connection_hdl hdl, std::string heade
 }
 
 
-void CWSMsgHandler::playctrl(const Json::Value& root) {
-	m_StreamSrv->stopStream();
+void CWSMsgHandler::playctrl(websocketpp::connection_hdl hdl, const Json::Value& params, int jsonrpcid) {
+	string filename = params.get("file", "<none>").asString();
+	if(filename.compare("<none>") == 0) {
+		string url = params.get("url", "<none>").asString();
+		if(url.compare("<none>") == 0) {
+			reportError(hdl, "error in jsonrpc message: neither file nor url given", jsonrpcid);
+		}
+	}
+	try {
+		m_StreamSrv->playFile(filename);
+
+	}
+	catch( string ex) {
+		reportError(hdl, "file not found", jsonrpcid);
+	}
 }
 
 
@@ -187,5 +205,21 @@ void CWSMsgHandler::onAdjVol(CWSMsgHandler::connection_hdl hdl, Json::Value root
     int volume = root["data"]["volume"].asInt();
     m_StreamSrv->setVolume(serviceName, volume);
 
+}
+void CWSMsgHandler::reportError(CWSMsgHandler::connection_hdl hdl, std::string errormsg, int jsonrpcid)
+{
+	Json::Value result;
+	result["success"] = false;
+	result["errormsg"] = errormsg;
+
+	Json::Value resp;
+	resp["jsonrpc"] = "2.0";
+	resp["result"] = result;
+	resp["id"] = jsonrpcid;
+
+	ostringstream oss;
+	oss << resp;
+	string json_msg = oss.str();
+	m_ws_srv->sendTo(hdl, json_msg);
 }
 

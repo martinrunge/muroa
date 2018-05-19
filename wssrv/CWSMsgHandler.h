@@ -31,13 +31,14 @@ public:
 	void onMessage(connection_hdl hdl, std::string header, std::string payload);
 	void listClients();
 	void informUser(std::string caption, std::string message);
+    void reportError(connection_hdl hdl, std::string errormsg, int jsonrpcid);
 
 protected:
 	void onListClients(connection_hdl hdl, Json::Value root);
 	void onActivateClient(connection_hdl hdl, Json::Value root);
 
 private:
-	void playctrl(const Json::Value& root);
+	void playctrl(websocketpp::connection_hdl hdl, const Json::Value& root, int jsonrpcid);
 	void changeStation(const Json::Value& root);
 
 	CppServer* m_StreamSrv;

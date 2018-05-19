@@ -184,6 +184,9 @@ void CppServer::playFile(const std::string filename)
 
         m_decoder->startDecodingThread();
     }
+    else {
+        throw "filenotfound";
+    }
 }
 
 void CppServer::playUrl(const std::string  url, int timeout_in_ms) {

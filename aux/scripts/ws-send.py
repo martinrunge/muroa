@@ -5,10 +5,10 @@ import websockets
 import json
 
 payload = {
-  "method": "echo",
-  "params": ["echome!"],
+  "method": "playctrl",
+  "params": { "file" : "/home/martin/Backup Nexus S/Music/Nena + Nur getrumt.mp3", "report_progress" : True },
   "jsonrpc": "2.0",
-  "id": 0,
+  "id": 2,
 }
 
 
