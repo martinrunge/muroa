@@ -79,24 +79,8 @@ include_directories(${SOURCE_DIR}
                     ${CMAKE_CURRENT_SOURCE_DIR}/../libmstream
                     ${ALSA_INCLUDE_DIR}
                     ) 
-
-#
-#                 "/home/martin/raspi/tools/arm-bcm2708/gcc-linaro-arm-linux-gnueabihf-raspbian/arm-linux-gnueabihf/libc/lib"
-#                 "/home/martin/raspi/tools/arm-bcm2708/gcc-linaro-arm-linux-gnueabihf-raspbian/arm-linux-gnueabihf/libc/lib/arm-linux-gnueabihf"
-#                 "/home/martin/raspi/tools/sysroot/lib/arm-linux-gnueabihf"
-#
                  
-link_directories(/home/martin/x-tools/arm-unknown-linux-gnueabi/arm-unknown-linux-gnueabi/sysroot/lib/arm-linux-gnueabihf
-                 ${BINARY_DIR} 
-                 ${SQLITE_LIBRARY_DIRS} 
-                 ${BOOST_LIBRARYDIR}
-                 ${libavcodec_LIBRARY_DIRS}
-                 ${LibSamplerate_CFLAGS}
-                 "${CMAKE_SOURCE_DIR}/../libmuroadaemon/build_${ARCH}" 
-#                 "${CMAKE_SOURCE_DIR}/../libmuroa++/build_${ARCH}"
-                 "${CMAKE_SOURCE_DIR}/../libsock++/build_${ARCH}"
-                 "${CMAKE_SOURCE_DIR}/../libmstream/build_${ARCH}")
-
+link_directories(${BINARY_DIR})
 ADD_EXECUTABLE(muroad ${SRCS} ${HEADERS} )
 
 set_target_properties( muroad PROPERTIES  COMPILE_FLAGS "-std=gnu++0x" ) 
