@@ -137,8 +137,10 @@ CStreamFmt CStreamDecoder::open(string filename, AVInputFormat *inputFmtPtr, AVD
     // The last three parameters specify the file format, buffer size and format parameters;
 	// by simply specifying NULL or 0 we ask libavformat to auto-detect the format and
 	// use a default buffer size.
-	if(avformat_open_input(&m_pFormatCtx, filename.c_str(), inputFmtPtr, &optionsPtr) != 0 )
+	if(avformat_open_input(&m_pFormatCtx, filename.c_str(), inputFmtPtr, &optionsPtr) != 0 ) {
 		cout << " Couldn't open file " << filename << endl;
+        return CStreamFmt();    
+    }
 
 	// Next, we need to retrieve information about the streams contained in the file:
 	if(avformat_find_stream_info(m_pFormatCtx, NULL) < 0 )

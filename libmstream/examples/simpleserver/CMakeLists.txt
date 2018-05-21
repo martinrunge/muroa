@@ -6,6 +6,7 @@ endif()
 
 set(CMAKE_MODULE_PATH "${MUROA_AUX_DIR}/cmake/Modules" ${CMAKE_MODULE_PATH})
 
+find_package( libavutil REQUIRED )
 
 add_definitions( -D__STDC_CONSTANT_MACROS )
 
@@ -22,6 +23,7 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR}
                     ${CMAKE_CURRENT_SOURCE_DIR}/../../../libsock++
                     ${CMAKE_CURRENT_SOURCE_DIR}/../../../libmuroadaemon
                     ${CMAKE_CURRENT_BINARY_DIR}/..
+                    ${libavutil_INCLUDE_DIR}
                     ) 
 
 link_directories(${BINARY_DIR}       "${CMAKE_SOURCE_DIR}/../../build" )

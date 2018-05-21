@@ -84,8 +84,8 @@ void CWSMsgHandler::playctrl(websocketpp::connection_hdl hdl, const Json::Value&
 		m_StreamSrv->playFile(filename);
 
 	}
-	catch( string ex) {
-		reportError(hdl, "file not found", jsonrpcid);
+	catch( ExRessourceNotFound ex) {
+		reportError(hdl, ex.getReason(), jsonrpcid);
 	}
 }
 
@@ -206,6 +206,36 @@ void CWSMsgHandler::onAdjVol(CWSMsgHandler::connection_hdl hdl, Json::Value root
     m_StreamSrv->setVolume(serviceName, volume);
 
 }
+
+
+void CWSMsgHandler::reportProgress(int posInSecs, int durationInSecs) {
+	Json::Value params;
+	params["pos_in_secs"] = posInSecs;
+	params["duration_in_secs"] = durationInSecs;
+
+	Json::Value resp;
+	resp["jsonrpc"] = "2.0";
+	resp["method"] = "progress";
+	resp["params"] = params;
+
+	ostringstream oss;
+	oss << resp;
+	string json_msg = oss.str();
+	m_ws_srv->sendToAll(json_msg);
+}
+
+void CWSMsgHandler::reportEndOfStream() {
+	Json::Value resp;
+	resp["jsonrpc"] = "2.0";
+	resp["method"] = "end_of_stream";
+	resp["params"] = Json::nullValue;
+
+	ostringstream oss;
+	oss << resp;
+	string json_msg = oss.str();
+	m_ws_srv->sendToAll(json_msg);
+}
+
 void CWSMsgHandler::reportError(CWSMsgHandler::connection_hdl hdl, std::string errormsg, int jsonrpcid)
 {
 	Json::Value result;
@@ -222,4 +252,6 @@ void CWSMsgHandler::reportError(CWSMsgHandler::connection_hdl hdl, std::string e
 	string json_msg = oss.str();
 	m_ws_srv->sendTo(hdl, json_msg);
 }
+
+
 

@@ -16,6 +16,7 @@ find_package( Boost 1.36.0 COMPONENTS system filesystem  REQUIRED )
 find_package( EXPAT REQUIRED )
 find_package( libavahiclient REQUIRED )
 find_package( libavahicommon REQUIRED )
+find_package( libavutil REQUIRED )
 find_package( log4cplus REQUIRED )
 
 MESSAGE(STATUS "log4cplus_DEFINITIONS: ${log4cplus_DEFINITIONS}")
@@ -63,6 +64,7 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR} ${Boost_INCLUDE_DIRS}
                                         ${log4cplus_INCLUDE_DIRS}
                                         ${libavahiclient_INCLUDE_DIRS}
                                         ${libavahicommon_INCLUDE_DIRS}
+                                        ${libavutil_INCLUDE_DIR}
                                         )
 
 link_directories(   )

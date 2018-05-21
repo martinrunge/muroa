@@ -9,13 +9,14 @@ Current Build Directory Index=0
 Build Directory Path=/home/martin/muroa/build
 Build Type=Debug
 CMake Binary=/usr/bin/cmake
+CMake Executable=/usr/bin/cmake
 Environment Profile=
 Extra Arguments=-Dmuroad=yes -Dmsessiond=no -Dmqtclient=no
-Install Directory=
+Install Directory=/usr/local
 Runtime=Host System
 
 [Launch]
-Launch Configurations=Launch Configuration 0
+Launch Configurations=Launch Configuration 0,Launch Configuration 1
 
 [Launch][Launch Configuration 0]
 Configured Launch Modes=execute
@@ -24,13 +25,39 @@ Name=muroad
 Type=Native Application
 
 [Launch][Launch Configuration 0][Data]
-Arguments=
+Arguments=-f
+Debugger Shell=
 Dependencies=@Variant(\x00\x00\x00\t\x00\x00\x00\x00\x01\x00\x00\x00\x0b\x00\x00\x00\x00\x03\x00\x00\x00\n\x00m\x00u\x00r\x00o\x00a\x00\x00\x00\x0c\x00m\x00u\x00r\x00o\x00a\x00d\x00\x00\x00\x0c\x00m\x00u\x00r\x00o\x00a\x00d)
+Dependency Action=Build
+Display Demangle Names=true
+Display Static Members=true
+EnvironmentGroup=
+Executable=file:///home/martin/muroa
+External Terminal=konsole --noclose --workdir %workdir -e %exe
+GDB Path=file:///usr/bin/gdb
+Project Target=muroa,muroad,muroad
+Remote GDB Config Script=
+Remote GDB Run Script=
+Remote GDB Shell Script=
+Start With=FrameStack
+Use External Terminal=false
+Working Directory=
+isExecutable=false
+
+[Launch][Launch Configuration 1]
+Configured Launch Modes=execute
+Configured Launchers=nativeAppLauncher
+Name=wssrv
+Type=Native Application
+
+[Launch][Launch Configuration 1][Data]
+Arguments=-f
+Dependencies=@Variant(\x00\x00\x00\t\x00\x00\x00\x00\x01\x00\x00\x00\x0b\x00\x00\x00\x00\x03\x00\x00\x00\n\x00m\x00u\x00r\x00o\x00a\x00\x00\x00\n\x00w\x00s\x00s\x00r\x00v\x00\x00\x00\n\x00w\x00s\x00s\x00r\x00v)
 Dependency Action=Build
 EnvironmentGroup=
 Executable=file:///home/martin/muroa
 External Terminal=konsole --noclose --workdir %workdir -e %exe
-Project Target=muroa,muroad,muroad
+Project Target=muroa,wssrv,wssrv
 Use External Terminal=false
 Working Directory=
 isExecutable=false

@@ -10,6 +10,7 @@ set(CMAKE_MODULE_PATH "${MUROA_AUX_DIR}/cmake/Modules" ${CMAKE_MODULE_PATH})
 
 find_package( Threads REQUIRED )
 find_package( log4cplus REQUIRED )
+find_package( libavutil REQUIRED )
 
 include( MacroGDBIndex )
 
@@ -28,6 +29,7 @@ set( HEADERS       CUtils.h
 include_directories(${CMAKE_CURRENT_SOURCE_DIR} 
                     ${Boost_INCLUDE_DIRS}  
                     ${log4cplus_INCLUDE_DIRS}
+                    ${libavutil_INCLUDE_DIR}
                     )
 
 link_directories( ${BOOST_LIBRARYDIR} )
