@@ -185,7 +185,10 @@ void CppServer::playFile(const std::string filename)
         m_decoder->startDecodingThread();
     }
     else {
-        throw "filenotfound";
+    	ostringstream ss;
+    	ss << "file '" << filename << "' not found";
+    	string tmpstr(ss.str());
+        throw ExRessourceNotFound(tmpstr);
     }
 }
 
@@ -319,11 +322,12 @@ void CppServer::onClientDisappeared(ServDescPtr srvPtr) {
 
 
 void CppServer::onProgress(int posInSecs, int durationInSecs) {
-
+	m_ws_msg_handler->reportProgress(posInSecs, durationInSecs);
 }
 
 void CppServer::onEndOfStream() {
     m_decoder->close();
+    m_ws_msg_handler->reportEndOfStream();
 }
 
 

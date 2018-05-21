@@ -30,7 +30,9 @@ include(FindPackageHandleStandardArgs)
 find_package_handle_standard_args(libavutil  DEFAULT_MSG
                                   libavutil_LIBRARY libavutil_INCLUDE_DIR)
                                   
-# MESSAGE( libavutil: "${libavutil_LIBRARY}")
+MESSAGE( libavutil: include dir: ${libavutil_INCLUDE_DIR}  )
+MESSAGE(            library:      ${libavutil_LIBRARY}     ) 
+
 
 mark_as_advanced(libavutil_INCLUDE_DIR libavutil_LIBRARY )
 

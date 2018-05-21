@@ -32,10 +32,13 @@ public:
 	void listClients();
 	void informUser(std::string caption, std::string message);
     void reportError(connection_hdl hdl, std::string errormsg, int jsonrpcid);
+	void reportProgress(int posInSecs, int durationInSecs);
+	void reportEndOfStream();
 
 protected:
 	void onListClients(connection_hdl hdl, Json::Value root);
 	void onActivateClient(connection_hdl hdl, Json::Value root);
+
 
 private:
 	void playctrl(websocketpp::connection_hdl hdl, const Json::Value& root, int jsonrpcid);

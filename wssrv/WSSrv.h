@@ -50,7 +50,8 @@ private:
     typedef std::set<connection_hdl,std::owner_less<connection_hdl>> con_list;
 
     server m_endpoint;
-    con_list m_connections;
+    con_list m_ws_connections;
+    con_list m_http_connections;
     server::timer_ptr m_timer;
 
     CRessourceHandler* m_resHandler;

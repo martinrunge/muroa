@@ -10,6 +10,8 @@
 #include "CRessourceHandler.h"
 #include "CWSMsgHandler.h"
 
+#include "MuroaExceptions.h"
+
 #include <CApp.h>
 
 #include <map>
@@ -72,7 +74,7 @@ void WSSrv::run(std::string docroot, uint16_t port) {
 
 void WSSrv::sendToAll(string message) {
     con_list::iterator it;
-    for (it = m_connections.begin(); it != m_connections.end(); ++it) {
+    for (it = m_ws_connections.begin(); it != m_ws_connections.end(); ++it) {
         m_endpoint.send(*it, message, websocketpp::frame::opcode::text);
     }
 }
@@ -105,7 +107,7 @@ void WSSrv::onTimer(websocketpp::lib::error_code const & ec) {
 
     // Broadcast count to all connections
     con_list::iterator it;
-    for (it = m_connections.begin(); it != m_connections.end(); ++it) {
+    for (it = m_ws_connections.begin(); it != m_ws_connections.end(); ++it) {
         m_endpoint.send(*it,val.str(),websocketpp::frame::opcode::text);
     }
 
@@ -129,6 +131,8 @@ void WSSrv::on_message(connection_hdl hdl, server::message_ptr msg) {
 }
 
 void WSSrv::onHttp(connection_hdl hdl) {
+    m_http_connections.insert(hdl);
+    
     // Upgrade our connection handle to a full connection_ptr
     server::connection_ptr con = m_endpoint.get_con_from_hdl(hdl);
 
@@ -169,8 +173,31 @@ void WSSrv::onHttp(connection_hdl hdl) {
         	}
 
         }
-
-        m_resHandler->handleREST(filename, query_params);
+        try {
+        	m_resHandler->handleREST(filename, query_params);
+        }
+        catch(ExRpcError rpcex) {
+    		std::stringstream ss;
+    		ss << "<!doctype html><html><head>"
+    		   << "<title>Error 400 (Bad request)</title><body>"
+    		   << "<h1>Error 400</h1>"
+    		   << "<p>" << rpcex.what() << "</p>"
+    		   << "</body></head></html>";
+    		con->set_body(ss.str());
+    		con->set_status(websocketpp::http::status_code::ok);
+    		return;
+        }
+        catch(ExRessourceNotFound& rnf) {
+    		std::stringstream ss;
+    		ss << "<!doctype html><html><head>"
+    		   << "<title>Error 200 (Ok)</title><body>"
+    		   << "<h1>Error 200</h1>"
+    		   << "<p>" << rnf.getReason() << "</p>"
+    		   << "</body></head></html>";
+    		con->set_body(ss.str());
+    		con->set_status(websocketpp::http::status_code::ok);
+    		return;
+        }
 
 		std::stringstream ss;
 		con->set_body(ss.str());
@@ -224,11 +251,11 @@ void WSSrv::onHttp(connection_hdl hdl) {
 }
 
 void WSSrv::onOpen(connection_hdl hdl) {
-    m_connections.insert(hdl);
+    m_ws_connections.insert(hdl);
 }
 
 void WSSrv::onClose(connection_hdl hdl) {
-    m_connections.erase(hdl);
+    m_ws_connections.erase(hdl);
 }
 
 

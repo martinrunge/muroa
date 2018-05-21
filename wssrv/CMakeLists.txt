@@ -7,7 +7,7 @@ endif()
 set(CMAKE_MODULE_PATH "${MUROA_AUX_DIR}/cmake/Modules" ${CMAKE_MODULE_PATH})
 
 find_package( Threads )
-find_package( Boost 1.45.0 COMPONENTS thread random  system  REQUIRED )
+find_package( Boost 1.45.0 COMPONENTS system  REQUIRED )
 find_package( JsonCpp REQUIRED )
 find_package( libavcodec REQUIRED )
 find_package( libavformat REQUIRED )

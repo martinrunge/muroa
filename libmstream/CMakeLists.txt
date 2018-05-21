@@ -11,6 +11,7 @@ include( MacroGDBIndex )
 
 find_package( Threads REQUIRED )
 find_package( log4cplus REQUIRED )
+find_package( libavutil REQUIRED )
 
 
 set(Boost_USE_MULTITHREADED ON )
@@ -87,6 +88,7 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR}
                     ${CMAKE_CURRENT_SOURCE_DIR}/../libmcommons
                     ${Boost_INCLUDE_DIRS}  
                     ${log4cplus_INCLUDE_DIRS}
+                    ${libavutil_INCLUDE_DIR}
                     ${CMAKE_CURRENT_SOURCE_DIR}/../libsock++ 
                     ${CMAKE_CURRENT_SOURCE_DIR}/../libmuroadaemon )
 

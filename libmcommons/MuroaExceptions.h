@@ -26,6 +26,7 @@
 
 #include <exception>
 #include <string>
+#include <sstream>
 
 // namespace muroa {  // activate later on
 
@@ -134,6 +135,28 @@ public:
 
 private:
 	std::string m_reason;
+};
+
+class ExRessourceNotFound: public std::exception {
+public:
+	ExRessourceNotFound(std::string& reason) : m_reason(reason) {
+	};
+	virtual ~ExRessourceNotFound()
+	{
+	};
+
+	inline const std::string& getReason() const throw()
+	{
+		return m_reason;
+	};
+
+	inline const char* what() const throw()
+	{
+		return m_reason.c_str();
+	};
+
+private:
+	const std::string m_reason;
 };
 
 namespace muroa {

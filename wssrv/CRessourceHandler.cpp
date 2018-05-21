@@ -44,7 +44,7 @@ void CRessourceHandler::handleREST(std::string filename, std::map<string,string>
 		map<string, string>::iterator it;
 		it = query_map.find("file");
 		if(it == query_map.end()) {
-			// station not found -> repost error
+			throw ExRpcError("'file' missing in query");  // station not found -> repost error
 		}
 		string filename = it->second;
 
