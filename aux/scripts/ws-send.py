@@ -6,7 +6,8 @@ import json
 
 payload = {
   "method": "playctrl",
-  "params": { "file" : "/home/martin/tmp/Klangkarussell_-_Sonnentanz_(Original_Version).mp3", "report_progress" : True },
+#  "params": { "file" : "/home/martin/tmp/Klangkarussell_-_Sonnentanz_(Original_Version).mp3", "report_progress" : True },
+  "params": { "file" : "/home/martin/Musik/Rock/P!nk_Who Knew_01_Who Knew - Main Version_ML1836864.mp3", "report_progress" : True },
   "jsonrpc": "2.0",
   "id": 2,
 }

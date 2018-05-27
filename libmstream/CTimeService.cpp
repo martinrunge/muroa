@@ -27,43 +27,53 @@ namespace muroa {
 using namespace boost;
 using namespace boost::asio::ip;
 
-CTimeService::CTimeService(boost::asio::io_service& io_serv,
-		                   bool server_role,
-		                   address ip_address,
-		                   int portNr,
-		                   udp protocol)
+CTimeService::CTimeService(boost::asio::io_service& io_serv, int portNr, udp protocol)
                            :
-                           m_server_role(server_role),
-		                   m_ip_address(ip_address),
+                           m_server_role(true),
 		                   m_port_nr(portNr),
 		                   m_socket(io_serv),
 		                   m_timer(io_serv)
 {
 	try {
 		m_socket.open(protocol);
-		if(m_server_role) {
-
-			bool found = false;
-			while( !found ) {
-				udp::endpoint endpoint = udp::endpoint(protocol, portNr);
-				boost::system::error_code ec;
-				m_socket.bind(endpoint, ec);
-				int val = ec.value();
-				if( val == EADDRINUSE ) {
-					portNr++;
-				}
-				else {
-					found = true;
-				}
-
+		bool found = false;
+		while( !found ) {
+			udp::endpoint endpoint = udp::endpoint(protocol, portNr);
+			boost::system::error_code ec;
+			m_socket.bind(endpoint, ec);
+			int val = ec.value();
+			if( val == EADDRINUSE ) {
+				portNr++;
+			}
+			else {
+				found = true;
 			}
 			m_port_nr = portNr;
 			start_server();
 		}
-		else {
-			m_remote_endpoint = udp::endpoint(m_ip_address, m_port_nr);
-			send_request(system::error_code());
-		}
+	}
+	catch(boost::system::system_error err) {
+		// could not open socket;
+	}
+
+}
+
+CTimeService::CTimeService(boost::asio::io_service& io_serv,
+		                   address server_address,
+		                   int portNr,
+		                   udp protocol)
+                           :
+                           m_server_role(false),
+		                   m_ip_address(server_address),
+		                   m_port_nr(portNr),
+		                   m_socket(io_serv),
+		                   m_timer(io_serv)
+{
+	try {
+		m_socket.open(protocol);
+
+		m_remote_endpoint = udp::endpoint(m_ip_address, m_port_nr);
+		send_request(system::error_code());
 	}
 	catch(boost::system::system_error err) {
 		// could not open socket;

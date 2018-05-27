@@ -72,7 +72,7 @@ void CSessionContainer::setup( boost::asio::io_service& io_service) {
 		m_ts_ctrl = new CTimeServiceCtrl();
 		int portNr = m_app->settings().getConfigVal("time_service_port", 44401);
 		boost::asio::ip::address address;
-		m_ts_ctrl->start(true, address, portNr);
+		m_ts_ctrl->startServer(true, address, portNr);
 	}
 
 	vector<string> browselist;

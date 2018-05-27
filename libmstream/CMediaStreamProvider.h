@@ -15,6 +15,7 @@
 
 #include <sys/time.h>
 
+#include "CTimeServiceCtrl.h"
 #include "CStreamCtrlConnection.h"
 #include "CUDPSocket.h"
 #include "crtppacket.h"
@@ -91,6 +92,9 @@ private:
     log4cplus::Logger m_timing_logger;
 
     CRTPPacket *m_rtp_packet;
+
+    muroa::CTimeServiceCtrl m_time_service_ctrl;
+
     muroa::evSyncStream m_sync_info;
     uint32_t m_ssrc;
 
