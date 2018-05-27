@@ -34,10 +34,16 @@ CTimeServiceCtrl::~CTimeServiceCtrl() {
 
 }
 
-void CTimeServiceCtrl::start(bool server_role, boost::asio::ip::address ip_address, int portNr, boost::asio::ip::udp protocol) {
+void CTimeServiceCtrl::startServer(int portNr, boost::asio::ip::udp protocol) {
 	assert(m_thread == 0);
-	m_server_role = server_role;
-	m_thread = new std::thread(bind(&CTimeServiceCtrl::threadfunc, this, server_role, ip_address, portNr, protocol));
+	m_server_role = true;
+	m_thread = new std::thread(bind(&CTimeServiceCtrl::server_thread_func, this, portNr, protocol));
+}
+
+void CTimeServiceCtrl::startClient(boost::asio::ip::address server_address, int portNr, boost::asio::ip::udp protocol) {
+	assert(m_thread == 0);
+	m_server_role = false;
+	m_thread = new std::thread(bind(&CTimeServiceCtrl::client_thread_func, this, server_address, portNr, protocol));
 }
 
 void CTimeServiceCtrl::stop() {
@@ -50,15 +56,27 @@ void CTimeServiceCtrl::stop() {
 	}
 }
 
-void CTimeServiceCtrl::threadfunc(bool server_role, boost::asio::ip::address ip_address, int portNr, boost::asio::ip::udp protocol) {
+void CTimeServiceCtrl::server_thread_func(int portNr, boost::asio::ip::udp protocol) {
 	try {
 		boost::asio::io_service io_service;
-		CTimeService ts(io_service, server_role, ip_address, portNr, protocol);
+		CTimeService ts(io_service, portNr, protocol);
 		LOG4CPLUS_DEBUG(m_logger, "starting TimeService");
-		if(server_role) {
-			m_used_port = ts.getUsedPort();
-			m_cond_var.notify_all();
-		}
+		m_used_port = ts.getUsedPort();
+		m_cond_var.notify_all();
+		io_service.run();
+		LOG4CPLUS_INFO(m_logger, "shutting down time service.");
+	} catch (std::exception& e) {
+		LOG4CPLUS_ERROR(m_logger, "Uncaught exception from TimeServices mainloop: " << e.what());
+	}
+}
+
+void CTimeServiceCtrl::client_thread_func(boost::asio::ip::address server_address, int portNr, boost::asio::ip::udp protocol) {
+	try {
+		boost::asio::io_service io_service;
+		CTimeService ts(io_service, server_address, portNr, protocol);
+		LOG4CPLUS_DEBUG(m_logger, "starting TimeService");
+		m_used_port = ts.getUsedPort();
+		m_cond_var.notify_all();
 		io_service.run();
 		LOG4CPLUS_INFO(m_logger, "shutting down time service.");
 	} catch (std::exception& e) {

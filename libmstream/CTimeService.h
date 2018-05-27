@@ -33,11 +33,8 @@ class CTimeSyncPkt;
 
 class CTimeService : public boost::enable_shared_from_this<CTimeService>{
 public:
-	CTimeService(boost::asio::io_service& io_service,
-			     bool server_role,
-			     boost::asio::ip::address ip_address,
-			     int portNr,
-			     boost::asio::ip::udp protocol = boost::asio::ip::udp::v4());
+	CTimeService(boost::asio::io_service& io_service, int portNr, boost::asio::ip::udp protocol = boost::asio::ip::udp::v4());
+	CTimeService(boost::asio::io_service& io_service, boost::asio::ip::address server_address, int portNr, boost::asio::ip::udp protocol = boost::asio::ip::udp::v4());
 	virtual ~CTimeService();
 
 	int getUsedPort() { return m_port_nr; };

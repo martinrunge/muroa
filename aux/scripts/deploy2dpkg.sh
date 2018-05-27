@@ -47,7 +47,7 @@ done < <(find -name "*.deb" -print0)
 
 for file in "${dpkg_list[@]}" ; do
     echo "package was built: '$file' -> adding it to repository in '$REPODIR'"
-    reprepro -b $REPODIR includedeb jessie $file
+    reprepro -b $REPODIR includedeb stretch $file
 done
 
 popd

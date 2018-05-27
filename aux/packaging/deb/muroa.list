@@ -1,2 +1,2 @@
-deb [arch=armhf] http://deb.muroa.org/raspbian jessie main
+deb [arch=armhf] http://deb.muroa.org/raspbian stretch main
 

@@ -219,6 +219,6 @@ void CMediaStreamConnection::onResetStream(const evResetStream& evRst) {
 
 
 
-void CMediaStreamConnection::useTimeService(boost::asio::ip::address ip_address, int port, boost::asio::ip::udp protocol) {
-	m_ts->start(false, ip_address, port, protocol);
+void CMediaStreamConnection::useTimeService(boost::asio::ip::address server_address, int port, boost::asio::ip::udp protocol) {
+	m_ts->startClient(server_address, port, protocol);
 }
