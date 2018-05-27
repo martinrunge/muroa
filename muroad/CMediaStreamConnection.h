@@ -128,7 +128,7 @@ private:
     boost::posix_time::ptime m_sync_requested_at;
     int m_idle_time;
     
-	muroa::CTimeServiceCtrl *m_ts;
+	muroa::CTimeServiceCtrl m_ts;
 
     boost::asio::io_service& m_io_service;
     boost::asio::ip::address m_mcast_addr;

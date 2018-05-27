@@ -143,6 +143,8 @@ private:
     int m_secs_idle;
     int m_max_idle;
 
+    int m_num_discard_fails;
+
     log4cplus::Logger m_timing_logger;
 
   private:

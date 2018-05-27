@@ -66,9 +66,6 @@ CMediaStreamConnection::CMediaStreamConnection(boost::asio::io_service& io_servi
 
   m_idle_time = 0;
 
-  m_ts = new CTimeServiceCtrl();
-  //CSync syncobj;
-
   start();
 }
 
@@ -76,7 +73,7 @@ CMediaStreamConnection::CMediaStreamConnection(boost::asio::io_service& io_servi
 CMediaStreamConnection::~CMediaStreamConnection()
 {
   stop();
-  m_ts->stop();
+  m_ts.stop();
   delete m_ts;
   delete m_recvloop_thread;
   delete m_playloop_thread;

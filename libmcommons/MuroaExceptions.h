@@ -139,9 +139,31 @@ private:
 
 class ExRessourceNotFound: public std::exception {
 public:
-	ExRessourceNotFound(std::string& reason) : m_reason(reason) {
+	ExRessourceNotFound(std::string reason) : m_reason(reason) {
 	};
 	virtual ~ExRessourceNotFound()
+	{
+	};
+
+	inline const std::string& getReason() const throw()
+	{
+		return m_reason;
+	};
+
+	inline const char* what() const throw()
+	{
+		return m_reason.c_str();
+	};
+
+private:
+	const std::string m_reason;
+};
+
+class ExSyncFailed: public std::exception {
+public:
+	ExSyncFailed(std::string reason) : m_reason(reason) {
+	};
+	virtual ~ExSyncFailed()
 	{
 	};
 

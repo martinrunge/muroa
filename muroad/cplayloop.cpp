@@ -18,6 +18,7 @@
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
 #include <CPacketRingBuffer.h>
+#include <MuroaExceptions.h>
 #include "cplayloop.h"
 #include "caudioframe.h"
 
@@ -274,6 +275,9 @@ void CPlayloop::DoLoop() {
 	catch(muroa::InterruptedEx iex) {
         cerr << "CPlayloop::DoLoop: got InterruptedEx: " << iex.what() << endl;
 	}
+	catch(ExSyncFailed sfex) {
+		cerr << "CPlayloop::DoLoop: sync to stream failed: " << sfex.getReason() << endl;
+	}
 }
 
 
@@ -332,6 +336,8 @@ int CPlayloop::startStream(const muroa::evSyncStream& syncInfo) {
  * All audio frames with PTS in the past may not be played any more. Discard them.
  */
 ptime CPlayloop::discardPastPTSFrames(const muroa::evSyncStream& syncInfo) {
+	m_num_discard_fails = 0;
+
 	while(m_nr_of_last_frame_decoded == -1 ) {
 		addPacket2RingBuffer(syncInfo.m_ssrc, true);
 	}
@@ -353,7 +359,14 @@ ptime CPlayloop::discardPastPTSFrames(const muroa::evSyncStream& syncInfo) {
 		while( m_ringbuffer->sizeInFrames() < m_write_granularity) {
 			int num_frames = addPacket2RingBuffer(syncInfo.m_ssrc, false);
 			if(num_frames == 0) {
+				m_num_discard_fails++;
+				if(m_num_discard_fails > 20) {
+					// give up and restart sync to avoid endless loop
+					throw ExSyncFailed(string(""));
+				}
 				LOG4CPLUS_ERROR(m_timing_logger, "   frames should be discarded to get in sync, but there were none in the packetbuffer.");
+				// better approad: let addPacket2RingBuffer block with timeout
+				usleep(m_num_discard_fails * 5 );
 			}
 		}
 
@@ -423,8 +436,9 @@ void CPlayloop::adjustResamplingFactor(const muroa::evSyncStream& syncInfo)
 
 		if(m_correction_factor < low_th || m_correction_factor > up_th ) {
 			LOG4CPLUS_WARN( m_timing_logger, " correction factor '"<< m_correction_factor <<"' is outside desired range of [" << low_th << "," << up_th<< "]");
-			resetStream(syncInfo.m_ssrc);
-			startStream(syncInfo);
+			// resetStream(syncInfo.m_ssrc);
+			// startStream(syncInfo);
+			m_audio_sink->stop();  // if audio sink is stopped, next loop iteration will call startStream and do all the resync
 		}
 	}
 }
