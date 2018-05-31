@@ -25,6 +25,8 @@
 #include <cmds/CmdStream.h>
 #include <boost/asio.hpp>
 
+#include "CTime.h"
+
 class CMediaStreamConnection;
 class CCtrlConnection;
 
@@ -69,6 +71,7 @@ public:
 	int getVolume();
 	boost::asio::ip::address getSessionServer();
 
+	void onClockOffset(CDuration theta);
 
 	const CCtrlConnection* getSessionCtrlConn() const {
 		return m_session_ctrl_conn;
@@ -77,6 +80,8 @@ public:
 	const std::string getSessionName() const {
 		return m_session_name;
 	}
+
+	boost::asio::io_service& getIoService() { return m_io_service; };
 
 private:
 	bool m_active;

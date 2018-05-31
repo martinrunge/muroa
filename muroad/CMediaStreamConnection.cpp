@@ -38,15 +38,16 @@
 #include "CApp.h"
 #include "CSettings.h"
 #include "CTcpServer.h"
-
+#include "CPlayer.h"
 
 using namespace std;
 using namespace boost::posix_time;
 using namespace muroa;
 
-CMediaStreamConnection::CMediaStreamConnection(boost::asio::io_service& io_service, boost::asio::ip::address mcast_addr, boost::asio::ip::udp::endpoint timesrv_endpoint) :
+CMediaStreamConnection::CMediaStreamConnection(CPlayer* player, boost::asio::ip::address mcast_addr, boost::asio::ip::udp::endpoint timesrv_endpoint) :
 		                   m_max_sync_infos(10),
-		                   m_io_service(io_service),
+						   m_player(player),
+		                   // m_io_service(io_service),
 						   m_mcast_addr(mcast_addr)
 {
   
@@ -61,7 +62,7 @@ CMediaStreamConnection::CMediaStreamConnection(boost::asio::io_service& io_servi
   m_sync_requested_for_stream_id = -1;
   m_sync_requested_at = microsec_clock::universal_time();
 
-  m_ts.startClient(timesrv_endpoint);
+  startTimeServiceClient(timesrv_endpoint);
   m_idle_time = 0;
 
   start();
@@ -71,7 +72,7 @@ CMediaStreamConnection::CMediaStreamConnection(boost::asio::io_service& io_servi
 CMediaStreamConnection::~CMediaStreamConnection()
 {
   stop();
-  m_ts.stop();
+  stopTimeService();
   delete m_recvloop_thread;
   delete m_playloop_thread;
 
@@ -214,6 +215,11 @@ void CMediaStreamConnection::onResetStream(const evResetStream& evRst) {
     }
 }
 
+
+void CMediaStreamConnection::onClockOffset(const CDuration& theta) {
+	// this method is called from the time servie client's worker thread -> pass theta to the eventloop of CPlayer
+	(m_player->getIoService()).post(boost::bind(&CPlayer::onClockOffset, m_player, theta) );
+}
 
 
 // void CMediaStreamConnection::useTimeService(boost::asio::ip::address server_address, boost::asio::ip::udp::endpoint timesrv_endpoint) {

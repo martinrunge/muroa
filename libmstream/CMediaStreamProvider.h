@@ -32,7 +32,7 @@
 
 namespace muroa {
 
-class CMediaStreamProvider {
+class CMediaStreamProvider :public CTimeServiceCtrl {
 public:
 	CMediaStreamProvider(boost::asio::io_service& io_service, int session_id, int transport_buffer_size_in_ms);
 	virtual ~CMediaStreamProvider();

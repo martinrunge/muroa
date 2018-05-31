@@ -34,19 +34,19 @@ CTimeServiceCtrl::~CTimeServiceCtrl() {
 
 }
 
-void CTimeServiceCtrl::startServer(int portNr, boost::asio::ip::udp protocol) {
+void CTimeServiceCtrl::startTimeServiceServer(int portNr, boost::asio::ip::udp protocol) {
 	assert(m_thread == 0);
 	m_server_role = true;
 	m_thread = new std::thread(bind(&CTimeServiceCtrl::server_thread_func, this, portNr, protocol));
 }
 
-void CTimeServiceCtrl::startClient(boost::asio::ip::udp::endpoint timesrv_endpoint) {
+void CTimeServiceCtrl::startTimeServiceClient(boost::asio::ip::udp::endpoint timesrv_endpoint) {
 	assert(m_thread == 0);
 	m_server_role = false;
 	m_thread = new std::thread(bind(&CTimeServiceCtrl::client_thread_func, this, timesrv_endpoint));
 }
 
-void CTimeServiceCtrl::stop() {
+void CTimeServiceCtrl::stopTimeService() {
 	if(m_thread != 0) {
 		if(m_thread->joinable()) {
 			m_thread->join();
@@ -59,7 +59,7 @@ void CTimeServiceCtrl::stop() {
 void CTimeServiceCtrl::server_thread_func(int portNr, boost::asio::ip::udp protocol) {
 	try {
 		boost::asio::io_service io_service;
-		CTimeService ts(io_service, portNr, protocol);
+		CTimeService ts(io_service, this, portNr, protocol);
 		LOG4CPLUS_DEBUG(m_logger, "starting TimeService");
 		m_used_port = ts.getUsedPort();
 		m_cond_var.notify_all();
@@ -73,7 +73,7 @@ void CTimeServiceCtrl::server_thread_func(int portNr, boost::asio::ip::udp proto
 void CTimeServiceCtrl::client_thread_func(boost::asio::ip::udp::endpoint timesrv_endpoint) {
 	try {
 		boost::asio::io_service io_service;
-		CTimeService ts(io_service, timesrv_endpoint);
+		CTimeService ts(io_service, this, timesrv_endpoint);
 		LOG4CPLUS_DEBUG(m_logger, "starting TimeService");
 		m_used_port = ts.getUsedPort();
 		m_cond_var.notify_all();
@@ -84,7 +84,7 @@ void CTimeServiceCtrl::client_thread_func(boost::asio::ip::udp::endpoint timesrv
 	}
 }
 
-int CTimeServiceCtrl::getCurrentServerPort() {
+int CTimeServiceCtrl::getCurrentTimeServerPort() {
 	if(m_server_role == true) {
 		if( m_used_port == 0) {
 			// port has not yet been set by time service thread.
@@ -95,6 +95,10 @@ int CTimeServiceCtrl::getCurrentServerPort() {
 		}
 	}
 	return m_used_port;
+}
+
+void CTimeServiceCtrl::onClockOffset(const CDuration& offset) {
+
 }
 
 

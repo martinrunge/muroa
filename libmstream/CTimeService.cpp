@@ -21,6 +21,7 @@
 #include "CTimeService.h"
 #include "CTime.h"
 #include "CTimeSyncPkt.h"
+#include "CTimeServiceCtrl.h"
 #include <iostream>
 
 namespace muroa {
@@ -29,9 +30,10 @@ using namespace boost;
 using namespace boost::asio::ip;
 
 // c-tor for server mode
-CTimeService::CTimeService(boost::asio::io_service& io_serv, int portNr, udp protocol)
+CTimeService::CTimeService(boost::asio::io_service& io_serv, CTimeServiceCtrl* const tsctrl, int portNr, udp protocol)
                            :
                            m_server_role(true),
+						   m_ts_ctrl(tsctrl),
 		                   m_port_nr(portNr),
 		                   m_socket(io_serv),
 		                   m_timer(io_serv),
@@ -62,9 +64,10 @@ CTimeService::CTimeService(boost::asio::io_service& io_serv, int portNr, udp pro
 }
 
 // c-tor for client mode
-CTimeService::CTimeService(boost::asio::io_service& io_serv, boost::asio::ip::udp::endpoint timesrv_endpoint)
+CTimeService::CTimeService(boost::asio::io_service& io_serv, CTimeServiceCtrl* const tsctrl, boost::asio::ip::udp::endpoint timesrv_endpoint)
                            :
                            m_server_role(false),
+						   m_ts_ctrl(tsctrl),
 		                   m_socket(io_serv),
 		                   m_timer(io_serv),
 						   m_awaiting_response(false)
@@ -141,7 +144,8 @@ void CTimeService::handle_receive(const boost::system::error_code& ec, std::size
 			}
 			ts_pkt.setT4(recv_time);
 			CDuration theta = ts_pkt.getClockOffset();
-			std::cerr << " clock offset [s]: " << std::fixed << theta.sec() << std::endl;
+			// std::cerr << " clock offset [s]: " << std::fixed << theta.sec() << std::endl;
+			m_ts_ctrl->onClockOffset(theta);
 			m_awaiting_response = false;
 			start_timer();
 		}

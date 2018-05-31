@@ -24,7 +24,7 @@
 #include <thread>
 #include <mutex>              // std::mutex, std::unique_lock
 #include <condition_variable> // std::condition_variable
-
+#include "CTime.h"
 
 // 	#include <boost/bind.hpp>
 #include <boost/asio.hpp>
@@ -40,11 +40,13 @@ public:
 	CTimeServiceCtrl();
 	virtual ~CTimeServiceCtrl();
 
-	void startServer(int portNr, boost::asio::ip::udp protocol = boost::asio::ip::udp::v4());
-	void startClient(boost::asio::ip::udp::endpoint timesrv_endpoint);
-	void stop();
+	void startTimeServiceServer(int portNr, boost::asio::ip::udp protocol = boost::asio::ip::udp::v4());
+	void startTimeServiceClient(boost::asio::ip::udp::endpoint timesrv_endpoint);
+	void stopTimeService();
 
-	int getCurrentServerPort();
+	int getCurrentTimeServerPort();
+
+	virtual void onClockOffset(const CDuration& offset);
 
 private:
 	void server_thread_func(int portNr, boost::asio::ip::udp protocol);
