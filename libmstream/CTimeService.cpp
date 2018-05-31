@@ -127,7 +127,7 @@ void CTimeService::handle_receive(const boost::system::error_code& ec, std::size
 		if(m_server_role) {
 			ts_pkt.setT2(recv_time);
 
-			ts_pkt.setT2(CTime::now());
+			ts_pkt.setT3(CTime::now());
 			buffer_t buf = ts_pkt.serialize();
 
 			boost::system::error_code send_ec;
