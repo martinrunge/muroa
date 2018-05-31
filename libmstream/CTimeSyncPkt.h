@@ -96,6 +96,7 @@ private:
 		char buffer[4 * sizeof(int64_t)];
 	};
 
+	packaging m_p;
 	void deserialize(packaging p);         // might throw CDeserialisationException
 
 };

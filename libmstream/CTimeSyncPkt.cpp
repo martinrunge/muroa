@@ -57,13 +57,12 @@ const CDuration CTimeSyncPkt::getClockOffset() {
 }
 
 buffer_t CTimeSyncPkt::serialize() {
-	packaging p;
-	p.times.t1 = m_t1.serialize();
-	p.times.t2 = m_t2.serialize();
-	p.times.t3 = m_t3.serialize();
-	p.times.t4 = m_t4.serialize();
+	m_p.times.t1 = m_t1.serialize();
+	m_p.times.t2 = m_t2.serialize();
+	m_p.times.t3 = m_t3.serialize();
+	m_p.times.t4 = m_t4.serialize();
 
-	return buffer_t{p.buffer, sizeof(p.buffer)};
+	return buffer_t{m_p.buffer, sizeof(m_p.buffer)};
 }
 
 void CTimeSyncPkt::deserialize(buffer_t buf) {    // might throw CDeserialisationException
