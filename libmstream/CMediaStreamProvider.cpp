@@ -52,11 +52,11 @@ CMediaStreamProvider::CMediaStreamProvider(boost::asio::io_service& io_service, 
 
 	  m_frames_in_sync_period = 0;
 
-	  m_time_service_ctrl.startServer(m_time_server_port);
+	  startTimeServiceServer(m_time_server_port);
 }
 
 CMediaStreamProvider::~CMediaStreamProvider() {
-	m_time_service_ctrl.stop();
+	stopTimeService();
 }
 
 void CMediaStreamProvider::addJoinedConnection(CStreamCtrlConnection* conn) {

@@ -82,7 +82,7 @@ CPlayer::~CPlayer() {
 void CPlayer::setupMediaStreamConn( boost::asio::ip::address mcast_addr, int timesrv_port) {
 	assert(m_media_stream_conn == 0);
 	boost::asio::ip::udp::endpoint timesrv_endpoint(m_session_ctrl_conn->remoteEndpoint().address(), timesrv_port);
-	m_media_stream_conn = new CMediaStreamConnection(m_io_service, mcast_addr, timesrv_endpoint);
+	m_media_stream_conn = new CMediaStreamConnection(this, mcast_addr, timesrv_endpoint);
 
     m_current_volume = getVolume();
 
@@ -183,6 +183,10 @@ void CPlayer::syncInfo(const evSyncStream& evt, CCtrlConnection* ctrlConn) {
 	if(ctrlConn == m_session_ctrl_conn) {
 		m_media_stream_conn->onSyncInfo(evt);
 	}
+}
+
+void CPlayer::onClockOffset(CDuration theta) {
+	LOG4CPLUS_DEBUG(CApp::logger(), "CPlayer::onClockOffset to server [s]: " << std::fixed << theta.sec() );
 }
 
 int CPlayer::getVolume() {

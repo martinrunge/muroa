@@ -44,6 +44,7 @@ Class encapsulates all the playback functioinalty. It inplements an interface to
 
 namespace muroa
 {
+  class CPlayer;
   class CApp;
   class CSettings;
   class CDnsSdAvahi;
@@ -59,9 +60,9 @@ class CPThread;
 class CPacketRingBuffer;
 
 
-class CMediaStreamConnection : public muroa::IRenderCmds {
+class CMediaStreamConnection : public muroa::IRenderCmds, public muroa::CTimeServiceCtrl {
 public:
-	CMediaStreamConnection(boost::asio::io_service& io_service, boost::asio::ip::address mcast_addr, boost::asio::ip::udp::endpoint timesrv_endpoint);
+	CMediaStreamConnection(muroa::CPlayer* player, boost::asio::ip::address mcast_addr, boost::asio::ip::udp::endpoint timesrv_endpoint);
     ~CMediaStreamConnection();
 
     void start();
@@ -93,6 +94,8 @@ public:
     void requestSync(int session_id, int stream_id);
     void setRequestedSyncObj(CRTPPacket* rtp_packet);
 
+    void onClockOffset(const CDuration& theta);
+
     void idleTime ( int theValue )
     {
         m_idle_time = theValue;
@@ -106,6 +109,7 @@ public:
     CPosixCond m_traffic_cond;
 
 private:
+    muroa::CPlayer* const m_player;
 
     CPacketRingBuffer * m_packet_ringbuffer;
   
@@ -115,10 +119,7 @@ private:
     CPThread *m_recvloop_thread;
     CPThread *m_playloop_thread;
 
-//    muroa::CConnectionManager m_conn_mgr;
-//    muroa::CTcpServer* m_tcp_server;
 
-//    CSync m_sync_obj;
     // the last sync info arrived will be prepended at the beginning of the list
     int m_max_sync_infos;
 	std::queue<muroa::evSyncStream*> m_sync_info_queue;
@@ -128,9 +129,9 @@ private:
     boost::posix_time::ptime m_sync_requested_at;
     int m_idle_time;
     
-	muroa::CTimeServiceCtrl m_ts;
+	// muroa::CTimeServiceCtrl m_ts;
 
-    boost::asio::io_service& m_io_service;
+    // boost::asio::io_service& m_io_service;
     boost::asio::ip::address m_mcast_addr;
     int m_timesrv_port;
 };

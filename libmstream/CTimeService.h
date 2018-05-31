@@ -30,11 +30,12 @@
 namespace muroa {
 
 class CTimeSyncPkt;
+class CTimeServiceCtrl;
 
 class CTimeService : public boost::enable_shared_from_this<CTimeService>{
 public:
-	CTimeService(boost::asio::io_service& io_service, int portNr, boost::asio::ip::udp protocol = boost::asio::ip::udp::v4());
-	CTimeService(boost::asio::io_service& io_service, boost::asio::ip::udp::endpoint timesrv_endpoint);
+	CTimeService(boost::asio::io_service& io_service, CTimeServiceCtrl* const tsctrl, int portNr, boost::asio::ip::udp protocol = boost::asio::ip::udp::v4());
+	CTimeService(boost::asio::io_service& io_service, CTimeServiceCtrl* const tsctrl, boost::asio::ip::udp::endpoint timesrv_endpoint);
 	virtual ~CTimeService();
 
 	int getUsedPort() { return m_port_nr; };
@@ -43,7 +44,8 @@ private:
 	boost::asio::ip::address m_ip_address;
 	int m_port_nr;
 	bool m_server_role;
-	// boost::asio::io_service& m_io_service;
+	CTimeServiceCtrl* const m_ts_ctrl;
+
 	boost::asio::ip::udp::socket m_socket;
 	boost::asio::ip::udp::endpoint m_remote_endpoint;
 

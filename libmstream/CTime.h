@@ -109,7 +109,7 @@ public:
 	}
 
 	CDuration operator*( const double& rhs ) const {
-		return CDuration( m_time_in_ns * rhs );
+		return CDuration( (int64_t)(m_time_in_ns * rhs) );
 	}
 
 	CDuration operator/( const double& rhs ) const {
@@ -173,7 +173,7 @@ public:
 	virtual ~CTime() {};
 	static CTime now() {   // might throw CException
 		struct timespec ts;
-		int retval = clock_gettime( CLOCK_MONOTONIC, &ts );
+		int retval = clock_gettime( CLOCK_REALTIME, &ts );
 		if(retval != 0) {
 			std::stringstream ss;
 			ss << "clock_gettime failed with error (errno: " << errno << ", '" << strerror(errno) << "')";
