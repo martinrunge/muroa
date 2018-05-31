@@ -32,7 +32,7 @@ CTimeSyncPkt::CTimeSyncPkt(buffer_t buf) {
 }
 
 CTimeSyncPkt::CTimeSyncPkt(const char* buf, size_t len) {
-
+	deserialize(buf, len);
 }
 
 
