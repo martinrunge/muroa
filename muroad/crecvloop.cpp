@@ -105,7 +105,7 @@ void CRecvloop::DoLoop()
 				CIPv4Address *sender = m_socket->latestSender();
 				address_v4 tmp_addr(sender->sock_addr_in_ptr()->sin_addr.s_addr);
 				address sender_addr(tmp_addr);
-				m_media_stream_conn->useTimeService(sender_addr, m_ts_port);
+				// m_media_stream_conn->useTimeService(sender_addr, m_ts_port);
 
 			}
 

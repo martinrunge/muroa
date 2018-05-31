@@ -41,14 +41,14 @@ public:
 	virtual ~CTimeServiceCtrl();
 
 	void startServer(int portNr, boost::asio::ip::udp protocol = boost::asio::ip::udp::v4());
-	void startClient(boost::asio::ip::address server_address, int portNr, boost::asio::ip::udp protocol);
+	void startClient(boost::asio::ip::udp::endpoint timesrv_endpoint);
 	void stop();
 
 	int getCurrentServerPort();
 
 private:
 	void server_thread_func(int portNr, boost::asio::ip::udp protocol);
-	void client_thread_func(boost::asio::ip::address server_address, int portNr, boost::asio::ip::udp protocol);
+	void client_thread_func(boost::asio::ip::udp::endpoint timesrv_endpoint);
 
 	std::thread *m_thread;
 

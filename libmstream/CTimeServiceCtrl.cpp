@@ -40,10 +40,10 @@ void CTimeServiceCtrl::startServer(int portNr, boost::asio::ip::udp protocol) {
 	m_thread = new std::thread(bind(&CTimeServiceCtrl::server_thread_func, this, portNr, protocol));
 }
 
-void CTimeServiceCtrl::startClient(boost::asio::ip::address server_address, int portNr, boost::asio::ip::udp protocol) {
+void CTimeServiceCtrl::startClient(boost::asio::ip::udp::endpoint timesrv_endpoint) {
 	assert(m_thread == 0);
 	m_server_role = false;
-	m_thread = new std::thread(bind(&CTimeServiceCtrl::client_thread_func, this, server_address, portNr, protocol));
+	m_thread = new std::thread(bind(&CTimeServiceCtrl::client_thread_func, this, timesrv_endpoint));
 }
 
 void CTimeServiceCtrl::stop() {
@@ -70,10 +70,10 @@ void CTimeServiceCtrl::server_thread_func(int portNr, boost::asio::ip::udp proto
 	}
 }
 
-void CTimeServiceCtrl::client_thread_func(boost::asio::ip::address server_address, int portNr, boost::asio::ip::udp protocol) {
+void CTimeServiceCtrl::client_thread_func(boost::asio::ip::udp::endpoint timesrv_endpoint) {
 	try {
 		boost::asio::io_service io_service;
-		CTimeService ts(io_service, server_address, portNr, protocol);
+		CTimeService ts(io_service, timesrv_endpoint);
 		LOG4CPLUS_DEBUG(m_logger, "starting TimeService");
 		m_used_port = ts.getUsedPort();
 		m_cond_var.notify_all();

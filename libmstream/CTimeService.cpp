@@ -21,18 +21,21 @@
 #include "CTimeService.h"
 #include "CTime.h"
 #include "CTimeSyncPkt.h"
+#include <iostream>
 
 namespace muroa {
 
 using namespace boost;
 using namespace boost::asio::ip;
 
+// c-tor for server mode
 CTimeService::CTimeService(boost::asio::io_service& io_serv, int portNr, udp protocol)
                            :
                            m_server_role(true),
 		                   m_port_nr(portNr),
 		                   m_socket(io_serv),
-		                   m_timer(io_serv)
+		                   m_timer(io_serv),
+						   m_awaiting_response(false)
 {
 	try {
 		m_socket.open(protocol);
@@ -58,21 +61,19 @@ CTimeService::CTimeService(boost::asio::io_service& io_serv, int portNr, udp pro
 
 }
 
-CTimeService::CTimeService(boost::asio::io_service& io_serv,
-		                   address server_address,
-		                   int portNr,
-		                   udp protocol)
+// c-tor for client mode
+CTimeService::CTimeService(boost::asio::io_service& io_serv, boost::asio::ip::udp::endpoint timesrv_endpoint)
                            :
                            m_server_role(false),
-		                   m_ip_address(server_address),
-		                   m_port_nr(portNr),
 		                   m_socket(io_serv),
-		                   m_timer(io_serv)
+		                   m_timer(io_serv),
+						   m_awaiting_response(false)
 {
 	try {
-		m_socket.open(protocol);
 
-		m_remote_endpoint = udp::endpoint(m_ip_address, m_port_nr);
+		m_socket.open(timesrv_endpoint.protocol());
+
+		m_remote_endpoint = timesrv_endpoint;
 		send_request(system::error_code());
 	}
 	catch(boost::system::system_error err) {
@@ -94,34 +95,39 @@ void CTimeService::start_server() {
 }
 
 void CTimeService::start_timer() {
-	m_timer.async_wait( boost::bind(&CTimeService::send_request, shared_from_this(), asio::placeholders::error) );
+	m_timer.expires_from_now(boost::posix_time::seconds(5));
+	m_timer.async_wait( boost::bind(&CTimeService::send_request, this, asio::placeholders::error) );
 }
 
 void CTimeService::send_request(const boost::system::error_code& ec ) {
 	if(ec != boost::asio::error::operation_aborted) {
-		CTime send_time;
+		if(m_awaiting_response) {
+			// error
+		}
 		CTimeSyncPkt ts_pkt;
-		ts_pkt.setT1(send_time);
+		ts_pkt.setT1(CTime::now());
 
 		buffer_t buf = ts_pkt.serialize();
 
 		boost::system::error_code send_ec;
 		size_t bytes_sent = m_socket.send_to(asio::buffer(buf.buffer, buf.size), m_remote_endpoint, 0, send_ec);
 
-		start_timer();
+		m_awaiting_response = true;
+		m_socket.async_receive_from(asio::buffer(m_buffer), m_remote_endpoint, boost::bind(&CTimeService::handle_receive, this,
+	                                            asio::placeholders::error,
+	                                            asio::placeholders::bytes_transferred) );
 	}
 }
 
 void CTimeService::handle_receive(const boost::system::error_code& ec, std::size_t bytes_transferred) {
 
 	if(!ec || ec == boost::asio::error::message_size) {
-		CTime recv_time;
+		CTime recv_time(CTime::now());
 		CTimeSyncPkt ts_pkt(m_buffer.data(), bytes_transferred);
 		if(m_server_role) {
-			ts_pkt.setT1Tick(recv_time);
+			ts_pkt.setT2(recv_time);
 
-			CTime send_time;
-			ts_pkt.setT2(send_time);
+			ts_pkt.setT2(CTime::now());
 			buffer_t buf = ts_pkt.serialize();
 
 			boost::system::error_code send_ec;
@@ -130,8 +136,13 @@ void CTimeService::handle_receive(const boost::system::error_code& ec, std::size
 			start_server();
 		}
 		else {
-			ts_pkt.setT2Tick(recv_time);
-			calcTimeDiff(&ts_pkt);
+			if(m_awaiting_response == false) {
+				// error
+			}
+			ts_pkt.setT4(recv_time);
+			CDuration theta = ts_pkt.getClockOffset();
+			std::cerr << " clock offset [s]: " << std::fixed << theta.sec() << std::endl;
+			m_awaiting_response = false;
 			start_timer();
 		}
 	}
@@ -140,10 +151,6 @@ void CTimeService::handle_receive(const boost::system::error_code& ec, std::size
 void CTimeService::createResponse(size_t bytes_transferred) {
 	boost::system::error_code ec;
 
-
-}
-
-void CTimeService::calcTimeDiff(CTimeSyncPkt *ts_pkt) {
 
 }
 

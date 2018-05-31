@@ -39,19 +39,29 @@ CTimeSyncPkt::CTimeSyncPkt(const char* buf, size_t len) {
 CTimeSyncPkt::~CTimeSyncPkt() {
 }
 
-CDuration CTimeSyncPkt::getTransitionTime() {
-	CDuration d1 = m_t1_tick - m_t1;
-	CDuration d2 = m_t2_tick - m_t2;
+const CDuration CTimeSyncPkt::getRoundTripDelay() {
+	const CDuration d1 = m_t4 - m_t1;
+	const CDuration d2 = m_t3 - m_t2;
 
-	return (d1 + d2) / 2;
+	return d1 - d2;
+}
+
+const CDuration CTimeSyncPkt::getClockOffset() {
+	// theta = T(B) - T(A) = 1/2 * [(T2-T1) + (T3-T4)]
+
+	const CDuration d1 = m_t2 - m_t1;
+	const CDuration d2 = m_t3 - m_t4;
+
+	const CDuration theta = (d1 + d2) * 0.5;
+	return theta;
 }
 
 buffer_t CTimeSyncPkt::serialize() {
 	packaging p;
-	p.times.t1      = m_t1.serialize();
-	p.times.t1_tick = m_t1_tick.serialize();
-	p.times.t2      = m_t2.serialize();
-	p.times.t2_tick = m_t2_tick.serialize();
+	p.times.t1 = m_t1.serialize();
+	p.times.t2 = m_t2.serialize();
+	p.times.t3 = m_t3.serialize();
+	p.times.t4 = m_t4.serialize();
 
 	return buffer_t{p.buffer, sizeof(p.buffer)};
 }
@@ -78,9 +88,9 @@ void CTimeSyncPkt::deserialize(const char* buf, size_t size) {   // might throw 
 
 void CTimeSyncPkt::deserialize(packaging p) {     // might throw CDeserialisationException
 	m_t1.deserialize(p.times.t1);
-	m_t1_tick.deserialize(p.times.t1_tick);
 	m_t2.deserialize(p.times.t2);
-	m_t2_tick.deserialize(p.times.t2_tick);
+	m_t3.deserialize(p.times.t3);
+	m_t4.deserialize(p.times.t4);
 }
 
 } /* namespace muroa */

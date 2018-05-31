@@ -40,7 +40,8 @@ public:
 
 	virtual ~CTimeSyncPkt();
 
-	CDuration getTransitionTime();
+	const CDuration getRoundTripDelay();
+	const CDuration getClockOffset();
 
 	buffer_t serialize();
 	void deserialize(buffer_t buf);                    // might throw CDeserialisationException
@@ -54,14 +55,6 @@ public:
 		m_t1 = t1;
 	}
 
-	const CTime& getT1Tick() const {
-		return m_t1_tick;
-	}
-
-	void setT1Tick(const CTime& t1Tick) {
-		m_t1_tick = t1Tick;
-	}
-
 	const CTime& getT2() const {
 		return m_t2;
 	}
@@ -70,27 +63,35 @@ public:
 		m_t2 = t2;
 	}
 
-	const CTime& getT2Tick() const {
-		return m_t2_tick;
+	const CTime& getT3() const {
+		return m_t3;
 	}
 
-	void setT2Tick(const CTime& t2Tick) {
-		m_t2_tick = t2Tick;
+	void setT3(const CTime& t3) {
+		m_t3 = t3;
+	}
+
+	const CTime& getT4() const {
+		return m_t4;
+	}
+
+	void setT4(const CTime& t4) {
+		m_t4 = t4;
 	}
 
 private:
 	CTime m_t1;
-	CTime m_t1_tick;
-
 	CTime m_t2;
-	CTime m_t2_tick;
+
+	CTime m_t3;
+	CTime m_t4;
 
 	union packaging {
 		struct _times {
 			uint64_t t1;
-			uint64_t t1_tick;
 			uint64_t t2;
-			uint64_t t2_tick;
+			uint64_t t3;
+			uint64_t t4;
 		} times;
 		char buffer[4 * sizeof(int64_t)];
 	};

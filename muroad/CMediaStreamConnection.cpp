@@ -38,18 +38,16 @@
 #include "CApp.h"
 #include "CSettings.h"
 #include "CTcpServer.h"
-#include "CTimeServiceCtrl.h"
 
 
 using namespace std;
 using namespace boost::posix_time;
 using namespace muroa;
 
-CMediaStreamConnection::CMediaStreamConnection(boost::asio::io_service& io_service, boost::asio::ip::address mcast_addr, int timesrv_port ) :
+CMediaStreamConnection::CMediaStreamConnection(boost::asio::io_service& io_service, boost::asio::ip::address mcast_addr, boost::asio::ip::udp::endpoint timesrv_endpoint) :
 		                   m_max_sync_infos(10),
 		                   m_io_service(io_service),
-						   m_mcast_addr(mcast_addr),
-						   m_timesrv_port(timesrv_port)
+						   m_mcast_addr(mcast_addr)
 {
   
   m_packet_ringbuffer = new CPacketRingBuffer(3);
@@ -63,7 +61,7 @@ CMediaStreamConnection::CMediaStreamConnection(boost::asio::io_service& io_servi
   m_sync_requested_for_stream_id = -1;
   m_sync_requested_at = microsec_clock::universal_time();
 
-
+  m_ts.startClient(timesrv_endpoint);
   m_idle_time = 0;
 
   start();
@@ -74,7 +72,6 @@ CMediaStreamConnection::~CMediaStreamConnection()
 {
   stop();
   m_ts.stop();
-  delete m_ts;
   delete m_recvloop_thread;
   delete m_playloop_thread;
 
@@ -219,6 +216,6 @@ void CMediaStreamConnection::onResetStream(const evResetStream& evRst) {
 
 
 
-void CMediaStreamConnection::useTimeService(boost::asio::ip::address server_address, int port, boost::asio::ip::udp protocol) {
-	m_ts->startClient(server_address, port, protocol);
-}
+// void CMediaStreamConnection::useTimeService(boost::asio::ip::address server_address, boost::asio::ip::udp::endpoint timesrv_endpoint) {
+// 	m_ts.startClient(server_address, port, protocol);
+// }

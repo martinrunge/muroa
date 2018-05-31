@@ -81,7 +81,8 @@ CPlayer::~CPlayer() {
 
 void CPlayer::setupMediaStreamConn( boost::asio::ip::address mcast_addr, int timesrv_port) {
 	assert(m_media_stream_conn == 0);
-	m_media_stream_conn = new CMediaStreamConnection(m_io_service, mcast_addr, timesrv_port);
+	boost::asio::ip::udp::endpoint timesrv_endpoint(m_session_ctrl_conn->remoteEndpoint().address(), timesrv_port);
+	m_media_stream_conn = new CMediaStreamConnection(m_io_service, mcast_addr, timesrv_endpoint);
 
     m_current_volume = getVolume();
 

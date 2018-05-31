@@ -37,6 +37,7 @@ Class encapsulates all the playback functioinalty. It inplements an interface to
 #include <cmds/CmdStream.h>
 // #include "cmds/CmdStreamReset.h"
 #include "CConnectionManager.h"
+#include "CTimeServiceCtrl.h"
 
 #include <boost/asio.hpp>
 
@@ -48,7 +49,6 @@ namespace muroa
   class CDnsSdAvahi;
   class CmdStreamReset;
   class CTcpServer;
-  class CTimeServiceCtrl;
   class CStreamCtrlConnection;
 }
 
@@ -61,7 +61,7 @@ class CPacketRingBuffer;
 
 class CMediaStreamConnection : public muroa::IRenderCmds {
 public:
-	CMediaStreamConnection(boost::asio::io_service& io_service, boost::asio::ip::address mcast_addr, int timesrv_port);
+	CMediaStreamConnection(boost::asio::io_service& io_service, boost::asio::ip::address mcast_addr, boost::asio::ip::udp::endpoint timesrv_endpoint);
     ~CMediaStreamConnection();
 
     void start();
@@ -77,7 +77,7 @@ public:
 	void onJoinMulticastGroup() {};
 	void onLeaveMutlicastGroup() {};
 
-	void useTimeService(boost::asio::ip::address ip_address, int port, boost::asio::ip::udp protocol = boost::asio::ip::udp::v4());
+	// void useTimeService(boost::asio::ip::address ip_address, int port, boost::asio::ip::udp protocol = boost::asio::ip::udp::v4());
 
 	muroa::evSyncStream getSyncInfo();
 
