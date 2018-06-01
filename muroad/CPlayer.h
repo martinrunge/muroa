@@ -54,6 +54,7 @@ public:
 
 	int onCloseCtrlConn(CCtrlConnection* ctrlConn);
 
+	int leaveSession(const evSessionError& evt);
 	int leaveSession(const evRequestLeave& evt, CCtrlConnection* ctrlConn);
 
     void syncInfo(const evSyncStream& evt, CCtrlConnection* ctrlConn);
@@ -61,7 +62,6 @@ public:
     void reportVolume(const boost::system::error_code& ec);
 
 	void resetStream(const evResetStream& evt, CCtrlConnection* ctrlConn);
-
 
 	void setupMediaStreamConn(  boost::asio::ip::address mcast_addr, int timesrv_port );
 	void shutdownMediaStreamConn();
@@ -99,6 +99,8 @@ private:
     boost::asio::ip::address m_mcast_addr;
     int m_timesrv_port;
     int m_current_volume;
+
+    CDuration m_max_tolerable_clock_offset;
 
 	boost::asio::deadline_timer m_report_volume_timer;
 

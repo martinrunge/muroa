@@ -58,7 +58,8 @@ public:
 	void confirmJoinRequest(const evRequestJoin& evt);
 	bool mayJoinSession(const evRequestJoin& rj);
 	void becomeSessionMember(const evRequestJoin& evt);
-    void leaveSession(const evRequestLeave& evt);
+	void sendEvSessionError(const muroa::evSessionError&);
+	void leaveSession(const evRequestLeave& evt);
 
     void onSyncInfo(const evSyncStream& evt);
 	void onSetVolume(const evSetVolume& evt);

@@ -104,6 +104,12 @@ void CStreamCtrlParserSM::onXmlStartElement(const std::string& name, const char*
 		parseCmdID(attributes, cmd);
 		parseEvJoinRejectedArgs(attributes, cmd);
 		m_tmp_cmd_ptr = cmd;
+	} else if( name.compare( evSessionError::ev_name) == 0) {
+		assert(m_tmp_cmd_ptr == 0);
+		evSessionError* cmd = new evSessionError();
+		parseCmdID(attributes, cmd);
+		parseEvSessionErrorArgs(attributes, cmd);
+		m_tmp_cmd_ptr = cmd;
 	} else if( name.compare( evLeave::ev_name) == 0) {
 		assert(m_tmp_cmd_ptr == 0);
 		evLeave* cmd = new evLeave();
@@ -173,6 +179,7 @@ void CStreamCtrlParserSM::onXmlEndElement(const std::string& name)
 		name.compare( evRequestLeave::ev_name    ) == 0 ||
 		name.compare( evJoinAccepted::ev_name    ) == 0 ||
 		name.compare( evJoinRejected::ev_name    ) == 0 ||
+		name.compare( evSessionError::ev_name    ) == 0 ||
 		name.compare( evLeave::ev_name           ) == 0 ||
 		name.compare( evGetSessionState::ev_name ) == 0 ||
 		name.compare( evSessionState::ev_name    ) == 0 ||
@@ -413,6 +420,65 @@ void CStreamCtrlParserSM::parseEvJoinRejectedArgs(    const char** attrs, evJoin
 	}
 	cmd->m_owner_session = name_str;
 	cmd->m_message = message_str;
+}
+
+void CStreamCtrlParserSM::parseEvSessionErrorArgs(    const char** attrs, evSessionError* cmd) {
+	string client_name_str;
+	string member_of_session_str;
+	string msg_str;
+	string clock_offset_str;
+
+	bool client_name_found = false;
+	bool member_of_session_found = false;
+	bool msg_found = false;
+	bool clock_offset_found = false;
+
+	parseCmdID(attrs, cmd);
+	for(int i=0; attrs[i]; i+=2)
+	{
+		string name  = attrs[i];
+		string value = attrs[i + 1];
+
+		if(name.compare("client_name") == 0) {
+			client_name_str = value;
+			client_name_found = true;
+		}
+		if(name.compare("member_of_session") == 0) {
+			member_of_session_str = value;
+			member_of_session_found = true;
+		}
+		if(name.compare("msg") == 0) {
+			msg_str = value;
+			msg_found = true;
+		}
+		if(name.compare("clock_offset") == 0) {
+			clock_offset_str = value;
+			clock_offset_found = true;
+		}
+	}
+
+	if( !client_name_found || !member_of_session_found || !msg_found || !clock_offset_found ) {
+		ostringstream oss;
+		oss << "evSessionError: ";
+		if( !client_name_found ) {
+			oss << " argument 'client_name' missing; ";
+		}
+		if( !member_of_session_found ) {
+			oss << " argument 'member_of_session' missing; ";
+		}
+		if( !msg_found ) {
+			oss << " argument 'msg' missing; ";
+		}
+		if( !clock_offset_found ) {
+			oss << " argument 'clock_offset' missing; ";
+		}
+		throw ExRpcError(oss.str());
+	}
+
+	cmd->m_client_name = client_name_str;
+	cmd->m_member_of_session = member_of_session_str;
+	cmd->m_error_msg = msg_str;
+	cmd->m_clock_offset = CDuration(CUtils::str2int64(clock_offset_str));
 }
 
 void CStreamCtrlParserSM::parseEvLeaveArgs(           const char** attrs, evLeave* cmd) {

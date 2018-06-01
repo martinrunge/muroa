@@ -34,6 +34,7 @@ public:
 
 	virtual void sendClientState() = 0;
 	virtual void sendSessionState(const evRequestSessionState& rss) = 0;
+	virtual void sendEvSessionError(const evSessionError& evt) = 0;
 	virtual void sendEvError(const evError& evt) = 0;
 	virtual void sendEvTimeout(const evTimeout& evt) = 0;
     virtual void sendEvVolume(const evVolume&evt) = 0;

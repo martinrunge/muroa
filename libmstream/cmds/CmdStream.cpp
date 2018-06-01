@@ -27,6 +27,7 @@ const std::string evRequestJoin::ev_name = "evRequestJoin";
 const std::string evRequestLeave::ev_name = "evRequestLeave";
 const std::string evJoinAccepted::ev_name = "evJoinAccepted";
 const std::string evJoinRejected::ev_name = "evJoinRejected";
+const std::string evSessionError::ev_name = "evSessionError";
 const std::string evLeave::ev_name = "evLeave";
 const std::string evGetSessionState::ev_name ="evGetSessionState";
 const std::string evSessionState::ev_name = "evSessionState";

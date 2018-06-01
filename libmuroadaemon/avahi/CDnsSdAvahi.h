@@ -41,6 +41,8 @@ public:
 
 //	void registerService(std::string serviceName, unsigned short servicePort);
 
+	std::string getServiceName() { return m_serviceName; };
+
 	void addBrowseService(std::string sericeType);
 
 	void clientCallback(AvahiClient *client, AvahiClientState state, void * userdata);

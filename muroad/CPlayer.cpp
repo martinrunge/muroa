@@ -65,6 +65,10 @@ CPlayer::CPlayer(boost::asio::io_service& io_service) :
 //    m_dnssd = new CDnsSdAvahi(io_service, serviceName, 44400, serviceType, vector<string>());
 	m_dnssd->setServiceChangedHandler(boost::bind( &muroa::CApp::serviceChanged, CApp::getInstPtr()));
 
+	m_current_volume = getVolume();
+
+	int max_co_in_ms = CApp::settings().getConfigVal("muroad.MaxClockOffset", 1000);
+	m_max_tolerable_clock_offset = CDuration(static_cast<int64_t>(1000000) * max_co_in_ms);
 }
 
 CPlayer::~CPlayer() {
@@ -164,6 +168,12 @@ int CPlayer::becomeSessionMember(const evRequestJoin& evt, CCtrlConnection* ctrl
     setupMediaStreamConn(evt.m_mcast_addr, evt.m_timesrv_port);
 }
 
+int CPlayer::leaveSession(const evSessionError& evt) {
+	m_session_name = "";
+	m_session_ctrl_conn = 0;
+	shutdownMediaStreamConn();
+}
+
 int CPlayer::leaveSession(const evRequestLeave& evt, CCtrlConnection* ctrlConn) {
 	m_session_name = "";
 	m_session_ctrl_conn = 0;
@@ -186,7 +196,19 @@ void CPlayer::syncInfo(const evSyncStream& evt, CCtrlConnection* ctrlConn) {
 }
 
 void CPlayer::onClockOffset(CDuration theta) {
-	LOG4CPLUS_DEBUG(CApp::logger(), "CPlayer::onClockOffset to server [s]: " << std::fixed << theta.sec() );
+	if(theta > m_max_tolerable_clock_offset || theta < -m_max_tolerable_clock_offset) {
+
+		ostringstream oss;
+		oss << "CPlayer::onClockOffset to server [s]: " << std::fixed << theta.sec();
+		LOG4CPLUS_DEBUG(CApp::logger(), oss.str() );
+
+		evSessionError evsesserr;
+		evsesserr.m_client_name = m_dnssd->getServiceName();
+		evsesserr.m_member_of_session = getSessionName();
+		evsesserr.m_error_msg = oss.str();
+		evsesserr.m_clock_offset = theta;
+		m_session_ctrl_conn->onEvent(&evsesserr);
+	}
 }
 
 int CPlayer::getVolume() {

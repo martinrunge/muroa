@@ -54,6 +54,7 @@ CStreamCtrlXml::CStreamCtrlXml() {    // might throw ExRpcError
 	type_serializers[std::type_index(typeid( evRequestLeave    ))] = &CStreamCtrlXml::sendEvRequestLeave;
 	type_serializers[std::type_index(typeid( evJoinAccepted    ))] = &CStreamCtrlXml::sendEvJoinAccepted;
 	type_serializers[std::type_index(typeid( evJoinRejected    ))] = &CStreamCtrlXml::sendEvJoinRejected;
+	type_serializers[std::type_index(typeid( evSessionError    ))] = &CStreamCtrlXml::sendEvSessionError;
 	type_serializers[std::type_index(typeid( evLeave           ))] = &CStreamCtrlXml::sendEvLeave;
 	type_serializers[std::type_index(typeid( evGetSessionState ))] = &CStreamCtrlXml::sendEvGetSessionState;
 	type_serializers[std::type_index(typeid( evSessionState    ))] = &CStreamCtrlXml::sendEvSessionState;
@@ -146,6 +147,17 @@ void CStreamCtrlXml::sendEvJoinRejected(const CmdStreamBase* ev) {
                                             << " owner_session=\"" << e->m_owner_session << "\""
 											<< " message=\"" << e->m_message << "\"/>" << endl;
 
+	sendData(oss.str());
+}
+
+void CStreamCtrlXml::sendEvSessionError(const CmdStreamBase* ev) {
+	const evSessionError* e = dynamic_cast<const evSessionError* >(ev);
+	ostringstream oss;
+	oss << "<" << e->ev_name << " cmdID=\"" << e->getID() << "\""
+			                                << " client_name=\"" << e->m_client_name << "\""
+											<< " member_of_session=\"" << e->m_member_of_session << "\""
+											<< " msg=\"" << e->m_error_msg << "\""
+											<< " clock_offset=\"" << e->m_clock_offset.ns() << "\"/>" << endl;
 	sendData(oss.str());
 }
 

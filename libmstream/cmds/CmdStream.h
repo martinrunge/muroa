@@ -22,6 +22,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define LIBMSTREAM_CMDS_CMDSTREAM_H_
 
 #include "CmdStreamBase.h"
+#include "CTime.h"
 
 #include <boost/asio.hpp>
 #include <boost/date_time/posix_time/posix_time.hpp>
@@ -274,6 +275,20 @@ public:
 	}
 	static const std::string ev_name;
 };
+
+class evSessionError: public CmdStreamBase {
+public:
+	bool operator==(const evSessionError& rhs) {
+		return  m_error_msg.compare(rhs.m_error_msg) == 0;
+	}
+	std::string m_client_name;
+	std::string m_member_of_session;
+	std::string m_error_msg;
+	CDuration m_clock_offset;
+
+	static const std::string ev_name;
+};
+
 
 class evError: public CmdStreamBase {
 public:

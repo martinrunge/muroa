@@ -65,6 +65,7 @@ private:
 	void sendEvRequestLeave    ( const CmdStreamBase* ev);
 	void sendEvJoinAccepted    ( const CmdStreamBase* ev);
 	void sendEvJoinRejected    ( const CmdStreamBase* ev);
+	void sendEvSessionError    ( const CmdStreamBase* ev);
 	void sendEvLeave           ( const CmdStreamBase* ev);
 	void sendEvGetSessionState ( const CmdStreamBase* ev);
 	void sendEvSessionState    ( const CmdStreamBase* ev);

@@ -113,6 +113,12 @@ void CCtrlConnection::becomeSessionMember(const evRequestJoin& evt) {
 }
 
 
+void CCtrlConnection::sendEvSessionError(const muroa::evSessionError& evt) {
+    sendEvent(&evt);
+    m_player->leaveSession(evt);
+}
+
+
 void CCtrlConnection::leaveSession(const evRequestLeave& evt) {
 
     m_player->leaveSession(evt, this);

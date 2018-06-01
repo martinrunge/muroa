@@ -67,19 +67,19 @@ public:
 		}
 	}
 
-	int64_t ns() {
+	int64_t ns() const {
 		return m_time_in_ns;
 	}
 
-	int64_t us() {
+	int64_t us() const {
 		return m_time_in_ns / 1000;
 	}
 
-	int64_t ms() {
+	int64_t ms() const {
 		return m_time_in_ns / 1000000;
 	}
 
-	double sec() {
+	double sec() const {
 		double factor = 1.0/1000000000LL;
 		return factor * m_time_in_ns;
 	}
@@ -90,6 +90,26 @@ public:
 
 	bool operator!=( const CDuration& rhs ) const {
 	    return ( m_time_in_ns != rhs.m_time_in_ns );
+	}
+
+	bool operator<( const CDuration& rhs ) const {
+		return m_time_in_ns < rhs.m_time_in_ns;
+	}
+
+	bool operator<=( const CDuration& rhs ) const {
+		return m_time_in_ns <= rhs.m_time_in_ns;
+	}
+
+	bool operator>( const CDuration& rhs ) const {
+		return m_time_in_ns > rhs.m_time_in_ns;
+	}
+
+	bool operator>=( const CDuration& rhs ) const {
+		return m_time_in_ns >= rhs.m_time_in_ns;
+	}
+
+	CDuration operator-() const {
+		return CDuration( -m_time_in_ns );
 	}
 
 	CDuration operator+( const CDuration& rhs ) const {

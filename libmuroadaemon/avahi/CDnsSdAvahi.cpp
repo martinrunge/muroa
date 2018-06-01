@@ -204,7 +204,7 @@ void CDnsSdAvahi::entryGroupCallback(AvahiEntryGroup *group, AvahiEntryGroupStat
 	switch (state) {
 		case AVAHI_ENTRY_GROUP_ESTABLISHED :
 			/* The entry group has been established successfully */
-			cerr << "Service ' " << m_serviceName << "' successfully established." << endl;
+			cerr << "Service '" << m_serviceName << "' successfully established." << endl;
 			break;
 
 		case AVAHI_ENTRY_GROUP_COLLISION : {

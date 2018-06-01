@@ -177,6 +177,11 @@ namespace muroa {
         void sendEvLeave(const evTimeout &to) {
         };
 
+
+        void sendEvSessionError(const evSessionError &err) {
+            _actions->sendEvSessionError(err);
+        };
+
         void sendEvError(const evError &err) {
             _actions->sendEvError(err);
         };
@@ -246,6 +251,7 @@ namespace muroa {
                a_irow < sessionMember      , evVolume                                , &c::sendEvVolume                                 >,
                a_irow < sessionMember      , evRequestSessionState                   , &c::sendSessionState                             >,
                 a_row < sessionMember      , evRequestLeave   , awaitReaction        , &c::leaveSession                                 >,
+                a_row < sessionMember      , evSessionError   , awaitReaction        , &c::sendEvSessionError                           >,
                 a_row < sessionMember      , evError          , exitState            , &c::sendEvError                                  >
         > {};
         //@formatter:on

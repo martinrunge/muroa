@@ -51,6 +51,7 @@ public:
                        XML_EV_REQUEST_LEAVE,
                        XML_EV_JOIN_ACCEPTED,
                        XML_EV_JOIN_REJECTED,
+					   XML_EV_SESSION_ERROR,
                        XML_EV_LEAVE,
                        XML_EV_GET_SESSION_STATE,
                        XML_EV_SESSION_STATE,
@@ -114,6 +115,7 @@ private:
 	void parseEvRequestLeaveArgs(    const char** attrs, evRequestLeave* cmd);
 	void parseEvJoinAcceptedArgs(    const char** attrs, evJoinAccepted* cmd);
 	void parseEvJoinRejectedArgs(    const char** attrs, evJoinRejected* cmd);
+	void parseEvSessionErrorArgs(    const char** attrs, evSessionError* cmd);
 	void parseEvLeaveArgs(           const char** attrs, evLeave* cmd);
 	void parseEvGetSessionStateArgs( const char** attrs, evGetSessionState* cmd);
 	void parseEvSessionStateArgs(    const char** attrs, evSessionState* cmd);

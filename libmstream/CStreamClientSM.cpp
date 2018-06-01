@@ -48,6 +48,7 @@ bool CStreamClientSM::onEvent(muroa::CmdStreamBase* ev) {
 	else if ( typeid(*ev) == typeid(evJoinRejected) )    process_event( *reinterpret_cast<evJoinRejected*>(ev) );
 	else if ( typeid(*ev) == typeid(evGetSessionState) ) process_event( *reinterpret_cast<evGetSessionState*>(ev) );
 	else if ( typeid(*ev) == typeid(evSessionState) )    process_event( *reinterpret_cast<evSessionState*>(ev) );
+	else if ( typeid(*ev) == typeid(evSessionError) )    process_event( *reinterpret_cast<evSessionError*>(ev) );
 	else if ( typeid(*ev) == typeid(evResetStream) )     process_event( *reinterpret_cast<evResetStream*>(ev) );
 	else if ( typeid(*ev) == typeid(evSyncStream) )      process_event( *reinterpret_cast<evSyncStream*>(ev) );
 	else if ( typeid(*ev) == typeid(evSetVolume) )       process_event( *reinterpret_cast<evSetVolume*>(ev) );
