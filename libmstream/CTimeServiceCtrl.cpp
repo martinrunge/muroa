@@ -26,7 +26,7 @@ using namespace log4cplus;
 
 namespace muroa {
 
-CTimeServiceCtrl::CTimeServiceCtrl() : m_thread(0), m_server_role(false), m_used_port(0) {
+CTimeServiceCtrl::CTimeServiceCtrl() : m_thread(0), m_server_role(false), m_used_port(0), m_ts(0) {
 	m_logger =  Logger::getInstance("main");
 }
 
@@ -52,6 +52,9 @@ void CTimeServiceCtrl::stopTimeService() {
 		if(m_thread->joinable()) {
 			m_thread->join();
 		}
+		delete m_ts;
+		m_ts = 0;
+
 		delete m_thread;
 		m_thread = 0;
 	}

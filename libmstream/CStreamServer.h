@@ -92,8 +92,10 @@ public:
 	virtual void onClientBecameSessionMember(muroa::CStreamCtrlConnection* conn, const muroa::evSessionState* evt);
 	virtual void onClientLeftSession(muroa::CStreamCtrlConnection* conn, const muroa::evLeave* evt);
 
+	virtual void onTimeout(muroa::CStreamCtrlConnection* conn, const evTimeout* evt);
 	virtual void onError(muroa::CStreamCtrlConnection* conn, const evJoinRejected* evt);
 	virtual void onError(muroa::CStreamCtrlConnection* conn, const evError* evt);
+	virtual void onSessionError(muroa::CStreamCtrlConnection* conn, const evSessionError* evt);
 
 	virtual void onVolume(muroa::CStreamCtrlConnection* conn, const evVolume* evt);
 

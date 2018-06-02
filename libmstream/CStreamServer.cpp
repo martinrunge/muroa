@@ -477,11 +477,19 @@ void CStreamServer::onClientLeftSession(muroa::CStreamCtrlConnection* conn, cons
 	}
 }
 
+void CStreamServer::onTimeout(muroa::CStreamCtrlConnection* conn, const evTimeout* evt) {
+
+}
+
 void  CStreamServer::onError(muroa::CStreamCtrlConnection* conn, const evJoinRejected* evt) {
 
 }
 
 void  CStreamServer::onError(muroa::CStreamCtrlConnection* conn, const evError* evt) {
+
+}
+
+void CStreamServer::onSessionError(muroa::CStreamCtrlConnection* conn, const evSessionError* evt) {
 
 }
 
@@ -533,4 +541,5 @@ void  CStreamServer::onVolume(muroa::CStreamCtrlConnection* conn, const evVolume
 //}
 
 
-} // namespace muroa
+}// namespace muroa
+

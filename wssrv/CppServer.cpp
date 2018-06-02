@@ -264,9 +264,16 @@ void CppServer::onVolume(muroa::CStreamCtrlConnection* conn, const muroa::evVolu
     m_ws_msg_handler->listClients();
 }
 
+void CppServer::onTimeout(muroa::CStreamCtrlConnection* conn, const evTimeout* evt) {
+
+}
 
 void CppServer::onError(muroa::CStreamCtrlConnection* conn, const evJoinRejected* evt) {
+    // m_ws_msg_handler->reportError(evt->m_message);
+}
 
+void CppServer::onSessionError(muroa::CStreamCtrlConnection* conn, const evSessionError* evt) {
+    m_ws_msg_handler->reportSessionError(evt->m_client_name, evt->m_error_msg, evt->m_clock_offset.ns()); //, evt->m_last_sync_error);
 }
 
 void CppServer::onClientState(muroa::CStreamCtrlConnection* conn, const muroa::evClientState* evt) {
@@ -361,5 +368,4 @@ bool CppServer::isClientSelected(const string &serviceName) {
 void CppServer::storeClientList() {
 	CApp::settings().setPersistentVal("msessiond", m_selected_clients);
 }
-
 
