@@ -100,7 +100,7 @@ void CStreamCtrlConnection::onDataToSend(const char* data, int len) {
 	boost::asio::write(*this, boost::asio::buffer(data, len));
 }
 
-void CStreamCtrlConnection::ontError(const evError* evt) {
+void CStreamCtrlConnection::onError(const evError* evt) {
 	m_stream_server->onError(this, evt);
 }
 
@@ -132,6 +132,11 @@ void CStreamCtrlConnection::setVolume(const evSetVolume* evt) {
 void CStreamCtrlConnection::onVolume(const evVolume* evt) {
     m_stream_server->onVolume(this, evt);
 }
+
+void CStreamCtrlConnection::onSessionError(const evSessionError* evt) {
+
+}
+
 
 void CStreamCtrlConnection::sendLeaveRequest(const muroa::evRequestLeave* evt) {
 	sendEvent(evt);

@@ -198,11 +198,11 @@ struct srv_ : public boost::msm::front::state_machine_def<srv_, VisitableState>
         {
         	template <class Event,class FSM> void on_entry(Event const& evt, FSM& fsm) {
         		std::cout << "starting: leaveSession" << std::endl;
-//        		if(typeid(evt) == typeid(evLeave)) {
-//        			fsm._inner_actions->requestLeave(&evt);
+//        		if(typeid(evt) == typeid(evSessionError)) {
+//        			fsm._inner_actions->onSessionError(&evt)
 //        		}
         	}
-            // template <class Event,class FSM> void on_exit(Event const&, FSM& )  {std::cout << "finishing: leaveSession" << std::endl;}
+            template <class Event,class FSM> void on_exit(Event const&, FSM& )  {std::cout << "finishing: leaveSession" << std::endl;}
             void accept(VisitorBase&) const     	{
             	std::cout << "in " << typeid(this).name() << std::endl;
             };
@@ -243,13 +243,22 @@ struct srv_ : public boost::msm::front::state_machine_def<srv_, VisitableState>
 			_inner_actions->onVolume(&evt);
 		}
 
+		void onSessionError(const evSessionError& evt) {
+			_inner_actions->onSessionError(&evt);
+		}
+
         void report_error(const evError& err) {
-        	_inner_actions->ontError(&err);
+        	_inner_actions->onError(&err);
         };
 
         void report_timeout(const evTimeout& to) {
         	_inner_actions->onTimeout(&to);
         };
+
+        void report_sess_err(const evSessionError& err) {
+        	_inner_actions->onSessionError(&err);
+        };
+
 
         typedef joinedSession_ j; // makes transition table cleaner
 
@@ -263,6 +272,7 @@ struct srv_ : public boost::msm::front::state_machine_def<srv_, VisitableState>
           _irow < sessionMember      , evSyncStream                                                                               >,
          a_irow < sessionMember      , evSetVolume                             , &j::setVolume                                    >,
          a_irow < sessionMember      , evVolume                                , &j::onVolume                                     >,
+         a_irow < sessionMember      , evSessionError                          , &j::onSessionError                               >,
           a_row < sessionMember      , evRequestLeave   , leaveSession         , &j::sendLeaveRequest                             >,
             //  +------------------- +------------------+----------------------+---------------------------+----------------------+
           _irow < noError            , evCmdSent                                                                                  >,
@@ -309,6 +319,8 @@ struct srv_ : public boost::msm::front::state_machine_def<srv_, VisitableState>
        _row < knowingClientState , evRequestClientState , awaitClientState                                                        >,
        _row < awaitJoinResponse  , evJoinAccepted       , joinedSession                                                           >,
        _row < joinedSession      , evLeave              , knowingClientState                                                      >,
+       _row < joinedSession      , evSessionError       , awaitClientState                                                        >,
+   //    _row < joinedSession      , evClientState        , knowingClientState                                                      >,
       a_row < awaitJoinResponse  , evJoinRejected       , knowingClientState   , &s::onJoinRejected                               >
     > {};
 	//@formatter:on
