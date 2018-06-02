@@ -119,6 +119,8 @@ void CWSMsgHandler::listClients() {
 		elem["member"] = it->isMember();
         elem["volume"] = it->getVolume();
 		elem["online"] = it->isOnline();
+		elem["lasterrmsg"] = it->getLastErrorMsg();
+		elem["lastsyncerr"] = it->getLastErrorMsg();
 		data.append(elem);
 	}
 

@@ -30,6 +30,12 @@ public:
 	const std::string& getMemberOfSession() const {	return m_member_of_session; }
 	void setMemberOfSession(const std::string& memberOfSession) { m_member_of_session = memberOfSession; }
 
+	const std::string& getLastErrorMsg() const { return m_last_error_msg; }
+	void setLastErrorMsg(const std::string& lastErrorMsg) {	m_last_error_msg = lastErrorMsg; }
+
+	const CTime& getLastSyncError() const {	return m_last_sync_error; }
+	void setLastSyncError(const CTime& lastSyncError) {	m_last_sync_error = lastSyncError; }
+
 	ServDescPtr srvPtr;
 
 private:
@@ -37,7 +43,8 @@ private:
 	bool m_is_member;
 	int m_volume;
 	std::string m_member_of_session;
-
+	std::string m_last_error_msg;
+	CTime m_last_sync_error;
 };
 
 } /* namespace muroa */
