@@ -254,4 +254,21 @@ void CWSMsgHandler::reportError(CWSMsgHandler::connection_hdl hdl, std::string e
 }
 
 
+void CWSMsgHandler::reportSessionError(std::string client_name, std::string errormsg, int64_t clock_offset) {   // , int64_t last_sync_error) {
+	Json::Value params;
+	params["client"] = client_name;
+	params["errormsg"] = errormsg;
+	params["clockoffset"] = Json::Value::Int64(clock_offset);
+    //params["last_sync_error"] = last_sync_error;
+
+    Json::Value notification;
+    notification["jsonrpc"] = "2.0";
+    notification["method"] = "session_error";
+    notification["params"] = params;
+
+	ostringstream oss;
+	oss << notification;
+	string json_msg = oss.str();
+	m_ws_srv->sendToAll(json_msg);
+}
 

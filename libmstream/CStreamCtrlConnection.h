@@ -90,6 +90,7 @@ public:
     void onVolume(const evVolume* evt);
     void onSessionError(const evSessionError* evt);
 
+
 	// called by statemachine to send event to client
 	void sendJoinRequest(const muroa::evRequestJoin*);
 	void setVolume(const evSetVolume* evt);

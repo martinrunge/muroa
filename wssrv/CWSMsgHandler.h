@@ -32,6 +32,7 @@ public:
 	void listClients();
 	void informUser(std::string caption, std::string message);
     void reportError(connection_hdl hdl, std::string errormsg, int jsonrpcid);
+    void reportSessionError(std::string client_name, std::string errormsg, int64_t clock_offset); // , int64_t last_sync_error);
 	void reportProgress(int posInSecs, int durationInSecs);
 	void reportEndOfStream();
 

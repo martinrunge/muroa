@@ -109,7 +109,7 @@ void CStreamCtrlConnection::onError(const evJoinRejected* evt) {
 }
 
 void CStreamCtrlConnection::onTimeout(const evTimeout* evt) {
-
+	m_stream_server->onTimeout(this, evt);
 }
 
 void CStreamCtrlConnection::onClientState(const evClientState* evt) {
@@ -134,7 +134,7 @@ void CStreamCtrlConnection::onVolume(const evVolume* evt) {
 }
 
 void CStreamCtrlConnection::onSessionError(const evSessionError* evt) {
-
+	m_stream_server->onSessionError(this, evt);
 }
 
 

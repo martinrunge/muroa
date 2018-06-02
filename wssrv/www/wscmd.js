@@ -109,15 +109,30 @@ wscmd.run(['wscmd', function (wscmd) {
               // get type from message
               console.log(message);
               var object = angular.fromJson(message);
-              var event = object.event;
-              if(event in callbacks) {
-                // call callback of type with data
-                var data = object.data;
-                callbacks[event](data);
+              if('jsonrpc' in object) {
+                  var jsonrpcversion = object.jsonrpc;
+                  if(object.jsonrpc != 2.0) {
+                      console.log("unsupported jsonrpc version: '" + event + "'");
+                  }
+                  var method = object.method
+                  if(method in callbacks) {
+                    var params = object.params
+                    callbacks[method](params)
+                  }
               }
               else {
-                  console.log("no callback registered for type '" + event + "'");
-              }
+                  if('event' in object) {
+                    var event = object.event;
+                        if(event in callbacks) {
+                            // call callback of type with data
+                            var data = object.data;
+                            callbacks[event](data);
+                        }
+                        else {
+                            console.log("no callback registered for type '" + event + "'");
+                        }
+                    }
+                }
           })
     
 }])

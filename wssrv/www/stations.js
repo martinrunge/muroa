@@ -154,6 +154,14 @@ app.controller('stationsCtrl', ['$scope', '$http', '$mdDialog', 'wscmd', 'mclien
       $scope.$apply();
     });
     
+    wscmd.reg_cb('session_error',  function (object) {
+        $scope.mclients.forEach( function(element, index, array) {
+            console.log("Index " + index + " : " + element.name);
+        });
+      $scope.$apply();
+    });
+
+
     wscmd.getCurrentClientList();
     
             
