@@ -91,11 +91,12 @@ int CPThread::StartThread(bool realtime) {
 
 int CPThread::StopThread() {
     int retval;
+    if(IsRunning()) {
+    	Run(false);
 
-    Run(false);
-
-    retval = pthread_join(m_thread_id, NULL);
-    perror("CPThread::StopThread (pthread_join)");
+    	retval = pthread_join(m_thread_id, NULL);
+    	perror("CPThread::StopThread (pthread_join)");
+    }
     return retval;
 }
 

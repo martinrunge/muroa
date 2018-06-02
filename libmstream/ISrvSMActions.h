@@ -21,9 +21,10 @@ public:
 
 	// called by statemachine to inform server (overloaded implementation in derived class is the end receiver)
 	virtual void onError(const evJoinRejected* evt) = 0;
-	virtual void ontError(const evError* evt) = 0;
+	virtual void onError(const evError* evt) = 0;
 	virtual void onTimeout(const evTimeout* evt) = 0;
 	virtual void onVolume(const evVolume* evt) = 0;
+	virtual void onSessionError(const evSessionError* evt) = 0;
 
 	virtual void onClientState(const evClientState* evt) = 0;
 	virtual void onClientState(const evLeave* evt) = 0;

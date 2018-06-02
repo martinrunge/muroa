@@ -37,7 +37,6 @@ using namespace muroa;
 namespace muroa {
 
 CPlayer::CPlayer(boost::asio::io_service& io_service) :
-		m_active(false),
 		m_conn_mgr(this),
 		m_tcp_server(0),
 		m_io_service(io_service),
@@ -112,16 +111,12 @@ void CPlayer::shutdownMediaStreamConn() {
  *          -2 access denied
  */
 int CPlayer::requestJoinSession(std::string name, CCtrlConnection* ctrlConn) {
-	if(!m_active) {
-		return -2;
-	}
-
 	if( name.compare(m_session_name) == 0 && m_session_ctrl_conn == ctrlConn ) {
 		LOG4CPLUS_INFO(CApp::logger(), "received request to join session " << name << " (" << ctrlConn->remoteEndpoint() << ") while already member of that session");
 		return 1;
 	}
 
-	if( name.empty() && m_session_ctrl_conn == 0 ) {
+	if( m_session_name.empty() && m_session_ctrl_conn == 0 ) {
 		LOG4CPLUS_INFO(CApp::logger(), "accepting request to join session " << name << " (" << ctrlConn->remoteEndpoint() << ")");
 
 		// setupMediaStreamConn();

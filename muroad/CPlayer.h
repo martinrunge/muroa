@@ -84,8 +84,6 @@ public:
 	boost::asio::io_service& getIoService() { return m_io_service; };
 
 private:
-	bool m_active;
-
 	CCtrlConnectionMgr m_conn_mgr;
     muroa::CTcpServer* m_tcp_server;
 

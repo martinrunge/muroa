@@ -191,7 +191,13 @@ void CStreamCtrlParserSM::onXmlEndElement(const std::string& name)
 		name.compare( evError::ev_name           ) == 0)
 	{
 			assert(m_tmp_cmd_ptr != 0);
-			bool event_consumed = onEvent(m_tmp_cmd_ptr);
+			bool event_consumed = true;
+			try {
+				event_consumed = onEvent(m_tmp_cmd_ptr);
+			}
+			catch(CException ex) {
+				;
+			}
 			if(event_consumed) {
 				delete m_tmp_cmd_ptr;
 			}

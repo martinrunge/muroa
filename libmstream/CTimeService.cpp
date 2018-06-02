@@ -37,7 +37,8 @@ CTimeService::CTimeService(boost::asio::io_service& io_serv, CTimeServiceCtrl* c
 		                   m_port_nr(portNr),
 		                   m_socket(io_serv),
 		                   m_timer(io_serv),
-						   m_awaiting_response(false)
+						   m_awaiting_response(false),
+						   m_shutting_down(false)
 {
 	try {
 		m_socket.open(protocol);
@@ -70,7 +71,8 @@ CTimeService::CTimeService(boost::asio::io_service& io_serv, CTimeServiceCtrl* c
 						   m_ts_ctrl(tsctrl),
 		                   m_socket(io_serv),
 		                   m_timer(io_serv),
-						   m_awaiting_response(false)
+						   m_awaiting_response(false),
+						   m_shutting_down(false)
 {
 	try {
 
@@ -88,6 +90,7 @@ CTimeService::CTimeService(boost::asio::io_service& io_serv, CTimeServiceCtrl* c
 CTimeService::~CTimeService()
 {
 	m_timer.cancel();
+	m_socket.close();
 }
 
 void CTimeService::start_server() {
@@ -144,7 +147,7 @@ void CTimeService::handle_receive(const boost::system::error_code& ec, std::size
 			}
 			ts_pkt.setT4(recv_time);
 			CDuration theta = ts_pkt.getClockOffset();
-			// std::cerr << " clock offset [s]: " << std::fixed << theta.sec() << std::endl;
+			std::cerr << " clock offset [s]: " << std::fixed << theta.sec() << std::endl;
 			m_ts_ctrl->onClockOffset(theta);
 			m_awaiting_response = false;
 			start_timer();
@@ -156,6 +159,13 @@ void CTimeService::createResponse(size_t bytes_transferred) {
 	boost::system::error_code ec;
 
 
+}
+
+void CTimeService::stop() {
+	m_shutting_down = true;
+	m_socket.get_io_service().stop();
+	m_socket.cancel();
+	m_timer.cancel();
 }
 
 } /* namespace muroa */

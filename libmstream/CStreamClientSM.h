@@ -136,6 +136,10 @@ namespace muroa {
                 std::cout << "entering: sessionMember" << std::endl;
                 fsm._actions->becomeSessionMember(evt);
             }
+            template<class Event, class FSM>
+            void on_exit(Event const &evt, FSM &fsm) {
+                std::cout << "leaving state: sessionMember" << std::endl;
+            }
 
             void accept(VisitorBase &vis) const {
                 vis.addState("sessionMember");
@@ -250,8 +254,8 @@ namespace muroa {
                a_irow < sessionMember      , evSetVolume                             , &c::setVolume                                    >,
                a_irow < sessionMember      , evVolume                                , &c::sendEvVolume                                 >,
                a_irow < sessionMember      , evRequestSessionState                   , &c::sendSessionState                             >,
+               a_irow < sessionMember      , evSessionError                          , &c::sendEvSessionError                           >,
                 a_row < sessionMember      , evRequestLeave   , awaitReaction        , &c::leaveSession                                 >,
-                a_row < sessionMember      , evSessionError   , awaitReaction        , &c::sendEvSessionError                           >,
                 a_row < sessionMember      , evError          , exitState            , &c::sendEvError                                  >
         > {};
         //@formatter:on

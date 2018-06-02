@@ -115,19 +115,17 @@ void CCtrlConnection::becomeSessionMember(const evRequestJoin& evt) {
 
 void CCtrlConnection::sendEvSessionError(const muroa::evSessionError& evt) {
     sendEvent(&evt);
-    m_player->leaveSession(evt);
 }
 
 
 void CCtrlConnection::leaveSession(const evRequestLeave& evt) {
-
-    m_player->leaveSession(evt, this);
-
     evLeave el;
     el.m_member_of_session = m_player->getSessionName();
     el.m_triggered_by_session = evt.m_triggered_by_name;
 
     sendEvent(&el);
+
+    m_player->leaveSession(evt, this);
 }
 
 

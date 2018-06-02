@@ -40,6 +40,8 @@ public:
 
 	int getUsedPort() { return m_port_nr; };
 
+	void stop();
+
 private:
 	boost::asio::ip::address m_ip_address;
 	int m_port_nr;
@@ -52,6 +54,7 @@ private:
 	boost::asio::deadline_timer m_timer;
 
 	bool m_awaiting_response;
+	bool m_shutting_down;
 
 	void start_server();
 	void start_timer();

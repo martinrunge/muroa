@@ -33,7 +33,10 @@
 #include <log4cplus/loglevel.h>
 #include <log4cplus/loggingmacros.h>
 
+
 namespace muroa {
+
+class CTimeService;
 
 class CTimeServiceCtrl {
 public:
@@ -53,7 +56,7 @@ private:
 	void client_thread_func(boost::asio::ip::udp::endpoint timesrv_endpoint);
 
 	std::thread *m_thread;
-
+	CTimeService* m_ts;
 	std::mutex m_mutex;
 	std::condition_variable m_cond_var;
 	bool m_server_role;

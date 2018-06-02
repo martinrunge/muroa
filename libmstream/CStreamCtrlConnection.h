@@ -83,11 +83,12 @@ public:
 	}
 
     void onError(const evJoinRejected* evt);
-    void ontError(const evError* evt);
+    void onError(const evError* evt);
 	void onTimeout(const evTimeout* evt);
 	void onClientState(const evClientState* evt);
 	void onClientState(const evLeave* evt);
     void onVolume(const evVolume* evt);
+    void onSessionError(const evSessionError* evt);
 
 	// called by statemachine to send event to client
 	void sendJoinRequest(const muroa::evRequestJoin*);

@@ -47,7 +47,8 @@ void CTimeServiceCtrl::startTimeServiceClient(boost::asio::ip::udp::endpoint tim
 }
 
 void CTimeServiceCtrl::stopTimeService() {
-	if(m_thread != 0) {
+	if(m_thread != 0 && m_ts != 0) {
+		m_ts->stop();
 		if(m_thread->joinable()) {
 			m_thread->join();
 		}
@@ -58,30 +59,36 @@ void CTimeServiceCtrl::stopTimeService() {
 
 void CTimeServiceCtrl::server_thread_func(int portNr, boost::asio::ip::udp protocol) {
 	try {
+		assert(m_ts == 0);
 		boost::asio::io_service io_service;
-		CTimeService ts(io_service, this, portNr, protocol);
+		m_ts = new CTimeService(io_service, this, portNr, protocol);
 		LOG4CPLUS_DEBUG(m_logger, "starting TimeService");
-		m_used_port = ts.getUsedPort();
+		m_used_port = m_ts->getUsedPort();
 		m_cond_var.notify_all();
 		io_service.run();
 		LOG4CPLUS_INFO(m_logger, "shutting down time service.");
 	} catch (std::exception& e) {
 		LOG4CPLUS_ERROR(m_logger, "Uncaught exception from TimeServices mainloop: " << e.what());
 	}
+	delete m_ts;
+	m_ts = 0;
 }
 
 void CTimeServiceCtrl::client_thread_func(boost::asio::ip::udp::endpoint timesrv_endpoint) {
 	try {
+		assert(m_ts == 0);
 		boost::asio::io_service io_service;
-		CTimeService ts(io_service, this, timesrv_endpoint);
+		m_ts = new CTimeService(io_service, this, timesrv_endpoint);
 		LOG4CPLUS_DEBUG(m_logger, "starting TimeService");
-		m_used_port = ts.getUsedPort();
+		m_used_port = m_ts->getUsedPort();
 		m_cond_var.notify_all();
 		io_service.run();
 		LOG4CPLUS_INFO(m_logger, "shutting down time service.");
 	} catch (std::exception& e) {
 		LOG4CPLUS_ERROR(m_logger, "Uncaught exception from TimeServices mainloop: " << e.what());
 	}
+	delete m_ts;
+	m_ts = 0;
 }
 
 int CTimeServiceCtrl::getCurrentTimeServerPort() {
