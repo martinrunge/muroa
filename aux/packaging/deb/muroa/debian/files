@@ -1,7 +1,7 @@
-muroa-common-dbgsym_0.6.0+nmu63_armhf.deb debug extra
-muroa-common_0.6.0+nmu63_armhf.deb sound optional
-muroad-dbgsym_0.6.0+nmu63_armhf.deb debug extra
-muroad_0.6.0+nmu63_armhf.buildinfo sound optional
-muroad_0.6.0+nmu63_armhf.deb sound optional
-wssrv-dbgsym_0.6.0+nmu63_armhf.deb debug extra
-wssrv_0.6.0+nmu63_armhf.deb sound optional
+muroa-common-dbgsym_0.6.0+nmu64_armhf.deb debug extra
+muroa-common_0.6.0+nmu64_armhf.deb sound optional
+muroad-dbgsym_0.6.0+nmu64_armhf.deb debug extra
+muroad_0.6.0+nmu64_armhf.buildinfo sound optional
+muroad_0.6.0+nmu64_armhf.deb sound optional
+wssrv-dbgsym_0.6.0+nmu64_armhf.deb debug extra
+wssrv_0.6.0+nmu64_armhf.deb sound optional
