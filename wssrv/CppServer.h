@@ -60,7 +60,7 @@ public:
 	void onError(muroa::CStreamCtrlConnection* conn, const evJoinRejected* evt);
     void onVolume(muroa::CStreamCtrlConnection* conn, const muroa::evVolume* evt);
 	void onSessionError(muroa::CStreamCtrlConnection* conn, const evSessionError* evt);
-void onClientState(muroa::CStreamCtrlConnection* conn, const muroa::evClientState* evt);
+    void onClientState(muroa::CStreamCtrlConnection* conn, const muroa::evClientState* evt);
 
     void onProgress(int posInSecs, int durationInSecs);
     void onEndOfStream();

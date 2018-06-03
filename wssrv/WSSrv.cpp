@@ -83,37 +83,6 @@ void WSSrv::sendTo(connection_hdl hdl, std::string message) {
 	m_endpoint.send(hdl, message,  websocketpp::frame::opcode::text);
 }
 
-void WSSrv::setTimer() {
-    m_timer = m_endpoint.set_timer(
-        1000,
-        websocketpp::lib::bind(
-            &WSSrv::onTimer,
-            this,
-            websocketpp::lib::placeholders::_1
-        )
-    );
-}
-
-void WSSrv::onTimer(websocketpp::lib::error_code const & ec) {
-    if (ec) {
-        // there was an error, stop telemetry
-        m_endpoint.get_alog().write(websocketpp::log::alevel::app,
-                "Timer Error: "+ec.message());
-        return;
-    }
-
-    std::stringstream val;
-    val << "count is blah";
-
-    // Broadcast count to all connections
-    con_list::iterator it;
-    for (it = m_ws_connections.begin(); it != m_ws_connections.end(); ++it) {
-        m_endpoint.send(*it,val.str(),websocketpp::frame::opcode::text);
-    }
-
-    // set timer for next telemetry check
-    setTimer();
-}
 
 bool WSSrv::on_ping(connection_hdl hdl, std::string msg) {
     m_endpoint.get_alog().write(websocketpp::log::alevel::app, "on_ping: "+msg);

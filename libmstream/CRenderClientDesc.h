@@ -10,6 +10,7 @@
 
 #include <string>
 #include "avahi/CServiceDesc.h"
+#include "CTime.h"
 
 namespace muroa {
 

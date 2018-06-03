@@ -490,7 +490,20 @@ void  CStreamServer::onError(muroa::CStreamCtrlConnection* conn, const evError* 
 }
 
 void CStreamServer::onSessionError(muroa::CStreamCtrlConnection* conn, const evSessionError* evt) {
+	bool has_changed = false;
 
+	for(vector<CRenderClientDesc>::iterator it = m_rcs.begin(); it != m_rcs.end(); it++) {
+		if( it->srvPtr->getServiceName().compare(conn->getServiceName()) == 0 ) {
+			if(it->getLastErrorMsg().compare(evt->m_error_msg) != 0) {
+				it->setLastErrorMsg(evt->m_error_msg);
+				has_changed = true;
+			}
+		}
+	}
+
+	if(has_changed) {
+		listClients();
+	}
 }
 
 void  CStreamServer::onVolume(muroa::CStreamCtrlConnection* conn, const evVolume* evt) {
