@@ -4,14 +4,14 @@
     "ID"   : "swr3",
     "Logo" : "radiostations/swr3/swr3.jpg",
     "type" : "netstream",
-    "URL"  : "http://swr-mp3-m-swr3.akacast.akamaistream.net/7/720/137136/v1/gnl.akacast.akamaistream.net/swr-mp3-m-swr3"
+    "URL"  : "https://swr-swr3-live.sslcast.addradio.de/swr/swr3/live/mp3/128/stream.mp3"
   },
   {
     "Name" : "Bayern 3",
     "ID"   : "bayern3",
     "Logo" : "radiostations/bayern3/bayern3.png",
     "type" : "netstream",
-    "URL" : "http://br-mp3-bayern3-m.akacast.akamaistream.net/7/442/142692/v1/gnl.akacast.akamaistream.net/br_mp3_bayern3_m"
+    "URL" : "http://br-br3-live.cast.addradio.de/br/br3/live/mp3/128/stream.mp3"
   },
   {
     "Name" : "Antenne Bayern",

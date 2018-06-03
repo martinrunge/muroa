@@ -273,7 +273,9 @@ void CppServer::onError(muroa::CStreamCtrlConnection* conn, const evJoinRejected
 }
 
 void CppServer::onSessionError(muroa::CStreamCtrlConnection* conn, const evSessionError* evt) {
+	CStreamServer::onSessionError(conn, evt);
     m_ws_msg_handler->reportSessionError(evt->m_client_name, evt->m_error_msg, evt->m_clock_offset.ns()); //, evt->m_last_sync_error);
+    m_ws_msg_handler->listClients();
 }
 
 void CppServer::onClientState(muroa::CStreamCtrlConnection* conn, const muroa::evClientState* evt) {

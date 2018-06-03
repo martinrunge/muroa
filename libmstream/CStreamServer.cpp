@@ -463,6 +463,8 @@ void CStreamServer::onClientLeftSession(muroa::CStreamCtrlConnection* conn, cons
 		if( it->srvPtr->getServiceName().compare(conn->getServiceName()) == 0 ) {
 			it->isMember(false);
             it->setMemberOfSession("");
+            it->setLastErrorMsg("");
+            it->setLastSyncError(CTime(0));
 			has_changed = true;
 		}
 	}

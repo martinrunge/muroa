@@ -73,7 +73,7 @@
                 <md-icon md-svg-icon="icons/ic_remove_24px.svg" ng-click="adjVol($event, c, -1)" ng-disabled="!c.member" class="md-secondary" />
                 <md-slider min="0" max="100" aria-label="volume" id="volume-slider" ng-model="c.volume" ng-disabled="!c.member" class="md-secondary md-hue-3" />
                 <md-icon md-svg-icon="icons/ic_add_24px.svg" ng-click="adjVol($event, c, 1)" ng-disabled="!c.member" aria-label="increase volume" class="md-secondary" />
-                <md-icon md-svg-icon="icons/ic_more_horiz_24px.svg"  ng-click="openPropDlg(c, $event)" ng-disabled="!c.online" aria-label="Open Settings" class="md-secondary md-hue-3" />
+                <md-icon md-svg-icon="{{c.settingsicon}}"  ng-click="openPropDlg(c, $event)" ng-disabled="!c.online" aria-label="Open Settings" class="md-secondary md-hue-3" />
             </md-list-item>
         </md-list>
 

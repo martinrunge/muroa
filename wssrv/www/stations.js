@@ -130,6 +130,10 @@ app.controller('stationsCtrl', ['$scope', '$http', '$mdDialog', 'wscmd', 'mclien
                     wscmd.adjVol(element.name, newValue);
                 }
             });
+            element.settingsicon = "icons/ic_more_horiz_24px.svg";
+            if(('lasterrmsg' in element) && element.lasterrmsg) {
+                 element.settingsicon = "icons/round-warning-24px.svg";
+            }
             
         });
         
