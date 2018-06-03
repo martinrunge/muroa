@@ -18,4 +18,5 @@ Makefile
 build
 .idea
 cmake-build-*
+.debhelper/
 
