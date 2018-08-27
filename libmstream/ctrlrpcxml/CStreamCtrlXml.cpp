@@ -62,10 +62,14 @@ CStreamCtrlXml::CStreamCtrlXml() {    // might throw ExRpcError
 	type_serializers[std::type_index(typeid( evSyncStream      ))] = &CStreamCtrlXml::sendEvSyncStream;
 	type_serializers[std::type_index(typeid( evSetVolume       ))] = &CStreamCtrlXml::sendEvSetVolume;
     type_serializers[std::type_index(typeid( evVolume          ))] = &CStreamCtrlXml::sendEvVolume;
+    type_serializers[std::type_index(typeid( evRequestProv     ))] = &CStreamCtrlXml::sendEvRequestProv;
+    type_serializers[std::type_index(typeid( evProvAck         ))] = &CStreamCtrlXml::sendEvProvAck;
+    type_serializers[std::type_index(typeid( evProvRej         ))] = &CStreamCtrlXml::sendEvProvRej;
+    type_serializers[std::type_index(typeid( evRevokeProv      ))] = &CStreamCtrlXml::sendEvRevokeProv;
 	type_serializers[std::type_index(typeid( evAck             ))] = &CStreamCtrlXml::sendEvAck;
 	type_serializers[std::type_index(typeid( evError           ))] = &CStreamCtrlXml::sendEvError;
 
-
+    m_sessionID = 0;
 	reset();
 }
 
@@ -231,6 +235,39 @@ void CStreamCtrlXml::sendEvVolume(const CmdStreamBase* ev) {
     oss << "<" << e->ev_name << " cmdID=\"" << e->getID() << "\""
         << " ssrc=\"" << e->m_ssrc << "\""
         << " volume=\"" << e->m_volume << "\"/>" << endl;
+    sendData(oss.str());
+}
+
+void CStreamCtrlXml::sendEvRequestProv( const CmdStreamBase* ev) {
+    const evRequestProv* e = dynamic_cast<const evRequestProv*>(ev);
+    ostringstream oss;
+    oss << "<" << e->ev_name << " cmdID=\"" << e->getID() << "\""
+        << " input_ch=\"" << e->m_input_ch << "\""
+        << " description=\"" << e->m_description << "\"/>" << endl;
+    sendData(oss.str());
+}
+
+void CStreamCtrlXml::sendEvProvAck( const CmdStreamBase* ev) {
+    const evProvAck* e = dynamic_cast<const evProvAck*>(ev);
+    ostringstream oss;
+    oss << "<" << e->ev_name << " cmdID=\"" << e->getID() << "\""
+        << " description=\"" << e->m_description << "\"/>" << endl;
+    sendData(oss.str());
+}
+
+void CStreamCtrlXml::sendEvProvRej( const CmdStreamBase* ev) {
+    const evProvRej* e = dynamic_cast<const evProvRej*>(ev);
+    ostringstream oss;
+    oss << "<" << e->ev_name << " cmdID=\"" << e->getID() << "\""
+        << " reason=\"" << e->m_reason << "\"/>" << endl;
+    sendData(oss.str());
+}
+
+void CStreamCtrlXml::sendEvRevokeProv( const CmdStreamBase* ev) {
+    const evRevokeProv* e = dynamic_cast<const evRevokeProv*>(ev);
+    ostringstream oss;
+    oss << "<" << e->ev_name << " cmdID=\"" << e->getID() << "\""
+        << " reason=\"" << e->m_reason << "\"/>" << endl;
     sendData(oss.str());
 }
 

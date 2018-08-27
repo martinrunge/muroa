@@ -92,6 +92,7 @@ public:
 
 
 	// called by statemachine to send event to client
+    void sendEvt(const CmdStreamBase* evt);
 	void sendJoinRequest(const muroa::evRequestJoin*);
 	void setVolume(const evSetVolume* evt);
 	void sendLeaveRequest(const muroa::evRequestLeave*);

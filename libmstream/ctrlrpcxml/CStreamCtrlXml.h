@@ -73,6 +73,10 @@ private:
 	void sendEvSyncStream      ( const CmdStreamBase* ev);
 	void sendEvSetVolume       ( const CmdStreamBase* ev);
 	void sendEvVolume          ( const CmdStreamBase* ev);
+	void sendEvRequestProv     ( const CmdStreamBase* ev);
+	void sendEvProvAck         ( const CmdStreamBase* ev);
+	void sendEvProvRej         ( const CmdStreamBase* ev);
+	void sendEvRevokeProv      ( const CmdStreamBase* ev);
 	void sendEvAck             ( const CmdStreamBase* ev);
 	void sendEvError           ( const CmdStreamBase* ev);
 

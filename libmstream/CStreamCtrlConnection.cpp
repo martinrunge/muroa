@@ -30,7 +30,8 @@ CStreamCtrlConnection::CStreamCtrlConnection(std::string serviceName, muroa::CSt
 					    m_stream_server(stream_server),
 						m_serviceName(serviceName),
 						m_srv_sm(this),
-						m_RTP_port(0)
+						m_RTP_port(0),
+						m_use_multicast_rtp(false)
 {
 
 }
@@ -94,6 +95,10 @@ bool CStreamCtrlConnection::onEvent(muroa::CmdStreamBase* ev) {
 
 void CStreamCtrlConnection::dataReceived( boost::array<char, 8192> buffer, int length) {
 	newData(buffer.data(), length);
+}
+
+void CStreamCtrlConnection::sendEvt(const CmdStreamBase* evt) {
+	sendEvent(evt);
 }
 
 void CStreamCtrlConnection::onDataToSend(const char* data, int len) {

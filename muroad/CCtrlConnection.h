@@ -64,15 +64,20 @@ public:
     void onSyncInfo(const evSyncStream& evt);
 	void onSetVolume(const evSetVolume& evt);
 	void onResetStream(const evResetStream& evt);
+	void onGetSMState(const evGetSMState&);
+	void onBecomeMediaProvider(const evBecomeMediaProvider& evt);
+    void onRevokeMediaProvider(const evRevokeMediaProvider& evt);
 
 	// send events to server, triggered by statemachine
 	void sendRejectJoin(const evRequestJoin& evt);
 	void sendRejectJoin(const evLeave& evt);
 	void sendRejectJoin(const evTimeout& evt);
+	void sendSMState(const evSMState&);
 
 	void sendEvError(const evError& err);
 	void sendEvTimeout(const evTimeout& to);
 	void sendEvVolume(const evVolume& evv);
+    void sendEvt(const CmdStreamBase& evt);
 
 private:
 	CCtrlConnection(boost::asio::io_service& io_service);

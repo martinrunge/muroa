@@ -130,7 +130,7 @@ namespace muroa {
 //    };
 
         // sessionMember
-        struct sessionMember : public msm::front::state<VisitableState> {
+        struct sessionMember : public boost::msm::front::state_machine_def<sessionMember, VisitableState>  {
             template<class Event, class FSM>
             void on_entry(Event const &evt, FSM &fsm) {
                 std::cout << "entering: sessionMember" << std::endl;
@@ -144,6 +144,84 @@ namespace muroa {
             void accept(VisitorBase &vis) const {
                 vis.addState("sessionMember");
             };
+
+        	// definition of mediaConsumer state
+            struct mediaConsumer : public boost::msm::front::state<VisitableState>
+            {
+            	template <class Event,class FSM>
+            	void on_entry(Event const&,FSM& )
+            	{
+            		std::cout << "entering: mediaConsumer" << std::endl;
+            	}
+            	template <class Event,class FSM>
+            	void on_exit(Event const&,FSM& )
+            	{
+            	    std::cout << "leaving: mediaConsumer" << std::endl;
+            	}
+            	void accept(VisitorBase&) const     	{
+            	    std::cout << "in " << typeid(this).name() << std::endl;
+            	};
+            };
+
+        	// definition of awaitBecomeProv state
+            struct awaitBecomeProv : public boost::msm::front::state<VisitableState>
+            {
+            	template <class Event,class FSM>
+            	void on_entry(Event const&,FSM& )
+            	{
+            		std::cout << "entering: awaitBecomeProv" << std::endl;
+            	}
+            	template <class Event,class FSM>
+            	void on_exit(Event const&,FSM& )
+            	{
+            	    std::cout << "leaving: awaitBecomeProv" << std::endl;
+            	}
+            	void accept(VisitorBase&) const     	{
+            	    std::cout << "in " << typeid(this).name() << std::endl;
+            	};
+            };
+
+        	// definition of mediaProvider state
+            struct mediaProvider : public boost::msm::front::state<VisitableState>
+            {
+            	template <class Event,class FSM>
+            	void on_entry(Event const&,FSM& )
+            	{
+            		std::cout << "entering: mediaProvider" << std::endl;
+            	}
+            	template <class Event,class FSM>
+            	void on_exit(Event const&,FSM& )
+            	{
+            	    std::cout << "leaving: mediaProvider" << std::endl;
+            	}
+            	void accept(VisitorBase&) const     	{
+            	    std::cout << "in " << typeid(this).name() << std::endl;
+            	};
+            };
+
+            // the initial state of the sessionMember SM. Must be defined
+            typedef mediaConsumer initial_state;
+
+            // Transition table for joinedSession
+            //@formatter:off
+    		struct transition_table : boost::mpl::vector<
+                //    Start                 Event                    Next                   Action                  Guard
+                //  +------------------- +------------------+-----------------------+----------------------+---------------------+
+               _row < mediaConsumer      , evRequestProv    , awaitBecomeProv                                                    >,
+               _row < awaitBecomeProv    , evProvAck        , mediaProvider                                                      >,
+               _row < awaitBecomeProv    , evProvRej        , mediaConsumer                                                      >,
+               _row < mediaProvider      , evRevokeProv     , mediaConsumer                                                      >
+            > {};
+    		//@formatter:on
+
+            // Replaces the default no-transition response.
+            template <class FSM,class Event>
+            void no_transition(Event const& e, FSM&,int state)
+            {
+                std::cout << " (sub state machine) no transition from state " << state
+                    << " on event " << typeid(e).name() << std::endl;
+            }
+
         };
 
         // exitState
@@ -221,6 +299,22 @@ namespace muroa {
             _actions->sendSessionState(rss);
         };
 
+        void onGetSMState(const evGetSMState &gs) {
+            _actions->onGetSMState(gs);
+        };
+
+        void sendSMState(const evSMState &gs) {
+            _actions->sendEvt(gs);
+        };
+
+        void onBecomeMediaProvider(const evBecomeMediaProvider &bmp) {
+            _actions->onBecomeMediaProvider(bmp);
+        };
+
+        void onRevokeMediaProvider(const evRevokeMediaProvider &rmp) {
+            _actions->onRevokeMediaProvider(rmp);
+        };
+
         // guards
         bool mayJoin(const evRequestJoin &rj) {
             bool retval = _actions->mayJoinSession(rj);
@@ -248,6 +342,9 @@ namespace muroa {
                   row < awaitReaction      , evRequestJoin    , awaitReaction        , &c::sendEvJoinRejected    , &c::mayNotJoin       >,
                   row < awaitReaction      , evRequestJoin    , sessionMember        , &c::sendEvJoinAccepted    , &c::mayJoin          >,
                a_irow < awaitReaction      , evRequestClientState                    , &c::sendClientState                              >,
+               a_irow < awaitReaction      , evGetSMState                            , &c::onGetSMState                                 >,
+               a_irow < awaitReaction      , evBecomeMediaProvider                   , &c::onBecomeMediaProvider                        >,
+               a_irow < awaitReaction      , evRevokeMediaProvider                   , &c::onRevokeMediaProvider                        >,
                 //    +--------------------+------------------+----------------------+---------------------------+----------------------+
                a_irow < sessionMember      , evResetStream                           , &c::resetStream                                  >,
                a_irow < sessionMember      , evSyncStream                            , &c::syncStream                                   >,

@@ -238,6 +238,10 @@ void CPlayer::resetStream(const evResetStream& evt, CCtrlConnection* ctrlConn) {
 	}
 }
 
+void CPlayer::getSMState(const evGetSMState& evt, CCtrlConnection* ctrlConn) {
+
+}
+
 boost::asio::ip::address CPlayer::getSessionServer() {
 	boost::asio::ip::address addr;
 

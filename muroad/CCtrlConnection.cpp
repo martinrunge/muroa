@@ -141,6 +141,18 @@ void CCtrlConnection::onResetStream(const evResetStream& evt) {
 	m_player->resetStream(evt, this);
 }
 
+void CCtrlConnection::onGetSMState(const evGetSMState& evt) {
+	m_player->getSMState(evt, this);
+}
+
+void CCtrlConnection::onBecomeMediaProvider(const evBecomeMediaProvider& evt) {
+
+}
+
+void CCtrlConnection::onRevokeMediaProvider(const evRevokeMediaProvider& evt) {
+
+}
+
 void CCtrlConnection::sendRejectJoin(const evRequestJoin& evt) {
 	evJoinRejected rj;
 
@@ -165,6 +177,9 @@ void CCtrlConnection::sendRejectJoin(const evTimeout& evt) {
     // getIoService().post(boost::bind( &IConnectionManager::remove, m_conn_mgr, this));
 }
 
+void CCtrlConnection::sendSMState(const evSMState& evt) {
+	sendEvent(&evt);
+}
 
 void CCtrlConnection::sendEvError(const evError& err) {
 	sendEvent(&err);
@@ -173,6 +188,10 @@ void CCtrlConnection::sendEvError(const evError& err) {
 void CCtrlConnection::sendEvTimeout(const evTimeout& to) {
 	// evTimeout not yet implemented
 	// sendEvent(&to);
+}
+
+void CCtrlConnection::sendEvt(const CmdStreamBase& evt) {
+	sendEvent(&evt);
 }
 
 void CCtrlConnection::sendSessionState(const evRequestSessionState &rss) {

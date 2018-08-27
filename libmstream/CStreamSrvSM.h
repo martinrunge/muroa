@@ -172,14 +172,17 @@ struct srv_ : public boost::msm::front::state_machine_def<srv_, VisitableState>
 
 
     	// definition of sessionMember
-        struct sessionMember : public boost::msm::front::state<VisitableState>
-        {
+        struct sessionMember : public boost::msm::front::state_machine_def<sessionMember, VisitableState> {
+
+        	ISrvSMActions* _member_actions;
+
         	template <class Event,class FSM>
         	void on_entry(Event const& evt ,FSM& fsm)
         	{
+        		_member_actions = fsm._inner_actions;
         		std::cout << "entering: state sessionMember: by event" << typeid(evt).name() << " ." << std::endl;
         		if(typeid(evt) == typeid(evSessionState)) {
-        			fsm._inner_actions->onBecameSessionMember(&evt);
+        			_member_actions->onBecameSessionMember(&evt);
         		}
         	}
         	template <class Event,class FSM>
@@ -191,6 +194,100 @@ struct srv_ : public boost::msm::front::state_machine_def<srv_, VisitableState>
         	    std::cout << "in " << typeid(this).name() << std::endl;
         	};
 
+        	// definition of mediaConsumer state
+            struct mediaConsumer : public boost::msm::front::state<VisitableState>
+            {
+            	template <class Event,class FSM>
+            	void on_entry(Event const&,FSM& )
+            	{
+            		std::cout << "entering: mediaConsumer" << std::endl;
+            	}
+            	template <class Event,class FSM>
+            	void on_exit(Event const&,FSM& )
+            	{
+            	    std::cout << "leaving: mediaConsumer" << std::endl;
+            	}
+            	void accept(VisitorBase&) const     	{
+            	    std::cout << "in " << typeid(this).name() << std::endl;
+            	};
+            };
+
+        	// definition of awaitBecomeProv state
+            struct awaitBecomeProv : public boost::msm::front::state<VisitableState>
+            {
+            	template <class Event,class FSM>
+            	void on_entry(Event const&,FSM& )
+            	{
+            		std::cout << "entering: awaitBecomeProv" << std::endl;
+            	}
+            	template <class Event,class FSM>
+            	void on_exit(Event const&,FSM& )
+            	{
+            	    std::cout << "leaving: awaitBecomeProv" << std::endl;
+            	}
+            	void accept(VisitorBase&) const     	{
+            	    std::cout << "in " << typeid(this).name() << std::endl;
+            	};
+            };
+
+        	// definition of mediaProvider state
+            struct mediaProvider : public boost::msm::front::state<VisitableState>
+            {
+            	template <class Event,class FSM>
+            	void on_entry(Event const&,FSM& )
+            	{
+            		std::cout << "entering: mediaProvider" << std::endl;
+            	}
+            	template <class Event,class FSM>
+            	void on_exit(Event const&,FSM& )
+            	{
+            	    std::cout << "leaving: mediaProvider" << std::endl;
+            	}
+            	void accept(VisitorBase&) const     	{
+            	    std::cout << "in " << typeid(this).name() << std::endl;
+            	};
+            };
+
+            template <class Event> void sendEvt(const Event& evt) {
+            	_member_actions->sendEvt(&evt);
+            }
+
+/*            void sendProvAckEvent(const evProvAck& evt) {
+            	_member_actions->sendEvent(&evt);
+            }
+
+            void sendProvRejEvent(const evProvRej& evt) {
+            	_member_actions->sendEvent(&evt);
+            }
+
+            void sendRevokeProvEvent(const evRevokeProv& evt) {
+            	_member_actions->sendEvent(&evt);
+            }*/
+
+            typedef sessionMember _s; // makes transition table cleaner
+
+            // the initial state of the sessionMember SM. Must be defined
+            typedef mediaConsumer initial_state;
+
+            // Transition table for joinedSession
+            //@formatter:off
+    		struct transition_table : boost::mpl::vector<
+                //    Start                 Event                    Next                   Action                  Guard
+                //  +------------------- +------------------+-----------------------+----------------------+---------------------+
+               _row < mediaConsumer      , evRequestProv    , awaitBecomeProv                                                    >,
+              a_row < awaitBecomeProv    , evProvAck        , mediaProvider         , &_s::sendEvt                      >,
+              a_row < awaitBecomeProv    , evProvRej        , mediaConsumer         , &_s::sendEvt                      >,
+               _row < mediaProvider      , evRevokeProv     , mediaConsumer                                                      >
+            > {};
+    		//@formatter:on
+
+            // Replaces the default no-transition response.
+            template <class FSM,class Event>
+            void no_transition(Event const& e, FSM&,int state)
+            {
+                std::cout << " (sub state machine) no transition from state " << state
+                    << " on event " << typeid(e).name() << std::endl;
+            }
         };
 
         // leaveSession

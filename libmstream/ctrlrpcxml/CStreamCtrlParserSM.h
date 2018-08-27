@@ -59,6 +59,10 @@ public:
                        XML_EV_SYNC_STREAM,
                        XML_EV_SET_VOLUME,
                        XML_EV_VOLUME,
+                       XML_EV_REQUEST_PROV,
+                       XML_EV_PROV_ACK,
+                       XML_EV_PROV_REJ,
+                       XML_EV_REVOKE_PROV,
                        XML_EV_ERROR
 	};
 
@@ -123,6 +127,10 @@ private:
 	void parseEvSyncStreamArgs(      const char** attrs, evSyncStream* cmd);
 	void parseEvSetVolumeArgs(       const char** attrs, evSetVolume* cmd);
     void parseEvVolumeArgs(          const char** attrs, evVolume* cmd);
+    void parseEvRequestProvArgs(     const char** attrs, evRequestProv* cmd);
+    void parseEvProvAckArgs(         const char** attrs, evProvAck* cmd);
+    void parseEvProvRejArgs(         const char** attrs, evProvRej* cmd);
+    void parseEvRevokeProvArgs(      const char** attrs, evRevokeProv* cmd);
 	void parseEvErrorArgs(           const char** attrs, evError* cmd);
 
 };

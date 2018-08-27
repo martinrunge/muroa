@@ -151,6 +151,7 @@ public:
 				m_timesrv_port == rhs.m_timesrv_port &&
 				m_rtp_unicast_port == rhs.m_rtp_unicast_port &&
 				m_volume == rhs.m_volume;
+		        m_media_provider.compare( rhs.m_media_provider);
 	}
 
 	std::string m_session_name;
@@ -158,6 +159,7 @@ public:
 	uint32_t m_timesrv_port;
 	uint32_t m_rtp_unicast_port;
 	uint32_t m_volume;
+	std::string m_media_provider;
 
 	static const std::string ev_name;
 };
@@ -300,6 +302,86 @@ public:
 	static const std::string ev_name;
 };
 
+class evRequestProv: public CmdStreamBase {
+public:
+	bool operator==(const evRequestProv& rhs) {
+		return  (m_input_ch.compare(rhs.m_input_ch) == 0 &&
+				 m_description.compare(rhs.m_description) == 0);
+	}
+
+	std::string m_input_ch;
+	std::string m_description;
+
+	static const std::string ev_name;
+};
+
+class evProvAck: public CmdStreamBase {
+public:
+	bool operator==(const evProvAck& rhs) {
+		return  m_description.compare(rhs.m_description) == 0;
+	}
+
+	std::string m_description;
+
+	static const std::string ev_name;
+};
+
+class evProvRej: public CmdStreamBase {
+public:
+	bool operator==(const evProvRej& rhs) {
+		return  m_reason.compare(rhs.m_reason) == 0;
+	}
+
+	std::string m_reason;
+
+	static const std::string ev_name;
+};
+
+class evRevokeProv: public CmdStreamBase {
+public:
+	bool operator==(const evRevokeProv& rhs) {
+		return  m_reason.compare(rhs.m_reason) == 0;
+	}
+
+	std::string m_reason;
+	static const std::string ev_name;
+};
+
+class evGetSMState: public  CmdStreamBase {
+public:
+	bool operator==(const evGetSMState& rhs) {
+		return true;
+	}
+	static const std::string ev_name;
+};
+
+class evSMState: public  CmdStreamBase {
+public:
+	bool operator==(const evSMState& rhs) {
+		return true;
+	}
+	static const std::string ev_name;
+};
+
+class evBecomeMediaProvider: public CmdStreamBase {
+public:
+	bool operator==(const evBecomeMediaProvider& rhs) {
+		return  m_reason.compare(rhs.m_reason) == 0;
+	}
+
+	std::string m_reason;
+	static const std::string ev_name;
+};
+
+class evRevokeMediaProvider: public CmdStreamBase {
+public:
+	bool operator==(const evRevokeMediaProvider& rhs) {
+		return  m_reason.compare(rhs.m_reason) == 0;
+	}
+
+	std::string m_reason;
+	static const std::string ev_name;
+};
 
 // internal event only used by state machine, not serialized and sent over network
 class evTimeout {

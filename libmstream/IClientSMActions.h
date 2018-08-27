@@ -37,7 +37,8 @@ public:
 	virtual void sendEvSessionError(const evSessionError& evt) = 0;
 	virtual void sendEvError(const evError& evt) = 0;
 	virtual void sendEvTimeout(const evTimeout& evt) = 0;
-    virtual void sendEvVolume(const evVolume&evt) = 0;
+    virtual void sendEvVolume(const evVolume &evt) = 0;
+    virtual void sendEvt(const CmdStreamBase &evt) = 0;
 
 	virtual void confirmJoinRequest(const evRequestJoin& evt ) = 0;
 	virtual bool mayJoinSession(const evRequestJoin& rj) = 0;
@@ -46,6 +47,11 @@ public:
 	virtual void onSyncInfo(const evSyncStream& evt) = 0;
 	virtual void onSetVolume(const evSetVolume& evt) = 0;
 	virtual void onResetStream(const evResetStream& evt) = 0;
+
+	virtual void onGetSMState(const evGetSMState& evt) = 0;
+	virtual void sendSMState(const evSMState& evt) = 0;
+	virtual void onBecomeMediaProvider(const evBecomeMediaProvider& evt) = 0;
+	virtual void onRevokeMediaProvider(const evRevokeMediaProvider& evt) = 0;
 
 	virtual void sendRejectJoin(const evRequestJoin& evt) = 0;
 	virtual void sendRejectJoin(const evLeave& evt) = 0;

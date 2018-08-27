@@ -62,6 +62,7 @@ public:
     void reportVolume(const boost::system::error_code& ec);
 
 	void resetStream(const evResetStream& evt, CCtrlConnection* ctrlConn);
+    void getSMState(const evGetSMState& evt, CCtrlConnection* ctrlConn);
 
 	void setupMediaStreamConn(  boost::asio::ip::address mcast_addr, int timesrv_port );
 	void shutdownMediaStreamConn();

@@ -152,6 +152,30 @@ void CStreamCtrlParserSM::onXmlStartElement(const std::string& name, const char*
         parseCmdID(attributes, cmd);
         parseEvVolumeArgs(attributes, cmd);
         m_tmp_cmd_ptr = cmd;
+    } else if( name.compare( evRequestProv::ev_name) == 0) {
+        assert(m_tmp_cmd_ptr == 0);
+        evRequestProv* cmd = new evRequestProv();
+        parseCmdID(attributes, cmd);
+        parseEvRequestProvArgs(attributes, cmd);
+        m_tmp_cmd_ptr = cmd;
+    } else if( name.compare( evProvAck::ev_name) == 0) {
+        assert(m_tmp_cmd_ptr == 0);
+        evProvAck* cmd = new evProvAck();
+        parseCmdID(attributes, cmd);
+        parseEvProvAckArgs(attributes, cmd);
+        m_tmp_cmd_ptr = cmd;
+    } else if( name.compare( evProvRej::ev_name) == 0) {
+        assert(m_tmp_cmd_ptr == 0);
+        evProvRej* cmd = new evProvRej();
+        parseCmdID(attributes, cmd);
+        parseEvProvRejArgs(attributes, cmd);
+        m_tmp_cmd_ptr = cmd;
+    } else if( name.compare( evRevokeProv::ev_name) == 0) {
+        assert(m_tmp_cmd_ptr == 0);
+        evRevokeProv* cmd = new evRevokeProv();
+        parseCmdID(attributes, cmd);
+        parseEvRevokeProvArgs(attributes, cmd);
+        m_tmp_cmd_ptr = cmd;
 	} else if( name.compare( evAck::ev_name) == 0) {
 		assert(m_tmp_cmd_ptr == 0);
 		evAck* cmd = new evAck();
@@ -187,6 +211,10 @@ void CStreamCtrlParserSM::onXmlEndElement(const std::string& name)
 		name.compare( evSyncStream::ev_name      ) == 0 ||
 		name.compare( evSetVolume::ev_name       ) == 0 ||
         name.compare( evVolume::ev_name          ) == 0 ||
+        name.compare( evRequestProv::ev_name     ) == 0 ||
+        name.compare( evProvAck::ev_name         ) == 0 ||
+        name.compare( evProvRej::ev_name         ) == 0 ||
+        name.compare( evRevokeProv::ev_name      ) == 0 ||
 		name.compare( evAck::ev_name             ) == 0 ||
 		name.compare( evError::ev_name           ) == 0)
 	{
@@ -580,6 +608,7 @@ void CStreamCtrlParserSM::parseEvSessionStateArgs( const char** attrs, evSession
 	string timesrv_port_str;
 	string rtp_port_str;
 	string vol_str;
+	string media_provider_str;
 
 	parseCmdID(attrs, cmd);
 
@@ -602,6 +631,9 @@ void CStreamCtrlParserSM::parseEvSessionStateArgs( const char** attrs, evSession
 		}
 		if(name.compare("volume") == 0) {
 				vol_str = value;
+		}
+		if(name.compare("media_provider") == 0) {
+				media_provider_str = value;
 		}
 	}
 
@@ -630,6 +662,7 @@ void CStreamCtrlParserSM::parseEvSessionStateArgs( const char** attrs, evSession
 	cmd->m_timesrv_port = CUtils::str2uint32(timesrv_port_str);
 	cmd->m_rtp_unicast_port = CUtils::str2uint32(rtp_port_str);
 	cmd->m_volume = CUtils::str2uint32(vol_str);
+	cmd->m_media_provider = media_provider_str;  // may be empty
 }
 
 void CStreamCtrlParserSM::parseEvResetStreamArgs(     const char** attrs, evResetStream* cmd) {
@@ -826,6 +859,119 @@ void CStreamCtrlParserSM::parseEvVolumeArgs(       const char** attrs, evVolume*
 	cmd->m_ssrc = CUtils::str2uint32(ssrc_str);
 	cmd->m_volume = CUtils::str2uint32(vol_str);
 }
+
+void CStreamCtrlParserSM::parseEvRequestProvArgs(const char** attrs, evRequestProv* cmd) {
+	string input_ch_str;
+	string descr_str;
+
+	parseCmdID(attrs, cmd);
+
+	for(int i=0; attrs[i]; i+=2)
+	{
+		string name  = attrs[i];
+		string value = attrs[i + 1];
+
+		if(name.compare("input_ch") == 0) {
+			input_ch_str = value;
+		}
+		if(name.compare("description") == 0) {
+			descr_str = value;
+		}
+	}
+
+	if( input_ch_str.empty() || descr_str.empty() ) {
+		ostringstream oss;
+		oss << "evVolume: ";
+		if( input_ch_str.empty() ) {
+			oss << " argument 'input_ch' missing; ";
+		}
+		if( descr_str.empty() ) {
+			oss << " argument 'description' missing; ";
+		}
+		throw ExRpcError(oss.str());
+	}
+	cmd->m_input_ch = input_ch_str;
+	cmd->m_description = descr_str;
+}
+
+void CStreamCtrlParserSM::parseEvProvAckArgs(const char** attrs, evProvAck* cmd) {
+	string descr_str;
+
+	parseCmdID(attrs, cmd);
+
+	for(int i=0; attrs[i]; i+=2)
+	{
+		string name  = attrs[i];
+		string value = attrs[i + 1];
+
+		if(name.compare("description") == 0) {
+			descr_str = value;
+		}
+	}
+
+	if( descr_str.empty() ) {
+		ostringstream oss;
+		oss << "evProvAck: ";
+		if( descr_str.empty() ) {
+			oss << " argument 'description' missing; ";
+		}
+		throw ExRpcError(oss.str());
+	}
+	cmd->m_description = descr_str;
+}
+
+void CStreamCtrlParserSM::parseEvProvRejArgs(const char** attrs, evProvRej* cmd) {
+	string reason_str;
+
+	parseCmdID(attrs, cmd);
+
+	for(int i=0; attrs[i]; i+=2)
+	{
+		string name  = attrs[i];
+		string value = attrs[i + 1];
+
+		if(name.compare("reason") == 0) {
+			reason_str = value;
+		}
+	}
+
+	if( reason_str.empty() ) {
+		ostringstream oss;
+		oss << "evProvRejArgs: ";
+		if( reason_str.empty() ) {
+			oss << " argument 'reason' missing; ";
+		}
+		throw ExRpcError(oss.str());
+	}
+	cmd->m_reason = reason_str;
+}
+
+void CStreamCtrlParserSM::parseEvRevokeProvArgs(const char** attrs, evRevokeProv* cmd) {
+	string reason_str;
+
+	parseCmdID(attrs, cmd);
+
+	for(int i=0; attrs[i]; i+=2)
+	{
+		string name  = attrs[i];
+		string value = attrs[i + 1];
+
+		if(name.compare("reason") == 0) {
+			reason_str = value;
+		}
+	}
+
+	if( reason_str.empty() ) {
+		ostringstream oss;
+		oss << "evRevokeProvArgs: ";
+		if( reason_str.empty() ) {
+			oss << " argument 'reason' missing; ";
+		}
+		throw ExRpcError(oss.str());
+	}
+	cmd->m_reason = reason_str;
+}
+
 
 void CStreamCtrlParserSM::parseEvErrorArgs(           const char** attrs, evError* cmd) {
 	string message_str;

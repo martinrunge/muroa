@@ -30,6 +30,7 @@ public:
 	virtual void onClientState(const evLeave* evt) = 0;
 
 	// call by statemachine to send message to client
+	virtual void sendEvt(const CmdStreamBase* evt) = 0;
 	virtual void sendJoinRequest(const evRequestJoin* evt) = 0;
 	virtual void setVolume(const evSetVolume* evt) = 0;
 	virtual void sendLeaveRequest(const evRequestLeave* evt) = 0;

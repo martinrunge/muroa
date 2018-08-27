@@ -35,6 +35,10 @@ const std::string evResetStream::ev_name = "evResetStream";
 const std::string evSyncStream::ev_name = "evSyncStream";
 const std::string evSetVolume::ev_name = "evSetVolume";
 const std::string evVolume::ev_name = "evVolume";
+const std::string evRequestProv::ev_name = "evRequestProv";
+const std::string evProvAck::ev_name = "evProvAck";
+const std::string evProvRej::ev_name = "evProvRej";
+const std::string evRevokeProv::ev_name = "evRevokeProv";
 const std::string evAck::ev_name = "evAck";
 const std::string evError::ev_name = "evError";
 
