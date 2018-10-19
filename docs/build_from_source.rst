@@ -1,32 +1,5 @@
-Users
-=====
-
-Installation
-------------
-
-
-Install playback clients on RaspberryPi with raspbian stretch
--------------------------------------------------------------
-
-Binary packages of the render client are available for raspbian stretch. To install them on a Raspberry Pi:
-
-
-.. code-block:: bash
-
-    # create an etry in sources.list
-    sudo bash -c 'cat << EOF > /etc/apt/sources.list.d/muroa.list
-    deb [arch=armhf] http://deb.muroa.org/raspbian stretch main
-    EOF'
-    
-    # add the signing key to your keyring
-    sudo bash -c 'wget -O - https:https://muroa.org/sites/default/files/martinrunge.asc | apt-key add -'
-    
-    sudo apt-get update
-    sudo apt-get install muroad
-
-
 Build from source
------------------
+=================
 
 Except for RaspberryPi, there are no binary packages available by now. I plan to offer binary packages for the major Linux distributions in the future. Until they are available, you have to build muroa from source:
 
@@ -43,7 +16,8 @@ Prerequisites:
 * libboost-program-options-dev
 
 
-Ubuntu and its flavours: 
+Ubuntu and its flavours
+-----------------------
 
 .. code-block:: bash
 
@@ -73,8 +47,8 @@ Ubuntu and its flavours:
                      libsqlite3-dev\
                      
                      
-Get the source from github 
---------------------------
+Get the source from github and compile:
+
 
 .. code-block:: bash
 

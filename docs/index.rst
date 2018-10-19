@@ -16,16 +16,16 @@ Muroa is a multi room audio player. Multi room means that you can listen to the 
 
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 3
    :caption: Full table of contents:
 
    News
-   Users
+   Installation
+   Target_platforms
    Developers
-   Target platforms <Target_platforms>
    Tools
    Contact
-   Indices and Tables <Indices_and_tables>
+   Indices_and_tables
 
 
    
