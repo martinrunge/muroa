@@ -19,5 +19,4 @@ build
 .idea
 cmake-build-*
 .debhelper/
-
-/Default/
+docs/_build/
