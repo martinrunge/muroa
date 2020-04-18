@@ -73,6 +73,7 @@ void CppServer::requestClientToJoin(std::string serviceName) {
         evj->m_timesrv_port = 12345;
 
         conn->onEvent(evj);
+        delete evj;
     }
     catch(CUnknownServiceNameException ex) {
 		LOG4CPLUS_WARN(CApp::logger(), "CppServer::requestClientToJoin: no control connection to '" << serviceName << "' (" << ex.reason() << ")");

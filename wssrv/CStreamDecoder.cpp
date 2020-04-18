@@ -344,7 +344,7 @@ int CStreamDecoder::decode() {
 			m_streamSrvPtr->reportProgress(m_posInSecs, m_durationInSecs);
 		}
 	}
-
+    av_frame_free(&av_frame);
 	return bytesUsed;
 }
 

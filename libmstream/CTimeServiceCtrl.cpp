@@ -31,7 +31,7 @@ CTimeServiceCtrl::CTimeServiceCtrl() : m_thread(0), m_server_role(false), m_used
 }
 
 CTimeServiceCtrl::~CTimeServiceCtrl() {
-
+    stopTimeService();
 }
 
 void CTimeServiceCtrl::startTimeServiceServer(int portNr, boost::asio::ip::udp protocol) {
