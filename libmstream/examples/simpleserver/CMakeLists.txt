@@ -23,7 +23,6 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR}
                     ${CMAKE_CURRENT_SOURCE_DIR}/../../../libsock++
                     ${CMAKE_CURRENT_SOURCE_DIR}/../../../libmuroadaemon
                     ${CMAKE_CURRENT_BINARY_DIR}/..
-                    ${libavutil_INCLUDE_DIR}
                     ) 
 
 link_directories(${BINARY_DIR}       "${CMAKE_SOURCE_DIR}/../../build" )

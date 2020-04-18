@@ -43,7 +43,7 @@ CStreamDecoder::CStreamDecoder(CppServer *streamSrvPtr) : m_streamSrvPtr(streamS
 
     av_init_packet(&m_packet);
 
-	m_frame_buffer_size = AVCODEC_MAX_AUDIO_FRAME_SIZE + FF_INPUT_BUFFER_PADDING_SIZE;
+	m_frame_buffer_size = AVCODEC_MAX_AUDIO_FRAME_SIZE + AV_INPUT_BUFFER_PADDING_SIZE;
 	m_frame_buffer = new uint8_t[m_frame_buffer_size];
 
 	m_res_frame_buffer_size = m_frame_buffer_size;

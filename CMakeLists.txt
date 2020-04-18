@@ -10,6 +10,7 @@ option( wssrv     "build stream searver with web interfave"   "yes")
 option( muroad    "build the muroa audio streaming daemon"    "yes")
 option( mqtclient "build the Qt based GUI client"             "no")
 option( unittests "build unittests"                           "no" )
+option( examples  "build the examples"                         "no")
 
 
 set(MUROA_AUX_DIR "${CMAKE_CURRENT_LIST_DIR}/aux")
@@ -73,7 +74,9 @@ endif( )
 
 if( msessiond OR muroad OR wssrv )
   add_subdirectory (libmstream)
-  add_subdirectory (libmstream/examples)
+  if( examples )
+    add_subdirectory (libmstream/examples)
+  endif()
   add_subdirectory (libmuroadaemon)  
   add_subdirectory (libsock++)
 endif( )

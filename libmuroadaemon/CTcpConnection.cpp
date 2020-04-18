@@ -30,6 +30,8 @@
 using namespace std;
 using namespace log4cplus;
 
+#define NEW_BOOST_ASIO
+
 namespace muroa {
 
 CTcpConnection::CTcpConnection(boost::asio::io_service& io_service) : m_socket(io_service) {
