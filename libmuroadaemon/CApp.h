@@ -58,7 +58,7 @@ private:
 // to get rid of warning "auto_ptr is deprecated"
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
-	std::auto_ptr<log4cplus::ErrorHandler> m_error_handler_ptr;
+	std::unique_ptr<log4cplus::ErrorHandler> m_error_handler_ptr;
 #pragma GCC diagnostic pop
 
     boost::filesystem::path m_abs_prog_dir;

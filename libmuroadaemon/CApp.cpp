@@ -118,11 +118,11 @@ void CApp::initLog() {
     bool logfile_accessible = CSettings::accessible(m_settings.logfile());
     if( logfile_accessible ) {
         appender = new FileAppender(m_settings.logfile());
-        appender->setErrorHandler(m_error_handler_ptr);
+        appender->setErrorHandler(std::move(m_error_handler_ptr));
     }
     else {
     	appender = new ConsoleAppender();
-    	appender->setErrorHandler(m_error_handler_ptr);
+    	appender->setErrorHandler(std::move(m_error_handler_ptr));
         //SharedAppenderPtr log_appender(console_appender);
 
     }
@@ -132,11 +132,11 @@ void CApp::initLog() {
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wdeprecated-declarations"   // to get rid of warning "auto_ptr is deprecated"
 
-	std::auto_ptr<Layout> myLayout = std::auto_ptr<Layout>(new log4cplus::PatternLayout("%d{%H:%M:%S,%q} [ %t: %-5p ] %m%n"));
+	std::unique_ptr<Layout> myLayout = std::auto_ptr<Layout>(new log4cplus::PatternLayout("%d{%H:%M:%S,%q} [ %t: %-5p ] %m%n"));
 
 #pragma GCC diagnostic pop
 
-	log_appender->setLayout(myLayout);
+	log_appender->setLayout(std::move(myLayout));
 
 	m_logger.addAppender(log_appender);
     // logger.setLogLevel ( DEBUG_LOG_LEVEL );

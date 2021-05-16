@@ -64,6 +64,7 @@ private:
   IConnectionManager* m_connectionManager;
   factory_ptr_t m_connection_factory;
 
+  boost::asio::io_service& m_io_service;
 };
 
 }

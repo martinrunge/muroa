@@ -34,8 +34,8 @@ class CTimeServiceCtrl;
 
 class CTimeService : public boost::enable_shared_from_this<CTimeService>{
 public:
-	CTimeService(boost::asio::io_service& io_service, CTimeServiceCtrl* const tsctrl, int portNr, boost::asio::ip::udp protocol = boost::asio::ip::udp::v4());
-	CTimeService(boost::asio::io_service& io_service, CTimeServiceCtrl* const tsctrl, boost::asio::ip::udp::endpoint timesrv_endpoint);
+	CTimeService(boost::asio::io_context& io_context, CTimeServiceCtrl* const tsctrl, int portNr, boost::asio::ip::udp protocol = boost::asio::ip::udp::v4());
+	CTimeService(boost::asio::io_context& io_context, CTimeServiceCtrl* const tsctrl, boost::asio::ip::udp::endpoint timesrv_endpoint);
 	virtual ~CTimeService();
 
 	int getUsedPort() { return m_port_nr; };
@@ -67,6 +67,7 @@ private:
 
 	  /// Buffer for incoming data.
 	boost::array<char, 8192> m_buffer;
+	boost::asio::io_context& m_io_context;
 };
 
 } /* namespace muroa */

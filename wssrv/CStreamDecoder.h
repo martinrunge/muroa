@@ -12,7 +12,7 @@ extern "C" {
 #include <libavformat/avformat.h>
 #include <libavcodec/avcodec.h>
 #include <libavdevice/avdevice.h>
-#include <libavresample/avresample.h>
+#include <libswresample/swresample.h>
 }
 
 // using namespace std;
@@ -42,7 +42,7 @@ public:
 	CStreamFmt openPulse(std::string server,
 						 std::string name,
 						 std::string stream_name,
-						 int sample_rate = -1,      // -1 defaults to 448000
+						 int sample_rate = -1,      // -1 defaults to 48000
 						 int channels = -1,         // -1 defaults to 2
 						 int frame_size = -1,       // -1 defaults to 1024
 	                     int fragment_size = -1 );  // defaults to unset
@@ -70,7 +70,7 @@ private:
 	AVFormatContext *m_pFormatCtx;
     AVCodecContext *m_pCodecCtx;
     AVCodec *m_pCodec;
-//    AVAudioResampleContext *m_pResamplerCtx;
+    SwrContext *m_pResamplerCtx;
     bool prepareOpen();
     CStreamFmt open(std::string filename, AVInputFormat *inputFmtPtr = NULL, AVDictionary *optionsPtr = NULL);
 

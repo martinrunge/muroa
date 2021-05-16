@@ -13,6 +13,7 @@ find_package( libavcodec REQUIRED )
 find_package( libavformat REQUIRED )
 find_package( libavdevice REQUIRED )
 find_package( libavutil REQUIRED )
+find_package( libswresample REQUIRED )
 find_package( OpenSSL REQUIRED)
 
 
@@ -60,6 +61,7 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR}
                     ${libavformat_INCLUDE_DIR}
                     ${libavdevice_INCLUDE_DIR}
                     ${libavutil_INCLUDE_DIR}
+                    ${libswresample_INCLUDE_DIR}
                     ${OPENSSL_INCLUDE_DIR}
 ) 
 
@@ -77,6 +79,7 @@ TARGET_LINK_LIBRARIES( wssrv          mstream
                                       ${libavcodec_LIBRARY}
                                       ${libavdevice_LIBRARY}
                                       ${libavutil_LIBRARY}
+                                      ${libswresample_LIBRARY}
                                       ${OPENSSL_LIBRARIES}
 )
                                       

@@ -152,7 +152,7 @@ CStreamFmt CStreamDecoder::open(string filename, AVInputFormat *inputFmtPtr, AVD
 	m_audioStreamID = -1;
 
 	for(unsigned i=0; i < m_pFormatCtx->nb_streams; i++) {
-		if(m_pFormatCtx->streams[i]->codec->codec_type==AVMEDIA_TYPE_AUDIO) {
+		if(m_pFormatCtx->streams[i]->codecpar->codec_type==AVMEDIA_TYPE_AUDIO) {
 			m_audioStreamID = i;
 			break;
 		}
@@ -193,13 +193,14 @@ CStreamFmt CStreamDecoder::open(string filename, AVInputFormat *inputFmtPtr, AVD
 		cerr << " Could not open codec." << endl;
 
 
-//	m_pResamplerCtx = avresample_alloc_context();
-//	av_opt_set_int(m_pResamplerCtx, "in_channel_layout",  AV_CH_LAYOUT_STEREO,  0);
-//	av_opt_set_int(m_pResamplerCtx, "out_channel_layout", AV_CH_LAYOUT_STEREO,  0);
-//	av_opt_set_int(m_pResamplerCtx, "in_sample_rate",     44100,                0);
-//	av_opt_set_int(m_pResamplerCtx, "out_sample_rate",    44100,                0);
-//	av_opt_set_int(m_pResamplerCtx, "in_sample_fmt",      AV_SAMPLE_FMT_S16P,   0);
-//	av_opt_set_int(m_pResamplerCtx, "out_sample_fmt",     AV_SAMPLE_FMT_S16,    0);
+	m_pResamplerCtx = swr_alloc();
+	av_opt_set_int(m_pResamplerCtx, "in_channel_layout",  m_pCodecCtx->channel_layout,     0);
+	av_opt_set_int(m_pResamplerCtx, "out_channel_layout", AV_CH_LAYOUT_STEREO,             0);
+	av_opt_set_int(m_pResamplerCtx, "in_sample_rate",     m_pCodecCtx->sample_rate,        0);
+	av_opt_set_int(m_pResamplerCtx, "out_sample_rate",    m_pCodecCtx->sample_rate,        0);
+	av_opt_set_int(m_pResamplerCtx, "in_sample_fmt",      m_pCodecCtx->sample_fmt,         0);
+	av_opt_set_int(m_pResamplerCtx, "out_sample_fmt",     AV_SAMPLE_FMT_S16,               0);
+	swr_init(m_pResamplerCtx);
 
 	m_open = true;
 	m_terminate = false;
@@ -222,6 +223,10 @@ void CStreamDecoder::close()
 	m_terminate = true;
 	m_play_thread->join();
 
+	// free resampling context
+	if(m_pResamplerCtx != 0) {
+		swr_free(&m_pResamplerCtx);
+	}
 	// Free old packet
     if(m_packet.data != NULL) {
         av_free_packet(&m_packet);
@@ -302,38 +307,11 @@ int CStreamDecoder::decode() {
 		int data_size = av_samples_get_buffer_size(&plane_size,
 				                                   m_pCodecCtx->channels,
 				                                   av_frame->nb_samples,
-				                                   m_pCodecCtx->sample_fmt,
+												   AV_SAMPLE_FMT_S16,
 				                                   0);
 
-//		avresample_convert	(	m_pResamplerCtx,
-//								&m_res_frame_buffer,
-//								1,
-//								data_size,
-//								av_frame->data,
-//								plane_size,
-//								data_size );
-        uint16_t *out = (uint16_t *)m_res_frame_buffer;
-        int write_p=0;
-
-		switch (m_pCodecCtx->sample_fmt){
-
-			case AV_SAMPLE_FMT_S16P:
-				for (int nb=0;nb<plane_size/sizeof(uint16_t);nb++){
-					for (int ch = 0; ch < m_pCodecCtx->channels; ch++) {
-						out[write_p] = ((uint16_t *) av_frame->extended_data[ch])[nb];
-						write_p++;
-					}
-				}
-				m_streamSrvPtr->write((char*) out, data_size);
-				break;
-
-			case AV_SAMPLE_FMT_S16:
-				m_streamSrvPtr->write((char*)av_frame->data[0], data_size);
-				break;
-
-			default:
-				break;
-		}
+		swr_convert(m_pResamplerCtx, &m_res_frame_buffer, av_frame->nb_samples, (const uint8_t **)av_frame->extended_data, av_frame->nb_samples);
+		m_streamSrvPtr->write((char*)m_res_frame_buffer, data_size);
 
 
 		// only call m_streamSrvPtr->reportProgress every second

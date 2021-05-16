@@ -43,7 +43,7 @@ class CStreamServer;
 
 class CStreamCtrlConnection : public bip::tcp::socket, public muroa::CStreamCtrlXml, public muroa::ISrvSMActions {
 public:
-	CStreamCtrlConnection(std::string serviceName, muroa::CStreamServer* stream_server, boost::asio::io_service& io_service);
+	CStreamCtrlConnection(std::string serviceName, muroa::CStreamServer* stream_server, boost::asio::io_context& io_context);
 	virtual ~CStreamCtrlConnection();
 
 	void connect(const endpoint_type & peer_endpoint, boost::system::error_code & ec);
@@ -119,6 +119,7 @@ private:
 	/// Buffer for incoming data.
 	boost::array<char, 8192> m_buffer;
 
+	boost::asio::io_context& m_io_context;
 };
 
 } /* namespace muroa */

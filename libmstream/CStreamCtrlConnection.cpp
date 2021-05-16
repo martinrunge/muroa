@@ -24,14 +24,15 @@
 
 namespace muroa {
 
-CStreamCtrlConnection::CStreamCtrlConnection(std::string serviceName, muroa::CStreamServer* stream_server, boost::asio::io_service& io_service)
-                      : bip::tcp::socket(io_service),
+CStreamCtrlConnection::CStreamCtrlConnection(std::string serviceName, muroa::CStreamServer* stream_server, boost::asio::io_context& io_context)
+                      : bip::tcp::socket(io_context),
                         m_stream_connection(0),
 					    m_stream_server(stream_server),
 						m_serviceName(serviceName),
 						m_srv_sm(this),
 						m_RTP_port(0),
-						m_use_multicast_rtp(false)
+						m_use_multicast_rtp(false),
+						m_io_context(io_context)
 {
 
 }
@@ -214,7 +215,7 @@ void CStreamCtrlConnection::handle_read(const boost::system::error_code& error, 
             // ask io_service to delete this instance of CStreamCtrlConnection later. It might have bee deleted by then triggered
             // by onClientDisappeared called by avahi. To avoid double deletion pass the connection name instead of the pointer
             // and search for a ctrl connection with that name later. If it has already been deleted, no pointer will be found.
-            get_io_service().post(boost::bind(&CStreamServer::disconnectFromClient, m_stream_server, m_serviceName ));
+            m_io_context.post(boost::bind(&CStreamServer::disconnectFromClient, m_stream_server, m_serviceName ));
     	}
     	// LOG4CPLUS_ERROR(CApp::logger(), "error in handle_read:  " << error.message());
     	// delete this;

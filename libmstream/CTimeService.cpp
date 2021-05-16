@@ -30,15 +30,16 @@ using namespace boost;
 using namespace boost::asio::ip;
 
 // c-tor for server mode
-CTimeService::CTimeService(boost::asio::io_service& io_serv, CTimeServiceCtrl* const tsctrl, int portNr, udp protocol)
+CTimeService::CTimeService(boost::asio::io_context& io_context, CTimeServiceCtrl* const tsctrl, int portNr, udp protocol)
                            :
                            m_server_role(true),
 						   m_ts_ctrl(tsctrl),
 		                   m_port_nr(portNr),
-		                   m_socket(io_serv),
-		                   m_timer(io_serv),
+		                   m_socket(io_context),
+		                   m_timer(io_context),
 						   m_awaiting_response(false),
-						   m_shutting_down(false)
+						   m_shutting_down(false),
+						   m_io_context(io_context)
 {
 	try {
 		m_socket.open(protocol);
@@ -65,14 +66,15 @@ CTimeService::CTimeService(boost::asio::io_service& io_serv, CTimeServiceCtrl* c
 }
 
 // c-tor for client mode
-CTimeService::CTimeService(boost::asio::io_service& io_serv, CTimeServiceCtrl* const tsctrl, boost::asio::ip::udp::endpoint timesrv_endpoint)
+CTimeService::CTimeService(boost::asio::io_context& io_context, CTimeServiceCtrl* const tsctrl, boost::asio::ip::udp::endpoint timesrv_endpoint)
                            :
                            m_server_role(false),
 						   m_ts_ctrl(tsctrl),
-		                   m_socket(io_serv),
-		                   m_timer(io_serv),
+		                   m_socket(io_context),
+		                   m_timer(io_context),
 						   m_awaiting_response(false),
-						   m_shutting_down(false)
+						   m_shutting_down(false),
+						   m_io_context(io_context)
 {
 	try {
 
@@ -163,7 +165,7 @@ void CTimeService::createResponse(size_t bytes_transferred) {
 
 void CTimeService::stop() {
 	m_shutting_down = true;
-	m_socket.get_io_service().stop();
+	m_io_context.stop();
 	m_socket.cancel();
 	m_timer.cancel();
 }
