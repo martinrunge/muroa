@@ -60,12 +60,8 @@ CApp::CApp(int argc, char** argv, std::string config_file_basename) : m_settings
     if( m_settings.parse(argc, argv) != 0) {
     	throw configEx("error parsing commandline parameters");
     }
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wdeprecated-declarations"   // to get rid of warning "auto_ptr is deprecated"
 
-    m_error_handler_ptr = auto_ptr<log4cplus::ErrorHandler>(new CAppenderErrorHandler);
-
-    #pragma GCC diagnostic pop
+    m_error_handler_ptr = unique_ptr<log4cplus::ErrorHandler>(new CAppenderErrorHandler);
 
     initLog();
 
@@ -118,7 +114,11 @@ void CApp::initLog() {
     bool logfile_accessible = CSettings::accessible(m_settings.logfile());
     if( logfile_accessible ) {
         appender = new FileAppender(m_settings.logfile());
+#ifdef log4cplus_MAJOR_VERSION == 1
+        appender->setErrorHandler(std::auto_ptr<log4cplus::ErrorHandler>(&(*m_error_handler_ptr)));
+#else
         appender->setErrorHandler(std::move(m_error_handler_ptr));
+#endif
     }
     else {
     	appender = new ConsoleAppender();
@@ -129,14 +129,14 @@ void CApp::initLog() {
     SharedAppenderPtr log_appender(appender);
 	log_appender->setName("LogAppender");
 
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wdeprecated-declarations"   // to get rid of warning "auto_ptr is deprecated"
+	std::unique_ptr<Layout> myLayout = std::unique_ptr<Layout>(new log4cplus::PatternLayout("%d{%H:%M:%S,%q} [ %t: %-5p ] %m%n"));
 
-	std::unique_ptr<Layout> myLayout = std::auto_ptr<Layout>(new log4cplus::PatternLayout("%d{%H:%M:%S,%q} [ %t: %-5p ] %m%n"));
+#ifdef log4cplus_MAJOR_VERSION == 1
+  	log_appender->setLayout(std::auto_ptr<Layout>(&(*myLayout)));
+#else
+    log_appender->setLayout(std::move(myLayout));
+#endif
 
-#pragma GCC diagnostic pop
-
-	log_appender->setLayout(std::move(myLayout));
 
 	m_logger.addAppender(log_appender);
     // logger.setLogLevel ( DEBUG_LOG_LEVEL );
