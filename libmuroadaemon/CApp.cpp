@@ -122,8 +122,11 @@ void CApp::initLog() {
     }
     else {
     	appender = new ConsoleAppender();
-    	appender->setErrorHandler(std::move(m_error_handler_ptr));
-        //SharedAppenderPtr log_appender(console_appender);
+#ifdef log4cplus_MAJOR_VERSION == 1
+    	appender->setErrorHandler(std::auto_ptr<log4cplus::ErrorHandler>(&(*m_error_handler_ptr)));
+#else
+        appender->setErrorHandler(std::move(m_error_handler_ptr));
+#endif
 
     }
     SharedAppenderPtr log_appender(appender);
